@@ -65,6 +65,12 @@ class ProgrammeController {
             @RequestBody vote: VoteInputModel
     ) = NotImplementedError()
 
+    @PostMapping("/{programmeId}/report/{reportId}")
+    fun updateReportedProgramme(
+            @PathVariable programmeId: Int,
+            @PathVariable reportId: Int
+    ) = NotImplementedError()
+
     @PostMapping("/stage")
     fun createStagingProgramme(@RequestBody programme: ProgrammeInputModel) = NotImplementedError()
 

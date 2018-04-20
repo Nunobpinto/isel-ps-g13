@@ -59,18 +59,16 @@ class CourseController {
             @PathVariable examId: Int
     ) = NotImplementedError()
 
-    @GetMapping("/{courseId}/terms/{termId}/exams/{examId}/stage")
+    @GetMapping("/{courseId}/terms/{termId}/exams/stage")
     fun getStageEntriesFromExamOnSpecificTermOfCourse(
             @PathVariable courseId: Int,
-            @PathVariable termId: Int,
-            @PathVariable examId: Int
+            @PathVariable termId: Int
     ) = NotImplementedError()
 
-    @GetMapping("/{courseId}/terms/{termId}/exams/{examId}/stage/{stageId}")
+    @GetMapping("/{courseId}/terms/{termId}/exams/stage/{stageId}")
     fun getStageEntryFromExamOnSpecificTermOfCourse(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            @PathVariable examId: Int,
             @PathVariable stageId: Int
     ) = NotImplementedError()
 
@@ -102,18 +100,17 @@ class CourseController {
             @PathVariable workItemId: Int
     ) = NotImplementedError()
 
-    @GetMapping("/{courseId}/terms/{termId}/exams/{workItemId}/stage")
+    @GetMapping("/{courseId}/terms/{termId}/workitem/stage")
     fun getStageEntriesFromWorkItemOnSpecificTermOfCourse(
             @PathVariable courseId: Int,
-            @PathVariable termInt: Int,
-            @PathVariable workItemId: Int
+            @PathVariable termId: Int,
+            @PathVariable stageId: Int
     ) = NotImplementedError()
 
-    @GetMapping("/{courseId}/terms/{termId}/workitem/{workItemId}/stage/{stageId}")
+    @GetMapping("/{courseId}/terms/{termId}/workitem/stage/{stageId}")
     fun getStageEntryFromWorkItemOnSpecificTermOfCourse(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            @PathVariable workItemId: Int,
             @PathVariable stageId: Int
     ) = NotImplementedError()
 
@@ -163,6 +160,12 @@ class CourseController {
             @RequestBody vote: VoteInputModel
     ) = NotImplementedError()
 
+    @PostMapping("/{courseId}/report/{reportId}")
+    fun updateReportedCourse(
+            @PathVariable courseId: Int,
+            @PathVariable reportId: Int
+    ) = NotImplementedError()
+
     @PostMapping("/stage")
     fun createStagingCourse(@RequestBody course: CourseInputModel) = NotImplementedError()
 
@@ -198,6 +201,14 @@ class CourseController {
             @PathVariable examId: Int,
             @PathVariable reportId: Int,
             @RequestBody vote: VoteInputModel
+    ) = NotImplementedError()
+
+    @PostMapping("/{courseId}/terms/{termId}/exams/{examId}/report/{reportId}")
+    fun updateReportedExam(
+            @PathVariable courseId: Int,
+            @PathVariable termId: Int,
+            @PathVariable examId: Int,
+            @PathVariable reportId: Int
     ) = NotImplementedError()
 
     @PostMapping("/{courseId}/terms/{termId}/exams/stage")
@@ -240,6 +251,15 @@ class CourseController {
 
     @PostMapping("/{courseId}/terms/{termId}/workitems/{workItemId}/report/{reportId}/vote")
     fun voteOnReportToWorkItemOnCourseInTerm(
+            @PathVariable courseId: Int,
+            @PathVariable termId: Int,
+            @PathVariable workItemId: Int,
+            @PathVariable reportId: Int,
+            @RequestBody vote: VoteInputModel
+    ) = NotImplementedError()
+
+    @PostMapping("/{courseId}/terms/{termId}/workitems/{workItemId}/report/{reportId}")
+    fun updateReportedWorkItem(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable workItemId: Int,
