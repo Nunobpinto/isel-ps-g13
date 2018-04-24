@@ -1,7 +1,7 @@
 package isel.leic.ps.eduWikiAPI.controller
 
 import isel.leic.ps.eduWikiAPI.inputModel.*
-import isel.leic.ps.eduWikiAPI.service.ClassService
+import isel.leic.ps.eduWikiAPI.service.interfaces.ClassService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 
@@ -261,7 +261,7 @@ class ClassController {
     fun createHomeWorknOnCourseInClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
-            @RequestBody homeWork: HomeWorkInputModel
+            @RequestBody homework: HomeworkInputModel
     ) = NotImplementedError()
 
     @PostMapping("/{classId}/courses/{courseId}/homeworks/{homeWorkId}/report")
@@ -293,7 +293,7 @@ class ClassController {
     fun createStagingHomeWork(
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
-            @RequestBody homeWork: HomeWorkInputModel
+            @RequestBody homework: HomeworkInputModel
     ) = NotImplementedError()
 
     @PostMapping("/{classId}/courses/{courseId}/homeworks/stage/{stageId}")

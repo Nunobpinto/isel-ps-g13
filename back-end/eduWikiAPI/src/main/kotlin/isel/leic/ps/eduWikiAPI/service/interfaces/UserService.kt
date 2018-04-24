@@ -1,4 +1,4 @@
-package isel.leic.ps.eduWikiAPI.service
+package isel.leic.ps.eduWikiAPI.service.interfaces
 
 import isel.leic.ps.eduWikiAPI.model.User
 

@@ -4,7 +4,7 @@ import isel.leic.ps.eduWikiAPI.inputModel.ClassInputModel
 import isel.leic.ps.eduWikiAPI.inputModel.CourseInputModel
 import isel.leic.ps.eduWikiAPI.inputModel.ProgrammeInputModel
 import isel.leic.ps.eduWikiAPI.inputModel.UserInputModel
-import isel.leic.ps.eduWikiAPI.service.UserService
+import isel.leic.ps.eduWikiAPI.service.interfaces.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import java.security.Principal

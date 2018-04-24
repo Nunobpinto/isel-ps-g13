@@ -1,7 +1,7 @@
 package isel.leic.ps.eduWikiAPI.controller
 
 import isel.leic.ps.eduWikiAPI.inputModel.*
-import isel.leic.ps.eduWikiAPI.service.CourseService
+import isel.leic.ps.eduWikiAPI.service.interfaces.CourseService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 

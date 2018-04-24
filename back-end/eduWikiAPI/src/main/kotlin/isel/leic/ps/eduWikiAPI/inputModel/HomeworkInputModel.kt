@@ -2,7 +2,7 @@ package isel.leic.ps.eduWikiAPI.inputModel
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-class HomeWorkInputModel (
+class HomeworkInputModel (
         @JsonProperty("delivery_date")
         val deliveryDate: String,
         @JsonProperty("off_limit_delivery")
