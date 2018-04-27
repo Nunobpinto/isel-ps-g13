@@ -46,6 +46,11 @@ class ProgrammeController {
     @PostMapping()
     fun createProgramme(@RequestBody input: ProgrammeInputModel) = NotImplementedError()
 
+    @PostMapping("/{programmeId}/courses")
+    fun addCourseToProgramme(@PathVariable programmeId: Int,
+                             @RequestBody input: CourseInputModel
+    ) = NotImplementedError()
+
     @PostMapping("/{programmeId}/vote")
     fun voteOnProgramme(
             @PathVariable programmeId: Int,
