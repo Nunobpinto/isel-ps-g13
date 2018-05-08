@@ -378,11 +378,11 @@ CREATE TABLE work_assignment_version (
   	late_delivery BOOLEAN,
   	multiple_deliveries BOOLEAN,
   	requires_report BOOLEAN,
-	created_by VARCHAR(20),
-	vote_count INTEGER DEFAULT 0,
-	time_stamp timestamp,
-	work_assignment_version INTEGER UNIQUE NOT NULL,
- 	PRIMARY KEY (id, work_assignment_version)
+	  created_by VARCHAR(20),
+	  vote_count INTEGER DEFAULT 0,
+	  time_stamp timestamp,
+	  work_assignment_version INTEGER UNIQUE NOT NULL,
+  	PRIMARY KEY (id, work_assignment_version)
 );
 
 CREATE TABLE exam_version (
@@ -392,10 +392,10 @@ CREATE TABLE exam_version (
   	type exam_type,
   	phase VARCHAR(30),
   	location varchar(30),
-	created_by VARCHAR(20),
-	exam_version INTEGER UNIQUE NOT NULL,
-	vote_count INTEGER DEFAULT 0,
-	time_stamp timestamp,
+	  created_by VARCHAR(20),
+	  exam_version INTEGER UNIQUE NOT NULL,
+	  vote_count INTEGER DEFAULT 0,
+	  time_stamp timestamp,
   	PRIMARY KEY (id, exam_version)
 );
 
