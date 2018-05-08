@@ -1,4 +1,4 @@
-package isel.leic.ps.eduWikiAPI.inputModel
+package isel.leic.ps.eduWikiAPI.domain.inputModel
 
 class VoteInputModel (
         val vote: String,

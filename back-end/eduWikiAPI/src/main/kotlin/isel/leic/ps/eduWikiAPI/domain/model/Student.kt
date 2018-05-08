@@ -1,6 +1,6 @@
-package isel.leic.ps.eduWikiAPI.model
+package isel.leic.ps.eduWikiAPI.domain.model
 
-data class User (
+data class Student (
         val username: String,
         val familyName: String,
         val givenName: String,
