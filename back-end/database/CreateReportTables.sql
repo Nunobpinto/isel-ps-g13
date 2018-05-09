@@ -51,8 +51,6 @@ CREATE TABLE term_report (
 CREATE TABLE class_report (
   report_id SERIAL,
   class_id INTEGER REFERENCES class,
-  class_version INTEGER UNIQUE NOT NULL,
-  created_by VARCHAR(20),
   class_name VARCHAR(10),
   term_id INTEGER REFERENCES term,
   made_by VARCHAR(20),
