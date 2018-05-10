@@ -2,6 +2,20 @@
 -- Create Version Tables
 --------------------------
 
+CREATE TABLE organization_version (
+  organization_id SERIAL,
+  organization_version INTEGER UNIQUE NOT NULL,
+  created_by VARCHAR(20),
+  organization_full_name varchar(100) UNIQUE NOT NULL,
+  organization_short_name varchar(10) UNIQUE NOT NULL,
+  organization_address varchar(100) NOT NULL,
+  organization_contact INTEGER UNIQUE NOT NULL,
+  vote_count INTEGER DEFAULT 0,
+  time_stamp timestamp,
+  PRIMARY KEY (organization_id, organization_version)
+)
+
+
 CREATE TABLE programme_version (
 	programme_id SERIAL,
 	programme_full_name varchar(100) UNIQUE NOT NULL,

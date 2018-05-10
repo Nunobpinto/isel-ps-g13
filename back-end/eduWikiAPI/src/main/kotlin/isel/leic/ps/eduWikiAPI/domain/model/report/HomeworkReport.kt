@@ -1,3 +1,14 @@
 package isel.leic.ps.eduWikiAPI.domain.model.report
 
-data class HomeworkReport ()
+import java.time.LocalDate
+
+data class HomeworkReport (
+        val reportId: Int = 0,
+        val classMiscUnitId: Int = 0,
+        val sheet: String = "",
+        val dueDate: LocalDate = LocalDate.now(),
+        val lateDelivery: Boolean = false,
+        val multipleDeliveries: Boolean = false,
+        val madeBy: String = "",
+        val votes: Int = 0
+)
