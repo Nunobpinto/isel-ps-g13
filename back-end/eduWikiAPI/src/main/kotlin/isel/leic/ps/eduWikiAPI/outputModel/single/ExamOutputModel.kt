@@ -23,5 +23,6 @@ class ExamOutputModel (
         val dueDate: LocalDate = LocalDate.now(),
         val type: String = "",
         val phase: String = "",
-        val location: String = ""
+        val location: String = "",
+        val votes: Int = 0
 ) : BaseResource()

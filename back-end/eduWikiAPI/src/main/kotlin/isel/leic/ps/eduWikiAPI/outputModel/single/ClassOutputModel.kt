@@ -17,5 +17,6 @@ data class ClassOutputModel(
         val username: String = "",
         @Siren4JProperty(name = "full_name")
         val fullName: String = "",
-        val termId: Int = 0
+        val termId: Int = 0,
+        val votes: Int = 0
 ) : BaseResource()

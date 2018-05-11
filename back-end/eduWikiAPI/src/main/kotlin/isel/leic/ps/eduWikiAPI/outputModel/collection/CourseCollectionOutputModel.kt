@@ -1,9 +1,6 @@
 package isel.leic.ps.eduWikiAPI.outputModel.collection
 
-import com.google.code.siren4j.annotations.Siren4JAction
-import com.google.code.siren4j.annotations.Siren4JActionField
 import com.google.code.siren4j.annotations.Siren4JEntity
-import com.google.code.siren4j.component.impl.ActionImpl.*
 import com.google.code.siren4j.resource.CollectionResource
 import isel.leic.ps.eduWikiAPI.outputModel.single.CourseOutputModel
 

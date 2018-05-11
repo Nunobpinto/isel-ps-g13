@@ -19,5 +19,6 @@ class HomeworkOutputModel (
         val sheet: String = "",
         val dueDate: LocalDate = LocalDate.now(),
         val lateDelivery: Boolean = false,
-        val multiple_deliveries: Boolean = false
+        val multiple_deliveries: Boolean = false,
+        val votes: Int = 0
 ) : BaseResource()

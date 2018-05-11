@@ -23,5 +23,6 @@ class ProgrammeOutputModel(
         val shortName: String = "",
         val academicDegree: String = "",
         val totalCredits: Int = 0,
-        val duration: Duration = Duration.ZERO
+        val duration: Duration = Duration.ZERO,
+        val votes: Int = 0
 ) : BaseResource()

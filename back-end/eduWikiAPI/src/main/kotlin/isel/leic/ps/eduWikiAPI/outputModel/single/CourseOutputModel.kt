@@ -22,5 +22,6 @@ data class CourseOutputModel(
         val shortName: String = "",
         val lecturedTermId: Int = 0,
         val optional: Boolean = false,
-        val credits: Int = 0
+        val credits: Int = 0,
+        val votes: Int = 0
 ) : BaseResource()

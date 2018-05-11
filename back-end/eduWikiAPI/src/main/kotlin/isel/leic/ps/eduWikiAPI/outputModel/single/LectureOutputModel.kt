@@ -21,5 +21,6 @@ class LectureOutputModel (
     val weekDay: DayOfWeek = DayOfWeek.MONDAY,
     val begins: LocalDate = LocalDate.now(),
     val duration: Duration = Duration.ZERO,
-    val location: String = ""
+    val location: String = "",
+    val votes: Int = 0
 ) : BaseResource()

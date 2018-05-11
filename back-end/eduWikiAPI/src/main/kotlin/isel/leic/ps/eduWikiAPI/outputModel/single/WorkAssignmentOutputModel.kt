@@ -22,5 +22,6 @@ class WorkAssignmentOutputModel(
         val individual: Boolean = false,
         val lateDelivery: Boolean = false,
         val multipleDeliveries: Boolean = false,
-        val requiresReport: Boolean = false
+        val requiresReport: Boolean = false,
+        val votes: Int = 0
 ) : BaseResource()
