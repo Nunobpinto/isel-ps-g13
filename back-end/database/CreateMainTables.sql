@@ -4,7 +4,7 @@
 
 CREATE TABLE organization (
   organization_id SERIAL,
-  organization_version INTEGER UNIQUE NOT NULL,
+  organization_version INTEGER UNIQUE NOT NULL DEFAULT 1,
   created_by VARCHAR(20),
   organization_full_name varchar(100) UNIQUE NOT NULL,
   organization_short_name varchar(10) UNIQUE NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE organization (
 
 CREATE TABLE programme (
   programme_id SERIAL,
-  programme_version INTEGER UNIQUE NOT NULL,
+  programme_version INTEGER UNIQUE NOT NULL DEFAULT 1,
   created_by VARCHAR(20),
   programme_full_name varchar(100) UNIQUE NOT NULL,
   programme_short_name varchar(10) UNIQUE NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE programme (
 CREATE TABLE course (
   course_id SERIAL,
   organization_id INTEGER REFERENCES organization,
-  course_version INTEGER UNIQUE NOT NULL,
+  course_version INTEGER UNIQUE NOT NULL DEFAULT 1,
   created_by VARCHAR(20),
   course_full_name varchar(100) UNIQUE NOT NULL,
   course_short_name varchar(10) UNIQUE NOT NULL,
@@ -50,14 +50,14 @@ CREATE TABLE term (
   term_short_name CHAR(5) UNIQUE NOT NULL,
   term_year INTEGER NOT NULL,
   term_type term_type NOT NULL,
-  term_version INTEGER UNIQUE NOT NULL,
+  term_version INTEGER UNIQUE NOT NULL DEFAULT 1,
   created_by VARCHAR(20),
   PRIMARY KEY (term_id)
 );
 
 CREATE TABLE class (
   class_id SERIAL,
-  class_version INTEGER UNIQUE NOT NULL,
+  class_version INTEGER UNIQUE NOT NULL DEFAULT 1,
   created_by VARCHAR(20),
   class_name VARCHAR(10),
   term_id INTEGER REFERENCES term,
@@ -81,7 +81,7 @@ CREATE TABLE course_misc_unit (
 
 CREATE TABLE work_assignment (
   id INTEGER REFERENCES course_misc_unit,
-  work_assignment_version INTEGER UNIQUE NOT NULL,
+  work_assignment_version INTEGER UNIQUE NOT NULL DEFAULT 1,
   created_by VARCHAR(20),
   sheet VARCHAR(100),
   supplement VARCHAR(100),
@@ -95,7 +95,7 @@ CREATE TABLE work_assignment (
 
 CREATE TABLE exam (
   id INTEGER REFERENCES course_misc_unit,
-  exam_version INTEGER UNIQUE NOT NULL,
+  exam_version INTEGER UNIQUE NOT NULL DEFAULT 1,
   created_by VARCHAR(20),
   sheet VARCHAR(100),
   due_date date,
@@ -125,7 +125,7 @@ CREATE TABLE class_misc_unit (
 
 CREATE TABLE lecture (
   id INTEGER REFERENCES class_misc_unit,
-  lecture_version INTEGER UNIQUE NOT NULL,
+  lecture_version INTEGER UNIQUE NOT NULL DEFAULT 1,
   created_by VARCHAR(20),
   weekday weekday,
   begins TIME,
@@ -136,7 +136,7 @@ CREATE TABLE lecture (
 
 CREATE TABLE homework (
   id INTEGER REFERENCES class_misc_unit,
-  homework_version INTEGER UNIQUE NOT NULL,	
+  homework_version INTEGER UNIQUE NOT NULL DEFAULT 1,	
   created_by VARCHAR(20),
   sheet VARCHAR(100),
   due_date DATE,
@@ -152,7 +152,7 @@ CREATE TABLE student (
   student_personal_email varchar(35) UNIQUE NOT NULL,
   student_organization_email varchar(35) UNIQUE NOT NULL,
   student_gender gender, 
-  student_version INTEGER UNIQUE NOT NULL,
+  student_version INTEGER UNIQUE NOT NULL DEFAULT 1,
   PRIMARY KEY (student_username)
 );
 
@@ -160,7 +160,7 @@ CREATE TABLE reputation (
   reputation_id SERIAL,
   reputation_points INTEGER NOT NULL,
   reputation_rank student_rank NOT NULL, 
-  reputation_version INTEGER UNIQUE NOT NULL,
+  reputation_version INTEGER UNIQUE NOT NULL DEFAULT 1,
   student varchar(20) REFERENCES student,
   PRIMARY KEY (reputation_id, student)
 );

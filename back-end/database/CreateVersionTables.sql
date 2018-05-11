@@ -3,7 +3,7 @@
 --------------------------
 
 CREATE TABLE organization_version (
-  organization_id SERIAL,
+  organization_id INTEGER REFERENCES organization,
   organization_version INTEGER UNIQUE NOT NULL,
   created_by VARCHAR(20),
   organization_full_name varchar(100) UNIQUE NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE organization_version (
 
 
 CREATE TABLE programme_version (
-	programme_id SERIAL,
+	programme_id INTEGER REFERENCES programme,
 	programme_full_name varchar(100) UNIQUE NOT NULL,
 	programme_short_name varchar(10) UNIQUE NOT NULL,
 	programme_academic_degree varchar(50) NOT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE programme_version (
 );
 
 CREATE TABLE course_version (
-	course_id SERIAL,
+	course_id INTEGER REFERENCES course,
 	organization_id INTEGER REFERENCES organization,
 	course_full_name varchar(100) UNIQUE NOT NULL,
 	course_short_name varchar(10) UNIQUE NOT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE course_version (
 );
 
 CREATE TABLE class_version (
-	class_id SERIAL,
+	class_id INTEGER REFERENCES class,
 	class_name VARCHAR(10),
 	term INTEGER REFERENCES term,
 	created_by VARCHAR(20),
@@ -52,6 +52,18 @@ CREATE TABLE class_version (
 	class_version INTEGER UNIQUE NOT NULL,
 	PRIMARY KEY (class_id, term, class_version)
 );
+
+CREATE TABLE term_version (
+  term_id INTEGER REFERENCES term,
+  term_short_name CHAR(5) UNIQUE NOT NULL,
+  term_year INTEGER NOT NULL,
+  term_type term_type NOT NULL,
+  created_by VARCHAR(20),
+  vote_count INTEGER DEFAULT 0,
+  time_stamp timestamp,
+  term_version INTEGER UNIQUE NOT NULL,
+  PRIMARY KEY (term_id, term_version)
+)
 
 CREATE TABLE work_assignment_version (
   	id INTEGER REFERENCES course_misc_unit,
