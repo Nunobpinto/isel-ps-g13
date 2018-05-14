@@ -20,7 +20,7 @@ interface OrganizationDAO {
 
     fun updateOrganization(organization: Organization, user: String) : Int
 
-    fun createOrganization(organization: Organization, user: String)
+    fun createOrganization(organization: Organization)
 
     fun voteOnOrganization(organizationId: Int, voteType: Int)
 

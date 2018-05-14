@@ -1,7 +1,5 @@
 package isel.leic.ps.eduWikiAPI.domain.model.report
 
-import java.time.Duration
-
 data class ProgrammeReport(
         val reportId: Int = 0,
         val programmeId: Int = 0,
@@ -9,7 +7,7 @@ data class ProgrammeReport(
         val programmeShortName: String = "",
         val programmeAcademicDegree: String = "",
         val programmeTotalCredits: Int = 0,
-        val programmeDuration: Duration = Duration.ZERO,
+        val programmeDuration: Int = 0,
         val createdBy: String = "",
         val votes: Int = 0
 )

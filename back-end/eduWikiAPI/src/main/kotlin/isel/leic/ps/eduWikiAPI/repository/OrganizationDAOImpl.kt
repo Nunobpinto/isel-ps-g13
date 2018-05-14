@@ -89,7 +89,7 @@ class OrganizationDAOImpl : OrganizationDAO {
 
     override fun updateOrganization(organization: Organization, user: String) = TODO("dynamically update org by filled values in Organization parameter")
 
-    override fun createOrganization(organization: Organization, user: String) = dbi.useHandle<Exception> {
+    override fun createOrganization(organization: Organization) = dbi.useHandle<Exception> {
         it.execute(dsl
                 .insertInto(table(ORG_TABLE),
                         field(ORG_ID),
@@ -107,7 +107,7 @@ class OrganizationDAOImpl : OrganizationDAO {
                         organization.shortName,
                         organization.address,
                         organization.contact,
-                        user
+                        organization.createdBy
                 ).sql
         )
     }
@@ -204,6 +204,7 @@ class OrganizationDAOImpl : OrganizationDAO {
     override fun reportOrganization(organizationReport: OrganizationReport) = dbi.useHandle<Exception> {
         it.execute(dsl
                 .insertInto(table(ORG_REPORT_TABLE),
+                        field(ORG_REPORT_ID),
                         field(ORG_ID),
                         field(ORG_FULL_NAME),
                         field(ORG_SHORT_NAME),
@@ -211,6 +212,7 @@ class OrganizationDAOImpl : OrganizationDAO {
                         field(ORG_CONTACT),
                         field(CREATED_BY))
                 .values(
+                        organizationReport.reportId,
                         organizationReport.organizationId,
                         organizationReport.organizationFullName,
                         organizationReport.organizationShortName,
