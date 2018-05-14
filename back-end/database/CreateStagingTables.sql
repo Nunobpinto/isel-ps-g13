@@ -41,11 +41,11 @@ CREATE TABLE course_programme_stage (
 CREATE TABLE class_stage (
 	class_id SERIAL,
 	class_name VARCHAR(10),
-	term INTEGER REFERENCES term,
+	term_Id INTEGER REFERENCES term,
 	created_by VARCHAR(20),
 	votes INTEGER DEFAULT 0,
 	time_stamp timestamp,
-	PRIMARY KEY (class_id, term)
+	PRIMARY KEY (class_id, termId)
 );
 
 CREATE TABLE course_class_stage (
@@ -76,7 +76,7 @@ CREATE TABLE course_misc_unit_stage (
 );
 
 CREATE TABLE work_assignment_stage (
-  	id INTEGER REFERENCES course_misc_unit,
+  	id INTEGER REFERENCES course_misc_unit_stage,
   	sheet VARCHAR(100),
   	supplement VARCHAR(100),
   	due_date date,
@@ -109,6 +109,8 @@ CREATE TABLE lecture_stage (
   begins TIME,
   duration INTERVAL,
   created_by VARCHAR(20),
+  time_stamp timestamp,
+  vote_count INTEGER DEFAULT 0,
   location varchar(30),
   PRIMARY KEY (id)
 );
@@ -119,6 +121,8 @@ CREATE TABLE homework_stage (
   due_date DATE,
   late_delivery BOOLEAN,
   multiple_deliveries BOOLEAN,
+  time_stamp timestamp,
+  vote_count INTEGER DEFAULT 0,
   created_by VARCHAR(20),
   PRIMARY KEY (id)
 );
