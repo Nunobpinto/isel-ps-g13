@@ -61,7 +61,8 @@ interface ProgrammeDAO {
 
     fun deleteReportOnProgramme(reportId: Int) : Int
 
-    fun deleteAllReportsOnProgramme() : Int
+    fun deleteAllReportsOnProgramme(programmeId : Int) : Int
 
-    fun voteOnReportProgramme(reportId: Int, voteType: Int)
+    fun deleteAllReports(): Int
+
 }

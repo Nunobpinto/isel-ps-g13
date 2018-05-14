@@ -31,7 +31,7 @@ class OrganizationDAOImpl : OrganizationDAO {
         const val ORG_VOTE = "votes"
         const val ORG_TIMESTAMP = "time_stamp"
         const val ORG_REPORT_ID = "report_id"
-        const val CREATED_BY = "created_by"
+        const val ORG_CREATED_BY = "created_by"
     }
 
     @Autowired
@@ -48,7 +48,7 @@ class OrganizationDAOImpl : OrganizationDAO {
                         field(ORG_SHORT_NAME),
                         field(ORG_ADDRESS),
                         field(ORG_CONTACT),
-                        field(CREATED_BY)
+                        field(ORG_CREATED_BY)
                 )
                 .from(table(ORG_TABLE))
                 .where(field(ORG_ID).eq(organizationId))
@@ -65,7 +65,7 @@ class OrganizationDAOImpl : OrganizationDAO {
                         field(ORG_SHORT_NAME),
                         field(ORG_ADDRESS),
                         field(ORG_CONTACT),
-                        field(CREATED_BY)
+                        field(ORG_CREATED_BY)
                 )
                 .from(table(ORG_TABLE))
                 .sql
@@ -98,7 +98,7 @@ class OrganizationDAOImpl : OrganizationDAO {
                         field(ORG_SHORT_NAME),
                         field(ORG_ADDRESS),
                         field(ORG_CONTACT),
-                        field(CREATED_BY)
+                        field(ORG_CREATED_BY)
                         )
                 .values(
                         organization.id,
@@ -136,7 +136,7 @@ class OrganizationDAOImpl : OrganizationDAO {
                         field(ORG_SHORT_NAME),
                         field(ORG_ADDRESS),
                         field(ORG_CONTACT),
-                        field(CREATED_BY),
+                        field(ORG_CREATED_BY),
                         field(ORG_VOTE),
                         field(ORG_TIMESTAMP)
                 )
@@ -155,7 +155,7 @@ class OrganizationDAOImpl : OrganizationDAO {
                         field(ORG_SHORT_NAME),
                         field(ORG_ADDRESS),
                         field(ORG_CONTACT),
-                        field(CREATED_BY),
+                        field(ORG_CREATED_BY),
                         field(ORG_VOTE),
                         field(ORG_TIMESTAMP)
                 )
@@ -188,7 +188,7 @@ class OrganizationDAOImpl : OrganizationDAO {
                         field(ORG_SHORT_NAME),
                         field(ORG_ADDRESS),
                         field(ORG_CONTACT),
-                        field(CREATED_BY))
+                        field(ORG_CREATED_BY))
                 .values(
                         organizationVersion.organizationId,
                         organizationVersion.version,
@@ -210,7 +210,7 @@ class OrganizationDAOImpl : OrganizationDAO {
                         field(ORG_SHORT_NAME),
                         field(ORG_ADDRESS),
                         field(ORG_CONTACT),
-                        field(CREATED_BY))
+                        field(ORG_CREATED_BY))
                 .values(
                         organizationReport.reportId,
                         organizationReport.organizationId,
@@ -223,9 +223,10 @@ class OrganizationDAOImpl : OrganizationDAO {
         )
     }
 
-    override fun deleteAllReportsOnOrganization() = dbi.withHandle<Int, Exception> {
+    override fun deleteAllReportsOnOrganization(organizationId: Int) = dbi.withHandle<Int, Exception> {
         it.execute(dsl
                 .delete(table(ORG_REPORT_TABLE))
+                .where(field(ORG_ID).eq(organizationId))
                 .sql
         )
     }
@@ -238,17 +239,9 @@ class OrganizationDAOImpl : OrganizationDAO {
         )
     }
 
-    override fun voteOnReportOrganization(reportId: Int, voteType: Int) = dbi.useTransaction<Exception> {
-        val votes: Int = it.createQuery(dsl
-                .select(field(ORG_VOTE))
-                .from(table(ORG_REPORT_TABLE))
-                .where(field(ORG_REPORT_ID).eq(reportId))
-                .sql
-        ).mapTo(Int::class.java).findOnly()
-        it.execute(dsl
-                .update(table(ORG_REPORT_TABLE))
-                .set(field(ORG_VOTE), if(voteType == -1) votes.dec() else votes.inc())
-                .where(field(ORG_REPORT_ID).eq(reportId))
+    override fun deleteAllReports(): Int = dbi.withHandle<Int, Exception> {
+        it.execute(dsl.
+                delete(table(ORG_REPORT_TABLE))
                 .sql
         )
     }

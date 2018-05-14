@@ -46,8 +46,8 @@ interface OrganizationDAO {
 
     fun deleteReportOnOrganization(reportId: Int) : Int
 
-    fun deleteAllReportsOnOrganization() : Int
+    fun deleteAllReportsOnOrganization(organizationId : Int) : Int
 
-    fun voteOnReportOrganization(reportId: Int, voteType: Int)
+    fun deleteAllReports() : Int
 
 }

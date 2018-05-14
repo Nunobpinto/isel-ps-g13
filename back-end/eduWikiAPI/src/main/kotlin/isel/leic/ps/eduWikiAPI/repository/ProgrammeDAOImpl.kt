@@ -336,6 +336,14 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         )
     }
 
+    override fun deleteAllReportsOnProgramme(programmeId : Int): Int = dbi.withHandle<Int, Exception> {
+        it.execute(dsl
+                .delete(table(PROG_REPORT_TABLE))
+                .where(field(PROG_ID).eq(programmeId))
+                .sql
+        )
+    }
+
     override fun deleteReportOnProgramme(reportId: Int): Int = dbi.withHandle<Int, Exception> {
         it.execute(dsl
                 .delete(table(PROG_REPORT_TABLE))
@@ -344,25 +352,11 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         )
     }
 
-    override fun deleteAllReportsOnProgramme(): Int = dbi.withHandle<Int, Exception> {
-        it.execute(dsl
-                .delete(table(PROG_REPORT_TABLE))
+    override fun deleteAllReports(): Int = dbi.withHandle<Int, Exception> {
+        it.execute(dsl.
+                delete(table(PROG_REPORT_TABLE))
                 .sql
         )
     }
 
-    override fun voteOnReportProgramme(reportId: Int, voteType: Int) = dbi.useTransaction<Exception> {
-        val votes: Int = it.createQuery(dsl
-                .select(field(PROG_VOTE))
-                .from(table(PROG_REPORT_TABLE))
-                .where(field(PROG_REPORT_ID).eq(reportId))
-                .sql
-        ).mapTo(Int::class.java).findOnly()
-        it.execute(dsl
-                .update(table(PROG_REPORT_TABLE))
-                .set(field(PROG_VOTE), if(voteType == -1) votes.dec() else votes.inc())
-                .where(field(PROG_REPORT_ID).eq(reportId))
-                .sql
-        )
-    }
 }
