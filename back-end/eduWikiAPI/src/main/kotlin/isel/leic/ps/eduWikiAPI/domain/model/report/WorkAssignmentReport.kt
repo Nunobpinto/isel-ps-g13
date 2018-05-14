@@ -12,6 +12,6 @@ data class WorkAssignmentReport (
         val lateDelivery: Boolean = false,
         val multipleDeliveries: Boolean = false,
         val requiresReport: Boolean = false,
-        val madeBy: String = "",
+        val createdBy: String = "",
         val votes: Int = 0
 )

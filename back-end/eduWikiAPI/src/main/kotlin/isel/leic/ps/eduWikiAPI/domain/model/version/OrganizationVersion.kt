@@ -10,6 +10,5 @@ data class OrganizationVersion (
         val shortName: String = "",
         val address: String = "",
         val contact: Int = 0,
-        val votes: Int = 0,
         val timestamp: Timestamp = Timestamp(0)
 )

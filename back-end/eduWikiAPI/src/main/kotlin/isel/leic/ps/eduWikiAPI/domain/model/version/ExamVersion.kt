@@ -12,6 +12,5 @@ data class ExamVersion (
         val location: String = "",
         val createdBy: String = "",
         val version: Int = 0,
-        val votes: Int = 0,
         val timestamp: Timestamp = Timestamp(0)
 )

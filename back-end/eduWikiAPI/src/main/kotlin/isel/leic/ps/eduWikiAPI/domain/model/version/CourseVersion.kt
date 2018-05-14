@@ -8,7 +8,6 @@ data class CourseVersion (
         val fullName: String = "",
         val shortName: String = "",
         val createdBy: String = "",
-        val votes: Int = 0,
         val timestamp: Timestamp = Timestamp(0),
         val version: Int = 0
 )

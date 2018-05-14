@@ -7,7 +7,6 @@ data class ClassVersion (
     val className: String = "",
     val termId: Int = 0,
     val createdBy: String = "",
-    val voteCount: Int = 0,
     val timestamp: Timestamp = Timestamp(0),
     val version: Int = 0
 )

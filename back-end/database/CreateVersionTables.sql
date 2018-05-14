@@ -10,7 +10,7 @@ CREATE TABLE organization_version (
   organization_short_name varchar(10) UNIQUE NOT NULL,
   organization_address varchar(100) NOT NULL,
   organization_contact INTEGER UNIQUE NOT NULL,
-  vote_count INTEGER DEFAULT 0,
+  votes INTEGER DEFAULT 0,
   time_stamp timestamp,
   PRIMARY KEY (organization_id, organization_version)
 )
@@ -24,7 +24,7 @@ CREATE TABLE programme_version (
 	programme_total_credits INTEGER,
 	programme_duration INTEGER,
 	created_by VARCHAR(20),
-	vote_count INTEGER DEFAULT 0,
+	votes INTEGER DEFAULT 0,
 	time_stamp timestamp,
 	programme_version INTEGER UNIQUE NOT NULL,
 	PRIMARY KEY (programme_id, programme_version)
@@ -36,7 +36,7 @@ CREATE TABLE course_version (
 	course_full_name varchar(100) UNIQUE NOT NULL,
 	course_short_name varchar(10) UNIQUE NOT NULL,
 	created_by VARCHAR(20),
-	vote_count INTEGER DEFAULT 0,
+	votes INTEGER DEFAULT 0,
 	time_stamp timestamp,
 	course_version INTEGER UNIQUE NOT NULL,
 	PRIMARY KEY (course_id, course_version)
@@ -47,23 +47,11 @@ CREATE TABLE class_version (
 	class_name VARCHAR(10),
 	term INTEGER REFERENCES term,
 	created_by VARCHAR(20),
-	vote_count INTEGER DEFAULT 0,
+	votes INTEGER DEFAULT 0,
 	time_stamp timestamp,
 	class_version INTEGER UNIQUE NOT NULL,
 	PRIMARY KEY (class_id, term, class_version)
 );
-
-CREATE TABLE term_version (
-  term_id INTEGER REFERENCES term,
-  term_short_name CHAR(5) UNIQUE NOT NULL,
-  term_year INTEGER NOT NULL,
-  term_type term_type NOT NULL,
-  created_by VARCHAR(20),
-  vote_count INTEGER DEFAULT 0,
-  time_stamp timestamp,
-  term_version INTEGER UNIQUE NOT NULL,
-  PRIMARY KEY (term_id, term_version)
-)
 
 CREATE TABLE work_assignment_version (
   	id INTEGER REFERENCES course_misc_unit,
@@ -75,7 +63,7 @@ CREATE TABLE work_assignment_version (
   	multiple_deliveries BOOLEAN,
   	requires_report BOOLEAN,
 	created_by VARCHAR(20),
-	vote_count INTEGER DEFAULT 0,
+	votes INTEGER DEFAULT 0,
 	time_stamp timestamp,
 	work_assignment_version INTEGER UNIQUE NOT NULL,
  	PRIMARY KEY (id, work_assignment_version)
@@ -90,7 +78,7 @@ CREATE TABLE exam_version (
   	location varchar(30),
 	created_by VARCHAR(20),
 	exam_version INTEGER UNIQUE NOT NULL,
-	vote_count INTEGER DEFAULT 0,
+	votes INTEGER DEFAULT 0,
 	time_stamp timestamp,
   	PRIMARY KEY (id, exam_version)
 );

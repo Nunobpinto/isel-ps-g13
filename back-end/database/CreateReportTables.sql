@@ -9,7 +9,7 @@ CREATE TABLE organization_report (
   organization_short_name varchar(10) UNIQUE NOT NULL,
   organization_address varchar(100) NOT NULL,
   organization_contact INTEGER UNIQUE NOT NULL,
-  made_by VARCHAR(20),
+  created_by VARCHAR(20),
   votes INTEGER DEFAULT 0,
   PRIMARY KEY (report_id)
 );
@@ -22,7 +22,7 @@ CREATE TABLE programme_report (
     programme_academic_degree varchar(50) NOT NULL,
     programme_total_credits INTEGER,
     programme_duration INTEGER,
-    made_by VARCHAR(20),
+    created_by VARCHAR(20),
     votes INTEGER DEFAULT 0,
     PRIMARY KEY (report_id)
 );
@@ -32,7 +32,7 @@ CREATE TABLE course_report (
     course_id INTEGER REFERENCES course,
     course_full_name varchar(100) UNIQUE NOT NULL,
     course_short_name varchar(10) UNIQUE NOT NULL,
-    made_by VARCHAR(20),
+    created_by VARCHAR(20),
     votes INTEGER DEFAULT 0,
     PRIMARY KEY (report_id)
 );
@@ -43,7 +43,7 @@ CREATE TABLE term_report (
   term_short_name CHAR(5) UNIQUE NOT NULL,
   term_year INTEGER NOT NULL,
   term_type term_type NOT NULL,
-  made_by VARCHAR(20),
+  created_by VARCHAR(20),
   votes INTEGER DEFAULT 0,
   PRIMARY KEY (report_id)
 );
@@ -53,7 +53,7 @@ CREATE TABLE class_report (
   class_id INTEGER REFERENCES class,
   class_name VARCHAR(10),
   term_id INTEGER REFERENCES term,
-  made_by VARCHAR(20),
+  created_by VARCHAR(20),
   votes INTEGER DEFAULT 0,
   PRIMARY KEY (report_id)
 );
@@ -68,7 +68,7 @@ CREATE TABLE work_assignment_report (
   late_delivery BOOLEAN,
   multiple_deliveries BOOLEAN,
   requires_report BOOLEAN,
-  made_by VARCHAR(20),
+  created_by VARCHAR(20),
   votes INTEGER DEFAULT 0,
   PRIMARY KEY (report_id)
 );
@@ -81,7 +81,7 @@ CREATE TABLE exam_report (
   exam_type exam_type,
   phase VARCHAR(30),
   location varchar(30),
-  made_by VARCHAR(20),
+  created_by VARCHAR(20),
   votes INTEGER DEFAULT 0,
   PRIMARY KEY (report_id)
 );
@@ -93,7 +93,7 @@ CREATE TABLE lecture_report (
   begins TIME,
   duration INTERVAL,
   location varchar(30),
-  made_by VARCHAR(20),
+  created_by VARCHAR(20),
   votes INTEGER DEFAULT 0,
   PRIMARY KEY (report_id)
 );
@@ -105,7 +105,7 @@ CREATE TABLE homework_report (
   due_date DATE,
   late_delivery BOOLEAN,
   multiple_deliveries BOOLEAN,
-  made_by VARCHAR(20),
+  created_by VARCHAR(20),
   votes INTEGER DEFAULT 0,
   PRIMARY KEY (report_id)
 );
@@ -118,7 +118,7 @@ CREATE TABLE student_report (
   student_personal_email varchar(35) UNIQUE NOT NULL,
   student_organization_email varchar(35) UNIQUE NOT NULL,
   student_gender gender, 
-  made_by VARCHAR(20),
+  created_by VARCHAR(20),
   votes INTEGER DEFAULT 0,
   PRIMARY KEY (report_id)
 );

@@ -7,7 +7,6 @@ data class HomeworkVersion (
       val sheet: String = "",
       val dueDate: LocalDate = LocalDate.now(),
       val createdBy: String = "",
-      val version: Int = 0,
       val lateDelivery: Boolean = false,
       val multipleDeliveries: Boolean = false
 )

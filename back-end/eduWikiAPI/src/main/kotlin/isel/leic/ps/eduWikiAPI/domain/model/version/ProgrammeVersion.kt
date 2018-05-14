@@ -12,7 +12,6 @@ data class ProgrammeVersion (
         val totalCredits: Int = 0,
         val duration: Duration = Duration.ZERO,
         val createdBy: String = "",
-        val votes: Int = 0,
         val timestamp: Timestamp = Timestamp(0),
         val version: Int = 0
 )

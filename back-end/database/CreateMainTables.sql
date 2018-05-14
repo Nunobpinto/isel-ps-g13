@@ -10,6 +10,7 @@ CREATE TABLE organization (
   organization_short_name varchar(10) UNIQUE NOT NULL,
   organization_address varchar(100) NOT NULL,
   organization_contact INTEGER UNIQUE NOT NULL,
+  votes INTEGER DEFAULT 0,
   PRIMARY KEY (organization_id)
 );
 
@@ -22,6 +23,7 @@ CREATE TABLE programme (
   programme_academic_degree varchar(50) NOT NULL,
   programme_total_credits INTEGER,
   programme_duration INTEGER,
+  votes INTEGER DEFAULT 0,
   PRIMARY KEY (programme_id)
 );
 
@@ -33,6 +35,7 @@ CREATE TABLE course (
   created_by VARCHAR(20),
   course_full_name varchar(100) UNIQUE NOT NULL,
   course_short_name varchar(10) UNIQUE NOT NULL,
+  votes INTEGER DEFAULT 0,
   PRIMARY KEY (course_id)
 );
 
@@ -42,6 +45,7 @@ CREATE TABLE course_programme (
   course_lectured_term varchar(50) NOT NULL,
   course_optional BOOLEAN NOT NULL,
   course_credits INTEGER NOT NULL,
+  votes INTEGER DEFAULT 0,
   PRIMARY KEY (course_id, programme_id)
 );
 
@@ -61,6 +65,7 @@ CREATE TABLE class (
   created_by VARCHAR(20),
   class_name VARCHAR(10),
   term_id INTEGER REFERENCES term,
+  votes INTEGER DEFAULT 0,
   PRIMARY KEY (class_id, term_id)
 );
 
@@ -90,6 +95,7 @@ CREATE TABLE work_assignment (
   late_delivery BOOLEAN,
   multiple_deliveries BOOLEAN,
   requires_report BOOLEAN,
+  votes INTEGER DEFAULT 0,
   PRIMARY KEY (id)
 );
 
@@ -102,6 +108,7 @@ CREATE TABLE exam (
   exam_type exam_type,
   phase VARCHAR(30),
   location varchar(30),
+  votes INTEGER DEFAULT 0,
   PRIMARY KEY (id)
 );
 
@@ -109,6 +116,7 @@ CREATE TABLE course_class (
   course_id INTEGER REFERENCES course,
   class_id INTEGER,
   term_id INTEGER,
+  votes INTEGER DEFAULT 0,
   FOREIGN KEY (class_id, term_id) REFERENCES class(class_id, term_id),
   PRIMARY KEY (course_id, class_id, term_id)
 );
@@ -131,6 +139,7 @@ CREATE TABLE lecture (
   begins TIME,
   duration INTERVAL,
   location varchar(30),
+  votes INTEGER DEFAULT 0,
   PRIMARY KEY (id)
 );
 
@@ -142,6 +151,7 @@ CREATE TABLE homework (
   due_date DATE,
   late_delivery BOOLEAN,
   multiple_deliveries BOOLEAN,
+  votes INTEGER DEFAULT 0,
   PRIMARY KEY (id)
 );
 

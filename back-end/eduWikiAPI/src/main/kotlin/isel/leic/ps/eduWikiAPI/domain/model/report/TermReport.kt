@@ -8,6 +8,6 @@ data class TermReport (
         val termShortName: String = "",
         val termYear: Year = Year.now(),
         val termType: String = "",
-        val madeBy: String = "",
+        val createdBy: String = "",
         val votes: Int = 0
 )

@@ -10,7 +10,7 @@ CREATE TABLE programme_stage (
 	programme_total_credits INTEGER,
 	programme_duration INTEGER,
 	created_by VARCHAR(20),
-	vote_count INTEGER DEFAULT 0,
+	votes INTEGER DEFAULT 0,
 	time_stamp timestamp,
 	PRIMARY KEY (programme_id)
 );
@@ -21,7 +21,7 @@ CREATE TABLE course_stage (
 	course_full_name varchar(100) UNIQUE NOT NULL,
 	course_short_name varchar(10) UNIQUE NOT NULL,
 	created_by VARCHAR(20),
-	vote_count INTEGER DEFAULT 0,
+	votes INTEGER DEFAULT 0,
 	time_stamp timestamp,
 	PRIMARY KEY (course_id)
 );
@@ -33,7 +33,7 @@ CREATE TABLE course_programme_stage (
   course_optional BOOLEAN NOT NULL,
   course_credits INTEGER NOT NULL,
   created_by VARCHAR(20),
-  vote_count INTEGER DEFAULT 0,
+  votes INTEGER DEFAULT 0,
   time_stamp timestamp,
   PRIMARY KEY (course_id, programme_id)
 );
@@ -43,7 +43,7 @@ CREATE TABLE class_stage (
 	class_name VARCHAR(10),
 	term INTEGER REFERENCES term,
 	created_by VARCHAR(20),
-	vote_count INTEGER DEFAULT 0,
+	votes INTEGER DEFAULT 0,
 	time_stamp timestamp,
 	PRIMARY KEY (class_id, term)
 );
@@ -53,7 +53,7 @@ CREATE TABLE course_class_stage (
 	class_id INTEGER,
 	term_id INTEGER,
 	created_by VARCHAR(20),
-	vote_count INTEGER DEFAULT 0,
+	votes INTEGER DEFAULT 0,
 	time_stamp timestamp,
 	FOREIGN KEY (class_id, term_id) REFERENCES class(class_id, term),
 	PRIMARY KEY (course_id, class_id, term_id)
@@ -85,7 +85,7 @@ CREATE TABLE work_assignment_stage (
   	multiple_deliveries BOOLEAN,
   	requires_report BOOLEAN,
 	created_by VARCHAR(20),
-	vote_count INTEGER DEFAULT 0,
+	votes INTEGER DEFAULT 0,
 	time_stamp timestamp,
  	PRIMARY KEY (id)
 );
@@ -98,7 +98,7 @@ CREATE TABLE exam_stage (
   	phase VARCHAR(30),
   	location varchar(30),
 	created_by VARCHAR(20),
-	vote_count INTEGER DEFAULT 0,
+	votes INTEGER DEFAULT 0,
 	time_stamp timestamp,
   	PRIMARY KEY (id)
 );

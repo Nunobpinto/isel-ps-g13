@@ -14,7 +14,6 @@ data class WorkAssignmentVersion (
         val multipleDeliveries: Boolean = false,
         val requiresReport: Boolean = false,
         val createdBy: String = "",
-        val votes: Int = 0,
         val timestamp: Timestamp = Timestamp(0),
         val version: Int = 0
 )

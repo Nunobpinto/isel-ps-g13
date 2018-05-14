@@ -5,6 +5,6 @@ data class CourseReport (
         val courseId: Int = 0,
         val courseFullName: String = "",
         val courseShortName: String = "",
-        val madeBy: String = "",
+        val createdBy: String = "",
         val votes: Int = 0
 )

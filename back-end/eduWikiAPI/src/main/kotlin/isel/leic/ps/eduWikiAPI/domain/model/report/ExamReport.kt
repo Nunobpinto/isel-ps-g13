@@ -10,6 +10,6 @@ data class ExamReport (
         val type: String = "",
         val phase: String = "",
         val location: String = "",
-        val madeBy: String = "",
+        val createdBy: String = "",
         val votes: Int = 0
 )
