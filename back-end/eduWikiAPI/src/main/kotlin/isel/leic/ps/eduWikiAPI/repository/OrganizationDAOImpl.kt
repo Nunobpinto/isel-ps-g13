@@ -16,6 +16,24 @@ import org.springframework.stereotype.Repository
 @Repository
 class OrganizationDAOImpl : OrganizationDAO {
 
+    companion object {
+        //TABLE NAMES
+        const val ORG_TABLE = "organization"
+        const val ORG_VERSION_TABLE = "organization_version"
+        const val ORG_REPORT_TABLE = "organization_report"
+        // FIELDS
+        const val ORG_ID = "organization_id"
+        const val ORG_VERSION = "organization_version"
+        const val ORG_FULL_NAME = "organization_full_name"
+        const val ORG_SHORT_NAME = "organization_short_name"
+        const val ORG_ADDRESS = "organization_address"
+        const val ORG_CONTACT = "organization_contact"
+        const val ORG_VOTE = "votes"
+        const val ORG_TIMESTAMP = "time_stamp"
+        const val ORG_REPORT_ID = "report_id"
+        const val CREATED_BY = "created_by"
+    }
+
     @Autowired
     lateinit var dsl: DSLContext
     @Autowired
@@ -24,16 +42,16 @@ class OrganizationDAOImpl : OrganizationDAO {
     override fun getOrganization(organizationId: Int) : Organization = dbi.withHandle<Organization, Exception>{
         it.createQuery(dsl
                 .select(
-                        field("organization_id"),
-                        field("organization_version"),
-                        field("organization_full_name"),
-                        field("organization_short_name"),
-                        field("organization_address"),
-                        field("organization_contact"),
-                        field("created_by")
+                        field(ORG_ID),
+                        field(ORG_VERSION),
+                        field(ORG_FULL_NAME),
+                        field(ORG_SHORT_NAME),
+                        field(ORG_ADDRESS),
+                        field(ORG_CONTACT),
+                        field(CREATED_BY)
                 )
-                .from(table("organization"))
-                .where(field("organization_id").eq(organizationId))
+                .from(table(ORG_TABLE))
+                .where(field(ORG_ID).eq(organizationId))
                 .sql
         ).mapTo(Organization::class.java).findOnly()
     }
@@ -41,30 +59,30 @@ class OrganizationDAOImpl : OrganizationDAO {
     override fun getAllOrganizations(): List<Organization> = dbi.withHandle<List<Organization>, Exception> {
         it.createQuery(dsl
                 .select(
-                        field("organization_id"),
-                        field("organization_version"),
-                        field("organization_full_name"),
-                        field("organization_short_name"),
-                        field("organization_address"),
-                        field("organization_contact"),
-                        field("created_by")
+                        field(ORG_ID),
+                        field(ORG_VERSION),
+                        field(ORG_FULL_NAME),
+                        field(ORG_SHORT_NAME),
+                        field(ORG_ADDRESS),
+                        field(ORG_CONTACT),
+                        field(CREATED_BY)
                 )
-                .from(table("organization"))
+                .from(table(ORG_TABLE))
                 .sql
         ).mapTo(Organization::class.java).list()
     }
 
     override fun deleteOrganization(organizationId: Int) = dbi.withHandle<Int, Exception> {
         it.execute(dsl
-                .delete(table("organization"))
-                .where(field("organization_id").eq(organizationId))
+                .delete(table(ORG_TABLE))
+                .where(field(ORG_ID).eq(organizationId))
                 .sql
         )
     }
 
     override fun deleteAllOrganizations() = dbi.withHandle<Int, Exception> {
         it.execute(dsl
-                .delete(table("organization"))
+                .delete(table(ORG_TABLE))
                 .sql
         )
     }
@@ -73,14 +91,14 @@ class OrganizationDAOImpl : OrganizationDAO {
 
     override fun createOrganization(organization: Organization, user: String) = dbi.useHandle<Exception> {
         it.execute(dsl
-                .insertInto(table("organization"),
-                        field("organization_id"),
-                        field("organization_version"),
-                        field("organization_full_name"),
-                        field("organization_short_name"),
-                        field("organization_address"),
-                        field("organization_contact"),
-                        field("created_by")
+                .insertInto(table(ORG_TABLE),
+                        field(ORG_ID),
+                        field(ORG_VERSION),
+                        field(ORG_FULL_NAME),
+                        field(ORG_SHORT_NAME),
+                        field(ORG_ADDRESS),
+                        field(ORG_CONTACT),
+                        field(CREATED_BY)
                         )
                 .values(
                         organization.id,
@@ -96,15 +114,15 @@ class OrganizationDAOImpl : OrganizationDAO {
 
     override fun voteOnOrganization(organizationId: Int, voteType: Int) = dbi.useTransaction<Exception> {
         val votes: Int = it.createQuery(dsl
-                .select(field("votes"))
-                .from(table("organization"))
-                .where(field("organization_id").eq(organizationId))
+                .select(field(ORG_VOTE))
+                .from(table(ORG_TABLE))
+                .where(field(ORG_ID).eq(organizationId))
                 .sql
         ).mapTo(Int::class.java).findOnly()
         it.execute(dsl
-                .update(table("organization"))
-                .set(field("votes"), if(voteType == -1) votes.dec() else votes.inc())
-                .where(field("organization_id").eq(organizationId))
+                .update(table(ORG_TABLE))
+                .set(field(ORG_VOTE), if(voteType == -1) votes.dec() else votes.inc())
+                .where(field(ORG_ID).eq(organizationId))
                 .sql
         )
     }
@@ -112,18 +130,18 @@ class OrganizationDAOImpl : OrganizationDAO {
     override fun getVersionOrganization(versionOrganizationId: Int, version: Int): OrganizationVersion  = dbi.withHandle<OrganizationVersion, Exception> {
         it.createQuery(dsl
                 .select(
-                        field("organization_id"),
-                        field("organization_version"),
-                        field("organization_full_name"),
-                        field("organization_short_name"),
-                        field("organization_address"),
-                        field("organization_contact"),
-                        field("created_by"),
-                        field("vote_count"),
-                        field("time_stamp")
+                        field(ORG_ID),
+                        field(ORG_VERSION),
+                        field(ORG_FULL_NAME),
+                        field(ORG_SHORT_NAME),
+                        field(ORG_ADDRESS),
+                        field(ORG_CONTACT),
+                        field(CREATED_BY),
+                        field(ORG_VOTE),
+                        field(ORG_TIMESTAMP)
                 )
-                .from(table("organization_version"))
-                .where(field("organization_id").eq(versionOrganizationId).and(field("organization_version").eq(version)))
+                .from(table(ORG_VERSION_TABLE))
+                .where(field(ORG_ID).eq(versionOrganizationId).and(field(ORG_VERSION).eq(version)))
                 .sql
         ).mapTo(OrganizationVersion::class.java).first()
     }
@@ -131,46 +149,46 @@ class OrganizationDAOImpl : OrganizationDAO {
     override fun getAllVersionOrganizations(): List<OrganizationVersion> = dbi.withHandle<List<OrganizationVersion>, Exception> {
         it.createQuery(dsl
                 .select(
-                        field("organization_id"),
-                        field("organization_version"),
-                        field("organization_full_name"),
-                        field("organization_short_name"),
-                        field("organization_address"),
-                        field("organization_contact"),
-                        field("created_by"),
-                        field("vote_count"),
-                        field("time_stamp")
+                        field(ORG_ID),
+                        field(ORG_VERSION),
+                        field(ORG_FULL_NAME),
+                        field(ORG_SHORT_NAME),
+                        field(ORG_ADDRESS),
+                        field(ORG_CONTACT),
+                        field(CREATED_BY),
+                        field(ORG_VOTE),
+                        field(ORG_TIMESTAMP)
                 )
-                .from(table("organization_version"))
+                .from(table(ORG_VERSION_TABLE))
                 .sql
         ).mapTo(OrganizationVersion::class.java).list()
     }
 
     override fun deleteVersionOrganization(versionOrganizationId: Int, version: Int) = dbi.withHandle<Int, Exception> {
         it.execute(dsl
-                .delete(table("organization_version"))
-                .where(field("organization_id").eq(versionOrganizationId).and(field("organization_version").eq(version)))
+                .delete(table(ORG_VERSION_TABLE))
+                .where(field(ORG_ID).eq(versionOrganizationId).and(field(ORG_VERSION).eq(version)))
                 .sql
         )
     }
 
     override fun deleteAllVersionOrganizations() = dbi.withHandle<Int, Exception> {
         it.execute(dsl
-                .delete(table("organization_version"))
+                .delete(table(ORG_VERSION_TABLE))
                 .sql
         )
     }
 
     override fun createVersionOrganization(organizationVersion: OrganizationVersion) = dbi.useHandle<Exception> {
         it.execute(dsl
-                .insertInto(table("organization_version"),
-                        field("organization_id"),
-                        field("organization_version"),
-                        field("organization_full_name"),
-                        field("organization_short_name"),
-                        field("organization_address"),
-                        field("organization_contact"),
-                        field("created_by"))
+                .insertInto(table(ORG_VERSION_TABLE),
+                        field(ORG_ID),
+                        field(ORG_VERSION),
+                        field(ORG_FULL_NAME),
+                        field(ORG_SHORT_NAME),
+                        field(ORG_ADDRESS),
+                        field(ORG_CONTACT),
+                        field(CREATED_BY))
                 .values(
                         organizationVersion.organizationId,
                         organizationVersion.version,
@@ -185,50 +203,50 @@ class OrganizationDAOImpl : OrganizationDAO {
 
     override fun reportOrganization(organizationReport: OrganizationReport) = dbi.useHandle<Exception> {
         it.execute(dsl
-                .insertInto(table("organization_report"),
-                        field("organization_id"),
-                        field("organization_full_name"),
-                        field("organization_short_name"),
-                        field("organization_address"),
-                        field("organization_contact"),
-                        field("made_by"))
+                .insertInto(table(ORG_REPORT_TABLE),
+                        field(ORG_ID),
+                        field(ORG_FULL_NAME),
+                        field(ORG_SHORT_NAME),
+                        field(ORG_ADDRESS),
+                        field(ORG_CONTACT),
+                        field(CREATED_BY))
                 .values(
                         organizationReport.organizationId,
                         organizationReport.organizationFullName,
                         organizationReport.organizationShortName,
                         organizationReport.organizationAddress,
                         organizationReport.organizationContact,
-                        organizationReport.madeBy
+                        organizationReport.createdBy
                 ).sql
         )
     }
 
     override fun deleteAllReportsOnOrganization() = dbi.withHandle<Int, Exception> {
         it.execute(dsl
-                .delete(table("organization_report"))
+                .delete(table(ORG_REPORT_TABLE))
                 .sql
         )
     }
 
     override fun deleteReportOnOrganization(reportId: Int) = dbi.withHandle<Int, Exception> {
         it.execute(dsl
-                .delete(table("organization_report"))
-                .where(field("report_id").eq(reportId))
+                .delete(table(ORG_REPORT_TABLE))
+                .where(field(ORG_REPORT_ID).eq(reportId))
                 .sql
         )
     }
 
     override fun voteOnReportOrganization(reportId: Int, voteType: Int) = dbi.useTransaction<Exception> {
         val votes: Int = it.createQuery(dsl
-                .select(field("votes"))
-                .from(table("organization_report"))
-                .where(field("report_id").eq(reportId))
+                .select(field(ORG_VOTE))
+                .from(table(ORG_REPORT_TABLE))
+                .where(field(ORG_REPORT_ID).eq(reportId))
                 .sql
         ).mapTo(Int::class.java).findOnly()
         it.execute(dsl
-                .update(table("organization_report"))
-                .set(field("votes"), if(voteType == -1) votes.dec() else votes.inc())
-                .where(field("report_id").eq(reportId))
+                .update(table(ORG_REPORT_TABLE))
+                .set(field(ORG_VOTE), if(voteType == -1) votes.dec() else votes.inc())
+                .where(field(ORG_REPORT_ID).eq(reportId))
                 .sql
         )
     }
