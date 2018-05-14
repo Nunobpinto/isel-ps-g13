@@ -1,4 +1,4 @@
-package isel.leic.ps.eduWikiAPI.outputModel.single
+package isel.leic.ps.eduWikiAPI.domain.outputModel.single
 
 import com.google.code.siren4j.annotations.Siren4JEntity
 

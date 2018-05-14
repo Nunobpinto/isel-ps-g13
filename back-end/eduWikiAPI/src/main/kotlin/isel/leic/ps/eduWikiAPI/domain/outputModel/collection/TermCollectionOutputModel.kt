@@ -1,9 +1,9 @@
-package isel.leic.ps.eduWikiAPI.outputModel.collection
+package isel.leic.ps.eduWikiAPI.domain.outputModel.collection
 
 import com.google.code.siren4j.annotations.Siren4JEntity
 import com.google.code.siren4j.resource.CollectionResource
-import isel.leic.ps.eduWikiAPI.outputModel.single.CourseOutputModel
-import isel.leic.ps.eduWikiAPI.outputModel.single.TermOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.CourseOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.TermOutputModel
 
 @Siren4JEntity(
         name = "terms",

@@ -1,11 +1,11 @@
-package isel.leic.ps.eduWikiAPI.outputModel.collection
+package isel.leic.ps.eduWikiAPI.domain.outputModel.collection
 
 import com.google.code.siren4j.annotations.Siren4JAction
 import com.google.code.siren4j.annotations.Siren4JActionField
 import com.google.code.siren4j.annotations.Siren4JEntity
 import com.google.code.siren4j.component.impl.ActionImpl.*
 import com.google.code.siren4j.resource.CollectionResource
-import isel.leic.ps.eduWikiAPI.outputModel.single.ClassOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.ClassOutputModel
 
 @Siren4JEntity(
         name = "classes",

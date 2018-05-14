@@ -1,8 +1,8 @@
-package isel.leic.ps.eduWikiAPI.outputModel.collection
+package isel.leic.ps.eduWikiAPI.domain.outputModel.collection
 
 import com.google.code.siren4j.annotations.Siren4JEntity
 import com.google.code.siren4j.resource.CollectionResource
-import isel.leic.ps.eduWikiAPI.outputModel.single.ExamOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.ExamOutputModel
 
 @Siren4JEntity(
         name = "exams",
