@@ -55,7 +55,6 @@ CREATE TABLE term (
   term_year INTEGER NOT NULL,
   term_type term_type NOT NULL,
   term_version INTEGER UNIQUE NOT NULL DEFAULT 1,
-  created_by VARCHAR(20),
   PRIMARY KEY (term_id)
 );
 
