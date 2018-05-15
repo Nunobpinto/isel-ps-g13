@@ -9,7 +9,9 @@ import org.jooq.DSLContext
 import org.jooq.impl.DSL.field
 import org.jooq.impl.DSL.table
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Repository
 
+@Repository
 class CourseDAOImpl : CourseDAO {
 
     companion object {
