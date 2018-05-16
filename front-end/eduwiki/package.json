@@ -1,0 +1,25 @@
+{
+  "name": "yacma",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Web Application using React for Checklists Management",
+  "dependencies": {
+    "antd": "^3.5.0",
+    "bluebird": "^3.5.1",
+    "isomorphic-fetch": "^2.2.1",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
+    "react-router-dom": "^4.2.2",
+    "react-scripts": "1.1.4",
+    "universal-cookie": "^2.1.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "devDependencies": {
+    "standard": "^11.0.1"
+  }
+}
