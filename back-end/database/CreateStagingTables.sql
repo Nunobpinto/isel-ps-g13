@@ -2,7 +2,7 @@
 -- Create Staging Tables
 --------------------------
 
-CREATE TABLE programme_stage (
+CREATE TABLE IF NOT EXISTS programme_stage (
 	programme_id SERIAL,
 	programme_full_name VARCHAR(100) NOT NULL,
 	programme_short_name VARCHAR(10) NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE programme_stage (
 	PRIMARY KEY (programme_id)
 );
 
-CREATE TABLE course_stage (
+CREATE TABLE IF NOT EXISTS course_stage (
 	course_id SERIAL,
 	organization_id INTEGER REFERENCES organization,
 	course_full_name VARCHAR(100) NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE course_stage (
 	PRIMARY KEY (course_id)
 );
 
-CREATE TABLE course_programme_stage (
+CREATE TABLE IF NOT EXISTS course_programme_stage (
   course_id INTEGER REFERENCES course,
   programme_id INTEGER REFERENCES programme,
   course_lectured_term VARCHAR(50) NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE course_programme_stage (
   PRIMARY KEY (course_id, programme_id)
 );
 
-CREATE TABLE class_stage (
+CREATE TABLE IF NOT EXISTS class_stage (
 	class_id SERIAL,
 	term_id INTEGER REFERENCES term,
 	class_name VARCHAR(10) NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE class_stage (
 	PRIMARY KEY (class_id, term_id)
 );
 
-CREATE TABLE course_class_stage (
+CREATE TABLE IF NOT EXISTS course_class_stage (
 	course_id INTEGER REFERENCES course,
 	class_id INTEGER,
 	term_id INTEGER,
@@ -60,13 +60,13 @@ CREATE TABLE course_class_stage (
 );
 
 -- not sure how staging course specific misc units are going to be staged, it might be through references to this table
--- CREATE TABLE course_term_stage (
+-- CREATE TABLE IF NOT EXISTS course_term_stage (
 --   course_id INTEGER REFERENCES course,
 --   term_id INTEGER REFERENCES term,
 --   PRIMARY KEY (course_id, term_id)
 -- );
 
-CREATE TABLE course_misc_unit_stage (
+CREATE TABLE IF NOT EXISTS course_misc_unit_stage (
   id SERIAL,
   course_id INTEGER,
   term_id INTEGER,
@@ -75,7 +75,7 @@ CREATE TABLE course_misc_unit_stage (
   PRIMARY KEY (id)
 );
 
-CREATE TABLE work_assignment_stage (
+CREATE TABLE IF NOT EXISTS work_assignment_stage (
   	id INTEGER REFERENCES course_misc_unit_stage,
   	sheet VARCHAR(100) NOT NULL,
   	supplement VARCHAR(100) NOT NULL,
@@ -90,7 +90,7 @@ CREATE TABLE work_assignment_stage (
  	PRIMARY KEY (id)
 );
 
-CREATE TABLE exam_stage (
+CREATE TABLE IF NOT EXISTS exam_stage (
   	id INTEGER REFERENCES course_misc_unit,
   	sheet VARCHAR(100) NOT NULL,
   	due_date date NOT NULL,
@@ -103,7 +103,7 @@ CREATE TABLE exam_stage (
   	PRIMARY KEY (id)
 );
 
-CREATE TABLE lecture_stage (
+CREATE TABLE IF NOT EXISTS lecture_stage (
   id INTEGER REFERENCES class_misc_unit,
   weekday weekday NOT NULL,
   begins TIME NOT NULL,
@@ -115,7 +115,7 @@ CREATE TABLE lecture_stage (
   PRIMARY KEY (id)
 );
 
-CREATE TABLE homework_stage (
+CREATE TABLE IF NOT EXISTS homework_stage (
   id INTEGER REFERENCES class_misc_unit,
   sheet VARCHAR(100) NOT NULL,
   due_date DATE NOT NULL,

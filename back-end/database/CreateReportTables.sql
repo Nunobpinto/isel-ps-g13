@@ -2,7 +2,7 @@
 -- Create Report Tables
 --------------------------
 
-CREATE TABLE organization_report (
+CREATE TABLE IF NOT EXISTS organization_report (
   report_id SERIAL,
   organization_id INTEGER REFERENCES organization,
   organization_full_name varchar(100),
@@ -14,7 +14,7 @@ CREATE TABLE organization_report (
   PRIMARY KEY (report_id)
 );
 
-CREATE TABLE programme_report (
+CREATE TABLE IF NOT EXISTS programme_report (
     report_id SERIAL, 
     programme_id INTEGER REFERENCES programme,
     programme_full_name varchar(100),
@@ -27,7 +27,7 @@ CREATE TABLE programme_report (
     PRIMARY KEY (report_id)
 );
 
-CREATE TABLE course_report (
+CREATE TABLE IF NOT EXISTS course_report (
     report_id SERIAL, 
     course_id INTEGER REFERENCES course,
     course_full_name varchar(100),
@@ -37,7 +37,7 @@ CREATE TABLE course_report (
     PRIMARY KEY (report_id)
 );
 
-CREATE TABLE class_report (
+CREATE TABLE IF NOT EXISTS class_report (
   report_id SERIAL,
   class_id INTEGER,
   term_id INTEGER,
@@ -48,7 +48,7 @@ CREATE TABLE class_report (
   PRIMARY KEY (report_id)
 );
 
-CREATE TABLE work_assignment_report (
+CREATE TABLE IF NOT EXISTS work_assignment_report (
   report_id SERIAL,
   id INTEGER REFERENCES course_misc_unit,
   sheet VARCHAR(100),
@@ -63,7 +63,7 @@ CREATE TABLE work_assignment_report (
   PRIMARY KEY (report_id)
 );
 
-CREATE TABLE exam_report (
+CREATE TABLE IF NOT EXISTS exam_report (
   report_id SERIAL,
   id INTEGER REFERENCES course_misc_unit,
   sheet VARCHAR(100),
@@ -76,7 +76,7 @@ CREATE TABLE exam_report (
   PRIMARY KEY (report_id)
 );
 
-CREATE TABLE lecture_report (
+CREATE TABLE IF NOT EXISTS lecture_report (
   report_id SERIAL,
   id INTEGER REFERENCES class_misc_unit,
   weekday weekday,
@@ -88,7 +88,7 @@ CREATE TABLE lecture_report (
   PRIMARY KEY (report_id)
 );
 
-CREATE TABLE homework_report (
+CREATE TABLE IF NOT EXISTS homework_report (
   report_id SERIAL,
   id INTEGER REFERENCES class_misc_unit,
   sheet VARCHAR(100),
@@ -100,7 +100,7 @@ CREATE TABLE homework_report (
   PRIMARY KEY (report_id)
 );
 
-CREATE TABLE student_report (
+CREATE TABLE IF NOT EXISTS student_report (
   report_id SERIAL,
   student_username VARCHAR(20) REFERENCES student,
   reason VARCHAR(200) NOT NULL,

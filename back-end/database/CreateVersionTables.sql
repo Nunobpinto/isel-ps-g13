@@ -2,7 +2,7 @@
 -- Create Version Tables
 --------------------------
 
-CREATE TABLE organization_version (
+CREATE TABLE IF NOT EXISTS organization_version (
   organization_id INTEGER REFERENCES organization,
   organization_version INTEGER,
   created_by VARCHAR(20) NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE organization_version (
 );
 
 
-CREATE TABLE programme_version (
+CREATE TABLE IF NOT EXISTS programme_version (
 	programme_id INTEGER REFERENCES programme,
 	programme_version INTEGER,
 	programme_full_name VARCHAR(100) NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE programme_version (
 );
 
 -- Information stored in association between course and programme might be stored here, not sure though
-CREATE TABLE course_version (
+CREATE TABLE IF NOT EXISTS course_version (
 	course_id INTEGER REFERENCES course,
 	organization_id INTEGER,
 	course_version INTEGER NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE course_version (
 	PRIMARY KEY (course_id, course_version)
 );
 
-CREATE TABLE class_version (
+CREATE TABLE IF NOT EXISTS class_version (
 	class_id INTEGER,
 	term_id INTEGER,
 	class_version INTEGER,
@@ -51,7 +51,7 @@ CREATE TABLE class_version (
 	PRIMARY KEY (class_id, term_id, class_version)
 );
 
-CREATE TABLE work_assignment_version (
+CREATE TABLE IF NOT EXISTS work_assignment_version (
   	id INTEGER REFERENCES course_misc_unit,
 	work_assignment_version INTEGER,
   	sheet VARCHAR(100) NOT NULL,
@@ -66,7 +66,7 @@ CREATE TABLE work_assignment_version (
  	PRIMARY KEY (id, work_assignment_version)
 );
 
-CREATE TABLE exam_version (
+CREATE TABLE IF NOT EXISTS exam_version (
   	id INTEGER REFERENCES course_misc_unit,
 	exam_version INTEGER,
   	sheet VARCHAR(100) NOT NULL,
@@ -79,7 +79,7 @@ CREATE TABLE exam_version (
   	PRIMARY KEY (id, exam_version)
 );
 
-CREATE TABLE lecture_version (
+CREATE TABLE IF NOT EXISTS lecture_version (
   id INTEGER REFERENCES class_misc_unit,
   lecture_version INTEGER,
   created_by VARCHAR(20) NOT NULL,
@@ -90,7 +90,7 @@ CREATE TABLE lecture_version (
   PRIMARY KEY (id, lecture_version)
 );
 
-CREATE TABLE homework_version (
+CREATE TABLE IF NOT EXISTS homework_version (
   id INTEGER REFERENCES class_misc_unit,
   homework_version INTEGER,
   sheet VARCHAR(100) NOT NULL,

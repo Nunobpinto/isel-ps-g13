@@ -2,7 +2,7 @@
 -- Create Main Tables
 --------------------------
 
-CREATE TABLE organization (
+CREATE TABLE IF NOT EXISTS organization (
   organization_id SERIAL,
   organization_version INTEGER NOT NULL DEFAULT 1,
   created_by VARCHAR(20) NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE organization (
   PRIMARY KEY (organization_id)
 );
 
-CREATE TABLE programme (
+CREATE TABLE IF NOT EXISTS programme (
   programme_id SERIAL,
   programme_version INTEGER NOT NULL DEFAULT 1,
   created_by VARCHAR(20) NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE programme (
 );
 
 -- Add column column restricting the terms where it can be lectured (winter only, summer only, both)
-CREATE TABLE course (
+CREATE TABLE IF NOT EXISTS course (
   course_id SERIAL,
   organization_id INTEGER REFERENCES organization,
   course_version INTEGER NOT NULL DEFAULT 1,
@@ -36,7 +36,7 @@ CREATE TABLE course (
   PRIMARY KEY (course_id)
 );
 
-CREATE TABLE course_programme (
+CREATE TABLE IF NOT EXISTS course_programme (
   course_id INTEGER REFERENCES course,
   programme_id INTEGER REFERENCES programme,
   course_programme_version INTEGER NOT NULL DEFAULT 1,
@@ -47,7 +47,7 @@ CREATE TABLE course_programme (
   PRIMARY KEY (course_id, programme_id)
 );
 
-CREATE TABLE term (
+CREATE TABLE IF NOT EXISTS term (
   term_id SERIAL,
   term_short_name CHAR(5) UNIQUE NOT NULL,
   term_year INTEGER NOT NULL,
@@ -55,7 +55,7 @@ CREATE TABLE term (
   PRIMARY KEY (term_id)
 );
 
-CREATE TABLE class (
+CREATE TABLE IF NOT EXISTS class (
   class_id SERIAL,
   class_version INTEGER NOT NULL DEFAULT 1,
   created_by VARCHAR(20) NOT NULL,
@@ -65,13 +65,13 @@ CREATE TABLE class (
   PRIMARY KEY (class_id, term_id)
 );
 
-CREATE TABLE course_term (
+CREATE TABLE IF NOT EXISTS course_term (
   course_id INTEGER REFERENCES course,
   term_id INTEGER REFERENCES term,
   PRIMARY KEY (course_id, term_id)
 );
 
-CREATE TABLE course_misc_unit (
+CREATE TABLE IF NOT EXISTS course_misc_unit (
   id SERIAL,
   misc_type course_misc_unit_type NOT NULL,
   course_id INTEGER,
@@ -80,7 +80,7 @@ CREATE TABLE course_misc_unit (
   PRIMARY KEY (id)
 );
 
-CREATE TABLE work_assignment (
+CREATE TABLE IF NOT EXISTS work_assignment (
   id INTEGER REFERENCES course_misc_unit,
   work_assignment_version INTEGER NOT NULL DEFAULT 1,
   created_by VARCHAR(20) NOT NULL,
@@ -139,7 +139,7 @@ CREATE TABLE lecture (
   PRIMARY KEY (id)
 );
 
-CREATE TABLE homework (
+CREATE TABLE IF NOT EXISTS homework (
   id INTEGER REFERENCES class_misc_unit,
   homework_version INTEGER NOT NULL DEFAULT 1,	
   created_by VARCHAR(20),
@@ -151,7 +151,7 @@ CREATE TABLE homework (
   PRIMARY KEY (id)
 );
 
-CREATE TABLE student (
+CREATE TABLE IF NOT EXISTS student (
   student_username VARCHAR(20),
   student_given_name VARCHAR(15) NOT NULL,
   student_family_name VARCHAR(15) NOT NULL,
@@ -161,7 +161,7 @@ CREATE TABLE student (
   PRIMARY KEY (student_username)
 );
 
-CREATE TABLE reputation (
+CREATE TABLE IF NOT EXISTS reputation (
   reputation_id SERIAL,
   reputation_points INTEGER NOT NULL,
   reputation_rank student_rank NOT NULL, 
@@ -170,7 +170,7 @@ CREATE TABLE reputation (
   PRIMARY KEY (reputation_id, student)
 );
 
-CREATE TABLE reputation_log (
+CREATE TABLE IF NOT EXISTS reputation_log (
   reputation_log_id SERIAL,
   reputation_log_action VARCHAR(150) NOT NULL,
   reputation_log_given_by varchar(15) NOT NULL,
@@ -181,7 +181,7 @@ CREATE TABLE reputation_log (
   PRIMARY KEY (reputation_log_id)
 );
 
-CREATE TABLE student_course_class (
+CREATE TABLE IF NOT EXISTS student_course_class (
 	username VARCHAR(20) NOT NULL REFERENCES student,
 	course_id INTEGER NOT NULL REFERENCES course,
 	class_id INTEGER,
