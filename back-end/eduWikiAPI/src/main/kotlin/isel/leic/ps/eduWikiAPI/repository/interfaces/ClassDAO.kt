@@ -20,7 +20,7 @@ interface ClassDAO {
 
     fun deleteAllClasses() : Int
 
-    fun updateClass(klass: Class, user: String) : Int
+    fun updateClass(klass: Class) : Int
 
     fun createClass(klass: Class)
 
@@ -29,6 +29,7 @@ interface ClassDAO {
     /**
      * Stage entities queries
      */
+
     fun getClassStage(classId: Int, termId: Int) : ClassStage
 
     fun getAllClassStages() : List<ClassStage>

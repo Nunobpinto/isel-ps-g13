@@ -89,7 +89,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         )
     }
 
-    override fun updateProgramme(programme: Programme, user: String): Int = TODO("dynamically update org by filled values in Programme parameter")
+    override fun updateProgramme(programme: Programme): Int = TODO("dynamically update org by filled values in Programme parameter")
 
     override fun createProgramme(programme: Programme) = dbi.useHandle<Exception> {
         it.execute(dsl

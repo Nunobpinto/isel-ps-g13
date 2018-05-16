@@ -18,7 +18,7 @@ interface ProgrammeDAO {
 
     fun deleteAllProgrammes() : Int
 
-    fun updateProgramme(programme: Programme, user: String) : Int
+    fun updateProgramme(programme: Programme) : Int
 
     fun createProgramme(programme: Programme)
 

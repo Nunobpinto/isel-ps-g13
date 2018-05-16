@@ -2,6 +2,7 @@ package isel.leic.ps.eduWikiAPI.repository.interfaces
 
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
+import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
 
 interface CourseDAO {
@@ -18,11 +19,27 @@ interface CourseDAO {
 
     fun deleteAllCourses() : Int
 
-    fun updateCourse(course: Course, user: String) : Int
+    fun updateCourse(course: Course) : Int
 
-    fun createCourse(course: Course, user: String)
+    fun createCourse(course: Course)
 
     fun voteOnCourse(courseId: Int, voteType: Int)
+
+    /**
+     * Stage entities queries
+     */
+
+    fun getCourseStage(courseStageId: Int) : CourseStage
+
+    fun getAllCourseStages() : List<CourseStage>
+
+    fun deleteCourseStage(courseStageId: Int) : Int
+
+    fun deleteAllCourseStages() : Int
+
+    fun createCourseStage(courseStage: CourseStage)
+
+    fun voteOnCourseStage(courseStageId: Int, voteType: Int)
 
     /**
      * Version entities queries

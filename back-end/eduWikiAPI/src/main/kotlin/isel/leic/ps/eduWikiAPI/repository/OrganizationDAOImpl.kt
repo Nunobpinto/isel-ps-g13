@@ -87,7 +87,7 @@ class OrganizationDAOImpl : OrganizationDAO {
         )
     }
 
-    override fun updateOrganization(organization: Organization, user: String) = TODO("dynamically update org by filled values in Organization parameter")
+    override fun updateOrganization(organization: Organization) = TODO("dynamically update org by filled values in Organization parameter")
 
     override fun createOrganization(organization: Organization) = dbi.useHandle<Exception> {
         it.execute(dsl

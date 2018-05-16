@@ -4,7 +4,7 @@ import java.sql.Timestamp
 import java.time.LocalDate
 
 data class ExamVersion (
-        val exameId: Int = 0,
+        val courseMiscUnitId: Int = 0,
         val sheet: String = "", //TODO
         val dueDate: LocalDate = LocalDate.now(),
         val type: String = "",

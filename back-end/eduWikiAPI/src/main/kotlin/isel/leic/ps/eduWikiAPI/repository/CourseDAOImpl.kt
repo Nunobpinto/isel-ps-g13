@@ -2,6 +2,7 @@ package isel.leic.ps.eduWikiAPI.repository
 
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
+import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
 import isel.leic.ps.eduWikiAPI.repository.interfaces.CourseDAO
 import org.jdbi.v3.core.Jdbi
@@ -10,6 +11,7 @@ import org.jooq.impl.DSL.field
 import org.jooq.impl.DSL.table
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
+import kotlin.concurrent.timer
 
 @Repository
 class CourseDAOImpl : CourseDAO {
@@ -19,6 +21,7 @@ class CourseDAOImpl : CourseDAO {
         const val CRS_TABLE = "course"
         const val CRS_VERSION_TABLE = "course_version"
         const val CRS_REPORT_TABLE = "course_report"
+        const val CRS_STAGE_TABLE = "course_stage"
         // FIELDS
         const val CRS_ID = "course_id"
         const val ORG_ID = "organization_id"
@@ -84,9 +87,9 @@ class CourseDAOImpl : CourseDAO {
         )
     }
 
-    override fun updateCourse(course: Course, user: String): Int = TODO("dynamically update org by filled values in Organization parameter")
+    override fun updateCourse(course: Course): Int = TODO("dynamically update org by filled values in Organization parameter")
 
-    override fun createCourse(course: Course, user: String) = dbi.useHandle<Exception> {
+    override fun createCourse(course: Course) = dbi.useHandle<Exception> {
         it.execute(dsl
                 .insertInto(table(CRS_TABLE),
                         field(CRS_ID),
@@ -123,6 +126,94 @@ class CourseDAOImpl : CourseDAO {
                 .sql
         )
     }
+
+    override fun getCourseStage(courseStageId: Int): CourseStage = dbi.withHandle<CourseStage, Exception> {
+        it.createQuery(dsl
+                .select(
+                        field(CRS_ID),
+                        field(ORG_ID),
+                        field(CRS_FULL_NAME),
+                        field(CRS_SHORT_NAME),
+                        field(CRS_CREATED_BY),
+                        field(CRS_VOTE),
+                        field(CRS_TIMESTAMP)
+                )
+                .from(table(CRS_STAGE_TABLE))
+                .where(field(CRS_ID).eq(courseStageId))
+                .sql
+        ).mapTo(CourseStage::class.java).findOnly()
+    }
+
+    override fun getAllCourseStages(): List<CourseStage> = dbi.withHandle<List<CourseStage>, Exception> {
+        it.createQuery(dsl
+                .select(
+                        field(CRS_ID),
+                        field(ORG_ID),
+                        field(CRS_FULL_NAME),
+                        field(CRS_SHORT_NAME),
+                        field(CRS_CREATED_BY),
+                        field(CRS_VOTE),
+                        field(CRS_TIMESTAMP)
+                )
+                .from(table(CRS_STAGE_TABLE))
+                .sql
+        ).mapTo(CourseStage::class.java).toList()
+    }
+
+    override fun deleteCourseStage(courseStageId: Int): Int = dbi.withHandle<Int, Exception> {
+        it.execute(dsl
+                .delete(table(CRS_STAGE_TABLE))
+                .where(field(CRS_ID).eq(courseStageId))
+                .sql
+        )
+    }
+
+    override fun deleteAllCourseStages(): Int = dbi.withHandle<Int, Exception> {
+        it.execute(dsl
+                .delete(table(CRS_STAGE_TABLE))
+                .sql
+        )
+    }
+
+    override fun createCourseStage(courseStage: CourseStage) = dbi.useHandle<Exception> {
+        it.execute(dsl
+                .insertInto(
+                        table(CRS_STAGE_TABLE),
+                        field(CRS_ID),
+                        field(ORG_ID),
+                        field(CRS_FULL_NAME),
+                        field(CRS_SHORT_NAME),
+                        field(CRS_CREATED_BY),
+                        field(CRS_VOTE),
+                        field(CRS_TIMESTAMP)
+                )
+                .values(
+                        courseStage.courseId,
+                        courseStage.organizationId,
+                        courseStage.fullName,
+                        courseStage.shortName,
+                        courseStage.createdBy,
+                        courseStage.votes,
+                        courseStage.timestamp
+                ).sql
+        )
+    }
+
+    override fun voteOnCourseStage(courseStageId: Int, voteType: Int) = dbi.useTransaction<Exception> {
+        val votes: Int = it.createQuery(dsl
+                .select(field(CRS_VOTE))
+                .from(table(CRS_STAGE_TABLE))
+                .where(field(CRS_ID).eq(courseStageId))
+                .sql
+        ).mapTo(Int::class.java).findOnly()
+        it.execute(dsl
+                .update(table(CRS_STAGE_TABLE))
+                .set(field(CRS_VOTE), if (voteType == -1) votes.dec() else votes.inc())
+                .where(field(CRS_ID).eq(courseStageId))
+                .sql
+        )
+    }
+
 
     override fun getVersionCourse(versionCourseId: Int, version: Int): CourseVersion = dbi.withHandle<CourseVersion, Exception> {
         it.createQuery(dsl

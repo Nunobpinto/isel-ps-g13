@@ -11,34 +11,35 @@ interface WorkAssignmentDAO {
      * Main entities queries
      */
 
-    fun getWorkAssignment(workAssignmentId: Int) : WorkAssignment
+    fun getWorkAssignment(courseMiscUnitId: Int) : WorkAssignment
 
     fun getAllWorkAssignment() : List<WorkAssignment>
 
-    fun deleteWorkAssignment(workAssignmentId: Int) : Int
+    fun deleteWorkAssignment(courseMiscUnitId: Int) : Int
 
     fun deleteAllWorkAssignments() : Int
 
-    fun updateWorkAssignment(workAssignment: WorkAssignment, user: String) : Int
+    fun updateWorkAssignment(workAssignment: WorkAssignment) : Int
 
     fun createWorkAssignment(workAssignment: WorkAssignment)
 
-    fun voteOnWorkAssignment(workAssignmentId: Int, voteType: Int)
+    fun voteOnWorkAssignment(courseMiscUnitId: Int, voteType: Int)
 
     /**
      * Stage entities queries
      */
-    fun getWorkAssignmentStage(workAssignmentId: Int) : WorkAssignmentStage
+
+    fun getWorkAssignmentStage(courseMiscUnitStageId: Int) : WorkAssignmentStage
 
     fun getAllWorkAssignmentStages() : List<WorkAssignmentStage>
 
-    fun deleteWorkAssignmentStage(workAssignmentId: Int) : Int
+    fun deleteWorkAssignmentStage(courseMiscUnitStageId: Int) : Int
 
     fun deleteAllWorkAssignmentStages() : Int
 
     fun createWorkAssignmentStage(workAssignmentStage: WorkAssignmentStage)
 
-    fun voteOnWorkAssignmentStage(workAssignmentId: Int, voteType: Int)
+    fun voteOnWorkAssignmentStage(courseMiscUnitStageId: Int, voteType: Int)
 
     /**
      * Version entities queries
@@ -62,7 +63,7 @@ interface WorkAssignmentDAO {
 
     fun deleteReportOnWorkAssignment(reportId: Int) : Int
 
-    fun deleteAllReportsOnWorkAssignment(workAssignmentId : Int) : Int
+    fun deleteAllReportsOnWorkAssignment(courseMiscUnitId : Int) : Int
 
     fun deleteAllReports(): Int
 

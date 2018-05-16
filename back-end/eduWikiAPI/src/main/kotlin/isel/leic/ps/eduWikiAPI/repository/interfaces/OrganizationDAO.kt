@@ -18,7 +18,7 @@ interface OrganizationDAO {
 
     fun deleteAllOrganizations() : Int
 
-    fun updateOrganization(organization: Organization, user: String) : Int
+    fun updateOrganization(organization: Organization) : Int
 
     fun createOrganization(organization: Organization)
 
