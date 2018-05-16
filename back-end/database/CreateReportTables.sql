@@ -5,11 +5,11 @@
 CREATE TABLE organization_report (
   report_id SERIAL,
   organization_id INTEGER REFERENCES organization,
-  organization_full_name varchar(100) UNIQUE NOT NULL,
-  organization_short_name varchar(10) UNIQUE NOT NULL,
-  organization_address varchar(100) NOT NULL,
-  organization_contact INTEGER UNIQUE NOT NULL,
-  created_by VARCHAR(20),
+  organization_full_name varchar(100),
+  organization_short_name varchar(10),
+  organization_address varchar(100),
+  organization_contact INTEGER,
+  created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   PRIMARY KEY (report_id)
 );
@@ -17,12 +17,12 @@ CREATE TABLE organization_report (
 CREATE TABLE programme_report (
     report_id SERIAL, 
     programme_id INTEGER REFERENCES programme,
-    programme_full_name varchar(100) UNIQUE NOT NULL,
-    programme_short_name varchar(10) UNIQUE NOT NULL,
-    programme_academic_degree varchar(50) NOT NULL,
+    programme_full_name varchar(100),
+    programme_short_name varchar(10),
+    programme_academic_degree varchar(50),
     programme_total_credits INTEGER,
     programme_duration INTEGER,
-    created_by VARCHAR(20),
+    created_by VARCHAR(20) NOT NULL,
     votes INTEGER DEFAULT 0,
     PRIMARY KEY (report_id)
 );
@@ -30,31 +30,21 @@ CREATE TABLE programme_report (
 CREATE TABLE course_report (
     report_id SERIAL, 
     course_id INTEGER REFERENCES course,
-    course_full_name varchar(100) UNIQUE NOT NULL,
-    course_short_name varchar(10) UNIQUE NOT NULL,
-    created_by VARCHAR(20),
+    course_full_name varchar(100),
+    course_short_name varchar(10),
+    created_by VARCHAR(20) NOT NULL,
     votes INTEGER DEFAULT 0,
     PRIMARY KEY (report_id)
 );
 
-CREATE TABLE term_report (
-  report_id SERIAL, 
-  term_id INTEGER REFERENCES term,
-  term_short_name CHAR(5) UNIQUE NOT NULL,
-  term_year INTEGER NOT NULL,
-  term_type term_type NOT NULL,
-  created_by VARCHAR(20),
-  votes INTEGER DEFAULT 0,
-  PRIMARY KEY (report_id)
-);
-
 CREATE TABLE class_report (
   report_id SERIAL,
-  class_id INTEGER REFERENCES class,
+  class_id INTEGER,
+  term_id INTEGER,
   class_name VARCHAR(10),
-  term_id INTEGER REFERENCES term,
-  created_by VARCHAR(20),
+  created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
+  FOREIGN KEY (class_id, term_id) REFERENCES class(class_id, term_id),
   PRIMARY KEY (report_id)
 );
 
@@ -68,7 +58,7 @@ CREATE TABLE work_assignment_report (
   late_delivery BOOLEAN,
   multiple_deliveries BOOLEAN,
   requires_report BOOLEAN,
-  created_by VARCHAR(20),
+  created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   PRIMARY KEY (report_id)
 );
@@ -81,7 +71,7 @@ CREATE TABLE exam_report (
   exam_type exam_type,
   phase VARCHAR(30),
   location varchar(30),
-  created_by VARCHAR(20),
+  created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   PRIMARY KEY (report_id)
 );
@@ -93,7 +83,7 @@ CREATE TABLE lecture_report (
   begins TIME,
   duration INTERVAL,
   location varchar(30),
-  created_by VARCHAR(20),
+  created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   PRIMARY KEY (report_id)
 );
@@ -105,20 +95,15 @@ CREATE TABLE homework_report (
   due_date DATE,
   late_delivery BOOLEAN,
   multiple_deliveries BOOLEAN,
-  created_by VARCHAR(20),
+  created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   PRIMARY KEY (report_id)
 );
 
 CREATE TABLE student_report (
   report_id SERIAL,
-  student_username VARCHAR(20),
-  student_given_name VARCHAR(15) NOT NULL,
-  student_family_name VARCHAR(15) NOT NULL,
-  student_personal_email varchar(35) UNIQUE NOT NULL,
-  student_organization_email varchar(35) UNIQUE NOT NULL,
-  student_gender gender, 
-  created_by VARCHAR(20),
-  votes INTEGER DEFAULT 0,
+  student_username VARCHAR(20) REFERENCES student,
+  reason VARCHAR(200) NOT NULL,
+  created_by VARCHAR(20) NOT NULL,
   PRIMARY KEY (report_id)
 );
