@@ -92,29 +92,21 @@ class ProgrammeDAOImpl : ProgrammeDAO {
     override fun updateProgramme(programme: Programme): Int = TODO("dynamically update org by filled values in Programme parameter")
 
     override fun createProgramme(programme: Programme) = dbi.useHandle<Exception> {
-        it.execute(dsl
-                .insertInto(
-                        table(PROG_TABLE),
-                        field(PROG_ID),
-                        field(PROG_VERSION),
-                        field(PROG_FULL_NAME),
-                        field(PROG_SHORT_NAME),
-                        field(PROG_ACADEMIC_DEGREE),
-                        field(PROG_TOTAL_CREDITS),
-                        field(PROG_DURATION),
-                        field(CREATED_BY)
-                )
-                .values(
-                        programme.id,
-                        programme.version,
-                        programme.fullName,
-                        programme.shortName,
-                        programme.academicDegree,
-                        programme.totalCredits,
-                        programme.duration,
-                        programme.createdBy
-                ).sql
-        )
+        val insert = "insert into $PROG_TABLE " +
+                "($PROG_VERSION, $PROG_FULL_NAME, " +
+                "$PROG_SHORT_NAME, $PROG_ACADEMIC_DEGREE, $PROG_TOTAL_CREDITS, " +
+                "$PROG_DURATION, $PROG_VOTE, $CREATED_BY) " +
+                "values(:version, :fullName, :shortName, :academicDegree, :totalCredits, :duration, :votes, :credits)"
+        it.createUpdate(insert)
+                .bind("version", programme.version)
+                .bind("fullName", programme.fullName)
+                .bind("shortName", programme.shortName)
+                .bind("academicDegree", programme.academicDegree)
+                .bind("totalCredits", programme.totalCredits)
+                .bind("duration", programme.duration)
+                .bind("votes", programme.votes)
+                .bind("credits", programme.createdBy)
+                .execute()
     }
 
     override fun voteOnProgramme(programmeId: Int, voteType: Int) = dbi.useTransaction<Exception> {
@@ -336,7 +328,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         )
     }
 
-    override fun deleteAllReportsOnProgramme(programmeId : Int): Int = dbi.withHandle<Int, Exception> {
+    override fun deleteAllReportsOnProgramme(programmeId: Int): Int = dbi.withHandle<Int, Exception> {
         it.execute(dsl
                 .delete(table(PROG_REPORT_TABLE))
                 .where(field(PROG_ID).eq(programmeId))
@@ -353,8 +345,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
     }
 
     override fun deleteAllReports(): Int = dbi.withHandle<Int, Exception> {
-        it.execute(dsl.
-                delete(table(PROG_REPORT_TABLE))
+        it.execute(dsl.delete(table(PROG_REPORT_TABLE))
                 .sql
         )
     }
