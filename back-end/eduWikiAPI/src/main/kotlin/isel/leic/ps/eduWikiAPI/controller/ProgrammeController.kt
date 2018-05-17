@@ -44,7 +44,8 @@ class ProgrammeController {
      * All POST Routes
      */
     @PostMapping()
-    fun createProgramme(@RequestBody input: ProgrammeInputModel) = NotImplementedError()
+    fun createProgramme(@RequestBody input: ProgrammeInputModel)
+            = programmeService.createProgramme(input)
 
     @PostMapping("/{programmeId}/courses")
     fun addCourseToProgramme(@PathVariable programmeId: Int,

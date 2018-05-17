@@ -11,5 +11,10 @@ class ProgrammeInputModel (
         val academicDegree: String,
         @JsonProperty("total_credits")
         val totalCredits: Int,
-        val duration: Int
+        @JsonProperty("created_by")
+        val createdBy: String,
+        val duration: Int,
+        @JsonProperty("organization_id")
+        val organizationId: Int,
+        val version: Int
 )
