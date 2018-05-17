@@ -20,7 +20,7 @@ class ProgrammeController {
     fun getAllProgrammes() = NotImplementedError()
 
     @GetMapping("/{programmeId}")
-    fun getSpecificProgramme(@PathVariable programmeId: Int) = NotImplementedError()
+    fun getSpecificProgramme(@PathVariable programmeId: Int) = programmeService.getSpecificProgramme(programmeId)
 
     @GetMapping("/{programmeId}/report")
     fun getProgrammeReports(@PathVariable programmeId: Int) = NotImplementedError()

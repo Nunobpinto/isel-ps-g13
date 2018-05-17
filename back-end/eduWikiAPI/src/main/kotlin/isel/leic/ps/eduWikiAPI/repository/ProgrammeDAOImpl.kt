@@ -40,21 +40,8 @@ class ProgrammeDAOImpl : ProgrammeDAO {
     lateinit var dbi: Jdbi
 
     override fun getProgramme(programmeId: Int): Programme = dbi.withHandle<Programme, Exception> {
-        it.createQuery(dsl
-                .select(
-                        field(PROG_ID),
-                        field(PROG_VERSION),
-                        field(PROG_FULL_NAME),
-                        field(PROG_SHORT_NAME),
-                        field(PROG_ACADEMIC_DEGREE),
-                        field(PROG_TOTAL_CREDITS),
-                        field(PROG_DURATION),
-                        field(CREATED_BY)
-                )
-                .from(table(PROG_TABLE))
-                .where(field(PROG_ID).eq(programmeId))
-                .sql
-        ).mapTo(Programme::class.java).findOnly()
+        val select = "select * from $PROG_TABLE where programme_id = :programmeId"
+        it.createQuery(select).bind("programmeId", programmeId).mapTo(Programme::class.java).findOnly()
     }
 
     override fun getAllProgrammes(): List<Programme> = dbi.withHandle<List<Programme>, Exception> {

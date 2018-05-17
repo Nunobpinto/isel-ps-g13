@@ -27,5 +27,10 @@ class ProgrammeServiceImpl : ProgrammeService {
         programmeRepo.createProgramme(programme)
     }
 
+    override fun getSpecificProgramme(programmeId: Int): Programme {
+        return programmeRepo.getProgramme(programmeId)
+    }
+
+
 
 }

@@ -5,4 +5,5 @@ import isel.leic.ps.eduWikiAPI.domain.model.Programme
 
 interface ProgrammeService {
     fun createProgramme(input: ProgrammeInputModel)
+    fun getSpecificProgramme(programmeId: Int): Programme
 }
