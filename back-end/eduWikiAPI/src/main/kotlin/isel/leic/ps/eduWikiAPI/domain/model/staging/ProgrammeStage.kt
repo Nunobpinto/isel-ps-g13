@@ -1,7 +1,6 @@
 package isel.leic.ps.eduWikiAPI.domain.model.staging
 
 import java.sql.Timestamp
-import java.time.Duration
 
 data class ProgrammeStage (
     val programmeId: Int = 0,

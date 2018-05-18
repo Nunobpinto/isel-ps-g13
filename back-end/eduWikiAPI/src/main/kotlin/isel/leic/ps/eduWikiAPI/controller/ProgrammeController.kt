@@ -32,10 +32,10 @@ class ProgrammeController {
     ) = NotImplementedError()
 
     @GetMapping("/stage")
-    fun getAllProgrammeStageEntries() = NotImplementedError()
+    fun getAllProgrammeStageEntries() = programmeService.getStagedProgrammes()
 
     @GetMapping("/stage/{stageId}")
-    fun getProgrammeSpecificStageEntry() = NotImplementedError()
+    fun getProgrammeSpecificStageEntry(@PathVariable stageId: Int) = programmeService.getSpecificStagedProgramme(stageId)
 
     @GetMapping("/{programmeId}/courses")
     fun getCoursesOnSpecificProgramme(@PathVariable programmeId: Int) = NotImplementedError()
@@ -78,10 +78,10 @@ class ProgrammeController {
     ) = NotImplementedError()
 
     @PostMapping("/stage")
-    fun createStagingProgramme(@RequestBody programme: ProgrammeInputModel) = NotImplementedError()
+    fun createStagingProgramme(@RequestBody programme: ProgrammeInputModel) = programmeService.createStagedProgramme(programme)
 
     @PostMapping("/stage/{stageId}")
-    fun createProgrammeFromStaged(@PathVariable stageId: Int) = NotImplementedError()
+    fun createProgrammeFromStaged(@PathVariable stageId: Int) = programmeService.createProgrammeFromStaged(stageId)
 
     @PostMapping("/stage/{stageId}/vote")
     fun voteOnStagedProgramme(

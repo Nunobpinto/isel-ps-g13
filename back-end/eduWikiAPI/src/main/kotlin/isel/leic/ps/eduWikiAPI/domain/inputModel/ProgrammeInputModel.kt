@@ -16,5 +16,6 @@ class ProgrammeInputModel (
         val duration: Int,
         @JsonProperty("organization_id")
         val organizationId: Int,
-        val version: Int
+        val version: Int,
+        val timestamp: String = ""
 )

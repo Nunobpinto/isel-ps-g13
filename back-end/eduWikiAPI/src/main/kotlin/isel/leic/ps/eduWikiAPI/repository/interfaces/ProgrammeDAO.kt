@@ -31,7 +31,7 @@ interface ProgrammeDAO {
 
     fun getAllProgrammeStages() : List<ProgrammeStage>
 
-    fun deleteProgrammeStage(programmeId: Int) : Int
+    fun deleteProgrammeStage(stageId: Int) : Int
 
     fun deleteAllProgrammeStages() : Int
 

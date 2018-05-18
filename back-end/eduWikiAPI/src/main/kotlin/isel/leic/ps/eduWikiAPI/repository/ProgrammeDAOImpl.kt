@@ -112,48 +112,20 @@ class ProgrammeDAOImpl : ProgrammeDAO {
     }
 
     override fun getProgrammeStage(programmeId: Int): ProgrammeStage = dbi.withHandle<ProgrammeStage, Exception> {
-        it.createQuery(dsl
-                .select(
-                        field(PROG_ID),
-                        field(PROG_VERSION),
-                        field(PROG_FULL_NAME),
-                        field(PROG_SHORT_NAME),
-                        field(PROG_ACADEMIC_DEGREE),
-                        field(PROG_TOTAL_CREDITS),
-                        field(PROG_DURATION),
-                        field(CREATED_BY),
-                        field(PROG_TIMESTAMP)
-                )
-                .from(table(PROG_STAGE_TABLE))
-                .where(field(PROG_ID).eq(programmeId))
-                .sql
-        ).mapTo(ProgrammeStage::class.java).findOnly()
+        val select = "select * from $PROG_STAGE_TABLE where programme_id = :programmeId"
+        it.createQuery(select).bind("programmeId", programmeId).mapTo(ProgrammeStage::class.java).findOnly()
     }
 
     override fun getAllProgrammeStages(): List<ProgrammeStage> = dbi.withHandle<List<ProgrammeStage>, Exception> {
-        it.createQuery(dsl
-                .select(
-                        field(PROG_ID),
-                        field(PROG_VERSION),
-                        field(PROG_FULL_NAME),
-                        field(PROG_SHORT_NAME),
-                        field(PROG_ACADEMIC_DEGREE),
-                        field(PROG_TOTAL_CREDITS),
-                        field(PROG_DURATION),
-                        field(CREATED_BY),
-                        field(PROG_TIMESTAMP)
-                )
-                .from(table(PROG_STAGE_TABLE))
-                .sql
-        ).mapTo(ProgrammeStage::class.java).toList()
+        val select = "select * from $PROG_STAGE_TABLE"
+        it.createQuery(select).mapTo(ProgrammeStage::class.java).toList()
     }
 
-    override fun deleteProgrammeStage(programmeId: Int): Int = dbi.withHandle<Int, Exception> {
-        it.execute(dsl
-                .delete(table(PROG_STAGE_TABLE))
-                .where(field(PROG_ID).eq(programmeId))
-                .sql
-        )
+    override fun deleteProgrammeStage(stageId: Int): Int = dbi.withHandle<Int, Exception> {
+        val delete = "delete from $PROG_STAGE_TABLE where programme_id = :programmeId"
+        it.createUpdate(delete)
+                .bind("programmeId", stageId)
+                .execute()
     }
 
     override fun deleteAllProgrammeStages(): Int = dbi.withHandle<Int, Exception> {
@@ -164,31 +136,21 @@ class ProgrammeDAOImpl : ProgrammeDAO {
     }
 
     override fun createProgrammeStage(programmeStage: ProgrammeStage) = dbi.useHandle<Exception> {
-        it.execute(dsl
-                .insertInto(
-                        table(PROG_STAGE_TABLE),
-                        field(PROG_ID),
-                        field(PROG_VERSION),
-                        field(PROG_FULL_NAME),
-                        field(PROG_SHORT_NAME),
-                        field(PROG_ACADEMIC_DEGREE),
-                        field(PROG_TOTAL_CREDITS),
-                        field(PROG_DURATION),
-                        field(PROG_TIMESTAMP),
-                        field(CREATED_BY)
-                )
-                .values(
-                        programmeStage.programmeId,
-                        programmeStage.version,
-                        programmeStage.fullName,
-                        programmeStage.shortName,
-                        programmeStage.academicDegree,
-                        programmeStage.totalCredits,
-                        programmeStage.duration,
-                        programmeStage.timestamp,
-                        programmeStage.createdBy
-                ).sql
-        )
+        val insert = "insert into $PROG_STAGE_TABLE " +
+                "($PROG_FULL_NAME, " +
+                "$PROG_SHORT_NAME, $PROG_ACADEMIC_DEGREE, $PROG_TOTAL_CREDITS, " +
+                "$PROG_DURATION, $PROG_VOTE, $CREATED_BY, $PROG_TIMESTAMP) " +
+                "values(:fullName, :shortName, :academicDegree, :totalCredits, :duration, :votes, :credits, :timestamp)"
+        it.createUpdate(insert)
+                .bind("fullName", programmeStage.fullName)
+                .bind("shortName", programmeStage.shortName)
+                .bind("academicDegree", programmeStage.academicDegree)
+                .bind("totalCredits", programmeStage.totalCredits)
+                .bind("duration", programmeStage.duration)
+                .bind("votes", programmeStage.votes)
+                .bind("credits", programmeStage.createdBy)
+                .bind("timestamp",programmeStage.timestamp)
+                .execute()
     }
 
     override fun voteOnProgrammeStage(programmeId: Int, voteType: Int) = dbi.useTransaction<Exception> {
