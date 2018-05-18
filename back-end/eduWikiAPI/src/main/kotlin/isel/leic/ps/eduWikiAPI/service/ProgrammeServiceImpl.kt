@@ -1,7 +1,9 @@
 package isel.leic.ps.eduWikiAPI.service
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.ProgrammeInputModel
+import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Programme
+import isel.leic.ps.eduWikiAPI.domain.model.report.ProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ProgrammeStage
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ProgrammeDAO
 import isel.leic.ps.eduWikiAPI.service.interfaces.ProgrammeService
@@ -15,6 +17,14 @@ class ProgrammeServiceImpl : ProgrammeService {
     @Autowired
     lateinit var programmeRepo: ProgrammeDAO
 
+    override fun getAllProgrammes(): List<Programme> {
+        return programmeRepo.getAllProgrammes()
+    }
+
+    override fun getSpecificProgramme(programmeId: Int): Programme {
+        return programmeRepo.getSpecificProgramme(programmeId)
+    }
+
     override fun createProgramme(input: ProgrammeInputModel) {
         val programme = Programme(
                 createdBy = input.createdBy,
@@ -24,14 +34,9 @@ class ProgrammeServiceImpl : ProgrammeService {
                 totalCredits = input.totalCredits,
                 duration = input.duration,
                 version = 0
-
         )
         programmeRepo.createProgramme(programme)
     }
-
-    override fun getSpecificProgramme(programmeId: Int): Programme =
-         programmeRepo.getProgramme(programmeId)
-
 
     override fun createStagedProgramme(programme: ProgrammeInputModel) {
         val stage = ProgrammeStage(
@@ -64,7 +69,17 @@ class ProgrammeServiceImpl : ProgrammeService {
         programmeRepo.createProgramme(programme)
     }
 
-    override fun getStagedProgrammes(): List<ProgrammeStage> =
-            programmeRepo.getAllProgrammeStages()
+    override fun getStagedProgrammes(): List<ProgrammeStage> = programmeRepo.getAllProgrammeStages()
 
+    override fun getAllReportsOfProgramme(programmeId: Int): List<ProgrammeReport>{
+        return programmeRepo.getAllReportsOfProgramme(programmeId)
+    }
+
+    override fun getSpecificReportOfProgramme(programmeId: Int, reportId: Int): ProgrammeReport {
+        return programmeRepo.getSpecificReportOfProgramme(programmeId, reportId)
+    }
+
+    override fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course> {
+       return programmeRepo.getCoursesOnSpecificProgramme(programmeId)
+    }
 }

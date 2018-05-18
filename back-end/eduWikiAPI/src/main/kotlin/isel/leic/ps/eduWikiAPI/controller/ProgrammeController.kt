@@ -16,20 +16,21 @@ class ProgrammeController {
     /**
      * All GET Routes
      */
+
     @GetMapping
-    fun getAllProgrammes() = NotImplementedError()
+    fun getAllProgrammes() = programmeService.getAllProgrammes()
 
     @GetMapping("/{programmeId}")
     fun getSpecificProgramme(@PathVariable programmeId: Int) = programmeService.getSpecificProgramme(programmeId)
 
-    @GetMapping("/{programmeId}/report")
-    fun getProgrammeReports(@PathVariable programmeId: Int) = NotImplementedError()
+    @GetMapping("/{programmeId}/reports")
+    fun getAllReportsOfProgramme(@PathVariable programmeId: Int) = programmeService.getAllReportsOfProgramme(programmeId)
 
-    @GetMapping("/{programmeId}/report/{reportId}")
-    fun getSpecificProgrammeReport(
+    @GetMapping("/{programmeId}/reports/{reportId}")
+    fun getSpecificReportOfProgramme(
             @PathVariable programmeId: Int,
             @PathVariable reportId: Int
-    ) = NotImplementedError()
+    ) = programmeService.getSpecificReportOfProgramme(programmeId, reportId)
 
     @GetMapping("/stage")
     fun getAllProgrammeStageEntries() = programmeService.getStagedProgrammes()
@@ -38,11 +39,12 @@ class ProgrammeController {
     fun getProgrammeSpecificStageEntry(@PathVariable stageId: Int) = programmeService.getSpecificStagedProgramme(stageId)
 
     @GetMapping("/{programmeId}/courses")
-    fun getCoursesOnSpecificProgramme(@PathVariable programmeId: Int) = NotImplementedError()
+    fun getCoursesOnSpecificProgramme(@PathVariable programmeId: Int) = programmeService.getCoursesOnSpecificProgramme(programmeId)
 
     /**
      * All POST Routes
      */
+
     @PostMapping()
     fun createProgramme(@RequestBody input: ProgrammeInputModel)
             = programmeService.createProgramme(input)
@@ -58,7 +60,7 @@ class ProgrammeController {
             @RequestBody vote: VoteInputModel
     ) = NotImplementedError()
 
-    @PostMapping("/{programmeId}/report")
+    @PostMapping("/{programmeId}/reports")
     fun reportProgramme(
             @PathVariable programmeId: Int,
             @RequestBody report: ReportInputModel
@@ -71,7 +73,7 @@ class ProgrammeController {
             @RequestBody vote: VoteInputModel
     ) = NotImplementedError()
 
-    @PostMapping("/{programmeId}/report/{reportId}")
+    @PostMapping("/{programmeId}/reports/{reportId}")
     fun updateReportedProgramme(
             @PathVariable programmeId: Int,
             @PathVariable reportId: Int

@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.repository
 
+import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Programme
 import isel.leic.ps.eduWikiAPI.domain.model.report.ProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ProgrammeStage
@@ -39,26 +40,14 @@ class ProgrammeDAOImpl : ProgrammeDAO {
     @Autowired
     lateinit var dbi: Jdbi
 
-    override fun getProgramme(programmeId: Int): Programme = dbi.withHandle<Programme, Exception> {
+    override fun getSpecificProgramme(programmeId: Int): Programme = dbi.withHandle<Programme, Exception> {
         val select = "select * from $PROG_TABLE where programme_id = :programmeId"
         it.createQuery(select).bind("programmeId", programmeId).mapTo(Programme::class.java).findOnly()
     }
 
     override fun getAllProgrammes(): List<Programme> = dbi.withHandle<List<Programme>, Exception> {
-        it.createQuery(dsl
-                .select(
-                        field(PROG_ID),
-                        field(PROG_VERSION),
-                        field(PROG_FULL_NAME),
-                        field(PROG_SHORT_NAME),
-                        field(PROG_ACADEMIC_DEGREE),
-                        field(PROG_TOTAL_CREDITS),
-                        field(PROG_DURATION),
-                        field(CREATED_BY)
-                )
-                .from(table(PROG_TABLE))
-                .sql
-        ).mapTo(Programme::class.java).list()
+        val select = "select * from $PROG_TABLE"
+        it.createQuery(select).mapTo(Programme::class.java).list()
     }
 
     override fun deleteProgramme(programmeId: Int): Int = dbi.withHandle<Int, Exception> {
@@ -109,6 +98,11 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .where(field(PROG_ID).eq(programmeId))
                 .sql
         )
+    }
+
+    override fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course> = dbi.withHandle<List<Course>, Exception> {
+///        val select = "select * from $_TABLE where programme_id = :programmeId"
+///        it.createQuery(select).bind("programmeId", programmeId).mapTo(ProgrammeStage::class.java).findOnly()
     }
 
     override fun getProgrammeStage(programmeId: Int): ProgrammeStage = dbi.withHandle<ProgrammeStage, Exception> {
@@ -275,6 +269,21 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                         programmeReport.votes
                 ).sql
         )
+    }
+
+    override fun getAllReportsOfProgramme(programmeId: Int): List<ProgrammeReport> = dbi.withHandle<List<ProgrammeReport>, Exception> {
+        val select = "select * from $PROG_REPORT_TABLE where programme_id = :programmeId"
+            it.createQuery(select)
+                    .bind("programmeId", programmeId)
+                    .mapTo(ProgrammeReport::class.java).list()
+    }
+
+    override fun getSpecificReportOfProgramme(programmeId : Int, reportId: Int): ProgrammeReport = dbi.withHandle<ProgrammeReport, Exception> {
+        val select = "select * from $PROG_REPORT_TABLE where programme_id = :programmeId and report_id = :reportId"
+        it.createQuery(select)
+                .bind("programmeId", programmeId)
+                .bind("reportId", reportId)
+                .mapTo(ProgrammeReport::class.java).findOnly()
     }
 
     override fun deleteAllReportsOnProgramme(programmeId: Int): Int = dbi.withHandle<Int, Exception> {

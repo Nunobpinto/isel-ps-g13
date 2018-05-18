@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.repository.interfaces
 
+import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Programme
 import isel.leic.ps.eduWikiAPI.domain.model.report.ProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ProgrammeStage
@@ -10,7 +11,7 @@ interface ProgrammeDAO {
      * Main entities queries
      */
 
-    fun getProgramme(programmeId: Int) : Programme
+    fun getSpecificProgramme(programmeId: Int) : Programme
 
     fun getAllProgrammes() : List<Programme>
 
@@ -23,6 +24,8 @@ interface ProgrammeDAO {
     fun createProgramme(programme: Programme)
 
     fun voteOnProgramme(programmeId: Int, voteType: Int)
+
+    fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course>
 
     /**
      * Stage entities queries
@@ -56,6 +59,10 @@ interface ProgrammeDAO {
     /**
      * Report entity queries
      */
+
+    fun getAllReportsOfProgramme(programmeId : Int) : List<ProgrammeReport>
+
+    fun getSpecificReportOfProgramme(programmeId : Int, reportId: Int): ProgrammeReport
 
     fun reportProgramme(programmeReport: ProgrammeReport)
 
