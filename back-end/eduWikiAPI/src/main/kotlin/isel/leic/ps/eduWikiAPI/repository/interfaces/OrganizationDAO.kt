@@ -1,6 +1,7 @@
 package isel.leic.ps.eduWikiAPI.repository.interfaces
 
 import isel.leic.ps.eduWikiAPI.domain.model.Organization
+import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.domain.model.report.OrganizationReport
 import isel.leic.ps.eduWikiAPI.domain.model.version.OrganizationVersion
 
@@ -14,7 +15,7 @@ interface OrganizationDAO {
 
     fun getAllOrganizations() : List<Organization>
 
-    fun deleteOrganization(organizationId: Int) : Int
+    fun deleteOrganization(organizationId: Int): Int
 
     fun deleteAllOrganizations() : Int
 
@@ -22,21 +23,7 @@ interface OrganizationDAO {
 
     fun createOrganization(organization: Organization)
 
-    fun voteOnOrganization(organizationId: Int, voteType: Int)
-
-    /**
-     * Version entities queries
-     */
-
-    fun getVersionOrganization(versionOrganizationId: Int, version: Int) : OrganizationVersion
-
-    fun getAllVersionOrganizations() : List<OrganizationVersion>
-
-    fun deleteVersionOrganization(versionOrganizationId: Int, version: Int) : Int
-
-    fun deleteAllVersionOrganizations() : Int
-
-    fun createVersionOrganization(organizationVersion: OrganizationVersion)
+    fun voteOnOrganization(organizationId: Int, vote: Vote)
 
     /**
      * Report entity queries
@@ -48,6 +35,10 @@ interface OrganizationDAO {
 
     fun deleteAllReportsOnOrganization(organizationId : Int) : Int
 
-    fun deleteAllReports() : Int
+    fun getAllOrganizationReports(organizationId: Int) : List<OrganizationReport>
+
+    fun getSpecificReport(organizationId: Int, reportId: Int) : OrganizationReport
+
+    fun voteOnReport(organizationId: Int, reportId: Int, vote: Vote)
 
 }

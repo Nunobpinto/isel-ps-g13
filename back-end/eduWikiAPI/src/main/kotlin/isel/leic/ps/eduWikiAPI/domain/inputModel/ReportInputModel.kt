@@ -7,6 +7,5 @@ class ReportInputModel (
         val reportedField: String,
         @JsonProperty("suggested_value")
         val suggestedValue: String,
-        val reason: String,
-        val username: String
+        val reporter: String
 )

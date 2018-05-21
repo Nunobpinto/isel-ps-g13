@@ -8,5 +8,7 @@ class OrganizationInputModel(
         @JsonProperty("short_name")
         val shortName: String,
         val address: String,
-        val contact: Int
+        val contact: String,
+        @JsonProperty("created_by")
+        val createdBy: String
 )

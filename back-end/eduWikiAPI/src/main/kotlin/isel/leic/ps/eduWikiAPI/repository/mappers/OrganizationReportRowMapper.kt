@@ -15,7 +15,7 @@ class OrganizationReportRowMapper : RowMapper<OrganizationReport> {
                     rs.getString(OrganizationDAOImpl.ORG_FULL_NAME),
                     rs.getString(OrganizationDAOImpl.ORG_SHORT_NAME),
                     rs.getString(OrganizationDAOImpl.ORG_ADDRESS),
-                    rs.getInt(OrganizationDAOImpl.ORG_CONTACT),
+                    rs.getString(OrganizationDAOImpl.ORG_CONTACT),
                     rs.getString(OrganizationDAOImpl.ORG_CREATED_BY),
                     rs.getInt(OrganizationDAOImpl.ORG_VOTE)
                     )
