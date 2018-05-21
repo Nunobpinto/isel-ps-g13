@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS organization_report (
   organization_full_name varchar(100),
   organization_short_name varchar(10),
   organization_address varchar(100),
-  organization_contact INTEGER,
+  organization_contact varchar(15),
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   PRIMARY KEY (report_id)
