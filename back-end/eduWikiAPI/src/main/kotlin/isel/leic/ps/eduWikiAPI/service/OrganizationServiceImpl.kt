@@ -1,15 +1,18 @@
 package isel.leic.ps.eduWikiAPI.service
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.OrganizationInputModel
-import isel.leic.ps.eduWikiAPI.domain.inputModel.ReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
+import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.OrganizationReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.inputModel.versions.OrganizationVersionInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Organization
 import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.domain.model.report.OrganizationReport
+import isel.leic.ps.eduWikiAPI.domain.model.version.OrganizationVersion
 import isel.leic.ps.eduWikiAPI.repository.interfaces.OrganizationDAO
 import isel.leic.ps.eduWikiAPI.service.interfaces.OrganizationService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.sql.Timestamp
 
 @Service
 class OrganizationServiceImpl : OrganizationService {
@@ -44,14 +47,15 @@ class OrganizationServiceImpl : OrganizationService {
 
     override fun getSpecificReport(organizationId: Int, reportId: Int) = organizationRepo.getSpecificReport(organizationId, reportId)
 
-    override fun reportOrganization(organizationId: Int, input: ReportInputModel) {
-        val report = when(input.reportedField){
-            "full_name" -> OrganizationReport(fullName = input.suggestedValue, reporter = input.reporter, id = organizationId)
-            "short_name" -> OrganizationReport(shortName = input.suggestedValue, reporter = input.reporter, id = organizationId)
-            "address" -> OrganizationReport(address = input.suggestedValue, reporter = input.reporter, id = organizationId)
-            "contact" -> OrganizationReport(contact = input.suggestedValue, reporter = input.reporter, id = organizationId)
-            else -> OrganizationReport(createdBy = input.suggestedValue, reporter = input.reporter, id = organizationId )
-        }
+    override fun reportOrganization(organizationId: Int, input: OrganizationReportInputModel) {
+        val report = OrganizationReport(
+                fullName = input.fullName,
+                shortName = input.shortName,
+                address = input.address,
+                contact = input.contact,
+                createdBy = input.createdBy,
+                id = organizationId
+        )
         organizationRepo.reportOrganization(report)
     }
 
@@ -64,5 +68,26 @@ class OrganizationServiceImpl : OrganizationService {
 
     override fun voteOnReport(organizationId: Int, reportId: Int, input: VoteInputModel)
             = organizationRepo.voteOnReport(organizationId,reportId, Vote.valueOf(input.vote))
+
+    override fun getAllVersions(organizationId: Int): List<OrganizationVersion> = organizationRepo.getAllVersions(organizationId)
+
+    override fun getVersion(organizationId: Int, version: Int): OrganizationVersion = organizationRepo.getVersion(organizationId, version)
+
+    override fun createVersion(organizationId: Int, input: OrganizationVersionInputModel) {
+        val version = OrganizationVersion(
+                fullName = input.fullName,
+                shortName = input.shortName,
+                address = input.address,
+                contact = input.contact,
+                createdBy = input.createdBy,
+                version = input.version,
+                timestamp = Timestamp.valueOf(input.timestamp)
+        )
+        organizationRepo.createVersion(version)
+    }
+
+    override fun deleteAllVersions(organizationId: Int) = organizationRepo.deleteAllVersions(organizationId)
+
+    override fun deleteSpecificVersion(organizationId: Int, version: Int) = organizationRepo.deleteVersion(organizationId, version)
 
 }

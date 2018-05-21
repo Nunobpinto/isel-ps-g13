@@ -26,6 +26,20 @@ interface OrganizationDAO {
     fun voteOnOrganization(organizationId: Int, vote: Vote)
 
     /**
+     * Version entity queries
+     */
+
+    fun getAllVersions(organizationId: Int): List<OrganizationVersion>
+
+    fun getVersion(organizationId: Int, version: Int): OrganizationVersion
+
+    fun createVersion(version: OrganizationVersion)
+
+    fun deleteAllVersions(organizationId: Int): Int?
+
+    fun deleteVersion(organizationId: Int, version: Int): Int?
+
+    /**
      * Report entity queries
      */
 
