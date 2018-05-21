@@ -11,7 +11,6 @@ class ProgrammeStageRowMapper : RowMapper<ProgrammeStage> {
     override fun map(rs: ResultSet, ctx: StatementContext) =
             ProgrammeStage(
                     programmeId = rs.getInt(ProgrammeDAOImpl.PROG_ID),
-                    version = rs.getInt(ProgrammeDAOImpl.PROG_VERSION),
                     createdBy = rs.getString(ProgrammeDAOImpl.CREATED_BY),
                     fullName = rs.getString(ProgrammeDAOImpl.PROG_FULL_NAME),
                     shortName = rs.getString(ProgrammeDAOImpl.PROG_SHORT_NAME),

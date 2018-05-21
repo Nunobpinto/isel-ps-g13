@@ -66,7 +66,7 @@ class ProgrammeController {
             @RequestBody report: ReportInputModel
     ) = NotImplementedError()
 
-    @PostMapping("/{programmeId}/report/{reportId}/vote")
+    @PostMapping("/{programmeId}/reports/{reportId}/vote")
     fun voteOnReportedProgramme(
             @PathVariable programmeId: Int,
             @PathVariable reportId: Int,
