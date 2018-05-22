@@ -9,6 +9,6 @@ data class HomeworkReport (
         val dueDate: LocalDate = LocalDate.now(),
         val lateDelivery: Boolean = false,
         val multipleDeliveries: Boolean = false,
-        val createdBy: String = "",
+        val reportedBy: String = "",
         val votes: Int = 0
 )

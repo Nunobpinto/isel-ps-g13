@@ -1,6 +1,7 @@
 package isel.leic.ps.eduWikiAPI.controller
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.*
+import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.service.interfaces.ProgrammeService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
@@ -51,33 +52,33 @@ class ProgrammeController {
 
     @PostMapping("/{programmeId}/courses")
     fun addCourseToProgramme(@PathVariable programmeId: Int,
-                             @RequestBody input: CourseInputModel
-    ) = NotImplementedError()
+                             @RequestBody course: Course
+    ) = programmeService.addCourseToProgramme(programmeId, course)
 
     @PostMapping("/{programmeId}/vote")
     fun voteOnProgramme(
             @PathVariable programmeId: Int,
             @RequestBody vote: VoteInputModel
-    ) = NotImplementedError()
+    ) = programmeService.voteOnProgramme(programmeId, vote)
 
     @PostMapping("/{programmeId}/reports")
     fun reportProgramme(
             @PathVariable programmeId: Int,
-            @RequestBody report: ReportInputModel
-    ) = NotImplementedError()
+            @RequestBody report: ProgrammeReportInputModel
+    ) = programmeService.reportProgramme(programmeId, report)
 
     @PostMapping("/{programmeId}/reports/{reportId}/vote")
     fun voteOnReportedProgramme(
             @PathVariable programmeId: Int,
             @PathVariable reportId: Int,
             @RequestBody vote: VoteInputModel
-    ) = NotImplementedError()
+    ) = programmeService.voteOnReportedProgramme(reportId, vote)
 
     @PostMapping("/{programmeId}/reports/{reportId}")
     fun updateReportedProgramme(
             @PathVariable programmeId: Int,
             @PathVariable reportId: Int
-    ) = NotImplementedError()
+    ) = programmeService.updateReportedProgramme(programmeId, reportId)
 
     @PostMapping("/stage")
     fun createStagingProgramme(@RequestBody programme: ProgrammeInputModel) = programmeService.createStagedProgramme(programme)

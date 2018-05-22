@@ -11,7 +11,6 @@ import org.jooq.impl.DSL.field
 import org.jooq.impl.DSL.table
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
-import kotlin.concurrent.timer
 
 @Repository
 class CourseDAOImpl : CourseDAO {
@@ -299,7 +298,7 @@ class CourseDAOImpl : CourseDAO {
                         courseReport.courseId,
                         courseReport.courseFullName,
                         courseReport.courseShortName,
-                        courseReport.createdBy,
+                        courseReport.reportedBy,
                         courseReport.votes
                 ).sql
         )

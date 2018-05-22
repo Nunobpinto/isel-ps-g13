@@ -370,7 +370,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         workAssignmentReport.lateDelivery,
                         workAssignmentReport.multipleDeliveries,
                         workAssignmentReport.requiresReport,
-                        workAssignmentReport.createdBy,
+                        workAssignmentReport.reportedBy,
                         workAssignmentReport.votes
                 ).sql
         )

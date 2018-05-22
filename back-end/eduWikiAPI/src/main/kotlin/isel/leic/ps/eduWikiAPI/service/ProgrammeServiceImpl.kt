@@ -1,6 +1,6 @@
 package isel.leic.ps.eduWikiAPI.service
 
-import isel.leic.ps.eduWikiAPI.domain.inputModel.ProgrammeInputModel
+import isel.leic.ps.eduWikiAPI.domain.inputModel.*
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Programme
 import isel.leic.ps.eduWikiAPI.domain.model.report.ProgrammeReport
@@ -82,4 +82,34 @@ class ProgrammeServiceImpl : ProgrammeService {
     override fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course> {
        return programmeRepo.getCoursesOnSpecificProgramme(programmeId)
     }
+
+    override fun addCourseToProgramme(programmeId: Int, course: Course) {
+        return programmeRepo.addCourseToProgramme(programmeId, course)
+    }
+
+    override fun voteOnProgramme(programmeId: Int, vote: VoteInputModel) {
+        return programmeRepo.voteOnProgramme(programmeId, vote)
+    }
+
+    override fun reportProgramme(programmeId: Int, report: ProgrammeReportInputModel) {
+        val programmeReport = ProgrammeReport(
+                programmeId = report.programmeId,
+                programmeFullName = report.fullName,
+                programmeShortName = report.shortName,
+                programmeAcademicDegree = report.academicDegree,
+                programmeDuration = report.duration,
+                programmeTotalCredits = report.totalCredits,
+                reportedBy = report.reportedBy
+        )
+        return programmeRepo.reportProgramme(programmeId, programmeReport)
+    }
+
+    override fun voteOnReportedProgramme(reportId: Int, vote: VoteInputModel) {
+        return programmeRepo.voteOnReportedProgramme(reportId, vote)
+    }
+
+    override fun updateReportedProgramme(programmeId: Int, reportId: Int) {
+        return programmeRepo.updateReportedProgramme(programmeId, reportId)
+    }
+
 }

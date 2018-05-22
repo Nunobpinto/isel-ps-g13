@@ -96,7 +96,7 @@ class OrganizationDAOImpl : OrganizationDAO {
                 .bind("shortName", organizationReport.shortName)
                 .bind("address", organizationReport.address)
                 .bind("contact", organizationReport.contact)
-                .bind("created_by", organizationReport.createdBy)
+                .bind("created_by", organizationReport.reportedBy)
                 .bind("id", organizationReport.id)
                 .execute()
     }

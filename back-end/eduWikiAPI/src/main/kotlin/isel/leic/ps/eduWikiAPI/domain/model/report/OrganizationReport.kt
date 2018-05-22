@@ -7,7 +7,7 @@ data class OrganizationReport (
         val shortName: String = "",
         val address: String = "",
         val contact: String = "",
-        val createdBy:String = "",
+        val reportedBy:String = "",
         val votes: Int = 0,
         val reporter: String = ""
 )

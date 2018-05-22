@@ -1,12 +1,12 @@
 package isel.leic.ps.eduWikiAPI.repository
 
+import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Programme
 import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.domain.model.report.ProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.ProgrammeVersion
-import isel.leic.ps.eduWikiAPI.repository.OrganizationDAOImpl.Companion.ORG_TABLE
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ProgrammeDAO
 import org.jdbi.v3.core.Jdbi
 import org.jooq.DSLContext
@@ -20,12 +20,18 @@ class ProgrammeDAOImpl : ProgrammeDAO {
     companion object {
         //TABLE NAMES
         const val PROG_TABLE = "programme"
+        const val CRS_PROG_TABLE = "course_programme"
         const val PROG_VERSION_TABLE = "programme_version"
         const val PROG_REPORT_TABLE = "programme_report"
         const val PROG_STAGE_TABLE = "programme_stage"
         // FIELDS
         const val PROG_ID = "programme_id"
+        const val CRS_ID = "course_id"
         const val PROG_VERSION = "programme_version"
+        const val CRS_PROG_VERSION = "course_programme_version"
+        const val CRS_LECT_TERM = "course_lectured_term"
+        const val CRS_OPT = "course_optional"
+        const val CRS_CRED = "course_credits"
         const val PROG_FULL_NAME = "programme_full_name"
         const val PROG_SHORT_NAME = "programme_short_name"
         const val PROG_ACADEMIC_DEGREE = "programme_academic_degree"
@@ -35,6 +41,8 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         const val PROG_TIMESTAMP = "time_stamp"
         const val PROG_REPORT_ID = "report_id"
         const val CREATED_BY = "created_by"
+        const val REPORTED_BY = "reported_by"
+
     }
 
     @Autowired
@@ -87,24 +95,36 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .execute()
     }
 
-    override fun voteOnProgramme(programmeId: Int, vote: Vote)  = dbi.useTransaction<Exception> {
+    override fun addCourseToProgramme(programmeId: Int, course: Course) = dbi.useHandle<Exception> {
+        val insert = "insert into $CRS_PROG_TABLE " +
+                "($CRS_ID, $PROG_ID, $CRS_LECT_TERM, $CRS_OPT, " +
+                "$CRS_CRED, $PROG_VOTE) " +
+                "values(:courseId, :programmeId, :term, :optional, :credits)"
+        it.createUpdate(insert)
+                .bind("courseId", course.id)
+                .bind("programmeId", programmeId)
+                .bind("term", course.lecturedTerm)
+                .bind("optional", course.optional)
+                .bind("credits", course.credits)
+    }
+
+    override fun voteOnProgramme(programmeId: Int, input: VoteInputModel) = dbi.useTransaction<Exception> {
         val voteQuery = "select votes from $PROG_STAGE_TABLE where $PROG_ID = :programmeId"
         var votes = it.createQuery(voteQuery)
                 .bind("programmeId", programmeId)
                 .mapTo(Int::class.java).findOnly()
-        votes = if(vote == Vote.Down) --votes else ++votes
+        votes = if (input.vote.equals(Vote.Down)) --votes else ++votes
         val updateQuery = "update $PROG_TABLE set votes = :votes where $PROG_ID = :programmeId"
         it.createUpdate(updateQuery)
-                .bind("votes",votes)
-                .bind("programmeId",programmeId)
+                .bind("votes", votes)
+                .bind("programmeId", programmeId)
                 .execute()
 
     }
 
     override fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course> = dbi.withHandle<List<Course>, Exception> {
-       /*val select = "select * from $_TABLE where programme_id = :programmeId"
-       it.createQuery(select).bind("programmeId", programmeId).mapTo(ProgrammeStage::class.java).findOnly()*/
-        throw NotImplementedError()
+        val select = "select * from $CRS_PROG_TABLE where programme_id = :programmeId"
+        it.createQuery(select).bind("programmeId", programmeId).mapTo(Course::class.java).list()
     }
 
     override fun getProgrammeStage(programmeId: Int): ProgrammeStage = dbi.withHandle<ProgrammeStage, Exception> {
@@ -143,20 +163,20 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .bind("duration", programmeStage.duration)
                 .bind("votes", programmeStage.votes)
                 .bind("credits", programmeStage.createdBy)
-                .bind("timestamp",programmeStage.timestamp)
+                .bind("timestamp", programmeStage.timestamp)
                 .execute()
     }
 
-    override fun voteOnProgrammeStage(programmeId: Int, vote: Vote)  = dbi.useTransaction<Exception> {
+    override fun voteOnProgrammeStage(programmeId: Int, vote: Vote) = dbi.useTransaction<Exception> {
         val voteQuery = "select votes from $PROG_STAGE_TABLE where $PROG_ID = :programmeId"
         var votes = it.createQuery(voteQuery)
                 .bind("programmeId", programmeId)
                 .mapTo(Int::class.java).findOnly()
-        votes = if(vote == Vote.Down) --votes else ++votes
+        votes = if (vote == Vote.Down) --votes else ++votes
         val updateQuery = "update $PROG_STAGE_TABLE set votes = :votes where $PROG_ID = :programmeId"
         it.createUpdate(updateQuery)
-                .bind("votes",votes)
-                .bind("programmeId",programmeId)
+                .bind("votes", votes)
+                .bind("programmeId", programmeId)
                 .execute()
 
     }
@@ -243,41 +263,31 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         )
     }
 
-    override fun reportProgramme(programmeReport: ProgrammeReport) = dbi.useHandle<Exception> {
-        it.execute(dsl
-                .insertInto(table(PROG_REPORT_TABLE),
-                        field(PROG_REPORT_ID),
-                        field(PROG_ID),
-                        field(PROG_FULL_NAME),
-                        field(PROG_SHORT_NAME),
-                        field(PROG_ACADEMIC_DEGREE),
-                        field(PROG_TOTAL_CREDITS),
-                        field(PROG_DURATION),
-                        field(CREATED_BY),
-                        field(PROG_VOTE)
-                )
-                .values(
-                        programmeReport.reportId,
-                        programmeReport.programmeId,
-                        programmeReport.programmeFullName,
-                        programmeReport.programmeShortName,
-                        programmeReport.programmeAcademicDegree,
-                        programmeReport.programmeTotalCredits,
-                        programmeReport.programmeDuration,
-                        programmeReport.createdBy,
-                        programmeReport.votes
-                ).sql
-        )
+    override fun reportProgramme(programmeId: Int, programmeReport: ProgrammeReport) = dbi.useHandle<Exception> {
+        val insert = "insert into $PROG_REPORT_TABLE " +
+                "($PROG_ID, $PROG_FULL_NAME, " +
+                "$PROG_SHORT_NAME, $PROG_ACADEMIC_DEGREE, $PROG_TOTAL_CREDITS, " +
+                "$PROG_DURATION, $REPORTED_BY, $PROG_TIMESTAMP) " +
+                "values(:programmeId, :fullName, :shortName, :academicDegree, " +
+                ":totalCredits, :duration, :reportedBy)"
+        it.createUpdate(insert)
+                .bind("programmeId", programmeId)
+                .bind("fullName", programmeReport.programmeFullName)
+                .bind("shortName", programmeReport.programmeShortName)
+                .bind("academicDegree", programmeReport.programmeAcademicDegree)
+                .bind("totalCredits", programmeReport.programmeTotalCredits)
+                .bind("duration", programmeReport.programmeDuration)
+                .bind("reportedBy", programmeReport.reportedBy)
     }
 
     override fun getAllReportsOfProgramme(programmeId: Int): List<ProgrammeReport> = dbi.withHandle<List<ProgrammeReport>, Exception> {
         val select = "select * from $PROG_REPORT_TABLE where programme_id = :programmeId"
-            it.createQuery(select)
-                    .bind("programmeId", programmeId)
-                    .mapTo(ProgrammeReport::class.java).list()
+        it.createQuery(select)
+                .bind("programmeId", programmeId)
+                .mapTo(ProgrammeReport::class.java).list()
     }
 
-    override fun getSpecificReportOfProgramme(programmeId : Int, reportId: Int): ProgrammeReport = dbi.withHandle<ProgrammeReport, Exception> {
+    override fun getSpecificReportOfProgramme(programmeId: Int, reportId: Int): ProgrammeReport = dbi.withHandle<ProgrammeReport, Exception> {
         val select = "select * from $PROG_REPORT_TABLE where programme_id = :programmeId and report_id = :reportId"
         it.createQuery(select)
                 .bind("programmeId", programmeId)
@@ -308,17 +318,21 @@ class ProgrammeDAOImpl : ProgrammeDAO {
     }
 
 
-    override fun voteOnReport(reportId: Int, vote: Vote)  = dbi.useTransaction<Exception> {
+    override fun voteOnReportedProgramme(reportId: Int, input: VoteInputModel) = dbi.useTransaction<Exception> {
         val voteQuery = "select votes from $PROG_REPORT_TABLE where $PROG_REPORT_ID = :reportId"
         var votes = it.createQuery(voteQuery)
                 .bind("reportId", reportId)
                 .mapTo(Int::class.java).findOnly()
-        votes = if(vote == Vote.Down) --votes else ++votes
+        votes = if (input.equals(Vote.Down)) --votes else ++votes
         val updateQuery = "update $PROG_REPORT_TABLE set votes = :votes where $PROG_REPORT_ID = :reportId"
         it.createUpdate(updateQuery)
-                .bind("votes",votes)
-                .bind("reportId",reportId)
+                .bind("votes", votes)
+                .bind("reportId", reportId)
                 .execute()
+
+    }
+
+    override fun updateReportedProgramme(programmeId: Int, reportId: Int) {
 
     }
 

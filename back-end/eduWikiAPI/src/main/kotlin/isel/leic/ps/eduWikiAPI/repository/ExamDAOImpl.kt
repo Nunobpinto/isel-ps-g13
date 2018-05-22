@@ -332,7 +332,7 @@ class ExamDAOImpl : ExamDAO {
                         examReport.type,
                         examReport.phase,
                         examReport.location,
-                        examReport.createdBy,
+                        examReport.reportedBy,
                         examReport.votes
                 ).sql
         )

@@ -10,7 +10,7 @@ data class StudentReport(
         val personalEmail: String = "",
         val studentOrganizationEmail: String = "",
         val gender: String = "",
-        val createdBy: String = "",
+        val reportedBy: String = "",
         val votes: Int = 0
 )
 

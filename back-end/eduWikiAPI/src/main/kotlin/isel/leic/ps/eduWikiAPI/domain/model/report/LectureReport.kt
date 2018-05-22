@@ -11,6 +11,6 @@ data class LectureReport (
         val begins: LocalDate = LocalDate.now(),
         val duration: Duration = Duration.ZERO,
         val location: String = "",
-        val createdBy: String = "",
+        val reportedBy: String = "",
         val votes: Int = 0
 )

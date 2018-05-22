@@ -50,7 +50,7 @@ class OrganizationServiceImpl : OrganizationService {
             "short_name" -> OrganizationReport(shortName = input.suggestedValue, reporter = input.reporter, id = organizationId)
             "address" -> OrganizationReport(address = input.suggestedValue, reporter = input.reporter, id = organizationId)
             "contact" -> OrganizationReport(contact = input.suggestedValue, reporter = input.reporter, id = organizationId)
-            else -> OrganizationReport(createdBy = input.suggestedValue, reporter = input.reporter, id = organizationId )
+            else -> OrganizationReport(reportedBy = input.suggestedValue, reporter = input.reporter, id = organizationId )
         }
         organizationRepo.reportOrganization(report)
     }

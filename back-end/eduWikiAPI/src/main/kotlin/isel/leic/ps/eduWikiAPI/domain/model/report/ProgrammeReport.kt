@@ -8,6 +8,6 @@ data class ProgrammeReport(
         val programmeAcademicDegree: String = "",
         val programmeTotalCredits: Int = 0,
         val programmeDuration: Int = 0,
-        val createdBy: String = "",
+        val reportedBy: String = "",
         val votes: Int = 0
 )

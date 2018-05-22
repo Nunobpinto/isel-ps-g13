@@ -1,6 +1,6 @@
 package isel.leic.ps.eduWikiAPI.service.interfaces
 
-import isel.leic.ps.eduWikiAPI.domain.inputModel.ProgrammeInputModel
+import isel.leic.ps.eduWikiAPI.domain.inputModel.*
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Programme
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ProgrammeStage
@@ -27,5 +27,15 @@ interface ProgrammeService {
     fun getSpecificReportOfProgramme(programmeId: Int, reportId: Int): ProgrammeReport
 
     fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course>
+
+    fun addCourseToProgramme(programmeId: Int, course: Course)
+
+    fun voteOnProgramme(programmeId: Int, vote: VoteInputModel)
+
+    fun reportProgramme(programmeId: Int, report: ProgrammeReportInputModel)
+
+    fun voteOnReportedProgramme(reportId: Int, vote: VoteInputModel)
+
+    fun updateReportedProgramme(programmeId: Int, reportId: Int)
 
 }
