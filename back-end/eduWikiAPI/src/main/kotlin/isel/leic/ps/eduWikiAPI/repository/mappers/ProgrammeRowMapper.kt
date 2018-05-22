@@ -13,7 +13,7 @@ class ProgrammeRowMapper : RowMapper<Programme> {
                     id = rs.getInt(ProgrammeDAOImpl.PROG_ID),
                     version = rs.getInt(ProgrammeDAOImpl.PROG_VERSION),
                     votes = rs.getInt(ProgrammeDAOImpl.PROG_VOTE),
-                    createdBy = rs.getString(ProgrammeDAOImpl.CREATED_BY),
+                    createdBy = rs.getString(ProgrammeDAOImpl.PROG_CREATED_BY),
                     fullName = rs.getString(ProgrammeDAOImpl.PROG_FULL_NAME),
                     shortName = rs.getString(ProgrammeDAOImpl.PROG_SHORT_NAME),
                     academicDegree = rs.getString(ProgrammeDAOImpl.PROG_ACADEMIC_DEGREE),

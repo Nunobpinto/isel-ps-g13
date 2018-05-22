@@ -4,7 +4,6 @@ import java.sql.Timestamp
 
 data class ProgrammeStage (
     val programmeId: Int = 0,
-    val version: Int = 1,
     val votes: Int = 1,
     val createdBy: String = "",
     val fullName: String = "",
