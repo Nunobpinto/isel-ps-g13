@@ -109,7 +109,23 @@ class ProgrammeServiceImpl : ProgrammeService {
     }
 
     override fun updateReportedProgramme(programmeId: Int, reportId: Int) {
-        return programmeRepo.updateReportedProgramme(programmeId, reportId)
+        val programme = programmeRepo.getSpecificProgramme(programmeId)
+        val report = programmeRepo.getSpecificReportOfProgramme(programmeId, reportId)
+        val updatedProgramme = Programme(
+                id = programme.id,
+                version = programme.version + 1,
+                votes = programme.votes,
+                createdBy = report.reportedBy,
+                fullName = if(report.programmeFullName != "") report.programmeFullName else programme.fullName,
+                shortName = if(report.programmeShortName != "") report.programmeShortName else programme.shortName,
+                academicDegree = if(report.programmeAcademicDegree != "") report.programmeAcademicDegree else programme.academicDegree,
+                totalCredits = if(report.programmeTotalCredits != 0) report.programmeTotalCredits else programme.totalCredits,
+                duration = if(report.programmeDuration != 0) report.programmeDuration else programme.duration
+        )
+        programmeRepo.addProgrammeVersion(programme)
+        programmeRepo.updateProgramme(updatedProgramme)
+        programmeRepo.deleteReportOnProgramme(programmeId,reportId)
+
     }
 
 }

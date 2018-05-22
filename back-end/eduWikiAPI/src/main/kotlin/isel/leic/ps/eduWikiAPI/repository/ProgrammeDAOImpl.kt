@@ -51,7 +51,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
     lateinit var dbi: Jdbi
 
     override fun getSpecificProgramme(programmeId: Int): Programme = dbi.withHandle<Programme, Exception> {
-        val select = "select * from $PROG_TABLE where programme_id = :programmeId"
+        val select = "select * from $PROG_TABLE where $PROG_ID = :programmeId"
         it.createQuery(select).bind("programmeId", programmeId).mapTo(Programme::class.java).findOnly()
     }
 
@@ -114,7 +114,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .bind("programmeId", programmeId)
                 .mapTo(Int::class.java).findOnly()
         votes = if (input.vote.equals(Vote.Down)) --votes else ++votes
-        val updateQuery = "update $PROG_TABLE set votes = :votes where $PROG_ID = :programmeId"
+        val updateQuery = "update $PROG_TABLE set $PROG_VOTE = :votes where $PROG_ID = :programmeId"
         it.createUpdate(updateQuery)
                 .bind("votes", votes)
                 .bind("programmeId", programmeId)
@@ -123,12 +123,12 @@ class ProgrammeDAOImpl : ProgrammeDAO {
     }
 
     override fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course> = dbi.withHandle<List<Course>, Exception> {
-        val select = "select * from $CRS_PROG_TABLE where programme_id = :programmeId"
+        val select = "select * from $CRS_PROG_TABLE where $PROG_ID = :programmeId"
         it.createQuery(select).bind("programmeId", programmeId).mapTo(Course::class.java).list()
     }
 
     override fun getProgrammeStage(programmeId: Int): ProgrammeStage = dbi.withHandle<ProgrammeStage, Exception> {
-        val select = "select * from $PROG_STAGE_TABLE where programme_id = :programmeId"
+        val select = "select * from $PROG_STAGE_TABLE where $PROG_ID = :programmeId"
         it.createQuery(select).bind("programmeId", programmeId).mapTo(ProgrammeStage::class.java).findOnly()
     }
 
@@ -138,7 +138,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
     }
 
     override fun deleteProgrammeStage(stageId: Int): Int = dbi.withHandle<Int, Exception> {
-        val delete = "delete from $PROG_STAGE_TABLE where programme_id = :programmeId"
+        val delete = "delete from $PROG_STAGE_TABLE where $PROG_ID = :programmeId"
         it.createUpdate(delete)
                 .bind("programmeId", stageId)
                 .execute()
@@ -173,7 +173,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .bind("programmeId", programmeId)
                 .mapTo(Int::class.java).findOnly()
         votes = if (vote == Vote.Down) --votes else ++votes
-        val updateQuery = "update $PROG_STAGE_TABLE set votes = :votes where $PROG_ID = :programmeId"
+        val updateQuery = "update $PROG_STAGE_TABLE set $PROG_VOTE = :votes where $PROG_ID = :programmeId"
         it.createUpdate(updateQuery)
                 .bind("votes", votes)
                 .bind("programmeId", programmeId)
@@ -281,14 +281,14 @@ class ProgrammeDAOImpl : ProgrammeDAO {
     }
 
     override fun getAllReportsOfProgramme(programmeId: Int): List<ProgrammeReport> = dbi.withHandle<List<ProgrammeReport>, Exception> {
-        val select = "select * from $PROG_REPORT_TABLE where programme_id = :programmeId"
+        val select = "select * from $PROG_REPORT_TABLE where $PROG_ID = :programmeId"
         it.createQuery(select)
                 .bind("programmeId", programmeId)
                 .mapTo(ProgrammeReport::class.java).list()
     }
 
     override fun getSpecificReportOfProgramme(programmeId: Int, reportId: Int): ProgrammeReport = dbi.withHandle<ProgrammeReport, Exception> {
-        val select = "select * from $PROG_REPORT_TABLE where programme_id = :programmeId and report_id = :reportId"
+        val select = "select * from $PROG_REPORT_TABLE where $PROG_ID = :programmeId and $PROG_REPORT_ID = :reportId"
         it.createQuery(select)
                 .bind("programmeId", programmeId)
                 .bind("reportId", reportId)
@@ -303,7 +303,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         )
     }
 
-    override fun deleteReportOnProgramme(reportId: Int): Int = dbi.withHandle<Int, Exception> {
+    override fun deleteReportOnProgramme(programmeId: Int, reportId: Int): Int = dbi.withHandle<Int, Exception> {
         it.execute(dsl
                 .delete(table(PROG_REPORT_TABLE))
                 .where(field(PROG_REPORT_ID).eq(reportId))
@@ -323,17 +323,20 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         var votes = it.createQuery(voteQuery)
                 .bind("reportId", reportId)
                 .mapTo(Int::class.java).findOnly()
-        votes = if (input.equals(Vote.Down)) --votes else ++votes
+        votes = if (input.vote.equals(Vote.Down)) --votes else ++votes
         val updateQuery = "update $PROG_REPORT_TABLE set votes = :votes where $PROG_REPORT_ID = :reportId"
         it.createUpdate(updateQuery)
                 .bind("votes", votes)
                 .bind("reportId", reportId)
                 .execute()
-
     }
 
-    override fun updateReportedProgramme(programmeId: Int, reportId: Int) {
+    override fun updateReportedProgramme(programme: Programme) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
+    override fun addProgrammeVersion(programme: Programme) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
 }

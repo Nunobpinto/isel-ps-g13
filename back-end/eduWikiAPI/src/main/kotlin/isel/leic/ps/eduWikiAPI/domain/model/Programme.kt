@@ -1,7 +1,5 @@
 package isel.leic.ps.eduWikiAPI.domain.model
 
-import java.time.Duration
-
 data class Programme(
         val id: Int = 0,
         val version: Int = 0,

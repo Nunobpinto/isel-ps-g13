@@ -70,7 +70,7 @@ interface ProgrammeDAO {
 
     fun reportProgramme(programmeId: Int, programmeReport: ProgrammeReport)
 
-    fun deleteReportOnProgramme(reportId: Int) : Int
+    fun deleteReportOnProgramme(programmeId: Int, reportId: Int) : Int
 
     fun deleteAllReportsOnProgramme(programmeId : Int) : Int
 
@@ -78,6 +78,8 @@ interface ProgrammeDAO {
 
     fun voteOnReportedProgramme(reportId: Int, vote: VoteInputModel)
 
-    fun updateReportedProgramme(programmeId: Int, reportId: Int)
+    fun updateReportedProgramme(programme : Programme)
+
+    fun addProgrammeVersion(programme: Programme)
 
 }
