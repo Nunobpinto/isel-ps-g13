@@ -1,10 +1,12 @@
 package isel.leic.ps.eduWikiAPI.service.interfaces
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.OrganizationInputModel
-import isel.leic.ps.eduWikiAPI.domain.inputModel.ReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
+import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.OrganizationReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.inputModel.versions.OrganizationVersionInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Organization
 import isel.leic.ps.eduWikiAPI.domain.model.report.OrganizationReport
+import isel.leic.ps.eduWikiAPI.domain.model.version.OrganizationVersion
 
 interface OrganizationService {
 
@@ -28,7 +30,7 @@ interface OrganizationService {
 
     fun getSpecificReport(organizationId: Int, reportId: Int): OrganizationReport
 
-    fun reportOrganization(organizationId: Int, input: ReportInputModel)
+    fun reportOrganization(organizationId: Int, input: OrganizationReportInputModel)
 
     fun deleteAllReports(organizationId: Int): Int
 
@@ -37,4 +39,14 @@ interface OrganizationService {
     fun voteOrganization(organizationId: Int, input: VoteInputModel)
 
     fun voteOnReport(organizationId: Int, reportId: Int, input: VoteInputModel)
+
+    fun getAllVersions(organizationId: Int): List<OrganizationVersion>
+
+    fun getVersion(organizationId: Int, version: Int): OrganizationVersion
+
+    fun createVersion(organizationId: Int, input: OrganizationVersionInputModel)
+
+    fun deleteAllVersions(organizationId: Int)
+
+    fun deleteSpecificVersion(organizationId: Int, version: Int)
 }

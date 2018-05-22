@@ -3,6 +3,7 @@ package isel.leic.ps.eduWikiAPI.repository
 import isel.leic.ps.eduWikiAPI.domain.model.Organization
 import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.domain.model.report.OrganizationReport
+import isel.leic.ps.eduWikiAPI.domain.model.version.OrganizationVersion
 import isel.leic.ps.eduWikiAPI.repository.interfaces.OrganizationDAO
 
 import org.jdbi.v3.core.Jdbi
@@ -17,6 +18,7 @@ class OrganizationDAOImpl : OrganizationDAO {
         //TABLE NAMES
         const val ORG_TABLE = "organization"
         const val ORG_REPORT_TABLE = "organization_report"
+        const val ORG_VERSION_TABLE = "organization_version"
         // FIELDS
         const val ORG_ID = "organization_id"
         const val ORG_VERSION = "organization_version"
@@ -76,11 +78,11 @@ class OrganizationDAOImpl : OrganizationDAO {
         var votes = it.createQuery(voteQuery)
                 .bind("organizationId", organizationId)
                 .mapTo(Int::class.java).findOnly()
-        votes = if(vote == Vote.Down) --votes else ++votes
+        votes = if (vote == Vote.Down) --votes else ++votes
         val updateQuery = "update $ORG_TABLE set votes = :votes where organization_id = :organizationId"
         it.createUpdate(updateQuery)
-                .bind("votes",votes)
-                .bind("organizationId",organizationId)
+                .bind("votes", votes)
+                .bind("organizationId", organizationId)
                 .execute()
 
     }
@@ -125,16 +127,61 @@ class OrganizationDAOImpl : OrganizationDAO {
         it.createQuery(select).bind("id", reportId).mapTo(OrganizationReport::class.java).findOnly()
     }
 
-    override fun voteOnReport(organizationId: Int, reportId: Int, vote: Vote)  = dbi.useTransaction<Exception> {
+    override fun voteOnReport(organizationId: Int, reportId: Int, vote: Vote) = dbi.useTransaction<Exception> {
         val voteQuery = "select votes from $ORG_REPORT_TABLE where report_id = :reportId"
         var votes = it.createQuery(voteQuery)
                 .bind("reportId", reportId)
                 .mapTo(Int::class.java).findOnly()
-        votes = if(vote == Vote.Down) --votes else ++votes
+        votes = if (vote == Vote.Down) --votes else ++votes
         val updateQuery = "update $ORG_REPORT_TABLE set votes = :votes where report_id = :reportId"
         it.createUpdate(updateQuery)
-                .bind("votes",votes)
-                .bind("reportId",reportId)
+                .bind("votes", votes)
+                .bind("reportId", reportId)
+                .execute()
+    }
+
+    override fun getAllVersions(organizationId: Int): List<OrganizationVersion> = dbi.withHandle<List<OrganizationVersion>, Exception> {
+        val select = "select * from $ORG_VERSION_TABLE where organization_id = :id "
+        it.createQuery(select).bind("id", organizationId).mapTo(OrganizationVersion::class.java).toList()
+    }
+
+    override fun getVersion(organizationId: Int, version: Int): OrganizationVersion = dbi.withHandle<OrganizationVersion, Exception> {
+        val select = "select * from $ORG_VERSION_TABLE where organization_id = :id and  organization_version = :version"
+        it.createQuery(select)
+                .bind("id", organizationId)
+                .bind("version", version)
+                .mapTo(OrganizationVersion::class.java).findOnly()
+    }
+
+    override fun createVersion(version: OrganizationVersion) = dbi.useHandle<Exception> {
+        val insert = "insert into $ORG_VERSION_TABLE" +
+                "($ORG_FULL_NAME, $ORG_VERSION," +
+                "$ORG_SHORT_NAME, $ORG_CREATED_BY, $ORG_ADDRESS, " +
+                "$ORG_CONTACT, $ORG_TIMESTAMP) " +
+                "values(:fullName,:version, :shortName, :created_by, :address, :contact, :timestamp)"
+        it.createUpdate(insert)
+                .bind("fullName", version.fullName)
+                .bind("shortName", version.shortName)
+                .bind("address", version.address)
+                .bind("contact", version.contact)
+                .bind("created_by", version.createdBy)
+                .bind("version", version.version)
+                .bind("timestamp", version.timestamp)
+                .execute()
+    }
+
+    override fun deleteAllVersions(organizationId: Int): Int = dbi.withHandle<Int, Exception> {
+        val delete = "delete from $ORG_REPORT_TABLE where organization_id = :organizationId"
+        it.createUpdate(delete)
+                .bind("organizationId", organizationId)
+                .execute()
+    }
+
+    override fun deleteVersion(organizationId: Int, version: Int): Int = dbi.withHandle<Int, Exception> {
+        val delete = "delete from $ORG_REPORT_TABLE where $ORG_ID = :organizationId and $ORG_VERSION = :version"
+        it.createUpdate(delete)
+                .bind("organizationId", organizationId)
+                .bind("version", version)
                 .execute()
     }
 
