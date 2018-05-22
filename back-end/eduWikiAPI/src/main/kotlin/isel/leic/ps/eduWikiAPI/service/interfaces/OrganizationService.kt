@@ -46,7 +46,7 @@ interface OrganizationService {
 
     fun createVersion(organizationId: Int, input: OrganizationVersionInputModel)
 
-    fun deleteAllVersions(organizationId: Int)
+    fun deleteAllVersions(organizationId: Int): Int?
 
-    fun deleteSpecificVersion(organizationId: Int, version: Int)
+    fun deleteSpecificVersion(organizationId: Int, version: Int): Int?
 }

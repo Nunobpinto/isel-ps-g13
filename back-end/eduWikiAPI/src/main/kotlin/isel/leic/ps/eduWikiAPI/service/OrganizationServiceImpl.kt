@@ -53,7 +53,7 @@ class OrganizationServiceImpl : OrganizationService {
                 shortName = input.shortName,
                 address = input.address,
                 contact = input.contact,
-                createdBy = input.createdBy,
+                reportedBy = input.createdBy,
                 id = organizationId
         )
         organizationRepo.reportOrganization(report)
