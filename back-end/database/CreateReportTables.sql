@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS organization_report (
   organization_short_name varchar(10),
   organization_address varchar(100),
   organization_contact varchar(15),
-  created_by VARCHAR(20) NOT NULL,
+  reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   PRIMARY KEY (report_id)
 );
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS programme_report (
     programme_academic_degree varchar(50),
     programme_total_credits INTEGER,
     programme_duration INTEGER,
-    created_by VARCHAR(20) NOT NULL,
+    reported_by VARCHAR(20) NOT NULL,
     votes INTEGER DEFAULT 0,
     PRIMARY KEY (report_id)
 );
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS course_report (
     course_id INTEGER REFERENCES course,
     course_full_name varchar(100),
     course_short_name varchar(10),
-    created_by VARCHAR(20) NOT NULL,
+    reported_by VARCHAR(20) NOT NULL,
     votes INTEGER DEFAULT 0,
     PRIMARY KEY (report_id)
 );
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS class_report (
   class_id INTEGER,
   term_id INTEGER,
   class_name VARCHAR(10),
-  created_by VARCHAR(20) NOT NULL,
+  reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   FOREIGN KEY (class_id, term_id) REFERENCES class(class_id, term_id),
   PRIMARY KEY (report_id)
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS work_assignment_report (
   late_delivery BOOLEAN,
   multiple_deliveries BOOLEAN,
   requires_report BOOLEAN,
-  created_by VARCHAR(20) NOT NULL,
+  reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   PRIMARY KEY (report_id)
 );
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS exam_report (
   exam_type exam_type,
   phase VARCHAR(30),
   location varchar(30),
-  created_by VARCHAR(20) NOT NULL,
+  reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   PRIMARY KEY (report_id)
 );
@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS lecture_report (
   begins TIME,
   duration INTERVAL,
   location varchar(30),
-  created_by VARCHAR(20) NOT NULL,
+  reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   PRIMARY KEY (report_id)
 );
@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS homework_report (
   due_date DATE,
   late_delivery BOOLEAN,
   multiple_deliveries BOOLEAN,
-  created_by VARCHAR(20) NOT NULL,
+  reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   PRIMARY KEY (report_id)
 );
@@ -104,6 +104,6 @@ CREATE TABLE IF NOT EXISTS student_report (
   report_id SERIAL,
   student_username VARCHAR(20) REFERENCES student,
   reason VARCHAR(200) NOT NULL,
-  created_by VARCHAR(20) NOT NULL,
+  reported_by VARCHAR(20) NOT NULL,
   PRIMARY KEY (report_id)
 );
