@@ -57,14 +57,14 @@ CREATE TABLE IF NOT EXISTS course_class_stage (
   time_stamp timestamp NOT NULL,
   FOREIGN KEY (class_id, term_id) REFERENCES class(class_id, term_id),
   PRIMARY KEY (course_id, class_id, term_id)
- );
- 
---- not sure how staging course specific misc units are going to be staged, it might be through references to this table
---- CREATE TABLE IF NOT EXISTS course_term_stage (
----   course_id INTEGER REFERENCES course,
----   term_id INTEGER REFERENCES term,
----   PRIMARY KEY (course_id, term_id)
---- );
+);
+
+-- not sure how staging course specific misc units are going to be staged, it might be through references to this table
+-- CREATE TABLE IF NOT EXISTS course_term_stage (
+--   course_id INTEGER REFERENCES course,
+--   term_id INTEGER REFERENCES term,
+--   PRIMARY KEY (course_id, term_id)
+-- );
 
 CREATE TABLE IF NOT EXISTS course_misc_unit_stage (
   id SERIAL,
@@ -73,16 +73,18 @@ CREATE TABLE IF NOT EXISTS course_misc_unit_stage (
   misc_type course_misc_unit_type NOT NULL,
   FOREIGN KEY (course_id, term_id) REFERENCES course_term(course_id, term_id),
   PRIMARY KEY (id)
- );
- 
+);
+
 CREATE TABLE IF NOT EXISTS class_misc_unit_stage (
   id SERIAL,
   misc_type class_misc_unit_type NOT NULL,
   course_id INTEGER,
+  class_id INTEGER,
+  term_id INTEGER,
   FOREIGN KEY (course_id, class_id, term_id) REFERENCES course_class(course_id, class_id, term_id),
   PRIMARY KEY (id)
- );
- 
+);
+
 CREATE TABLE IF NOT EXISTS work_assignment_stage (
   id INTEGER REFERENCES course_misc_unit_stage,
   sheet VARCHAR(100) NOT NULL,
@@ -97,7 +99,7 @@ CREATE TABLE IF NOT EXISTS work_assignment_stage (
   time_stamp timestamp NOT NULL,
   PRIMARY KEY (id)
 );
- 
+
 CREATE TABLE IF NOT EXISTS exam_stage (
   id INTEGER REFERENCES course_misc_unit_stage,
   sheet VARCHAR(100) NOT NULL,
@@ -109,8 +111,8 @@ CREATE TABLE IF NOT EXISTS exam_stage (
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
   PRIMARY KEY (id)
- );
- 
+);
+
 CREATE TABLE IF NOT EXISTS lecture_stage (
   id INTEGER REFERENCES class_misc_unit_stage,
   weekday weekday NOT NULL,
@@ -121,16 +123,16 @@ CREATE TABLE IF NOT EXISTS lecture_stage (
   votes INTEGER DEFAULT 0,
   location VARCHAR(30) NOT NULL,
   PRIMARY KEY (id)
- );
- 
+);
+
 CREATE TABLE IF NOT EXISTS homework_stage (
   id INTEGER REFERENCES class_misc_unit_stage,
   sheet VARCHAR(100) NOT NULL,
   due_date DATE NOT NULL,
   late_delivery BOOLEAN NOT NULL,
   multiple_deliveries BOOLEAN NOT NULL,
+  time_stamp timestamp NOT NULL,
   votes INTEGER DEFAULT 0,
   created_by VARCHAR(20) NOT NULL,
-  time_stamp timestamp NOT NULL,
   PRIMARY KEY (id)
- ); 
+);
