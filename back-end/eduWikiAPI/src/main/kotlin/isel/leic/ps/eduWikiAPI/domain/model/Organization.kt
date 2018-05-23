@@ -1,5 +1,7 @@
 package isel.leic.ps.eduWikiAPI.domain.model
 
+import java.sql.Timestamp
+
 data class Organization(
         val id: Int = 0,
         val version: Int = 0,
@@ -8,5 +10,6 @@ data class Organization(
         val shortName: String = "",
         val address: String = "",
         val contact: String = "",
-        val votes: Int = 0
+        val votes: Int = 0,
+        val timestamp: Timestamp = Timestamp(1)
 )

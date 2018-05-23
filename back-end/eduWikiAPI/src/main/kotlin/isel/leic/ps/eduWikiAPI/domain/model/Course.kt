@@ -1,5 +1,7 @@
 package isel.leic.ps.eduWikiAPI.domain.model
 
+import java.sql.Timestamp
+
 data class Course(
         val id: Int = 0,
         val organizationId: Int = 0,
@@ -11,5 +13,6 @@ data class Course(
         val lecturedTerm: Int = 0,
         val programmeId: Int = 0,
         val optional: Boolean = false,
-        val credits: Int = 0
+        val credits: Int = 0,
+        val timestamp: Timestamp = Timestamp(1)
 )

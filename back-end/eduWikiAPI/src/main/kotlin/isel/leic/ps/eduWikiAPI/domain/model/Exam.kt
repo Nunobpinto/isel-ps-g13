@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.domain.model;
 
+import java.sql.Timestamp
 import java.time.LocalDate;
 
 data class Exam (
@@ -11,5 +12,6 @@ data class Exam (
         val dueDate: LocalDate = LocalDate.now(),
         val type: String = "",
         val phase: String = "",
-        val location: String = ""
+        val location: String = "",
+        val timestamp: Timestamp = Timestamp(1)
 )

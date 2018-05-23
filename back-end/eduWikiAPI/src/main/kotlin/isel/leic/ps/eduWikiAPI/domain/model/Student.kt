@@ -1,5 +1,7 @@
 package isel.leic.ps.eduWikiAPI.domain.model
 
+import java.sql.Timestamp
+
 data class Student (
         val username: String = "",
         val givenName: String = "",

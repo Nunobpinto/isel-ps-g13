@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.domain.model;
 
+import java.sql.Timestamp
 import java.time.DayOfWeek
 import java.time.Duration
 import java.time.LocalDate
@@ -12,5 +13,6 @@ data class Lecture(
         val weekDay: DayOfWeek = DayOfWeek.MONDAY,
         val begins: LocalDate = LocalDate.now(),
         val duration: Duration = Duration.ZERO,
-        val location: String = ""
+        val location: String = "",
+        val timestamp: Timestamp = Timestamp(1)
 )
