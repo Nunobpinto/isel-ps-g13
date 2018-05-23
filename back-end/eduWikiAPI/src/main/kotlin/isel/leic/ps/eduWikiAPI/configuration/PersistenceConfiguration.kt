@@ -19,7 +19,7 @@ import javax.sql.DataSource
 class PersistenceConfiguration {
 
     @Bean
-    fun dbiBean(dataSource: DataSource) : Jdbi? =
+    fun jdbiBean(dataSource: DataSource): Jdbi? =
             Jdbi.create(dataSource)
                     // Plugins
                     .installPlugin(KotlinPlugin())

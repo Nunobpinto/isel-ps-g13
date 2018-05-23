@@ -67,4 +67,6 @@ interface CourseDAO {
 
     fun deleteAllReports() : Int
 
+    fun getAllReportsOnCourse(courseId: Int) : List<CourseReport>
+
 }

@@ -1,6 +1,8 @@
 package isel.leic.ps.eduWikiAPI.controller
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.*
+import isel.leic.ps.eduWikiAPI.domain.model.Course
+import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
 import isel.leic.ps.eduWikiAPI.service.interfaces.CourseService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
@@ -9,7 +11,6 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/courses")
 class CourseController {
 
-    //TODO implementation of Course Controller methods
     @Autowired
     lateinit var courseService: CourseService
 
@@ -17,13 +18,19 @@ class CourseController {
      * All GET Routes
      */
     @GetMapping
-    fun getAllCourses() = NotImplementedError()
+    fun getAllCourses(): List<Course> {
+        return courseService.getAllCourses();
+    }
 
     @GetMapping("/{courseId}")
-    fun getSpecificCourse(@PathVariable courseId: Int) = NotImplementedError()
+    fun getSpecificCourse(@PathVariable courseId: Int) : Course {
+        return courseService.getSpecificCourse(courseId)
+    }
 
     @GetMapping("/{courseId}/report")
-    fun getCourseReports(@PathVariable courseId: Int) = NotImplementedError()
+    fun getCourseReports(@PathVariable courseId: Int) : List<CourseReport>  {
+        return courseService.getAllReportsOnCourse(courseId)
+    }
 
     @GetMapping("/{courseId}/report/{reportId}")
     fun getSpecificCourseReport(
