@@ -3,7 +3,6 @@ package isel.leic.ps.eduWikiAPI.repository.interfaces
 import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Programme
-import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.domain.model.report.ProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.ProgrammeVersion
@@ -17,15 +16,15 @@ interface ProgrammeDAO {
 
     fun getAllProgrammes() : List<Programme>
 
-    fun deleteProgramme(programmeId: Int) : Int
+    fun deleteSpecificProgramme(programmeId: Int)
 
-    fun deleteAllProgrammes() : Int
+    fun deleteAllProgrammes()
 
-    fun updateProgramme(programme: Programme) : Int
+    fun updateProgramme(programmeId: Int, programme: Programme)
 
     fun createProgramme(programme: Programme)
 
-    fun voteOnProgramme(programmeId: Int, vote: VoteInputModel)
+    fun voteOnProgramme(programmeId: Int, inputVote: VoteInputModel)
 
     fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course>
 
@@ -34,17 +33,20 @@ interface ProgrammeDAO {
     /**
      * Stage entities queries
      */
+
     fun getProgrammeStage(programmeId: Int) : ProgrammeStage
 
     fun getAllProgrammeStages() : List<ProgrammeStage>
 
-    fun deleteProgrammeStage(stageId: Int) : Int
-
-    fun deleteAllProgrammeStages() : Int
+    fun deleteAllStagedProgrammes()
 
     fun createProgrammeStage(programmeStage: ProgrammeStage)
 
-    fun voteOnProgrammeStage(programmeId: Int, vote: Vote)
+    fun voteOnStagedProgramme(programmeId: Int, inputVote: VoteInputModel)
+
+    fun updateStagedProgramme(programmeId: Int, programme: ProgrammeStage)
+
+    fun deleteStagedProgramme(stageId: Int)
 
     /**
      * Version entities queries
@@ -60,6 +62,8 @@ interface ProgrammeDAO {
 
     fun createVersionProgramme(programmeVersion: ProgrammeVersion)
 
+    fun addToProgrammeVersion(programme: Programme)
+
     /**
      * Report entity queries
      */
@@ -70,16 +74,10 @@ interface ProgrammeDAO {
 
     fun reportProgramme(programmeId: Int, programmeReport: ProgrammeReport)
 
-    fun deleteReportOnProgramme(programmeId: Int, reportId: Int) : Int
+    fun deleteReportOnProgramme(programmeId: Int, reportId: Int)
 
-    fun deleteAllReportsOnProgramme(programmeId : Int) : Int
+    fun deleteAllReportsOnProgramme(programmeId : Int)
 
-    fun deleteAllReports(): Int
-
-    fun voteOnReportedProgramme(reportId: Int, vote: VoteInputModel)
-
-    fun updateReportedProgramme(programme : Programme)
-
-    fun addProgrammeVersion(programme: Programme)
+    fun voteOnReportedProgramme(reportId: Int, inputVote: VoteInputModel)
 
 }

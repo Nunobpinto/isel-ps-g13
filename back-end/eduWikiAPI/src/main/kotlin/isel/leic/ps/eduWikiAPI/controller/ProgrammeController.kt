@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/programmes")
 class ProgrammeController {
 
-    //TODO implementation of Programme Controller methods
     @Autowired
     lateinit var programmeService: ProgrammeService
 
@@ -47,32 +46,32 @@ class ProgrammeController {
      */
 
     @PostMapping()
-    fun createProgramme(@RequestBody input: ProgrammeInputModel)
-            = programmeService.createProgramme(input)
+    fun createProgramme(@RequestBody inputProgramme: ProgrammeInputModel)
+            = programmeService.createProgramme(inputProgramme)
 
     @PostMapping("/{programmeId}/courses")
     fun addCourseToProgramme(@PathVariable programmeId: Int,
                              @RequestBody course: Course
     ) = programmeService.addCourseToProgramme(programmeId, course)
 
-    @PostMapping("/{programmeId}/vote")
+    @PostMapping("/{programmeId}/inputVote")
     fun voteOnProgramme(
             @PathVariable programmeId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = programmeService.voteOnProgramme(programmeId, vote)
+            @RequestBody inputVote: VoteInputModel
+    ) = programmeService.voteOnProgramme(programmeId, inputVote)
 
     @PostMapping("/{programmeId}/reports")
     fun reportProgramme(
             @PathVariable programmeId: Int,
-            @RequestBody report: ProgrammeReportInputModel
-    ) = programmeService.reportProgramme(programmeId, report)
+            @RequestBody inputProgrammeReport: ProgrammeReportInputModel
+    ) = programmeService.reportProgramme(programmeId, inputProgrammeReport)
 
-    @PostMapping("/{programmeId}/reports/{reportId}/vote")
+    @PostMapping("/{programmeId}/reports/{reportId}/inputVote")
     fun voteOnReportedProgramme(
             @PathVariable programmeId: Int,
             @PathVariable reportId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = programmeService.voteOnReportedProgramme(reportId, vote)
+            @RequestBody inputVote: VoteInputModel
+    ) = programmeService.voteOnReportedProgramme(reportId, inputVote)
 
     @PostMapping("/{programmeId}/reports/{reportId}")
     fun updateReportedProgramme(
@@ -81,54 +80,56 @@ class ProgrammeController {
     ) = programmeService.updateReportedProgramme(programmeId, reportId)
 
     @PostMapping("/stage")
-    fun createStagingProgramme(@RequestBody programme: ProgrammeInputModel) = programmeService.createStagedProgramme(programme)
+    fun createStagingProgramme(@RequestBody inputProgramme: ProgrammeInputModel) = programmeService.createStagedProgramme(inputProgramme)
 
     @PostMapping("/stage/{stageId}")
     fun createProgrammeFromStaged(@PathVariable stageId: Int) = programmeService.createProgrammeFromStaged(stageId)
 
-    @PostMapping("/stage/{stageId}/vote")
+    @PostMapping("/stage/{stageId}/inputVote")
     fun voteOnStagedProgramme(
             @PathVariable stageId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = NotImplementedError()
+            @RequestBody inputVote: VoteInputModel
+    ) = programmeService.voteOnStagedProgramme(stageId, inputVote)
 
     /**
      * ALL PATCH Routes
      */
+
     @PatchMapping("/{programmeId}")
     fun partialUpdateOnProgramme(
             @PathVariable programmeId: Int,
-            @RequestBody programme: ProgrammeInputModel
-    ) = NotImplementedError()
+            @RequestBody inputProgramme: ProgrammeInputModel
+    ) = programmeService.partialUpdateOnProgramme(programmeId, inputProgramme)
 
     @PatchMapping("/stage/{stageId}")
     fun partialUpdateOnStagedProgramme(
             @PathVariable stageId: Int,
-            @RequestBody programme: ProgrammeInputModel
-    ) = NotImplementedError()
+            @RequestBody inputProgramme: ProgrammeInputModel
+    ) = programmeService.partialUpdateOnStagedProgramme(stageId, inputProgramme)
 
     /**
      * ALL DELETE Routes
      */
+
     @DeleteMapping
-    fun deleteAllProgrammes() = NotImplementedError()
+    fun deleteAllProgrammes() = programmeService.deleteAllProgrammes()
 
     @DeleteMapping("/{programmeId}")
-    fun deleteSpecificProgramme(@PathVariable programmeId: Int) = NotImplementedError()
+    fun deleteSpecificProgramme(@PathVariable programmeId: Int) = programmeService.deleteSpecificProgramme(programmeId)
 
     @DeleteMapping("/stage")
-    fun deleteAllStagedProgrammes() = NotImplementedError()
+    fun deleteAllStagedProgrammes() = programmeService.deleteAllStagedProgrammes()
 
     @DeleteMapping("/stage/{stageId}")
-    fun deleteStagedProgramme(@PathVariable stageId: Int) = NotImplementedError()
+    fun deleteStagedProgramme(@PathVariable stageId: Int) = programmeService.deleteStagedProgramme(stageId)
 
     @DeleteMapping("/{programmeId}/report")
-    fun deleteAllReportsInProgramme(@PathVariable programmeId: Int) = NotImplementedError()
+    fun deleteAllReportsOnProgramme(@PathVariable programmeId: Int) = programmeService.deleteAllReportsOnProgramme(programmeId)
 
     @DeleteMapping("/{programmeId}/report/{reportId}")
-    fun deleteReportInProgramme(
+    fun deleteReportOnProgramme(
             @PathVariable programmeId: Int,
             @PathVariable reportId: Int
-    ) = NotImplementedError()
+    ) = programmeService.deleteReportOnProgramme(programmeId, reportId)
 
 }

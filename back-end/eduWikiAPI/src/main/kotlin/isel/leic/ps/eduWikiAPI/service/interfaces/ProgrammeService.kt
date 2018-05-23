@@ -8,11 +8,11 @@ import isel.leic.ps.eduWikiAPI.domain.model.report.ProgrammeReport
 
 interface ProgrammeService {
 
-    fun createProgramme(input: ProgrammeInputModel)
+    fun createProgramme(inputProgramme: ProgrammeInputModel)
 
     fun getSpecificProgramme(programmeId: Int): Programme
 
-    fun createStagedProgramme(programme: ProgrammeInputModel)
+    fun createStagedProgramme(inputProgramme: ProgrammeInputModel)
 
     fun getSpecificStagedProgramme(stageId: Int) : ProgrammeStage
 
@@ -30,12 +30,30 @@ interface ProgrammeService {
 
     fun addCourseToProgramme(programmeId: Int, course: Course)
 
-    fun voteOnProgramme(programmeId: Int, vote: VoteInputModel)
+    fun voteOnProgramme(programmeId: Int, inputVote: VoteInputModel)
 
-    fun reportProgramme(programmeId: Int, report: ProgrammeReportInputModel)
+    fun reportProgramme(programmeId: Int, inputProgrammeReport: ProgrammeReportInputModel)
 
-    fun voteOnReportedProgramme(reportId: Int, vote: VoteInputModel)
+    fun voteOnReportedProgramme(reportId: Int, inputVote: VoteInputModel)
 
     fun updateReportedProgramme(programmeId: Int, reportId: Int)
+
+    fun voteOnStagedProgramme(stageId: Int, inputVote: VoteInputModel)
+
+    fun deleteAllProgrammes()
+
+    fun deleteSpecificProgramme(programmeId: Int)
+
+    fun deleteAllStagedProgrammes()
+
+    fun deleteStagedProgramme(stageId : Int)
+
+    fun deleteAllReportsOnProgramme(programmeId: Int)
+
+    fun deleteReportOnProgramme(programmeId: Int, reportId: Int)
+
+    fun partialUpdateOnProgramme(programmeId: Int, inputProgramme: ProgrammeInputModel)
+
+    fun partialUpdateOnStagedProgramme(programmeId: Int, inputProgramme: ProgrammeInputModel)
 
 }
