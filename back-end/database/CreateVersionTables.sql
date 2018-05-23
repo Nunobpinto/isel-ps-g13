@@ -86,6 +86,7 @@ CREATE TABLE IF NOT EXISTS lecture_version (
   weekday weekday NOT NULL,
   begins TIME NOT NULL,
   duration INTERVAL NOT NULL,
+  time_stamp timestamp NOT NULL,
   location varchar(30) NOT NULL,
   PRIMARY KEY (id, lecture_version)
 );
@@ -97,6 +98,7 @@ CREATE TABLE IF NOT EXISTS homework_version (
   due_date DATE NOT NULL,
   created_by VARCHAR(20) NOT NULL,
   late_delivery BOOLEAN NOT NULL,
+  time_stamp timestamp NOT NULL,
   multiple_deliveries BOOLEAN NOT NULL,
   PRIMARY KEY (id, homework_version)
 );

@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS organization_report (
   organization_contact varchar(15),
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
+  time_stamp timestamp NOT NULL,
   PRIMARY KEY (report_id)
 );
 
@@ -24,6 +25,7 @@ CREATE TABLE IF NOT EXISTS programme_report (
     programme_duration INTEGER,
     reported_by VARCHAR(20) NOT NULL,
     votes INTEGER DEFAULT 0,
+    time_stamp timestamp NOT NULL,
     PRIMARY KEY (report_id)
 );
 
@@ -34,6 +36,7 @@ CREATE TABLE IF NOT EXISTS course_report (
     course_short_name varchar(10),
     reported_by VARCHAR(20) NOT NULL,
     votes INTEGER DEFAULT 0,
+    time_stamp timestamp NOT NULL,
     PRIMARY KEY (report_id)
 );
 
@@ -44,6 +47,7 @@ CREATE TABLE IF NOT EXISTS class_report (
   class_name VARCHAR(10),
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
+  time_stamp timestamp NOT NULL,
   FOREIGN KEY (class_id, term_id) REFERENCES class(class_id, term_id),
   PRIMARY KEY (report_id)
 );
@@ -60,6 +64,7 @@ CREATE TABLE IF NOT EXISTS work_assignment_report (
   requires_report BOOLEAN,
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
+  time_stamp timestamp NOT NULL,
   PRIMARY KEY (report_id)
 );
 
@@ -73,6 +78,7 @@ CREATE TABLE IF NOT EXISTS exam_report (
   location varchar(30),
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
+  time_stamp timestamp NOT NULL,
   PRIMARY KEY (report_id)
 );
 
@@ -85,6 +91,7 @@ CREATE TABLE IF NOT EXISTS lecture_report (
   location varchar(30),
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
+  time_stamp timestamp NOT NULL,
   PRIMARY KEY (report_id)
 );
 
@@ -97,6 +104,7 @@ CREATE TABLE IF NOT EXISTS homework_report (
   multiple_deliveries BOOLEAN,
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
+  time_stamp timestamp NOT NULL,
   PRIMARY KEY (report_id)
 );
 
@@ -105,5 +113,6 @@ CREATE TABLE IF NOT EXISTS student_report (
   student_username VARCHAR(20) REFERENCES student,
   reason VARCHAR(200) NOT NULL,
   reported_by VARCHAR(20) NOT NULL,
+  time_stamp timestamp NOT NULL,
   PRIMARY KEY (report_id)
 );

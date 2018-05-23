@@ -1,138 +1,118 @@
 --------------------------
--- Create Staging Tables
+-- Create Report Tables
 --------------------------
 
-CREATE TABLE IF NOT EXISTS programme_stage (
-	programme_id SERIAL,
-	programme_full_name VARCHAR(100) NOT NULL,
-	programme_short_name VARCHAR(10) NOT NULL,
-	programme_academic_degree VARCHAR(50) NOT NULL,
-	programme_total_credits INTEGER NOT NULL,
-	programme_duration INTEGER NOT NULL,
-	created_by VARCHAR(20) NOT NULL,
-	votes INTEGER DEFAULT 0,
-	time_stamp timestamp NOT NULL,
-	PRIMARY KEY (programme_id)
-);
-
-CREATE TABLE IF NOT EXISTS course_stage (
-	course_id SERIAL,
-	organization_id INTEGER REFERENCES organization,
-	course_full_name VARCHAR(100) NOT NULL,
-	course_short_name VARCHAR(10) NOT NULL,
-	created_by VARCHAR(20) NOT NULL,
-	votes INTEGER DEFAULT 0,
-	time_stamp timestamp NOT NULL,
-	PRIMARY KEY (course_id)
-);
-
-CREATE TABLE IF NOT EXISTS course_programme_stage (
-  course_id INTEGER REFERENCES course,
-  programme_id INTEGER REFERENCES programme,
-  course_lectured_term VARCHAR(50) NOT NULL,
-  course_optional BOOLEAN NOT NULL,
-  course_credits INTEGER NOT NULL,
-  created_by VARCHAR(20) NOT NULL,
+CREATE TABLE IF NOT EXISTS organization_report (
+  report_id SERIAL,
+  organization_id INTEGER REFERENCES organization,
+  organization_full_name varchar(100),
+  organization_short_name varchar(10),
+  organization_address varchar(100),
+  organization_contact varchar(15),
+  reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  PRIMARY KEY (course_id, programme_id)
+  PRIMARY KEY (report_id)
 );
 
-CREATE TABLE IF NOT EXISTS class_stage (
-	class_id SERIAL,
-	term_id INTEGER REFERENCES term,
-	class_name VARCHAR(10) NOT NULL,
-	created_by VARCHAR(20) NOT NULL,
-	votes INTEGER DEFAULT 0,
-	time_stamp timestamp NOT NULL,
-	PRIMARY KEY (class_id, term_id)
+CREATE TABLE IF NOT EXISTS programme_report (
+    report_id SERIAL, 
+    programme_id INTEGER REFERENCES programme,
+    programme_full_name varchar(100),
+    programme_short_name varchar(10),
+    programme_academic_degree varchar(50),
+    programme_total_credits INTEGER,
+    programme_duration INTEGER,
+    reported_by VARCHAR(20) NOT NULL,
+    votes INTEGER DEFAULT 0,
+    time_stamp timestamp NOT NULL,
+    PRIMARY KEY (report_id)
 );
 
-CREATE TABLE IF NOT EXISTS course_class_stage (
-	course_id INTEGER REFERENCES course,
-	class_id INTEGER,
-	term_id INTEGER,
-	created_by VARCHAR(20) NOT NULL,
-	votes INTEGER DEFAULT 0,
-	time_stamp timestamp NOT NULL,
-	FOREIGN KEY (class_id, term_id) REFERENCES class(class_id, term_id),
-	PRIMARY KEY (course_id, class_id, term_id)
+CREATE TABLE IF NOT EXISTS course_report (
+    report_id SERIAL, 
+    course_id INTEGER REFERENCES course,
+    course_full_name varchar(100),
+    course_short_name varchar(10),
+    reported_by VARCHAR(20) NOT NULL,
+    votes INTEGER DEFAULT 0,
+    time_stamp timestamp NOT NULL,
+    PRIMARY KEY (report_id)
 );
 
--- not sure how staging course specific misc units are going to be staged, it might be through references to this table
--- CREATE TABLE IF NOT EXISTS course_term_stage (
---   course_id INTEGER REFERENCES course,
---   term_id INTEGER REFERENCES term,
---   PRIMARY KEY (course_id, term_id)
--- );
-
-CREATE TABLE IF NOT EXISTS course_misc_unit_stage (
-  id SERIAL,
-  course_id INTEGER,
-  term_id INTEGER,
-  misc_type course_misc_unit_type NOT NULL,
-  FOREIGN KEY (course_id, term_id) REFERENCES course_term(course_id, term_id),
-  PRIMARY KEY (id)
-);
-
-CREATE TABLE IF NOT EXISTS class_misc_unit_stage (
-  id SERIAL,
-  misc_type class_misc_unit_type NOT NULL,
-  course_id INTEGER,
+CREATE TABLE IF NOT EXISTS class_report (
+  report_id SERIAL,
   class_id INTEGER,
   term_id INTEGER,
-  FOREIGN KEY (course_id, class_id, term_id) REFERENCES course_class(course_id, class_id, term_id),
-  PRIMARY KEY (id)
-);
-
-CREATE TABLE IF NOT EXISTS work_assignment_stage (
-  	id INTEGER REFERENCES course_misc_unit_stage,
-  	sheet VARCHAR(100) NOT NULL,
-  	supplement VARCHAR(100) NOT NULL,
-  	due_date date NOT NULL,
-  	individual BOOLEAN NOT NULL,
-  	late_delivery BOOLEAN NOT NULL,
-  	multiple_deliveries BOOLEAN NOT NULL,
-  	requires_report BOOLEAN NOT NULL,
-	created_by VARCHAR(20) NOT NULL,
-	votes INTEGER DEFAULT 0,
-	time_stamp timestamp NOT NULL,
- 	PRIMARY KEY (id)
-);
-
-CREATE TABLE IF NOT EXISTS exam_stage (
-  	id INTEGER REFERENCES course_misc_unit_stage,
-  	sheet VARCHAR(100) NOT NULL,
-  	due_date date NOT NULL,
-  	exam_type  exam_type NOT NULL,
-  	phase VARCHAR(30) NOT NULL,
-  	location VARCHAR(30) NOT NULL,
-	created_by VARCHAR(20) NOT NULL,
-	votes INTEGER DEFAULT 0,
-	time_stamp timestamp NOT NULL,
-  	PRIMARY KEY (id)
-);
-
-CREATE TABLE IF NOT EXISTS lecture_stage (
-  id INTEGER REFERENCES class_misc_unit_stage,
-  weekday weekday NOT NULL,
-  begins TIME NOT NULL,
-  duration INTERVAL NOT NULL,
-  created_by VARCHAR(20) NOT NULL,
-  time_stamp timestamp NOT NULL,
+  class_name VARCHAR(10),
+  reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
-  location VARCHAR(30) NOT NULL,
-  PRIMARY KEY (id)
+  time_stamp timestamp NOT NULL,
+  FOREIGN KEY (class_id, term_id) REFERENCES class(class_id, term_id),
+  PRIMARY KEY (report_id)
 );
 
-CREATE TABLE IF NOT EXISTS homework_stage (
-  id INTEGER REFERENCES class_misc_unit_stage,
-  sheet VARCHAR(100) NOT NULL,
-  due_date DATE NOT NULL,
-  late_delivery BOOLEAN NOT NULL,
-  multiple_deliveries BOOLEAN NOT NULL,
-  time_stamp timestamp NOT NULL,
+CREATE TABLE IF NOT EXISTS work_assignment_report (
+  report_id SERIAL,
+  id INTEGER REFERENCES course_misc_unit,
+  sheet VARCHAR(100),
+  supplement VARCHAR(100),
+  due_date date,
+  individual BOOLEAN,
+  late_delivery BOOLEAN,
+  multiple_deliveries BOOLEAN,
+  requires_report BOOLEAN,
+  reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
-  created_by VARCHAR(20) NOT NULL,
-  PRIMARY KEY (id)
+  time_stamp timestamp NOT NULL,
+  PRIMARY KEY (report_id)
+);
+
+CREATE TABLE IF NOT EXISTS exam_report (
+  report_id SERIAL,
+  id INTEGER REFERENCES course_misc_unit,
+  sheet VARCHAR(100),
+  due_date date,
+  exam_type exam_type,
+  phase VARCHAR(30),
+  location varchar(30),
+  reported_by VARCHAR(20) NOT NULL,
+  votes INTEGER DEFAULT 0,
+  time_stamp timestamp NOT NULL,
+  PRIMARY KEY (report_id)
+);
+
+CREATE TABLE IF NOT EXISTS lecture_report (
+  report_id SERIAL,
+  id INTEGER REFERENCES class_misc_unit,
+  weekday weekday,
+  begins TIME,
+  duration INTERVAL,
+  location varchar(30),
+  reported_by VARCHAR(20) NOT NULL,
+  votes INTEGER DEFAULT 0,
+  time_stamp timestamp NOT NULL,
+  PRIMARY KEY (report_id)
+);
+
+CREATE TABLE IF NOT EXISTS homework_report (
+  report_id SERIAL,
+  id INTEGER REFERENCES class_misc_unit,
+  sheet VARCHAR(100),
+  due_date DATE,
+  late_delivery BOOLEAN,
+  multiple_deliveries BOOLEAN,
+  reported_by VARCHAR(20) NOT NULL,
+  votes INTEGER DEFAULT 0,
+  time_stamp timestamp NOT NULL,
+  PRIMARY KEY (report_id)
+);
+
+CREATE TABLE IF NOT EXISTS student_report (
+  report_id SERIAL,
+  student_username VARCHAR(20) REFERENCES student,
+  reason VARCHAR(200) NOT NULL,
+  reported_by VARCHAR(20) NOT NULL,
+  time_stamp timestamp NOT NULL,
+  PRIMARY KEY (report_id)
 );
