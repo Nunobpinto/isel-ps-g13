@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS organization_version (
   organization_full_name VARCHAR(100) NOT NULL,
   organization_short_name VARCHAR(10) NOT NULL,
   organization_address VARCHAR(100) NOT NULL,
-  organization_contact INTEGER NOT NULL,
+  organization_contact VARCHAR(15) NOT NULL,
   time_stamp timestamp NOT NULL,
   PRIMARY KEY (organization_id, organization_version)
 );
