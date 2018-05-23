@@ -72,11 +72,11 @@ class ProgrammeDAOImpl : ProgrammeDAO {
     }
 
     override fun updateProgramme(programmeId: Int, programme: Programme) = dbi.useHandle<Exception> {
-        val update = "update $PROG_TABLE SET" +
+        val update = "update $PROG_TABLE SET " +
                 "$PROG_VERSION = :version, $PROG_CREATED_BY = :createdBy, " +
                 "$PROG_FULL_NAME = :fullName, $PROG_SHORT_NAME = :shortName, " +
                 "$PROG_ACADEMIC_DEGREE = :academicDegree, $PROG_TOTAL_CREDITS = :totalCredits, " +
-                "$PROG_DURATION = :duration, $PROG_VOTE = :votes, ) " +
+                "$PROG_DURATION = :duration, $PROG_VOTE = :votes, $PROG_TIMESTAMP = :timestamp " +
                 "where $PROG_ID = :programmeId"
 
         it.createUpdate(update)
@@ -89,6 +89,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .bind("duration", programme.duration)
                 .bind("votes", programme.votes)
                 .bind("programmeId", programmeId)
+                .bind("timestamp", programme.timestamp)
                 .execute()
     }
 
@@ -96,8 +97,8 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         val insert = "insert into $PROG_TABLE " +
                 "($PROG_VERSION, $PROG_FULL_NAME, " +
                 "$PROG_SHORT_NAME, $PROG_ACADEMIC_DEGREE, $PROG_TOTAL_CREDITS, " +
-                "$PROG_DURATION, $PROG_VOTE, $PROG_CREATED_BY) " +
-                "values(:version, :fullName, :shortName, :academicDegree, :totalCredits, :duration, :votes, :credits)"
+                "$PROG_DURATION, $PROG_VOTE, $PROG_CREATED_BY, $PROG_TIMESTAMP) " +
+                "values(:version, :fullName, :shortName, :academicDegree, :totalCredits, :duration, :votes, :credits, :timestamp)"
 
         it.createUpdate(insert)
                 .bind("version", programme.version)
@@ -108,6 +109,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .bind("duration", programme.duration)
                 .bind("votes", programme.votes)
                 .bind("credits", programme.createdBy)
+                .bind("timestamp", programme.timestamp)
                 .execute()
     }
 
@@ -305,7 +307,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 "$PROG_SHORT_NAME, $PROG_ACADEMIC_DEGREE, $PROG_TOTAL_CREDITS, " +
                 "$PROG_DURATION, $PROG_REPORTED_BY, $PROG_TIMESTAMP) " +
                 "values(:programmeId, :fullName, :shortName, :academicDegree, " +
-                ":totalCredits, :duration, :reportedBy)"
+                ":totalCredits, :duration, :reportedBy, :timestamp)"
         it.createUpdate(insert)
                 .bind("programmeId", programmeId)
                 .bind("fullName", programmeReport.programmeFullName)
@@ -314,6 +316,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .bind("totalCredits", programmeReport.programmeTotalCredits)
                 .bind("duration", programmeReport.programmeDuration)
                 .bind("reportedBy", programmeReport.reportedBy)
+                .bind("timestamp", programmeReport.timestamp)
                 .execute()
     }
 
@@ -364,9 +367,9 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         val insert = "insert into $PROG_VERSION_TABLE " +
                 "($PROG_ID, $PROG_VERSION, $PROG_FULL_NAME, $PROG_SHORT_NAME, " +
                 "$PROG_ACADEMIC_DEGREE, $PROG_TOTAL_CREDITS," +
-                "$PROG_DURATION, $PROG_CREATED_BY)" +
+                "$PROG_DURATION, $PROG_CREATED_BY, $PROG_TIMESTAMP)" +
                 "values (:programmeId, :programmeVersion, :programmeFullName, :programmeShortName," +
-                ":programmeAcademicDegree, :programmeTotalCredits, :programmeDuration, :programmeCreatedBy)"
+                ":programmeAcademicDegree, :programmeTotalCredits, :programmeDuration, :programmeCreatedBy, :timestamp)"
         it.createUpdate(insert)
                 .bind("programmeId", programme.id)
                 .bind("programmeVersion", programme.version)
@@ -376,6 +379,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .bind("programmeTotalCredits", programme.totalCredits)
                 .bind("programmeDuration", programme.duration)
                 .bind("programmeCreatedBy", programme.createdBy)
+                .bind("timestamp", programme.timestamp)
                 .execute()
     }
 

@@ -18,6 +18,7 @@ class ProgrammeRowMapper : RowMapper<Programme> {
                     shortName = rs.getString(ProgrammeDAOImpl.PROG_SHORT_NAME),
                     academicDegree = rs.getString(ProgrammeDAOImpl.PROG_ACADEMIC_DEGREE),
                     totalCredits = rs.getInt(ProgrammeDAOImpl.PROG_TOTAL_CREDITS),
-                    duration = rs.getInt(ProgrammeDAOImpl.PROG_DURATION)
+                    duration = rs.getInt(ProgrammeDAOImpl.PROG_DURATION),
+                    timestamp = rs.getTimestamp(ProgrammeDAOImpl.PROG_TIMESTAMP)
             )
 }

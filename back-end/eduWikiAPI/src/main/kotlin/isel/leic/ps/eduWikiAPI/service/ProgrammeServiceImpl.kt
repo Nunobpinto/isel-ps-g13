@@ -1,6 +1,7 @@
 package isel.leic.ps.eduWikiAPI.service
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.*
+import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ProgrammeReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Programme
 import isel.leic.ps.eduWikiAPI.domain.model.report.ProgrammeReport
@@ -10,6 +11,8 @@ import isel.leic.ps.eduWikiAPI.service.interfaces.ProgrammeService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.sql.Timestamp
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Service
 class ProgrammeServiceImpl : ProgrammeService {
@@ -33,7 +36,7 @@ class ProgrammeServiceImpl : ProgrammeService {
                 academicDegree = inputProgramme.academicDegree,
                 totalCredits = inputProgramme.totalCredits,
                 duration = inputProgramme.duration,
-                version = 0
+                timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
         programmeRepo.createProgramme(programme)
     }
@@ -46,7 +49,7 @@ class ProgrammeServiceImpl : ProgrammeService {
                 academicDegree = inputProgramme.academicDegree,
                 totalCredits = inputProgramme.totalCredits,
                 duration = inputProgramme.duration,
-                timestamp = Timestamp.valueOf(inputProgramme.timestamp)
+                timestamp = Timestamp.valueOf(LocalDateTime.now())
 
         )
         programmeRepo.createProgrammeStage(stage)
@@ -63,7 +66,9 @@ class ProgrammeServiceImpl : ProgrammeService {
                 shortName = programmeStage.shortName,
                 academicDegree = programmeStage.academicDegree,
                 totalCredits = programmeStage.totalCredits,
-                duration = programmeStage.duration
+                duration = programmeStage.duration,
+                timestamp = Timestamp.valueOf(LocalDateTime.now())
+
         )
         programmeRepo.deleteStagedProgramme(stageId) //TODO use transaction
         programmeRepo.createProgramme(programme)    //TODO use transaction
@@ -97,13 +102,14 @@ class ProgrammeServiceImpl : ProgrammeService {
 
     override fun reportProgramme(programmeId: Int, inputProgrammeReport: ProgrammeReportInputModel) {
         val programmeReport = ProgrammeReport(
-                programmeId = inputProgrammeReport.programmeId,
+                programmeId = programmeId,
                 programmeFullName = inputProgrammeReport.fullName,
                 programmeShortName = inputProgrammeReport.shortName,
                 programmeAcademicDegree = inputProgrammeReport.academicDegree,
                 programmeDuration = inputProgrammeReport.duration,
                 programmeTotalCredits = inputProgrammeReport.totalCredits,
-                reportedBy = inputProgrammeReport.reportedBy
+                reportedBy = inputProgrammeReport.reportedBy,
+                timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
         return programmeRepo.reportProgramme(programmeId, programmeReport)
     }
@@ -120,11 +126,12 @@ class ProgrammeServiceImpl : ProgrammeService {
                 version = programme.version + 1,
                 votes = programme.votes,
                 createdBy = report.reportedBy,
-                fullName = if(!report.programmeFullName.isEmpty()) report.programmeFullName else programme.fullName,
-                shortName = if(!report.programmeShortName.isEmpty()) report.programmeShortName else programme.shortName,
-                academicDegree = if(!report.programmeAcademicDegree.isEmpty()) report.programmeAcademicDegree else programme.academicDegree,
-                totalCredits = if(report.programmeTotalCredits != 0) report.programmeTotalCredits else programme.totalCredits,
-                duration = if(report.programmeDuration != 0) report.programmeDuration else programme.duration
+                fullName = report.programmeFullName ?: programme.fullName,
+                shortName =report.programmeShortName ?: programme.shortName,
+                academicDegree = report.programmeAcademicDegree ?: programme.academicDegree,
+                totalCredits = if(report.programmeTotalCredits != 0) report.programmeTotalCredits!! else programme.totalCredits,
+                duration = if(report.programmeDuration!=0) report.programmeDuration!! else programme.duration,
+                timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
         programmeRepo.addToProgrammeVersion(programme)
         programmeRepo.updateProgramme(programmeId, updatedProgramme)
