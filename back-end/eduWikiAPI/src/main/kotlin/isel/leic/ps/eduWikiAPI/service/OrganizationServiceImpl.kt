@@ -13,6 +13,7 @@ import isel.leic.ps.eduWikiAPI.service.interfaces.OrganizationService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.sql.Timestamp
+import java.time.LocalDateTime
 
 @Service
 class OrganizationServiceImpl : OrganizationService {
@@ -20,7 +21,7 @@ class OrganizationServiceImpl : OrganizationService {
     @Autowired
     lateinit var organizationRepo: OrganizationDAO
 
-    override fun getSpecificOrganization(organizationId: Int) = organizationRepo.getOrganization(organizationId)
+    override fun getSpecificOrganization(organizationId: Int) = organizationRepo.getSpecificOrganization(organizationId)
 
     override fun createOrganization(organizationInputModel: OrganizationInputModel) {
         val organization = Organization(
@@ -28,7 +29,8 @@ class OrganizationServiceImpl : OrganizationService {
                 shortName = organizationInputModel.shortName,
                 address = organizationInputModel.address,
                 createdBy = organizationInputModel.createdBy,
-                contact = organizationInputModel.contact
+                contact = organizationInputModel.contact,
+                timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
         organizationRepo.createOrganization(organization)
     }
@@ -37,15 +39,13 @@ class OrganizationServiceImpl : OrganizationService {
 
     override fun deleteAllOrganizations() = organizationRepo.deleteAllOrganizations()
 
-    override fun updateOrganization() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun updateOrganization(organization: Organization) = organizationRepo.updateOrganization(organization)
 
     override fun getAllOrganizations(): List<Organization> = organizationRepo.getAllOrganizations()
 
     override fun getAllOrganizationReports(organizationId: Int) = organizationRepo.getAllOrganizationReports(organizationId)
 
-    override fun getSpecificReport(organizationId: Int, reportId: Int) = organizationRepo.getSpecificReport(organizationId, reportId)
+    override fun getSpecificReport(organizationId: Int, reportId: Int) = organizationRepo.getSpecificReportOfOrganization(organizationId, reportId)
 
     override fun reportOrganization(organizationId: Int, input: OrganizationReportInputModel) {
         val report = OrganizationReport(
@@ -54,7 +54,8 @@ class OrganizationServiceImpl : OrganizationService {
                 address = input.address,
                 contact = input.contact,
                 reportedBy = input.createdBy,
-                id = organizationId
+                id = organizationId,
+                timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
         organizationRepo.reportOrganization(report)
     }
@@ -81,7 +82,7 @@ class OrganizationServiceImpl : OrganizationService {
                 contact = input.contact,
                 createdBy = input.createdBy,
                 version = input.version,
-                timestamp = Timestamp.valueOf(input.timestamp)
+                timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
         organizationRepo.createVersion(version)
     }
@@ -89,5 +90,24 @@ class OrganizationServiceImpl : OrganizationService {
     override fun deleteAllVersions(organizationId: Int) = organizationRepo.deleteAllVersions(organizationId)
 
     override fun deleteSpecificVersion(organizationId: Int, version: Int) = organizationRepo.deleteVersion(organizationId, version)
+
+    override fun updateReportedOrganization(organizationId: Int, reportId: Int) {
+        val organization = organizationRepo.getSpecificOrganization(organizationId)
+        val report = organizationRepo.getSpecificReportOfOrganization(organizationId, reportId)
+        val updatedOrganization = Organization(
+                id = organization.id,
+                version = organization.version + 1,
+                votes = organization.votes,
+                createdBy = organization.createdBy,
+                fullName = report.fullName ?: organization.fullName,
+                shortName =report.shortName ?: organization.shortName,
+                contact = report.contact ?: organization.contact,
+                address = report.address ?: organization.address,
+                timestamp = Timestamp.valueOf(LocalDateTime.now())
+        )
+        organizationRepo.addToOrganizationVersion(organization)
+        organizationRepo.updateOrganization(updatedOrganization)
+        organizationRepo.deleteReportOnOrganization(reportId)
+    }
 
 }

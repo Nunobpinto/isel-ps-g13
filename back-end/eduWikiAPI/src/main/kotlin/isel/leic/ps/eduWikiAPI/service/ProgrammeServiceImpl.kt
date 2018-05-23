@@ -125,7 +125,7 @@ class ProgrammeServiceImpl : ProgrammeService {
                 id = programme.id,
                 version = programme.version + 1,
                 votes = programme.votes,
-                createdBy = report.reportedBy,
+                createdBy = programme.createdBy,
                 fullName = report.programmeFullName ?: programme.fullName,
                 shortName =report.programmeShortName ?: programme.shortName,
                 academicDegree = report.programmeAcademicDegree ?: programme.academicDegree,

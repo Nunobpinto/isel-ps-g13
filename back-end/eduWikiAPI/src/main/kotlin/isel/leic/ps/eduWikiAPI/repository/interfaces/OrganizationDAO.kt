@@ -11,7 +11,7 @@ interface OrganizationDAO {
      * Main entities queries
      */
 
-    fun getOrganization(organizationId: Int) : Organization
+    fun getSpecificOrganization(organizationId: Int) : Organization
 
     fun getAllOrganizations() : List<Organization>
 
@@ -19,7 +19,7 @@ interface OrganizationDAO {
 
     fun deleteAllOrganizations() : Int
 
-    fun updateOrganization(organization: Organization) : Int
+    fun updateOrganization(organization: Organization)
 
     fun createOrganization(organization: Organization)
 
@@ -39,6 +39,8 @@ interface OrganizationDAO {
 
     fun deleteVersion(organizationId: Int, version: Int): Int?
 
+    fun addToOrganizationVersion(organization: Organization)
+
     /**
      * Report entity queries
      */
@@ -51,7 +53,7 @@ interface OrganizationDAO {
 
     fun getAllOrganizationReports(organizationId: Int) : List<OrganizationReport>
 
-    fun getSpecificReport(organizationId: Int, reportId: Int) : OrganizationReport
+    fun getSpecificReportOfOrganization(organizationId: Int, reportId: Int) : OrganizationReport
 
     fun voteOnReport(organizationId: Int, reportId: Int, vote: Vote)
 

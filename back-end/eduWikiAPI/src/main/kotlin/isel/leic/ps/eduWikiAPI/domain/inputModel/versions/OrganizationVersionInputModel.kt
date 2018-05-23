@@ -11,6 +11,5 @@ class OrganizationVersionInputModel (
         @JsonProperty("short_name")
         val shortName: String,
         val address: String,
-        val contact: String,
-        val timestamp: String
+        val contact: String
 )

@@ -24,7 +24,7 @@ interface OrganizationService {
 
     fun deleteAllOrganizations(): Int
 
-    fun updateOrganization()
+    fun updateOrganization(organization: Organization)
 
     fun getAllOrganizationReports(organizationId: Int): List<OrganizationReport>
 
@@ -49,4 +49,6 @@ interface OrganizationService {
     fun deleteAllVersions(organizationId: Int): Int?
 
     fun deleteSpecificVersion(organizationId: Int, version: Int): Int?
+
+    fun updateReportedOrganization(organizationId: Int, reportId: Int)
 }

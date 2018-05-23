@@ -10,12 +10,13 @@ class OrganizationRowMapper : RowMapper<Organization> {
 
     override fun map(rs: ResultSet, ctx: StatementContext) =
             Organization(
-                    rs.getInt(OrganizationDAOImpl.ORG_ID),
-                    rs.getInt(OrganizationDAOImpl.ORG_VERSION),
-                    rs.getString(OrganizationDAOImpl.ORG_CREATED_BY),
-                    rs.getString(OrganizationDAOImpl.ORG_FULL_NAME),
-                    rs.getString(OrganizationDAOImpl.ORG_SHORT_NAME),
-                    rs.getString(OrganizationDAOImpl.ORG_ADDRESS),
-                    rs.getString(OrganizationDAOImpl.ORG_CONTACT)
+                    id = rs.getInt(OrganizationDAOImpl.ORG_ID),
+                    version = rs.getInt(OrganizationDAOImpl.ORG_VERSION),
+                    createdBy = rs.getString(OrganizationDAOImpl.ORG_CREATED_BY),
+                    fullName = rs.getString(OrganizationDAOImpl.ORG_FULL_NAME),
+                    shortName = rs.getString(OrganizationDAOImpl.ORG_SHORT_NAME),
+                    address = rs.getString(OrganizationDAOImpl.ORG_ADDRESS),
+                    contact = rs.getString(OrganizationDAOImpl.ORG_CONTACT),
+                    timestamp = rs.getTimestamp(OrganizationDAOImpl.ORG_TIMESTAMP)
             )
 }

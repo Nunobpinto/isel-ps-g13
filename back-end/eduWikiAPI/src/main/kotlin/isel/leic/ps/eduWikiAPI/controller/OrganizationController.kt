@@ -45,16 +45,15 @@ class OrganizationController {
     @PostMapping("/{organizationId}/reports")
     fun reportOrganization(@PathVariable organizationId: Int, @RequestBody input: OrganizationReportInputModel) = organizationService.reportOrganization(organizationId, input)
 
+    @PostMapping("/{organizationId}/reports/{reportId}")
+    fun updateReportedOrganization(@PathVariable organizationId: Int, @PathVariable reportId: Int)
+            = organizationService.updateReportedOrganization(organizationId, reportId)
+
     @PostMapping("/{organizationId}/vote")
     fun voteOrganization(@PathVariable organizationId: Int, @RequestBody input: VoteInputModel) = organizationService.voteOrganization(organizationId, input)
 
     @PostMapping("/{organizationId}/reports/{reportId}/vote")
     fun voteOrganizationReport(@PathVariable organizationId: Int, @PathVariable reportId: Int, @RequestBody input: VoteInputModel) = organizationService.voteOnReport(organizationId, reportId, input)
-
-    @PostMapping("/{organizationId}/versions")
-    fun createVersion(@PathVariable organizationId: Int, @RequestBody input: OrganizationVersionInputModel)
-            = organizationService.createVersion(organizationId, input)
-
     /**
      * ALL PATCH Routes
      */

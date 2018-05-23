@@ -55,7 +55,7 @@ class ProgrammeController {
                              @RequestBody course: Course
     ) = programmeService.addCourseToProgramme(programmeId, course)
 
-    @PostMapping("/{programmeId}/inputVote")
+    @PostMapping("/{programmeId}/vote")
     fun voteOnProgramme(
             @PathVariable programmeId: Int,
             @RequestBody inputVote: VoteInputModel
@@ -67,7 +67,7 @@ class ProgrammeController {
             @RequestBody inputProgrammeReport: ProgrammeReportInputModel
     ) = programmeService.reportProgramme(programmeId, inputProgrammeReport)
 
-    @PostMapping("/{programmeId}/reports/{reportId}/inputVote")
+    @PostMapping("/{programmeId}/reports/{reportId}/vote")
     fun voteOnReportedProgramme(
             @PathVariable programmeId: Int,
             @PathVariable reportId: Int,
@@ -86,7 +86,7 @@ class ProgrammeController {
     @PostMapping("/stage/{stageId}")
     fun createProgrammeFromStaged(@PathVariable stageId: Int) = programmeService.createProgrammeFromStaged(stageId)
 
-    @PostMapping("/stage/{stageId}/inputVote")
+    @PostMapping("/stage/{stageId}/vote")
     fun voteOnStagedProgramme(
             @PathVariable stageId: Int,
             @RequestBody inputVote: VoteInputModel

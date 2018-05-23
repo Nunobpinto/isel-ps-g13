@@ -30,12 +30,13 @@ class OrganizationDAOImpl : OrganizationDAO {
         const val ORG_TIMESTAMP = "time_stamp"
         const val ORG_REPORT_ID = "report_id"
         const val ORG_CREATED_BY = "created_by"
+        const val ORG_REPORTED_BY = "reported_by"
     }
 
     @Autowired
     lateinit var dbi: Jdbi
 
-    override fun getOrganization(organizationId: Int): Organization = dbi.withHandle<Organization, Exception> {
+    override fun getSpecificOrganization(organizationId: Int): Organization = dbi.withHandle<Organization, Exception> {
         val select = "select * from $ORG_TABLE where organization_id = :organizationId"
         it.createQuery(select).bind("organizationId", organizationId).mapTo(Organization::class.java).findOnly()
     }
@@ -56,20 +57,40 @@ class OrganizationDAOImpl : OrganizationDAO {
         it.createUpdate("delete from $ORG_TABLE").execute()
     }
 
-    override fun updateOrganization(organization: Organization) = TODO("dynamically update org by filled values in Organization parameter")
+    override fun updateOrganization(organization: Organization) = dbi.useHandle<Exception> {
+        val update = "update $ORG_TABLE SET " +
+                "$ORG_VERSION = :version, $ORG_CREATED_BY = :createdBy, " +
+                "$ORG_FULL_NAME = :fullName, $ORG_SHORT_NAME = :shortName, " +
+                "$ORG_CONTACT = :contact, $ORG_ADDRESS = :address, " +
+                "$ORG_VOTE = :votes, $ORG_TIMESTAMP = :timestamp " +
+                "where $ORG_ID = :id"
+
+        it.createUpdate(update)
+                .bind("version", organization.version)
+                .bind("createdBy", organization.createdBy)
+                .bind("fullName", organization.fullName)
+                .bind("shortName", organization.shortName)
+                .bind("contact", organization.contact)
+                .bind("address", organization.address)
+                .bind("votes", organization.votes)
+                .bind("id", organization.id)
+                .bind("timestamp", organization.timestamp)
+                .execute()
+    }
 
     override fun createOrganization(organization: Organization) = dbi.useHandle<Exception> {
         val insert = "insert into $ORG_TABLE " +
                 "($ORG_FULL_NAME, " +
                 "$ORG_SHORT_NAME, $ORG_CREATED_BY, $ORG_ADDRESS, " +
-                "$ORG_CONTACT) " +
-                "values(:fullName, :shortName, :created_by, :address, :contact)"
+                "$ORG_CONTACT, $ORG_TIMESTAMP) " +
+                "values(:fullName, :shortName, :created_by, :address, :contact, :timestamp)"
         it.createUpdate(insert)
                 .bind("fullName", organization.fullName)
                 .bind("shortName", organization.shortName)
                 .bind("address", organization.address)
                 .bind("contact", organization.contact)
                 .bind("created_by", organization.createdBy)
+                .bind("timestamp", organization.timestamp)
                 .execute()
     }
 
@@ -90,16 +111,17 @@ class OrganizationDAOImpl : OrganizationDAO {
     override fun reportOrganization(organizationReport: OrganizationReport) = dbi.useHandle<Exception> {
         val insert = "insert into $ORG_REPORT_TABLE" +
                 "($ORG_FULL_NAME, $ORG_ID," +
-                "$ORG_SHORT_NAME, $ORG_CREATED_BY, $ORG_ADDRESS, " +
-                "$ORG_CONTACT) " +
-                "values(:fullName,:id, :shortName, :created_by, :address, :contact)"
+                "$ORG_SHORT_NAME, $ORG_REPORTED_BY, $ORG_ADDRESS, " +
+                "$ORG_CONTACT, $ORG_TIMESTAMP) " +
+                "values(:fullName,:id, :shortName, :reported_by, :address, :contact, :timestamp)"
         it.createUpdate(insert)
                 .bind("fullName", organizationReport.fullName)
                 .bind("shortName", organizationReport.shortName)
                 .bind("address", organizationReport.address)
                 .bind("contact", organizationReport.contact)
-                .bind("created_by", organizationReport.reportedBy)
+                .bind("reported_by", organizationReport.reportedBy)
                 .bind("id", organizationReport.id)
+                .bind("timestamp", organizationReport.timestamp)
                 .execute()
     }
 
@@ -122,7 +144,7 @@ class OrganizationDAOImpl : OrganizationDAO {
         it.createQuery(select).bind("id", organizationId).mapTo(OrganizationReport::class.java).toList()
     }
 
-    override fun getSpecificReport(organizationId: Int, reportId: Int): OrganizationReport = dbi.withHandle<OrganizationReport, Exception> {
+    override fun getSpecificReportOfOrganization(organizationId: Int, reportId: Int): OrganizationReport = dbi.withHandle<OrganizationReport, Exception> {
         val select = "select * from $ORG_REPORT_TABLE where report_id = :id "
         it.createQuery(select).bind("id", reportId).mapTo(OrganizationReport::class.java).findOnly()
     }
@@ -182,6 +204,24 @@ class OrganizationDAOImpl : OrganizationDAO {
         it.createUpdate(delete)
                 .bind("organizationId", organizationId)
                 .bind("version", version)
+                .execute()
+    }
+
+    override fun addToOrganizationVersion(organization: Organization) = dbi.useHandle<Exception> {
+        val insert = "insert into $ORG_VERSION_TABLE " +
+                "($ORG_ID, $ORG_VERSION, $ORG_FULL_NAME, $ORG_SHORT_NAME, " +
+                "$ORG_CONTACT, $ORG_ADDRESS, $ORG_TIMESTAMP, $ORG_CREATED_BY) " +
+                "values (:id, :version, :fullName, :shortName, " +
+                ":contact, :address, :timestamp, :createdBy)"
+        it.createUpdate(insert)
+                .bind("id", organization.id)
+                .bind("version", organization.version)
+                .bind("fullName", organization.fullName)
+                .bind("shortName", organization.shortName)
+                .bind("contact", organization.contact)
+                .bind("address", organization.address)
+                .bind("timestamp", organization.timestamp)
+                .bind("createdBy", organization.createdBy)
                 .execute()
     }
 
