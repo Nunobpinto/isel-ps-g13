@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS organization (
   organization_full_name VARCHAR(100) NOT NULL,
   organization_short_name VARCHAR(10) NOT NULL,
   organization_address VARCHAR (100) NOT NULL,
-  organization_contact VARCHAR (15) NOT NULL
+  organization_contact VARCHAR (15) NOT NULL,
   votes INTEGER DEFAULT 0,
   PRIMARY KEY (organization_id)
 );

@@ -75,6 +75,16 @@ CREATE TABLE IF NOT EXISTS course_misc_unit_stage (
   PRIMARY KEY (id)
 );
 
+CREATE TABLE IF NOT EXISTS class_misc_unit_stage (
+  id SERIAL,
+  misc_type class_misc_unit_type NOT NULL,
+  course_id INTEGER,
+  class_id INTEGER,
+  term_id INTEGER,
+  FOREIGN KEY (course_id, class_id, term_id) REFERENCES course_class(course_id, class_id, term_id),
+  PRIMARY KEY (id)
+);
+
 CREATE TABLE IF NOT EXISTS work_assignment_stage (
   	id INTEGER REFERENCES course_misc_unit_stage,
   	sheet VARCHAR(100) NOT NULL,
@@ -91,7 +101,7 @@ CREATE TABLE IF NOT EXISTS work_assignment_stage (
 );
 
 CREATE TABLE IF NOT EXISTS exam_stage (
-  	id INTEGER REFERENCES course_misc_unit,
+  	id INTEGER REFERENCES course_misc_unit_stage,
   	sheet VARCHAR(100) NOT NULL,
   	due_date date NOT NULL,
   	exam_type  exam_type NOT NULL,
@@ -104,7 +114,7 @@ CREATE TABLE IF NOT EXISTS exam_stage (
 );
 
 CREATE TABLE IF NOT EXISTS lecture_stage (
-  id INTEGER REFERENCES class_misc_unit,
+  id INTEGER REFERENCES class_misc_unit_stage,
   weekday weekday NOT NULL,
   begins TIME NOT NULL,
   duration INTERVAL NOT NULL,
@@ -116,7 +126,7 @@ CREATE TABLE IF NOT EXISTS lecture_stage (
 );
 
 CREATE TABLE IF NOT EXISTS homework_stage (
-  id INTEGER REFERENCES class_misc_unit,
+  id INTEGER REFERENCES class_misc_unit_stage,
   sheet VARCHAR(100) NOT NULL,
   due_date DATE NOT NULL,
   late_delivery BOOLEAN NOT NULL,
