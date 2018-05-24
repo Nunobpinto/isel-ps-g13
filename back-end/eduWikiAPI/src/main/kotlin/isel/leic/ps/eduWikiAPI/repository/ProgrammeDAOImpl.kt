@@ -126,7 +126,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
     }
 
     override fun voteOnProgramme(programmeId: Int, inputVote: VoteInputModel) = dbi.useTransaction<Exception> {
-        val voteQuery = "select votes from $PROG_STAGE_TABLE where $PROG_ID = :programmeId"
+        val voteQuery = "select $PROG_VOTES from $PROG_TABLE where $PROG_ID = :programmeId"
         var votes = it.createQuery(voteQuery)
                 .bind("programmeId", programmeId)
                 .mapTo(Int::class.java).findOnly()
@@ -136,7 +136,6 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .bind("votes", votes)
                 .bind("programmeId", programmeId)
                 .execute()
-
     }
 
     override fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course> = dbi.withHandle<List<Course>, Exception> {

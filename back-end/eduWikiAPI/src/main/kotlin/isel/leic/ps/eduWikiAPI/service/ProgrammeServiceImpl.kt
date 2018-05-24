@@ -21,13 +21,10 @@ class ProgrammeServiceImpl : ProgrammeService {
     @Autowired
     lateinit var programmeRepo: ProgrammeDAO
 
-    override fun getAllProgrammes(): List<Programme> {
-        return programmeRepo.getAllProgrammes()
-    }
+    override fun getAllProgrammes(): List<Programme> = programmeRepo.getAllProgrammes()
 
-    override fun getSpecificProgramme(programmeId: Int): Programme {
-        return programmeRepo.getSpecificProgramme(programmeId)
-    }
+
+    override fun getSpecificProgramme(programmeId: Int): Programme = programmeRepo.getSpecificProgramme(programmeId)
 
     override fun createProgramme(inputProgramme: ProgrammeInputModel) {
         val programme = Programme(
@@ -56,8 +53,7 @@ class ProgrammeServiceImpl : ProgrammeService {
         programmeRepo.createProgrammeStage(stage)
     }
 
-    override fun getSpecificStagedProgramme(stageId: Int) : ProgrammeStage =
-            programmeRepo.getProgrammeStage(stageId)
+    override fun getSpecificStagedProgramme(stageId: Int) : ProgrammeStage = programmeRepo.getProgrammeStage(stageId)
 
     override fun createProgrammeFromStaged(stageId: Int) {
         val programmeStage = programmeRepo.getProgrammeStage(stageId)
@@ -77,29 +73,17 @@ class ProgrammeServiceImpl : ProgrammeService {
 
     override fun getStagedProgrammes(): List<ProgrammeStage> = programmeRepo.getAllProgrammeStages()
 
-    override fun voteOnStagedProgramme(stageId: Int, inputVote: VoteInputModel) {
-        return programmeRepo.voteOnStagedProgramme(stageId, inputVote)
-    }
+    override fun voteOnStagedProgramme(stageId: Int, inputVote: VoteInputModel) = programmeRepo.voteOnStagedProgramme(stageId, inputVote)
 
-    override fun getAllReportsOfProgramme(programmeId: Int): List<ProgrammeReport>{
-        return programmeRepo.getAllReportsOfProgramme(programmeId)
-    }
+    override fun getAllReportsOfProgramme(programmeId: Int): List<ProgrammeReport> = programmeRepo.getAllReportsOfProgramme(programmeId)
 
-    override fun getSpecificReportOfProgramme(programmeId: Int, reportId: Int): ProgrammeReport {
-        return programmeRepo.getSpecificReportOfProgramme(programmeId, reportId)
-    }
+    override fun getSpecificReportOfProgramme(programmeId: Int, reportId: Int): ProgrammeReport = programmeRepo.getSpecificReportOfProgramme(programmeId, reportId)
 
-    override fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course> {
-       return programmeRepo.getCoursesOnSpecificProgramme(programmeId)
-    }
+    override fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course> = programmeRepo.getCoursesOnSpecificProgramme(programmeId)
 
-    override fun addCourseToProgramme(programmeId: Int, course: Course) {
-        return programmeRepo.addCourseToProgramme(programmeId, course)
-    }
+    override fun addCourseToProgramme(programmeId: Int, course: Course) = programmeRepo.addCourseToProgramme(programmeId, course)
 
-    override fun voteOnProgramme(programmeId: Int, inputVote: VoteInputModel) {
-        return programmeRepo.voteOnProgramme(programmeId, inputVote)
-    }
+    override fun voteOnProgramme(programmeId: Int, inputVote: VoteInputModel) = programmeRepo.voteOnProgramme(programmeId, inputVote)
 
     override fun reportProgramme(programmeId: Int, inputProgrammeReport: ProgrammeReportInputModel) {
         val programmeReport = ProgrammeReport(
@@ -112,12 +96,10 @@ class ProgrammeServiceImpl : ProgrammeService {
                 reportedBy = inputProgrammeReport.reportedBy,
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
-        return programmeRepo.reportProgramme(programmeId, programmeReport)
+        programmeRepo.reportProgramme(programmeId, programmeReport)
     }
 
-    override fun voteOnReportedProgramme(reportId: Int, inputVote: VoteInputModel) {
-        return programmeRepo.voteOnReportedProgramme(reportId, inputVote)
-    }
+    override fun voteOnReportedProgramme(reportId: Int, inputVote: VoteInputModel) = programmeRepo.voteOnReportedProgramme(reportId, inputVote)
 
     override fun updateReportedProgramme(programmeId: Int, reportId: Int) {
         val programme = programmeRepo.getSpecificProgramme(programmeId)
@@ -139,29 +121,21 @@ class ProgrammeServiceImpl : ProgrammeService {
         programmeRepo.deleteReportOnProgramme(programmeId,reportId)
     }
 
-    override fun deleteAllProgrammes() {
-        return programmeRepo.deleteAllProgrammes()
-    }
+    override fun deleteAllProgrammes() = programmeRepo.deleteAllProgrammes()
 
-    override fun deleteSpecificProgramme(programmeId: Int) {
-        return programmeRepo.deleteSpecificProgramme(programmeId)
-    }
+    override fun deleteSpecificProgramme(programmeId: Int) = programmeRepo.deleteSpecificProgramme(programmeId)
+
 
     override fun deleteAllStagedProgrammes() {
         return programmeRepo.deleteAllStagedProgrammes()
     }
 
-    override fun deleteStagedProgramme(stageId: Int) {
-        return programmeRepo.deleteStagedProgramme(stageId)
-    }
+    override fun deleteStagedProgramme(stageId: Int) = programmeRepo.deleteStagedProgramme(stageId)
 
-    override fun deleteAllReportsOnProgramme(programmeId: Int) {
-        return programmeRepo.deleteAllReportsOnProgramme(programmeId)
-    }
+    override fun deleteAllReportsOnProgramme(programmeId: Int) = programmeRepo.deleteAllReportsOnProgramme(programmeId)
 
-    override fun deleteReportOnProgramme(programmeId: Int, reportId: Int) {
-        return programmeRepo.deleteReportOnProgramme(programmeId, reportId)
-    }
+
+    override fun deleteReportOnProgramme(programmeId: Int, reportId: Int) = programmeRepo.deleteReportOnProgramme(programmeId, reportId)
 
     override fun partialUpdateOnProgramme(programmeId: Int, inputProgramme: ProgrammeInputModel) {
         val programme = programmeRepo.getSpecificProgramme(programmeId)
