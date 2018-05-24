@@ -34,15 +34,15 @@ interface ProgrammeDAO {
      * Stage entities queries
      */
 
-    fun getProgrammeStage(programmeId: Int) : ProgrammeStage
+    fun getSpecificProgrammeStage(programmeId: Int) : ProgrammeStage
 
     fun getAllProgrammeStages() : List<ProgrammeStage>
 
     fun deleteAllStagedProgrammes()
 
-    fun createProgrammeStage(programmeStage: ProgrammeStage)
+    fun createStagingProgramme(programmeStage: ProgrammeStage)
 
-    fun voteOnStagedProgramme(programmeId: Int, inputVote: VoteInputModel)
+    fun voteOnStagedProgramme(programmeStageId: Int, inputVote: VoteInputModel)
 
     fun updateStagedProgramme(programmeId: Int, programme: ProgrammeStage)
 

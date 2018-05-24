@@ -38,7 +38,7 @@ class ProgrammeServiceImpl : ProgrammeService {
         programmeDAO.createProgramme(programme)
     }
 
-    override fun createStagedProgramme(inputProgramme: ProgrammeInputModel) {
+    override fun createStagingProgramme(inputProgramme: ProgrammeInputModel) {
         val stage = ProgrammeStage(
                 createdBy = inputProgramme.createdBy,
                 fullName = inputProgramme.fullName,
@@ -49,13 +49,13 @@ class ProgrammeServiceImpl : ProgrammeService {
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
 
         )
-        programmeDAO.createProgrammeStage(stage)
+        programmeDAO.createStagingProgramme(stage)
     }
 
-    override fun getSpecificStagedProgramme(stageId: Int) : ProgrammeStage = programmeDAO.getProgrammeStage(stageId)
+    override fun getSpecificStagedProgramme(stageId: Int) : ProgrammeStage = programmeDAO.getSpecificProgrammeStage(stageId)
 
     override fun createProgrammeFromStaged(stageId: Int) {
-        val programmeStage = programmeDAO.getProgrammeStage(stageId)
+        val programmeStage = programmeDAO.getSpecificProgrammeStage(stageId)
         val programme = Programme(
                 createdBy = programmeStage.createdBy,
                 fullName = programmeStage.fullName,
@@ -152,7 +152,7 @@ class ProgrammeServiceImpl : ProgrammeService {
     }
 
     override fun partialUpdateOnStagedProgramme(programmeId: Int, inputProgramme: ProgrammeInputModel) {
-        val programme = programmeDAO.getProgrammeStage(programmeId)
+        val programme = programmeDAO.getSpecificProgrammeStage(programmeId)
         val updatedProgramme = ProgrammeStage(
                 programmeId = programmeId,
                 createdBy = inputProgramme.createdBy,

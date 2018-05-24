@@ -14,7 +14,7 @@ interface ProgrammeService {
 
     fun getSpecificProgramme(programmeId: Int): Programme
 
-    fun createStagedProgramme(inputProgramme: ProgrammeInputModel)
+    fun createStagingProgramme(inputProgramme: ProgrammeInputModel)
 
     fun getSpecificStagedProgramme(stageId: Int) : ProgrammeStage
 

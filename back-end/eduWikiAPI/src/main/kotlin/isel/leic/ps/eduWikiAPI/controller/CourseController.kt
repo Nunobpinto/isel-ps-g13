@@ -157,7 +157,7 @@ class CourseController {
     ) = courseService.voteOnCourse(courseId, inputVote)
 
     @PostMapping("/{courseId}/reports")
-    fun reportCourse(
+    fun reportCourse( //TODO
             @PathVariable courseId: Int,
             @RequestBody inputReportCourse: CourseReportInputModel
     ) = courseService.reportCourse(courseId, inputReportCourse)
@@ -170,22 +170,22 @@ class CourseController {
     ) = courseService.voteOnReportedCourse(reportId, inputVote)
 
     @PostMapping("/{courseId}/reports/{reportId}")
-    fun updateReportedCourse(
+    fun updateReportedCourse( //TODO
             @PathVariable courseId: Int,
             @PathVariable reportId: Int
-    ) = NotImplementedError()
+    ) = courseService.updateReportedCourse(courseId, reportId)
 
     @PostMapping("/stage")
-    fun createStagingCourse(@RequestBody course: CourseInputModel) = NotImplementedError()
+    fun createStagingCourse(@RequestBody inputCourse: CourseInputModel) = courseService.createStagingCourse(inputCourse)
 
     @PostMapping("/stage/{stageId}")
-    fun createCourseFromStaged(@PathVariable stageId: Int) = NotImplementedError()
+    fun createCourseFromStaged(@PathVariable stageId: Int) = courseService.createCourseFromStaged(stageId)
 
     @PostMapping("/stage/{stageId}/vote")
     fun voteOnStagedCourse(
             @PathVariable stageId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = NotImplementedError()
+            @RequestBody inputVote: VoteInputModel
+    ) = courseService.voteOnStagedCourse(stageId, inputVote)
 
     //exams
     @PostMapping("/{courseId}/terms/{termId}/exams")
@@ -193,7 +193,7 @@ class CourseController {
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @RequestBody exam: ExamInputModel
-    ) = NotImplementedError()
+    ) = courseService.createExamOnCourseInTerm(courseId, termId, exam)
 
     @PostMapping("/{courseId}/terms/{termId}/exams/{examId}/reports")
     fun addReportToExamOnCourseInTerm(

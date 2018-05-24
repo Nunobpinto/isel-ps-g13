@@ -116,12 +116,11 @@ class CourseDAOImpl : CourseDAO {
                 .execute()
     }
 
-    override fun deleteCourseStage(courseStageId: Int): Int = dbi.withHandle<Int, Exception> {
-        it.execute(dsl
-                .delete(table(COURSE_STAGE_TABLE))
-                .where(field(COURSE_ID).eq(courseStageId))
-                .sql
-        )
+    override fun deleteStagedCourse(courseStageId: Int) = dbi.useHandle<Exception> {
+        val delete = "delete from $COURSE_STAGE_TABLE where $COURSE_ID = :courseId"
+        it.createUpdate(delete)
+                .bind("courseId", courseStageId)
+                .execute()
     }
 
     override fun deleteAllCourseStages(): Int = dbi.withHandle<Int, Exception> {
@@ -131,43 +130,32 @@ class CourseDAOImpl : CourseDAO {
         )
     }
 
-    override fun createCourseStage(courseStage: CourseStage) = dbi.useHandle<Exception> {
-        it.execute(dsl
-                .insertInto(
-                        table(COURSE_STAGE_TABLE),
-                        field(COURSE_ID),
-                        field(ORG_ID),
-                        field(COURSE_FULL_NAME),
-                        field(COURSE_SHORT_NAME),
-                        field(COURSE_CREATED_BY),
-                        field(COURSE_VOTES),
-                        field(COURSE_TIMESTAMP)
-                )
-                .values(
-                        courseStage.courseId,
-                        courseStage.organizationId,
-                        courseStage.fullName,
-                        courseStage.shortName,
-                        courseStage.createdBy,
-                        courseStage.votes,
-                        courseStage.timestamp
-                ).sql
-        )
+    override fun createStagingCourse(courseStage: CourseStage) = dbi.useHandle<Exception> {
+        val insert = "insert into $COURSE_STAGE_TABLE " +
+                "(${OrganizationDAOImpl.ORG_ID}, $COURSE_FULL_NAME" +
+                "$COURSE_SHORT_NAME, $COURSE_CREATED_BY, $COURSE_VOTES,, $COURSE_TIMESTAMP) " +
+                "values(:organizationId, :fullName, :shortName, :createdBy, :votes, :timestamp)"
+        it.createUpdate(insert)
+                .bind("organizationId", courseStage.organizationId)
+                .bind("fullName", courseStage.fullName)
+                .bind("shortName", courseStage.shortName)
+                .bind("createdBy", courseStage.createdBy)
+                .bind("votes", courseStage.votes)
+                .bind("timestamp", courseStage.timestamp)
+                .execute()
     }
 
-    override fun voteOnCourseStage(courseStageId: Int, voteType: Int) = dbi.useTransaction<Exception> {
-        val votes: Int = it.createQuery(dsl
-                .select(field(COURSE_VOTES))
-                .from(table(COURSE_STAGE_TABLE))
-                .where(field(COURSE_ID).eq(courseStageId))
-                .sql
-        ).mapTo(Int::class.java).findOnly()
-        it.execute(dsl
-                .update(table(COURSE_STAGE_TABLE))
-                .set(field(COURSE_VOTES), if (voteType == -1) votes.dec() else votes.inc())
-                .where(field(COURSE_ID).eq(courseStageId))
-                .sql
-        )
+    override fun voteOnStagedCourse(courseStageId: Int, inputVote: VoteInputModel) = dbi.useTransaction<Exception> {
+        val voteQuery = "select $COURSE_VOTES from $COURSE_STAGE_TABLE where $COURSE_ID = :courseId"
+        var votes = it.createQuery(voteQuery)
+                .bind("courseId", courseStageId)
+                .mapTo(Int::class.java).findOnly()
+        votes = if (inputVote.vote.equals(Vote.Down)) --votes else ++votes
+        val updateQuery = "update $COURSE_STAGE_TABLE set $COURSE_VOTES = :votes where $COURSE_ID = :courseId"
+        it.createUpdate(updateQuery)
+                .bind("votes", votes)
+                .bind("courseId", courseStageId)
+                .execute()
     }
 
     override fun getVersionCourse(versionCourseId: Int, version: Int): CourseVersion = dbi.withHandle<CourseVersion, Exception> {
@@ -497,6 +485,13 @@ class CourseDAOImpl : CourseDAO {
                 .bind("votes", votes)
                 .bind("reportId", reportId)
                 .execute()
+    }
+
+    override fun createExamOnCourseInTerm(courseId: Int, termId: Int, exam: Exam) = dbi.useHandle<Exception> {
+        val insert = "insert into ${ExamDAOImpl.EXM_TABLE}" +
+                "($COURSE_ID, $COURSE_FULL_NAME, \" +\n" +
+                "                \"$COURSE_SHORT_NAME, $COURSE_REPORTED_BY, $COURSE_TIMESTAMP) \" +\n" +
+                "                \"values(:courseId, :fullName, :shortName, :reportedBy, :timestamp)"
     }
 
 

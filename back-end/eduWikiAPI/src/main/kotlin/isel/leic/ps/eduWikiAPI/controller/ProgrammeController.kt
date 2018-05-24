@@ -88,7 +88,7 @@ class ProgrammeController {
     ) = programmeService.updateReportedProgramme(programmeId, reportId)
 
     @PostMapping("/stage")
-    fun createStagingProgramme(@RequestBody inputProgramme: ProgrammeInputModel) = programmeService.createStagedProgramme(inputProgramme)
+    fun createStagingProgramme(@RequestBody inputProgramme: ProgrammeInputModel) = programmeService.createStagingProgramme(inputProgramme)
 
     @PostMapping("/stage/{stageId}")
     fun createProgrammeFromStaged(@PathVariable stageId: Int) = programmeService.createProgrammeFromStaged(stageId)

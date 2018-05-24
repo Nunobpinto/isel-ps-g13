@@ -1,6 +1,7 @@
 package isel.leic.ps.eduWikiAPI.service.interfaces
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.CourseInputModel
+import isel.leic.ps.eduWikiAPI.domain.inputModel.ExamInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Class
@@ -66,5 +67,15 @@ interface CourseService {
     fun reportCourse(courseId: Int, inputReportCourse: CourseReportInputModel)
 
     fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel)
+
+    fun updateReportedCourse(courseId: Int, reportId: Int)
+
+    fun createStagingCourse(inputCourse: CourseInputModel)
+
+    fun createCourseFromStaged(stageId: Int)
+
+    fun voteOnStagedCourse(stageId: Int, inputVote: VoteInputModel)
+
+    fun createExamOnCourseInTerm(courseId: Int, termId: Int, inputExam: ExamInputModel)
 
 }

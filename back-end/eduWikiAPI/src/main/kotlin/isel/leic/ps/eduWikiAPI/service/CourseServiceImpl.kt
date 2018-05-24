@@ -1,6 +1,7 @@
 package isel.leic.ps.eduWikiAPI.service
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.CourseInputModel
+import isel.leic.ps.eduWikiAPI.domain.inputModel.ExamInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Class
@@ -27,7 +28,7 @@ class CourseServiceImpl : CourseService {
     @Autowired
     lateinit var courseDAO: CourseDAO
 
-    override fun getAllCourses() : List<Course> = courseDAO.getAllCourses()
+    override fun getAllCourses(): List<Course> = courseDAO.getAllCourses()
 
     override fun getSpecificCourse(courseId: Int) = courseDAO.getSpecificCourse(courseId)
 
@@ -83,17 +84,71 @@ class CourseServiceImpl : CourseService {
     override fun voteOnCourse(courseId: Int, inputVote: VoteInputModel) = courseDAO.voteOnCourse(courseId, inputVote)
 
     override fun reportCourse(courseId: Int, inputReportCourse: CourseReportInputModel) {
-        val courseReport = CourseReport(
+        /*val courseReport = CourseReport(
                 courseId = courseId,
                 courseFullName = inputReportCourse.fullName,
                 courseShortName = inputReportCourse.shortName,
                 reportedBy = inputReportCourse.reportedBy
         )
         courseDAO.reportCourse(courseId, courseReport)
+        */
+        NotImplementedError()
     }
-
 
     override fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel) = courseDAO.voteOnReportedCourse(reportId, inputVote)
 
+    override fun updateReportedCourse(courseId: Int, reportId: Int) {
+        /* val course = courseDAO.getSpecificCourse(courseId)
+         val report = courseDAO.getSpecificReportOfCourse(courseId, reportId)
+         val updatedCourse = Course(
+                 id = course.id,
+                 version = course.version + 1,
+                 votes = course.votes,
+                 createdBy = course.createdBy,
+                 fullName = report.courseFullName ?: course.fullName,
+                 shortName = report.courseShortName ?: course.shortName,
+                 timestamp = Timestamp.valueOf(LocalDateTime.now())
+         )
+         courseDAO.addToProgrammeVersion(programme)
+         courseDAO.updateProgramme(programmeId, updatedProgramme)
+         courseDAO.deleteReportOnProgramme(programmeId,reportId)
+          */
+        NotImplementedError()
+    }
 
+    override fun createStagingCourse(inputCourse: CourseInputModel) {
+        val stage = CourseStage(
+                fullName = inputCourse.fullName,
+                shortName = inputCourse.shortName,
+                createdBy = inputCourse.createdBy,
+                timestamp = Timestamp.valueOf(LocalDateTime.now())
+        )
+        courseDAO.createStagingCourse(stage)
+    }
+
+    override fun createCourseFromStaged(stageId: Int) {
+        val courseStage = courseDAO.getCourseSpecificStageEntry(stageId)
+        val course = Course(
+                organizationId = courseStage.organizationId,
+                createdBy = courseStage.createdBy,
+                fullName = courseStage.fullName,
+                shortName = courseStage.shortName,
+                timestamp = Timestamp.valueOf(LocalDateTime.now())
+        )
+        courseDAO.deleteStagedCourse(stageId) //TODO use transaction
+        courseDAO.createCourse(course)    //TODO use transaction
+    }
+
+    override fun voteOnStagedCourse(stageId: Int, inputVote: VoteInputModel) = courseDAO.voteOnStagedCourse(stageId, inputVote)
+
+    override fun createExamOnCourseInTerm(courseId: Int, termId: Int, inputExam: ExamInputModel) {
+        val exam = Exam(
+                createdBy = inputExam.createdBy,
+                sheet = inputExam.sheet,
+                dueDate = inputExam.dueDate,
+                phase = inputExam.phase,
+                location = inputExam.location
+                )
+        courseDAO.createExamOnCourseInTerm(courseId, termId, exam)
+    }
 }

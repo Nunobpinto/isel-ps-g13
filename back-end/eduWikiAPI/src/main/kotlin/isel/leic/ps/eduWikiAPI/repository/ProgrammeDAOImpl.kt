@@ -143,7 +143,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         it.createQuery(select).bind("programmeId", programmeId).mapTo(Course::class.java).list()
     }
 
-    override fun getProgrammeStage(programmeId: Int): ProgrammeStage = dbi.withHandle<ProgrammeStage, Exception> {
+    override fun getSpecificProgrammeStage(programmeId: Int): ProgrammeStage = dbi.withHandle<ProgrammeStage, Exception> {
         val select = "select * from $PROG_STAGE_TABLE where $PROG_ID = :programmeId"
         it.createQuery(select).bind("programmeId", programmeId).mapTo(ProgrammeStage::class.java).findOnly()
     }
@@ -157,7 +157,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         it.createUpdate("delete from $PROG_STAGE_TABLE").execute()
     }
 
-    override fun createProgrammeStage(programmeStage: ProgrammeStage) = dbi.useHandle<Exception> {
+    override fun createStagingProgramme(programmeStage: ProgrammeStage) = dbi.useHandle<Exception> {
         val insert = "insert into $PROG_STAGE_TABLE " +
                 "($PROG_FULL_NAME, " +
                 "$PROG_SHORT_NAME, $PROG_ACADEMIC_DEGREE, $PROG_TOTAL_CREDITS, " +
@@ -175,16 +175,16 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .execute()
     }
 
-    override fun voteOnStagedProgramme(programmeId: Int, inputVote: VoteInputModel) = dbi.useTransaction<Exception> {
+    override fun voteOnStagedProgramme(programmeStageId: Int, inputVote: VoteInputModel) = dbi.useTransaction<Exception> {
         val voteQuery = "select $PROG_VOTES from $PROG_STAGE_TABLE where $PROG_ID = :programmeId"
         var votes = it.createQuery(voteQuery)
-                .bind("programmeId", programmeId)
+                .bind("programmeId", programmeStageId)
                 .mapTo(Int::class.java).findOnly()
         votes = if (inputVote.vote.equals(Vote.Down)) --votes else ++votes
         val updateQuery = "update $PROG_STAGE_TABLE set $PROG_VOTES = :votes where $PROG_ID = :programmeId"
         it.createUpdate(updateQuery)
                 .bind("votes", votes)
-                .bind("programmeId", programmeId)
+                .bind("programmeId", programmeStageId)
                 .execute()
     }
 

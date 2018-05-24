@@ -48,17 +48,19 @@ interface CourseDAO {
 
     fun getClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class>
 
+    fun createExamOnCourseInTerm(courseId: Int, termId: Int, exam: Exam)
+
     /**
      * Stage entities queries
      */
 
-    fun deleteCourseStage(courseStageId: Int) : Int
+    fun deleteStagedCourse(courseStageId: Int)
 
     fun deleteAllCourseStages() : Int
 
-    fun createCourseStage(courseStage: CourseStage)
+    fun createStagingCourse(courseStage: CourseStage)
 
-    fun voteOnCourseStage(courseStageId: Int, voteType: Int)
+    fun voteOnStagedCourse(courseStageId: Int, inputVote: VoteInputModel)
 
     fun getAllCourseStageEntries(): List<CourseStage>
 
