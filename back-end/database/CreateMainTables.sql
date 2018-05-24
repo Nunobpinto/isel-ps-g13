@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS work_assignment (
   PRIMARY KEY (id)
 );
 
-CREATE TABLE exam (
+CREATE TABLE IF NOT EXISTS exam (
   id INTEGER REFERENCES course_misc_unit,
   exam_version INTEGER NOT NULL DEFAULT 1,
   created_by VARCHAR(20) NOT NULL,
@@ -121,7 +121,7 @@ CREATE TABLE exam (
   PRIMARY KEY (id)
 );
 
-CREATE TABLE course_class (
+CREATE TABLE IF NOT EXISTS course_class (
   course_id INTEGER REFERENCES course,
   class_id INTEGER,
   term_id INTEGER,
@@ -131,7 +131,7 @@ CREATE TABLE course_class (
   PRIMARY KEY (course_id, class_id, term_id)
 );
 
-CREATE TABLE class_misc_unit (
+CREATE TABLE IF NOT EXISTS class_misc_unit (
   id SERIAL,
   misc_type class_misc_unit_type,
   course_id INTEGER,
@@ -142,7 +142,7 @@ CREATE TABLE class_misc_unit (
   PRIMARY KEY (id)
 );
 
-CREATE TABLE lecture (
+CREATE TABLE IF NOT EXISTS lecture (
   id INTEGER REFERENCES class_misc_unit,
   lecture_version INTEGER NOT NULL DEFAULT 1,
   created_by VARCHAR(20),
@@ -174,7 +174,6 @@ CREATE TABLE IF NOT EXISTS student (
   student_family_name VARCHAR(15) NOT NULL,
   student_personal_email varchar(35) UNIQUE NOT NULL,
   student_organization_email varchar(35) UNIQUE NOT NULL,
-  student_version INTEGER UNIQUE NOT NULL DEFAULT 1,
   PRIMARY KEY (student_username)
 );
 
@@ -182,7 +181,6 @@ CREATE TABLE IF NOT EXISTS reputation (
   reputation_id SERIAL,
   reputation_points INTEGER NOT NULL,
   reputation_rank student_rank NOT NULL, 
-  reputation_version INTEGER UNIQUE NOT NULL DEFAULT 1,
   student varchar(20) REFERENCES student,
   PRIMARY KEY (reputation_id, student)
 );
@@ -199,8 +197,10 @@ CREATE TABLE IF NOT EXISTS reputation_log (
 );
 
 CREATE TABLE IF NOT EXISTS student_course_class (
-	username VARCHAR(20) NOT NULL REFERENCES student,
-	course_id INTEGER NOT NULL REFERENCES course,
+	username VARCHAR(20) REFERENCES student,
+	course_id INTEGER REFERENCES course,
 	class_id INTEGER,
+  term_id INTEGER,
+  FOREIGN KEY (class_id, term_id) REFERENCES class (class_id, term_id),
 	PRIMARY KEY (username, course_id)
 );
