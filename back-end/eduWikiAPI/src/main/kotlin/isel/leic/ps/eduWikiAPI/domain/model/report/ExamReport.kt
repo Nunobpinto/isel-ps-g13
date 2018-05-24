@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.domain.model.report
 
+import java.sql.Timestamp
 import java.time.Year
 
 data class ExamReport (
@@ -11,5 +12,6 @@ data class ExamReport (
         val phase: String = "",
         val location: String = "",
         val reportedBy: String = "",
-        val votes: Int = 0
+        val votes: Int = 0,
+        val timestamp: Timestamp
 )

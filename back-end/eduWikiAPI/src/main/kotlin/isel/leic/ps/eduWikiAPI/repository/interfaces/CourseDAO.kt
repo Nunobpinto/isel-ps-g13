@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.repository.interfaces
 
+import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Class
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Exam
@@ -31,7 +32,7 @@ interface CourseDAO {
 
     fun createCourse(course: Course)
 
-    fun voteOnCourse(courseId: Int, voteType: Int)
+    fun voteOnCourse(courseId: Int, inputVote: VoteInputModel)
 
     fun getTermsOfCourse(courseId: Int): List<Term>
 
@@ -89,7 +90,7 @@ interface CourseDAO {
      * Report entity queries
      */
 
-    fun reportCourse(courseReport: CourseReport)
+    fun reportCourse(courseId: Int, courseReport: CourseReport)
 
     fun deleteReportOnCourse(reportId: Int) : Int
 
@@ -108,5 +109,7 @@ interface CourseDAO {
     fun getAllReportsOnWorkUnitOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): List<WorkAssignmentReport>
 
     fun getSpecificReportFromWorkItemOnSpecificTermOfCourse(reportId: Int): WorkAssignmentReport
+
+    fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel)
 
 }

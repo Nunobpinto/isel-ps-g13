@@ -1,6 +1,7 @@
 package isel.leic.ps.eduWikiAPI.controller
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.*
+import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
 import isel.leic.ps.eduWikiAPI.service.interfaces.CourseService
@@ -158,15 +159,15 @@ class CourseController {
     @PostMapping("/{courseId}/reports")
     fun reportCourse(
             @PathVariable courseId: Int,
-            @RequestBody report: ReportInputModel
-    ) = NotImplementedError()
+            @RequestBody inputReportCourse: CourseReportInputModel
+    ) = courseService.reportCourse(courseId, inputReportCourse)
 
     @PostMapping("/{courseId}/reports/{reportId}/vote")
     fun voteOnReportedCourse(
             @PathVariable courseId: Int,
             @PathVariable reportId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = NotImplementedError()
+            @RequestBody inputVote: VoteInputModel
+    ) = courseService.voteOnReportedCourse(reportId, inputVote)
 
     @PostMapping("/{courseId}/reports/{reportId}")
     fun updateReportedCourse(

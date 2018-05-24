@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.domain.model.report
 
+import java.sql.Timestamp
 import java.time.LocalDate
 
 data class WorkAssignmentReport (
@@ -13,5 +14,6 @@ data class WorkAssignmentReport (
         val multipleDeliveries: Boolean = false,
         val requiresReport: Boolean = false,
         val reportedBy: String = "",
-        val votes: Int = 0
+        val votes: Int = 0,
+        val timestamp: Timestamp
 )
