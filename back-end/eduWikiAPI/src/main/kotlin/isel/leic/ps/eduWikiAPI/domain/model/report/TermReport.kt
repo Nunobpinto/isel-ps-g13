@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.domain.model.report
 
+import java.sql.Timestamp
 import java.time.Year
 
 data class TermReport (
@@ -9,5 +10,6 @@ data class TermReport (
         val termYear: Year = Year.now(),
         val termType: String = "",
         val reportedBy: String = "",
-        val votes: Int = 0
+        val votes: Int = 0,
+        val timestamp: Timestamp
 )

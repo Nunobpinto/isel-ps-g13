@@ -1,10 +1,7 @@
 package isel.leic.ps.eduWikiAPI.repository
 
-import isel.leic.ps.eduWikiAPI.domain.model.Class
-import isel.leic.ps.eduWikiAPI.domain.model.Course
-import isel.leic.ps.eduWikiAPI.domain.model.Exam
-import isel.leic.ps.eduWikiAPI.domain.model.Term
-import isel.leic.ps.eduWikiAPI.domain.model.WorkAssignment
+import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
+import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.ExamReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.WorkAssignmentReport
@@ -45,6 +42,7 @@ class CourseDAOImpl : CourseDAO {
         const val COURSE_VOTES = "votes"
         const val COURSE_TIMESTAMP = "time_stamp"
         const val COURSE_REPORT_ID = "report_id"
+        const val COURSE_REPORTED_BY = "reported_by"
         const val COURSE_CREATED_BY = "created_by"
         // COURSE_PROGRAMME FIELDS
         const val PROGRAMME_ID = "programme_id"
@@ -105,19 +103,17 @@ class CourseDAOImpl : CourseDAO {
                 .execute()
     }
 
-    override fun voteOnCourse(courseId: Int, voteType: Int) = dbi.useTransaction<Exception> {
-        val votes: Int = it.createQuery(dsl
-                .select(field(COURSE_VOTES))
-                .from(table(COURSE_TABLE))
-                .where(field(COURSE_ID).eq(courseId))
-                .sql
-        ).mapTo(Int::class.java).findOnly()
-        it.execute(dsl
-                .update(table(COURSE_TABLE))
-                .set(field(COURSE_VOTES), if (voteType == -1) votes.dec() else votes.inc())
-                .where(field(COURSE_ID).eq(courseId))
-                .sql
-        )
+    override fun voteOnCourse(courseId: Int, inputVote: VoteInputModel) = dbi.useTransaction<Exception> {
+        val voteQuery = "select $COURSE_VOTES from $COURSE_TABLE where $COURSE_ID :courseId"
+        var votes = it.createQuery(voteQuery)
+                .bind("courseId", courseId)
+                .mapTo(Int::class.java).findOnly()
+        votes = if (inputVote.vote.equals(Vote.Down)) --votes else ++votes
+        val updateQuery = "update $COURSE_TABLE set $COURSE_VOTES = :votes where $COURSE_ID = :courseId"
+        it.createUpdate(updateQuery)
+                .bind("votes", votes)
+                .bind("programmeId", courseId)
+                .execute()
     }
 
     override fun deleteCourseStage(courseStageId: Int): Int = dbi.withHandle<Int, Exception> {
@@ -244,24 +240,18 @@ class CourseDAOImpl : CourseDAO {
         )
     }
 
-    override fun reportCourse(courseReport: CourseReport) = dbi.useHandle<Exception> {
-        it.execute(dsl
-                .insertInto(table(COURSE_REPORT_TABLE),
-                        field(COURSE_REPORT_ID),
-                        field(COURSE_ID),
-                        field(COURSE_FULL_NAME),
-                        field(COURSE_SHORT_NAME),
-                        field(COURSE_CREATED_BY),
-                        field(COURSE_VOTES))
-                .values(
-                        courseReport.reportId,
-                        courseReport.courseId,
-                        courseReport.courseFullName,
-                        courseReport.courseShortName,
-                        courseReport.reportedBy,
-                        courseReport.votes
-                ).sql
-        )
+    override fun reportCourse(courseId: Int, courseReport: CourseReport) = dbi.useHandle<Exception> {
+        val insert = "insert into $COURSE_REPORT_TABLE " +
+                "($COURSE_ID, $COURSE_FULL_NAME, " +
+                "$COURSE_SHORT_NAME, $COURSE_REPORTED_BY, $COURSE_TIMESTAMP) " +
+                "values(:courseId, :fullName, :shortName, :reportedBy, :timestamp)"
+        it.createUpdate(insert)
+                .bind("courseId", courseId)
+                .bind("fullName", courseReport.courseFullName)
+                .bind("shortName", courseReport.courseShortName)
+                .bind("reportedBy", courseReport.reportedBy)
+                .bind("timestamp", courseReport.timestamp)
+                .execute()
     }
 
     override fun deleteReportOnCourse(reportId: Int): Int = dbi.withHandle<Int, Exception> {
@@ -496,6 +486,18 @@ class CourseDAOImpl : CourseDAO {
                 .list()
     }
 
+    override fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel) = dbi.useHandle<Exception>{
+        val voteQuery = "select $COURSE_VOTES from $COURSE_REPORT_TABLE where $COURSE_REPORT_ID = :reportId"
+        var votes = it.createQuery(voteQuery)
+                .bind("reportId", reportId)
+                .mapTo(Int::class.java).findOnly()
+        votes = if (inputVote.vote.equals(Vote.Down)) --votes else ++votes
+        val updateQuery = "update $COURSE_REPORT_TABLE set $COURSE_VOTES = :votes where $COURSE_REPORT_ID = :reportId"
+        it.createUpdate(updateQuery)
+                .bind("votes", votes)
+                .bind("reportId", reportId)
+                .execute()
+    }
 
 
 }

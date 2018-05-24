@@ -2,6 +2,7 @@ package isel.leic.ps.eduWikiAPI.service
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.CourseInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
+import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Class
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Exam
@@ -79,8 +80,20 @@ class CourseServiceImpl : CourseService {
         courseDAO.createCourse(course)
     }
 
-    override fun voteOnCourse(courseId: Int, inputVote: VoteInputModel) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun voteOnCourse(courseId: Int, inputVote: VoteInputModel) = courseDAO.voteOnCourse(courseId, inputVote)
+
+    override fun reportCourse(courseId: Int, inputReportCourse: CourseReportInputModel) {
+        val courseReport = CourseReport(
+                courseId = courseId,
+                courseFullName = inputReportCourse.fullName,
+                courseShortName = inputReportCourse.shortName,
+                reportedBy = inputReportCourse.reportedBy
+        )
+        courseDAO.reportCourse(courseId, courseReport)
     }
+
+
+    override fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel) = courseDAO.voteOnReportedCourse(reportId, inputVote)
+
 
 }

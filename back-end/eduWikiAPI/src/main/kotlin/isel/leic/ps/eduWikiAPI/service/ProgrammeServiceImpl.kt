@@ -12,19 +12,18 @@ import isel.leic.ps.eduWikiAPI.service.interfaces.ProgrammeService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.sql.Timestamp
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Service
 class ProgrammeServiceImpl : ProgrammeService {
 
     @Autowired
-    lateinit var programmeRepo: ProgrammeDAO
+    lateinit var programmeDAO: ProgrammeDAO
 
-    override fun getAllProgrammes(): List<Programme> = programmeRepo.getAllProgrammes()
+    override fun getAllProgrammes(): List<Programme> = programmeDAO.getAllProgrammes()
 
 
-    override fun getSpecificProgramme(programmeId: Int): Programme = programmeRepo.getSpecificProgramme(programmeId)
+    override fun getSpecificProgramme(programmeId: Int): Programme = programmeDAO.getSpecificProgramme(programmeId)
 
     override fun createProgramme(inputProgramme: ProgrammeInputModel) {
         val programme = Programme(
@@ -36,7 +35,7 @@ class ProgrammeServiceImpl : ProgrammeService {
                 duration = inputProgramme.duration,
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
-        programmeRepo.createProgramme(programme)
+        programmeDAO.createProgramme(programme)
     }
 
     override fun createStagedProgramme(inputProgramme: ProgrammeInputModel) {
@@ -50,13 +49,13 @@ class ProgrammeServiceImpl : ProgrammeService {
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
 
         )
-        programmeRepo.createProgrammeStage(stage)
+        programmeDAO.createProgrammeStage(stage)
     }
 
-    override fun getSpecificStagedProgramme(stageId: Int) : ProgrammeStage = programmeRepo.getProgrammeStage(stageId)
+    override fun getSpecificStagedProgramme(stageId: Int) : ProgrammeStage = programmeDAO.getProgrammeStage(stageId)
 
     override fun createProgrammeFromStaged(stageId: Int) {
-        val programmeStage = programmeRepo.getProgrammeStage(stageId)
+        val programmeStage = programmeDAO.getProgrammeStage(stageId)
         val programme = Programme(
                 createdBy = programmeStage.createdBy,
                 fullName = programmeStage.fullName,
@@ -67,23 +66,23 @@ class ProgrammeServiceImpl : ProgrammeService {
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
 
         )
-        programmeRepo.deleteStagedProgramme(stageId) //TODO use transaction
-        programmeRepo.createProgramme(programme)    //TODO use transaction
+        programmeDAO.deleteStagedProgramme(stageId) //TODO use transaction
+        programmeDAO.createProgramme(programme)    //TODO use transaction
     }
 
-    override fun getStagedProgrammes(): List<ProgrammeStage> = programmeRepo.getAllProgrammeStages()
+    override fun getStagedProgrammes(): List<ProgrammeStage> = programmeDAO.getAllProgrammeStages()
 
-    override fun voteOnStagedProgramme(stageId: Int, inputVote: VoteInputModel) = programmeRepo.voteOnStagedProgramme(stageId, inputVote)
+    override fun voteOnStagedProgramme(stageId: Int, inputVote: VoteInputModel) = programmeDAO.voteOnStagedProgramme(stageId, inputVote)
 
-    override fun getAllReportsOfProgramme(programmeId: Int): List<ProgrammeReport> = programmeRepo.getAllReportsOfProgramme(programmeId)
+    override fun getAllReportsOfProgramme(programmeId: Int): List<ProgrammeReport> = programmeDAO.getAllReportsOfProgramme(programmeId)
 
-    override fun getSpecificReportOfProgramme(programmeId: Int, reportId: Int): ProgrammeReport = programmeRepo.getSpecificReportOfProgramme(programmeId, reportId)
+    override fun getSpecificReportOfProgramme(programmeId: Int, reportId: Int): ProgrammeReport = programmeDAO.getSpecificReportOfProgramme(programmeId, reportId)
 
-    override fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course> = programmeRepo.getCoursesOnSpecificProgramme(programmeId)
+    override fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course> = programmeDAO.getCoursesOnSpecificProgramme(programmeId)
 
-    override fun addCourseToProgramme(programmeId: Int, course: Course) = programmeRepo.addCourseToProgramme(programmeId, course)
+    override fun addCourseToProgramme(programmeId: Int, course: Course) = programmeDAO.addCourseToProgramme(programmeId, course)
 
-    override fun voteOnProgramme(programmeId: Int, inputVote: VoteInputModel) = programmeRepo.voteOnProgramme(programmeId, inputVote)
+    override fun voteOnProgramme(programmeId: Int, inputVote: VoteInputModel) = programmeDAO.voteOnProgramme(programmeId, inputVote)
 
     override fun reportProgramme(programmeId: Int, inputProgrammeReport: ProgrammeReportInputModel) {
         val programmeReport = ProgrammeReport(
@@ -96,14 +95,14 @@ class ProgrammeServiceImpl : ProgrammeService {
                 reportedBy = inputProgrammeReport.reportedBy,
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
-        programmeRepo.reportProgramme(programmeId, programmeReport)
+        programmeDAO.reportProgramme(programmeId, programmeReport)
     }
 
-    override fun voteOnReportedProgramme(reportId: Int, inputVote: VoteInputModel) = programmeRepo.voteOnReportedProgramme(reportId, inputVote)
+    override fun voteOnReportedProgramme(reportId: Int, inputVote: VoteInputModel) = programmeDAO.voteOnReportedProgramme(reportId, inputVote)
 
     override fun updateReportedProgramme(programmeId: Int, reportId: Int) {
-        val programme = programmeRepo.getSpecificProgramme(programmeId)
-        val report = programmeRepo.getSpecificReportOfProgramme(programmeId, reportId)
+        val programme = programmeDAO.getSpecificProgramme(programmeId)
+        val report = programmeDAO.getSpecificReportOfProgramme(programmeId, reportId)
         val updatedProgramme = Programme(
                 id = programme.id,
                 version = programme.version + 1,
@@ -116,29 +115,28 @@ class ProgrammeServiceImpl : ProgrammeService {
                 duration = if(report.programmeDuration!=0) report.programmeDuration!! else programme.duration,
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
-        programmeRepo.addToProgrammeVersion(programme)
-        programmeRepo.updateProgramme(programmeId, updatedProgramme)
-        programmeRepo.deleteReportOnProgramme(programmeId,reportId)
+        programmeDAO.addToProgrammeVersion(programme)
+        programmeDAO.updateProgramme(programmeId, updatedProgramme)
+        programmeDAO.deleteReportOnProgramme(programmeId,reportId)
     }
 
-    override fun deleteAllProgrammes() = programmeRepo.deleteAllProgrammes()
+    override fun deleteAllProgrammes() = programmeDAO.deleteAllProgrammes()
 
-    override fun deleteSpecificProgramme(programmeId: Int) = programmeRepo.deleteSpecificProgramme(programmeId)
+    override fun deleteSpecificProgramme(programmeId: Int) = programmeDAO.deleteSpecificProgramme(programmeId)
 
 
     override fun deleteAllStagedProgrammes() {
-        return programmeRepo.deleteAllStagedProgrammes()
+        return programmeDAO.deleteAllStagedProgrammes()
     }
 
-    override fun deleteStagedProgramme(stageId: Int) = programmeRepo.deleteStagedProgramme(stageId)
+    override fun deleteStagedProgramme(stageId: Int) = programmeDAO.deleteStagedProgramme(stageId)
 
-    override fun deleteAllReportsOnProgramme(programmeId: Int) = programmeRepo.deleteAllReportsOnProgramme(programmeId)
+    override fun deleteAllReportsOnProgramme(programmeId: Int) = programmeDAO.deleteAllReportsOnProgramme(programmeId)
 
-
-    override fun deleteReportOnProgramme(programmeId: Int, reportId: Int) = programmeRepo.deleteReportOnProgramme(programmeId, reportId)
+    override fun deleteReportOnProgramme(programmeId: Int, reportId: Int) = programmeDAO.deleteReportOnProgramme(programmeId, reportId)
 
     override fun partialUpdateOnProgramme(programmeId: Int, inputProgramme: ProgrammeInputModel) {
-        val programme = programmeRepo.getSpecificProgramme(programmeId)
+        val programme = programmeDAO.getSpecificProgramme(programmeId)
         val updatedProgramme = Programme(
                 id = programmeId,
                 version = inputProgramme.version + 1,
@@ -149,12 +147,12 @@ class ProgrammeServiceImpl : ProgrammeService {
                 totalCredits = if(inputProgramme.totalCredits != 0) inputProgramme.totalCredits else programme.totalCredits,
                 duration = if(inputProgramme.duration != 0) inputProgramme.duration else programme.duration
         )
-        programmeRepo.addToProgrammeVersion(programme)
-        programmeRepo.updateProgramme(programmeId, updatedProgramme)
+        programmeDAO.addToProgrammeVersion(programme)
+        programmeDAO.updateProgramme(programmeId, updatedProgramme)
     }
 
     override fun partialUpdateOnStagedProgramme(programmeId: Int, inputProgramme: ProgrammeInputModel) {
-        val programme = programmeRepo.getProgrammeStage(programmeId)
+        val programme = programmeDAO.getProgrammeStage(programmeId)
         val updatedProgramme = ProgrammeStage(
                 programmeId = programmeId,
                 createdBy = inputProgramme.createdBy,
@@ -164,16 +162,16 @@ class ProgrammeServiceImpl : ProgrammeService {
                 totalCredits = if(inputProgramme.totalCredits != 0) inputProgramme.totalCredits else programme.totalCredits,
                 duration = if(inputProgramme.duration != 0) inputProgramme.duration else programme.duration
         )
-        programmeRepo.updateStagedProgramme(programmeId, updatedProgramme)
+        programmeDAO.updateStagedProgramme(programmeId, updatedProgramme)
     }
 
-    override fun getAllVersions(programmeId: Int): List<ProgrammeVersion> = programmeRepo.getAllVersionsOfProgramme(programmeId)
+    override fun getAllVersions(programmeId: Int): List<ProgrammeVersion> = programmeDAO.getAllVersionsOfProgramme(programmeId)
 
-    override fun getVersion(programmeId: Int, versionId: Int): ProgrammeVersion = programmeRepo.getSpecificVersionOfProgramme(programmeId, versionId)
+    override fun getVersion(programmeId: Int, versionId: Int): ProgrammeVersion = programmeDAO.getSpecificVersionOfProgramme(programmeId, versionId)
 
-    override fun deleteAllVersions(programmeId: Int): Int = programmeRepo.deleteAllVersionsOfProgramme(programmeId)
+    override fun deleteAllVersions(programmeId: Int): Int = programmeDAO.deleteAllVersionsOfProgramme(programmeId)
 
-    override fun deleteSpecificVersion(programmeId: Int, versionId: Int): Int = programmeRepo.deleteVersionProgramme(programmeId, versionId)
+    override fun deleteSpecificVersion(programmeId: Int, versionId: Int): Int = programmeDAO.deleteVersionProgramme(programmeId, versionId)
 
 
 }

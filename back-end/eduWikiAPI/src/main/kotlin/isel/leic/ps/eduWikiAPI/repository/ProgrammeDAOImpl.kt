@@ -176,7 +176,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
     }
 
     override fun voteOnStagedProgramme(programmeId: Int, inputVote: VoteInputModel) = dbi.useTransaction<Exception> {
-        val voteQuery = "select votes from $PROG_STAGE_TABLE where $PROG_ID = :programmeId"
+        val voteQuery = "select $PROG_VOTES from $PROG_STAGE_TABLE where $PROG_ID = :programmeId"
         var votes = it.createQuery(voteQuery)
                 .bind("programmeId", programmeId)
                 .mapTo(Int::class.java).findOnly()
@@ -322,12 +322,12 @@ class ProgrammeDAOImpl : ProgrammeDAO {
     }
 
     override fun voteOnReportedProgramme(reportId: Int, inputVote: VoteInputModel) = dbi.useTransaction<Exception> {
-        val voteQuery = "select votes from $PROG_REPORT_TABLE where $PROG_REPORT_ID = :reportId"
+        val voteQuery = "select $PROG_VOTES from $PROG_REPORT_TABLE where $PROG_REPORT_ID = :reportId"
         var votes = it.createQuery(voteQuery)
                 .bind("reportId", reportId)
                 .mapTo(Int::class.java).findOnly()
         votes = if (inputVote.vote.equals(Vote.Down)) --votes else ++votes
-        val updateQuery = "update $PROG_REPORT_TABLE set votes = :votes where $PROG_REPORT_ID = :reportId"
+        val updateQuery = "update $PROG_REPORT_TABLE set $PROG_VOTES = :votes where $PROG_REPORT_ID = :reportId"
         it.createUpdate(updateQuery)
                 .bind("votes", votes)
                 .bind("reportId", reportId)
