@@ -13,7 +13,7 @@ class ProgrammeReportRowMapper : RowMapper<ProgrammeReport> {
                     timestamp = rs.getTimestamp(ProgrammeDAOImpl.PROG_TIMESTAMP),
                     reportId = rs.getInt(ProgrammeDAOImpl.PROG_REPORT_ID),
                     programmeId = rs.getInt(ProgrammeDAOImpl.PROG_ID),
-                    votes = rs.getInt(ProgrammeDAOImpl.PROG_VOTE),
+                    votes = rs.getInt(ProgrammeDAOImpl.PROG_VOTES),
                     reportedBy = rs.getString(ProgrammeDAOImpl.PROG_REPORTED_BY),
                     programmeFullName = rs.getString(ProgrammeDAOImpl.PROG_FULL_NAME),
                     programmeShortName = rs.getString(ProgrammeDAOImpl.PROG_SHORT_NAME),

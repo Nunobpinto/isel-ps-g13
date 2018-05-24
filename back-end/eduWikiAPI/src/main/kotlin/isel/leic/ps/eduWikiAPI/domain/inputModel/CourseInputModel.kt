@@ -7,7 +7,8 @@ class CourseInputModel(
         val fullName: String,
         @JsonProperty("short_name")
         val shortName: String,
-        val semester: Int,
-        val optional: Boolean,
-        val credits: Int
+        @JsonProperty("organization_id")
+        val organizationId: Int,
+        @JsonProperty("created_by")
+        val createdBy: String = ""
 )

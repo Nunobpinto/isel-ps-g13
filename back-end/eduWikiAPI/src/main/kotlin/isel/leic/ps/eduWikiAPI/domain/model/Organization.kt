@@ -4,7 +4,7 @@ import java.sql.Timestamp
 
 data class Organization(
         val id: Int = 0,
-        val version: Int = 0,
+        val version: Int = 1,
         val createdBy: String = "",
         val fullName: String = "",
         val shortName: String = "",

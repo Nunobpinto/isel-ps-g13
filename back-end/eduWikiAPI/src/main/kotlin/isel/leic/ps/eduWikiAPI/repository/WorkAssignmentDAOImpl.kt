@@ -2,6 +2,7 @@ package isel.leic.ps.eduWikiAPI.repository
 
 import isel.leic.ps.eduWikiAPI.domain.model.WorkAssignment
 import isel.leic.ps.eduWikiAPI.domain.model.report.WorkAssignmentReport
+import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseClassStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.WorkAssignmentVersion
 import isel.leic.ps.eduWikiAPI.repository.interfaces.WorkAssignmentDAO
@@ -22,7 +23,6 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         const val WRK_ASS_REPORT_TABLE = "work_assignment_report"
         const val WRK_ASS_STAGE_TABLE = "work_assignment_stage"
         // FIELDS
-        const val CRS_MISC_UNIT_ID = "id"
         const val WRK_ASS_VERSION = "work_assignment_version"
         const val WRK_ASS_SHEET = "sheet"
         const val WRK_ASS_SUPPLEMENT = "supplement"
@@ -45,7 +45,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
     override fun getWorkAssignment(courseMiscUnitId: Int): WorkAssignment = dbi.withHandle<WorkAssignment, Exception> {
         it.createQuery(dsl
                 .select(
-                        field(CRS_MISC_UNIT_ID),
+                        field(CourseDAOImpl.CRS_MISC_UNIT_ID),
                         field(WRK_ASS_VERSION),
                         field(WRK_ASS_CREATED_BY),
                         field(WRK_ASS_SHEET),
@@ -59,7 +59,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         field(WRK_ASS_VOTE)
                 )
                 .from(table(WRK_ASS_TABLE))
-                .where(field(CRS_MISC_UNIT_ID).eq(courseMiscUnitId))
+                .where(field(CourseDAOImpl.CRS_MISC_UNIT_ID).eq(courseMiscUnitId))
                 .sql
         ).mapTo(WorkAssignment::class.java).findOnly()
     }
@@ -67,7 +67,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
     override fun getAllWorkAssignment(): List<WorkAssignment> = dbi.withHandle<List<WorkAssignment>, Exception> {
         it.createQuery(dsl
                 .select(
-                        field(CRS_MISC_UNIT_ID),
+                        field(CourseDAOImpl.CRS_MISC_UNIT_ID),
                         field(WRK_ASS_VERSION),
                         field(WRK_ASS_CREATED_BY),
                         field(WRK_ASS_SHEET),
@@ -88,7 +88,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
     override fun deleteWorkAssignment(courseMiscUnitId: Int): Int = dbi.withHandle<Int, Exception> {
         it.execute(dsl
                 .delete(table(WRK_ASS_TABLE))
-                .where(field(CRS_MISC_UNIT_ID).eq(courseMiscUnitId))
+                .where(field(CourseDAOImpl.CRS_MISC_UNIT_ID).eq(courseMiscUnitId))
                 .sql
         )
     }
@@ -108,7 +108,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         it.execute(dsl
                 .insertInto(
                         table(WRK_ASS_TABLE),
-                        field(CRS_MISC_UNIT_ID),
+                        field(CourseDAOImpl.CRS_MISC_UNIT_ID),
                         field(WRK_ASS_VERSION),
                         field(WRK_ASS_CREATED_BY),
                         field(WRK_ASS_SHEET),
@@ -140,13 +140,13 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         val votes: Int = it.createQuery(dsl
                 .select(field(WRK_ASS_VOTE))
                 .from(table(WRK_ASS_TABLE))
-                .where(field(CRS_MISC_UNIT_ID).eq(courseMiscUnitId))
+                .where(field(CourseDAOImpl.CRS_MISC_UNIT_ID).eq(courseMiscUnitId))
                 .sql
         ).mapTo(Int::class.java).findOnly()
         it.execute(dsl
                 .update(table(WRK_ASS_TABLE))
                 .set(field(WRK_ASS_VOTE), if (voteType == -1) votes.dec() else votes.inc())
-                .where(field(CRS_MISC_UNIT_ID).eq(courseMiscUnitId))
+                .where(field(CourseDAOImpl.CRS_MISC_UNIT_ID).eq(courseMiscUnitId))
                 .sql
         )
     }
@@ -154,7 +154,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
     override fun getWorkAssignmentStage(courseMiscUnitStageId: Int): WorkAssignmentStage = dbi.withHandle<WorkAssignmentStage, Exception> {
         it.createQuery(dsl
                 .select(
-                        field(CRS_MISC_UNIT_ID),
+                        field(CourseDAOImpl.CRS_MISC_UNIT_ID),
                         field(WRK_ASS_SHEET),
                         field(WRK_ASS_SUPPLEMENT),
                         field(WRK_ASS_DUE_DATE),
@@ -167,7 +167,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         field(WRK_ASS_TIMESTAMP)
                 )
                 .from(table(WRK_ASS_STAGE_TABLE))
-                .where(field(CRS_MISC_UNIT_ID).eq(courseMiscUnitStageId))
+                .where(field(CourseDAOImpl.CRS_MISC_UNIT_ID).eq(courseMiscUnitStageId))
                 .sql
         ).mapTo(WorkAssignmentStage::class.java).findOnly()
     }
@@ -175,7 +175,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
     override fun getAllWorkAssignmentStages(): List<WorkAssignmentStage> = dbi.withHandle<List<WorkAssignmentStage>, Exception> {
         it.createQuery(dsl
                 .select(
-                        field(CRS_MISC_UNIT_ID),
+                        field(CourseDAOImpl.CRS_MISC_UNIT_ID),
                         field(WRK_ASS_SHEET),
                         field(WRK_ASS_SUPPLEMENT),
                         field(WRK_ASS_DUE_DATE),
@@ -195,7 +195,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
     override fun deleteWorkAssignmentStage(courseMiscUnitStageId: Int): Int = dbi.withHandle<Int, Exception> {
         it.execute(dsl
                 .delete(table(WRK_ASS_STAGE_TABLE))
-                .where(field(CRS_MISC_UNIT_ID).eq(courseMiscUnitStageId))
+                .where(field(CourseDAOImpl.CRS_MISC_UNIT_ID).eq(courseMiscUnitStageId))
                 .sql
         )
     }
@@ -211,7 +211,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         it.execute(dsl
                 .insertInto(
                         table(WRK_ASS_STAGE_TABLE),
-                        field(CRS_MISC_UNIT_ID),
+                        field(CourseDAOImpl.CRS_MISC_UNIT_ID),
                         field(WRK_ASS_SHEET),
                         field(WRK_ASS_SUPPLEMENT),
                         field(WRK_ASS_DUE_DATE),
@@ -243,13 +243,13 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         val votes: Int = it.createQuery(dsl
                 .select(field(WRK_ASS_VOTE))
                 .from(table(WRK_ASS_STAGE_TABLE))
-                .where(field(CRS_MISC_UNIT_ID).eq(courseMiscUnitStageId))
+                .where(field(CourseDAOImpl.CRS_MISC_UNIT_ID).eq(courseMiscUnitStageId))
                 .sql
         ).mapTo(Int::class.java).findOnly()
         it.execute(dsl
                 .update(table(WRK_ASS_STAGE_TABLE))
                 .set(field(WRK_ASS_VOTE), if (voteType == -1) votes.dec() else votes.inc())
-                .where(field(CRS_MISC_UNIT_ID).eq(courseMiscUnitStageId))
+                .where(field(CourseDAOImpl.CRS_MISC_UNIT_ID).eq(courseMiscUnitStageId))
                 .sql
         )
     }
@@ -257,7 +257,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
     override fun getVersionWorkAssignment(versionWorkAssignmentId: Int, version: Int): WorkAssignmentVersion = dbi.withHandle<WorkAssignmentVersion, Exception> {
         it.createQuery(dsl
                 .select(
-                        field(CRS_MISC_UNIT_ID),
+                        field(CourseDAOImpl.CRS_MISC_UNIT_ID),
                         field(WRK_ASS_SHEET),
                         field(WRK_ASS_SUPPLEMENT),
                         field(WRK_ASS_DUE_DATE),
@@ -271,7 +271,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         field(WRK_ASS_VERSION)
                 )
                 .from(table(WRK_ASS_VERSION_TABLE))
-                .where(field(CRS_MISC_UNIT_ID).eq(versionWorkAssignmentId).and(field(WRK_ASS_VERSION).eq(version)))
+                .where(field(CourseDAOImpl.CRS_MISC_UNIT_ID).eq(versionWorkAssignmentId).and(field(WRK_ASS_VERSION).eq(version)))
                 .sql
         ).mapTo(WorkAssignmentVersion::class.java).first()
     }
@@ -279,7 +279,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
     override fun getAllVersionWorkAssignments(): List<WorkAssignmentVersion> = dbi.withHandle<List<WorkAssignmentVersion>, Exception> {
         it.createQuery(dsl
                 .select(
-                        field(CRS_MISC_UNIT_ID),
+                        field(CourseDAOImpl.CRS_MISC_UNIT_ID),
                         field(WRK_ASS_SHEET),
                         field(WRK_ASS_SUPPLEMENT),
                         field(WRK_ASS_DUE_DATE),
@@ -300,7 +300,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
     override fun deleteVersionWorkAssignment(versionWorkAssignmentId: Int, version: Int): Int = dbi.withHandle<Int, Exception> {
         it.execute(dsl
                 .delete(table(WRK_ASS_VERSION_TABLE))
-                .where(field(CRS_MISC_UNIT_ID).eq(versionWorkAssignmentId).and(field(WRK_ASS_VERSION).eq(version)))
+                .where(field(CourseDAOImpl.CRS_MISC_UNIT_ID).eq(versionWorkAssignmentId).and(field(WRK_ASS_VERSION).eq(version)))
                 .sql
         )
     }
@@ -316,7 +316,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         it.execute(dsl
                 .insertInto(
                         table(WRK_ASS_VERSION_TABLE),
-                        field(CRS_MISC_UNIT_ID),
+                        field(CourseDAOImpl.CRS_MISC_UNIT_ID),
                         field(WRK_ASS_SHEET),
                         field(WRK_ASS_SUPPLEMENT),
                         field(WRK_ASS_DUE_DATE),
@@ -349,7 +349,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                 .insertInto(
                         table(WRK_ASS_REPORT_TABLE),
                         field(WRK_ASS_REPORT_ID),
-                        field(CRS_MISC_UNIT_ID),
+                        field(CourseDAOImpl.CRS_MISC_UNIT_ID),
                         field(WRK_ASS_SHEET),
                         field(WRK_ASS_SUPPLEMENT),
                         field(WRK_ASS_DUE_DATE),
@@ -387,7 +387,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
     override fun deleteAllReportsOnWorkAssignment(courseMiscUnitId: Int): Int = dbi.withHandle<Int, Exception> {
         it.execute(dsl
                 .delete(table(WRK_ASS_REPORT_TABLE))
-                .where(field(CRS_MISC_UNIT_ID).eq(courseMiscUnitId))
+                .where(field(CourseDAOImpl.CRS_MISC_UNIT_ID).eq(courseMiscUnitId))
                 .sql
         )
     }

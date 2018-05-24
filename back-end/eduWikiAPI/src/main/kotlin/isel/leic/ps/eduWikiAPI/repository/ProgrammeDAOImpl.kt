@@ -10,7 +10,6 @@ import isel.leic.ps.eduWikiAPI.domain.model.version.ProgrammeVersion
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ProgrammeDAO
 import org.jdbi.v3.core.Jdbi
 import org.jooq.DSLContext
-import org.jooq.impl.DSL.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 
@@ -37,7 +36,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         const val PROG_ACADEMIC_DEGREE = "programme_academic_degree"
         const val PROG_TOTAL_CREDITS = "programme_total_credits"
         const val PROG_DURATION = "programme_duration"
-        const val PROG_VOTE = "votes"
+        const val PROG_VOTES = "votes"
         const val PROG_TIMESTAMP = "time_stamp"
         const val PROG_REPORT_ID = "report_id"
         const val PROG_CREATED_BY = "created_by"
@@ -76,7 +75,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 "$PROG_VERSION = :version, $PROG_CREATED_BY = :createdBy, " +
                 "$PROG_FULL_NAME = :fullName, $PROG_SHORT_NAME = :shortName, " +
                 "$PROG_ACADEMIC_DEGREE = :academicDegree, $PROG_TOTAL_CREDITS = :totalCredits, " +
-                "$PROG_DURATION = :duration, $PROG_VOTE = :votes, $PROG_TIMESTAMP = :timestamp " +
+                "$PROG_DURATION = :duration, $PROG_VOTES = :votes, $PROG_TIMESTAMP = :timestamp " +
                 "where $PROG_ID = :programmeId"
 
         it.createUpdate(update)
@@ -97,7 +96,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         val insert = "insert into $PROG_TABLE " +
                 "($PROG_VERSION, $PROG_FULL_NAME, " +
                 "$PROG_SHORT_NAME, $PROG_ACADEMIC_DEGREE, $PROG_TOTAL_CREDITS, " +
-                "$PROG_DURATION, $PROG_VOTE, $PROG_CREATED_BY, $PROG_TIMESTAMP) " +
+                "$PROG_DURATION, $PROG_VOTES, $PROG_CREATED_BY, $PROG_TIMESTAMP) " +
                 "values(:version, :fullName, :shortName, :academicDegree, :totalCredits, :duration, :votes, :credits, :timestamp)"
 
         it.createUpdate(insert)
@@ -116,7 +115,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
     override fun addCourseToProgramme(programmeId: Int, course: Course) = dbi.useHandle<Exception> {
         val insert = "insert into $CRS_PROG_TABLE " +
                 "($CRS_ID, $PROG_ID, $CRS_LECT_TERM, $CRS_OPT, " +
-                "$CRS_CRED, $PROG_VOTE) " +
+                "$CRS_CRED, $PROG_VOTES) " +
                 "values(:courseId, :programmeId, :term, :optional, :credits)"
         it.createUpdate(insert)
                 .bind("courseId", course.id)
@@ -132,7 +131,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .bind("programmeId", programmeId)
                 .mapTo(Int::class.java).findOnly()
         votes = if (inputVote.vote.equals(Vote.Down)) --votes else ++votes
-        val updateQuery = "update $PROG_TABLE set $PROG_VOTE = :votes where $PROG_ID = :programmeId"
+        val updateQuery = "update $PROG_TABLE set $PROG_VOTES = :votes where $PROG_ID = :programmeId"
         it.createUpdate(updateQuery)
                 .bind("votes", votes)
                 .bind("programmeId", programmeId)
@@ -163,7 +162,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         val insert = "insert into $PROG_STAGE_TABLE " +
                 "($PROG_FULL_NAME, " +
                 "$PROG_SHORT_NAME, $PROG_ACADEMIC_DEGREE, $PROG_TOTAL_CREDITS, " +
-                "$PROG_DURATION, $PROG_VOTE, $PROG_CREATED_BY, $PROG_TIMESTAMP) " +
+                "$PROG_DURATION, $PROG_VOTES, $PROG_CREATED_BY, $PROG_TIMESTAMP) " +
                 "values(:fullName, :shortName, :academicDegree, :totalCredits, :duration, :votes, :credits, :timestamp)"
         it.createUpdate(insert)
                 .bind("fullName", programmeStage.fullName)
@@ -183,7 +182,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .bind("programmeId", programmeId)
                 .mapTo(Int::class.java).findOnly()
         votes = if (inputVote.vote.equals(Vote.Down)) --votes else ++votes
-        val updateQuery = "update $PROG_STAGE_TABLE set $PROG_VOTE = :votes where $PROG_ID = :programmeId"
+        val updateQuery = "update $PROG_STAGE_TABLE set $PROG_VOTES = :votes where $PROG_ID = :programmeId"
         it.createUpdate(updateQuery)
                 .bind("votes", votes)
                 .bind("programmeId", programmeId)
@@ -194,7 +193,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         val update = "update $PROG_STAGE_TABLE SET" +
                 "$PROG_FULL_NAME = :fullName, $PROG_SHORT_NAME = :shortName, " +
                 "$PROG_ACADEMIC_DEGREE = :academicDegree, $PROG_TOTAL_CREDITS = :totalCredits, " +
-                "$PROG_DURATION = :duration, $PROG_CREATED_BY = :createdBy, $PROG_VOTE = :votes, " +
+                "$PROG_DURATION = :duration, $PROG_CREATED_BY = :createdBy, $PROG_VOTES = :votes, " +
                 "$PROG_TIMESTAMP = :timestamp) " +
                 "where $PROG_ID = :programmeId"
 
@@ -245,7 +244,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .bind("id", programmeId)
                 .execute()
     }
-/*
+/* //TODO mandar fora
     override fun createVersionProgramme(programmeVersion: ProgrammeVersion) = dbi.useHandle<Exception> {
         it.execute(dsl
                 .insertInto(

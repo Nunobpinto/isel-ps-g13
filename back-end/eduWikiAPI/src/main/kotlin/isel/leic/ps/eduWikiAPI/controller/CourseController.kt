@@ -17,6 +17,7 @@ class CourseController {
     /**
      * All GET Routes
      */
+
     @GetMapping
     fun getAllCourses(): List<Course> {
         return courseService.getAllCourses();
@@ -33,141 +34,141 @@ class CourseController {
     }
 
     @GetMapping("/{courseId}/report/{reportId}")
-    fun getSpecificCourseReport(
+    fun getSpecificReportOfCourse(
             @PathVariable courseId: Int,
             @PathVariable reportId: Int
-    ) = NotImplementedError()
+    ) = courseService.getSpecificReportOfCourse(courseId, reportId)
 
     @GetMapping("/stage")
-    fun getAllCourseStageEntries() = NotImplementedError()
+    fun getAllCourseStageEntries() = courseService.getAllCourseStageEntries()
 
     @GetMapping("/stage/{stageId}")
-    fun getCourseSpecificStageEntry() = NotImplementedError()
+    fun getCourseSpecificStageEntry(@PathVariable stageId: Int) = courseService.getCourseSpecificStageEntry(stageId)
 
     @GetMapping("/{courseId}/terms")
-    fun getTermsOfCourse(@PathVariable courseId: Int) = NotImplementedError()
+    fun getTermsOfCourse(@PathVariable courseId: Int) = courseService.getTermsOfCourse(courseId)
 
     @GetMapping("/{courseId}/terms/{termId}")
     fun getSpecificTermOfCourse(
             @PathVariable courseId: Int,
             @PathVariable termId: Int
-    ) = NotImplementedError()
+    ) = courseService.getSpecificTermOfCourse(courseId, termId)
 
     @GetMapping("/{courseId}/terms/{termId}/exams")
-    fun getExamsFromSpecificTermOfCourse(
+    fun getAllExamsFromSpecificTermOfCourse(
             @PathVariable courseId: Int,
             @PathVariable termId: Int
-    ) = NotImplementedError()
+    ) = courseService.getAllExamsFromSpecificTermOfCourse(courseId, termId)
 
     @GetMapping("/{courseId}/terms/{termId}/exams/{examId}")
     fun getSpecificExamFromSpecificTermOfCourse(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable examId: Int
-    ) = NotImplementedError()
+    ) = courseService.getSpecificExamFromSpecificTermOfCourse(courseId, termId, examId)
 
     @GetMapping("/{courseId}/terms/{termId}/exams/stage")
     fun getStageEntriesFromExamOnSpecificTermOfCourse(
             @PathVariable courseId: Int,
             @PathVariable termId: Int
-    ) = NotImplementedError()
+    ) = courseService.getStageEntriesFromExamOnSpecificTermOfCourse(courseId, termId)
 
     @GetMapping("/{courseId}/terms/{termId}/exams/stage/{stageId}")
     fun getStageEntryFromExamOnSpecificTermOfCourse(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable stageId: Int
-    ) = NotImplementedError()
+    ) = courseService.getStageEntryFromExamOnSpecificTermOfCourse(courseId, termId, stageId)
 
-    @GetMapping("/{courseId}/terms/{termId}/exams/{examId}/report")
-    fun getReportsFromExamOnSpecificTermOfCourse(
+    @GetMapping("/{courseId}/terms/{termId}/exams/{examId}/reports")
+    fun getAllReportsOnExamOnSpecificTermOfCourse(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable examId: Int
-    ) = NotImplementedError()
+    ) = courseService.getAllReportsOnExamOnSpecificTermOfCourse(examId)
 
-    @GetMapping("/{courseId}/terms/{termId}/exams/{examId}/report/{reportId}")
-    fun getReportFromExamOnSpecificTermOfCourse(
+    @GetMapping("/{courseId}/terms/{termId}/exams/{examId}/reports/{reportId}")
+    fun getSpecificReportOnExamOnSpecificTermOfCourse(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable examId: Int,
             @PathVariable reportId: Int
-    ) = NotImplementedError()
+    ) = courseService.getSpecificReportOnExamOnSpecificTermOfCourse(reportId)
 
-    @GetMapping("/{courseId}/terms/{termId}/workitems")
-    fun getWorkItemsFromSpecificTermOfCourse(
+    @GetMapping("/{courseId}/terms/{termId}/workAssignments")
+    fun getAllWorkAssignmentsFromSpecificTermOfCourse(
             @PathVariable courseId: Int,
             @PathVariable termId: Int
-    ) = NotImplementedError()
+    ) = courseService.getAllWorkAssignmentsFromSpecificTermOfCourse(courseId, termId)
 
-    @GetMapping("/{courseId}/terms/{termId}/workitems/{workItemId}")
-    fun getSpecificWorkItemFromSpecificTermOfCourse(
+    @GetMapping("/{courseId}/terms/{termId}/workAssignments/{workAssignmentId}")
+    fun getSpecificWorkAssignmentFromSpecificTermOfCourse(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            @PathVariable workItemId: Int
-    ) = NotImplementedError()
+            @PathVariable workAssignmentId: Int
+    ) = courseService.getSpecificWorkAssignmentFromSpecificTermOfCourse(workAssignmentId)
 
-    @GetMapping("/{courseId}/terms/{termId}/workitem/stage")
+    @GetMapping("/{courseId}/terms/{termId}/workAssignments/stage")
     fun getStageEntriesFromWorkItemOnSpecificTermOfCourse(
             @PathVariable courseId: Int,
-            @PathVariable termId: Int,
-            @PathVariable stageId: Int
-    ) = NotImplementedError()
+            @PathVariable termId: Int
+    ) = courseService.getStageEntriesFromWorkItemOnSpecificTermOfCourse(courseId, termId)
 
-    @GetMapping("/{courseId}/terms/{termId}/workitem/stage/{stageId}")
+    @GetMapping("/{courseId}/terms/{termId}/workAssignments/stage/{stageId}")
     fun getStageEntryFromWorkItemOnSpecificTermOfCourse(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable stageId: Int
-    ) = NotImplementedError()
+    ) = courseService.getStageEntryFromWorkItemOnSpecificTermOfCourse(courseId, termId, stageId)
 
-    @GetMapping("/{courseId}/terms/{termId}/workitem/{workItemId}/report")
-    fun getReportsFromWorkUnitOnSpecificTermOfCourse(
+    @GetMapping("/{courseId}/terms/{termId}/workAssignments/{workAssignmentId}/reports")
+    fun getAllReportsOnWorkUnitOnSpecificTermOfCourse(
             @PathVariable courseId: Int,
-            @PathVariable termInt: Int,
-            @PathVariable examInt: Int
-    ) = NotImplementedError()
+            @PathVariable termId: Int,
+            @PathVariable workAssignmentId: Int
+    ) = courseService.getAllReportsOnWorkUnitOnSpecificTermOfCourse(courseId, termId, workAssignmentId)
 
-    @GetMapping("/{courseId}/terms/{termId}/workitem/{workItemId}/report/{reportId}")
-    fun getReportFromWorkItemOnSpecificTermOfCourse(
+    @GetMapping("/{courseId}/terms/{termId}/workAssignments/{workAssignmentId}/reports/{reportId}")
+    fun getSpecificReportFromWorkItemOnSpecificTermOfCourse(
             @PathVariable courseId: Int,
             @PathVariable termInt: Int,
             @PathVariable workItemId: Int,
             @PathVariable reportId: Int
-    ) = NotImplementedError()
+    ) = courseService.getSpecificReportFromWorkItemOnSpecificTermOfCourse(reportId)
 
     @GetMapping("/{courseId}/terms/{termId}/classes")
     fun getClassesOnSpecificTermOfCourse(
             @PathVariable courseId: Int,
-            @PathVariable termInt: Int
-    ) = NotImplementedError()
+            @PathVariable termId: Int
+    ) = courseService.getClassesOnSpecificTermOfCourse(courseId, termId)
 
     /**
      * All POST Routes
      */
+
     @PostMapping()
-    fun createCourse(@RequestBody input: CourseInputModel) = NotImplementedError()
+    fun createCourse(@RequestBody inputCourse: CourseInputModel) = courseService.createCourse(inputCourse)
 
     @PostMapping("/{courseId}/vote")
     fun voteOnCourse(
             @PathVariable courseId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = NotImplementedError()
+            @RequestBody inputVote: VoteInputModel
+    ) = courseService.voteOnCourse(courseId, inputVote)
 
-    @PostMapping("/{courseId}/report")
+    @PostMapping("/{courseId}/reports")
     fun reportCourse(
             @PathVariable courseId: Int,
             @RequestBody report: ReportInputModel
     ) = NotImplementedError()
 
-    @PostMapping("/{courseId}/report/{reportId}/vote")
+    @PostMapping("/{courseId}/reports/{reportId}/vote")
     fun voteOnReportedCourse(
             @PathVariable courseId: Int,
             @PathVariable reportId: Int,
             @RequestBody vote: VoteInputModel
     ) = NotImplementedError()
 
-    @PostMapping("/{courseId}/report/{reportId}")
+    @PostMapping("/{courseId}/reports/{reportId}")
     fun updateReportedCourse(
             @PathVariable courseId: Int,
             @PathVariable reportId: Int
@@ -193,7 +194,7 @@ class CourseController {
             @RequestBody exam: ExamInputModel
     ) = NotImplementedError()
 
-    @PostMapping("/{courseId}/terms/{termId}/exams/{examId}/report")
+    @PostMapping("/{courseId}/terms/{termId}/exams/{examId}/reports")
     fun addReportToExamOnCourseInTerm(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
@@ -201,7 +202,7 @@ class CourseController {
             @RequestBody report: ReportInputModel
     ) = NotImplementedError()
 
-    @PostMapping("/{courseId}/terms/{termId}/exams/{examId}/report/{reportId}/vote")
+    @PostMapping("/{courseId}/terms/{termId}/exams/{examId}/reports/{reportId}/vote")
     fun voteOnReportToExamOnCourseInTerm(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
@@ -210,7 +211,7 @@ class CourseController {
             @RequestBody vote: VoteInputModel
     ) = NotImplementedError()
 
-    @PostMapping("/{courseId}/terms/{termId}/exams/{examId}/report/{reportId}")
+    @PostMapping("/{courseId}/terms/{termId}/exams/{examId}/reports/{reportId}")
     fun updateReportedExam(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
@@ -241,14 +242,14 @@ class CourseController {
     ) = NotImplementedError()
 
     //workItems
-    @PostMapping("/{courseId}/terms/{termId}/workitems")
+    @PostMapping("/{courseId}/terms/{termId}/workAssignments")
     fun createWorkItemOnCourseInTerm(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @RequestBody workItem: WorkItemInputModel
     ) = NotImplementedError()
 
-    @PostMapping("/{courseId}/terms/{termId}/workitems/{workItemId}/report")
+    @PostMapping("/{courseId}/terms/{termId}/workAssignments/{workAssignmentId}/reports")
     fun addReportToWorkItemOnCourseInTerm(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
@@ -256,7 +257,7 @@ class CourseController {
             @RequestBody report: ReportInputModel
     ) = NotImplementedError()
 
-    @PostMapping("/{courseId}/terms/{termId}/workitems/{workItemId}/report/{reportId}/vote")
+    @PostMapping("/{courseId}/terms/{termId}/workAssignments/{workAssignmentId}/reports/{reportId}/vote")
     fun voteOnReportToWorkItemOnCourseInTerm(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
@@ -265,7 +266,7 @@ class CourseController {
             @RequestBody vote: VoteInputModel
     ) = NotImplementedError()
 
-    @PostMapping("/{courseId}/terms/{termId}/workitems/{workItemId}/report/{reportId}")
+    @PostMapping("/{courseId}/terms/{termId}/workAssignments/{workAssignmentId}/reports/{reportId}")
     fun updateReportedWorkItem(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
@@ -274,21 +275,21 @@ class CourseController {
             @RequestBody vote: VoteInputModel
     ) = NotImplementedError()
 
-    @PostMapping("/{courseId}/terms/{termId}/workitems/stage")
+    @PostMapping("/{courseId}/terms/{termId}/workAssignments/stage")
     fun createStagingWorkItem(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @RequestBody workItem: WorkItemInputModel
     ) = NotImplementedError()
 
-    @PostMapping("/{courseId}/terms/{termId}/workitems/stage/{stageId}")
+    @PostMapping("/{courseId}/terms/{termId}/workAssignments/stage/{stageId}")
     fun createWorkItemFromStaged(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable stageId: Int
     ) = NotImplementedError()
 
-    @PostMapping("/{courseId}/terms/{termId}/workitems/stage/{stageId}/vote")
+    @PostMapping("/{courseId}/terms/{termId}/workAssignments/stage/{stageId}/vote")
     fun voteOnStagedWorkItem(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
@@ -326,10 +327,10 @@ class CourseController {
     @DeleteMapping("/stage/{stageId}")
     fun deleteStagedCourse(@PathVariable stageId: Int) = NotImplementedError()
 
-    @DeleteMapping("/{courseId}/report")
+    @DeleteMapping("/{courseId}/reports")
     fun deleteAllReportsInCourse(@PathVariable courseId: Int) = NotImplementedError()
 
-    @DeleteMapping("/{courseId}/report/{reportId}")
+    @DeleteMapping("/{courseId}/reports/{reportId}")
     fun deleteReportInCourse(
             @PathVariable courseId: Int,
             @PathVariable reportId: Int
@@ -362,14 +363,14 @@ class CourseController {
             @PathVariable stageId: Int
     ) = NotImplementedError()
 
-    @DeleteMapping("/{courseId}/terms/{termId}/exams/{examId}/report")
+    @DeleteMapping("/{courseId}/terms/{termId}/exams/{examId}/reports")
     fun deleteAllReportsInExams(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable examId: Int
     ) = NotImplementedError()
 
-    @DeleteMapping("/{courseId}/terms/{termId}/exams/{examId}/report/{reportId}")
+    @DeleteMapping("/{courseId}/terms/{termId}/exams/{examId}/reports/{reportId}")
     fun deleteReportInExam(
             @PathVariable courseId: Int,
             @PathVariable examId: Int,
@@ -377,40 +378,40 @@ class CourseController {
     ) = NotImplementedError()
 
     //workitems
-    @DeleteMapping("/{courseId}/terms/{termId}/workitems")
+    @DeleteMapping("/{courseId}/terms/{termId}/workAssignments")
     fun deleteAllWorkItems(
             @PathVariable courseId: Int,
             @PathVariable termId: Int
     ) = NotImplementedError()
 
-    @DeleteMapping("/{courseId}/terms/{termId}/workitems/{workItemId}")
+    @DeleteMapping("/{courseId}/terms/{termId}/workAssignments/{workAssignmentId}")
     fun deleteWorkItem(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable workItemId: Int
     ) = NotImplementedError()
 
-    @DeleteMapping("/{courseId}/terms/{termId}/workitems/stage")
+    @DeleteMapping("/{courseId}/terms/{termId}/workAssignments/stage")
     fun deleteAllStagedWorkItem(
             @PathVariable courseId: Int,
             @PathVariable termId: Int
     ) = NotImplementedError()
 
-    @DeleteMapping("/{courseId}/terms/{termId}/workitems/stage/{stageId}")
+    @DeleteMapping("/{courseId}/terms/{termId}/workAssignments/stage/{stageId}")
     fun deleteStagedWorkItem(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable stageId: Int
     ) = NotImplementedError()
 
-    @DeleteMapping("/{courseId}/terms/{termId}/workitems/{workItemId}/report")
+    @DeleteMapping("/{courseId}/terms/{termId}/workAssignments/{workAssignmentsId}/reports")
     fun deleteAllReportsInWorkItem(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable workItemId: Int
     ) = NotImplementedError()
 
-    @DeleteMapping("/{courseId}/terms/{termId}/workitems/{workItemId}/report/{reportId}")
+    @DeleteMapping("/{courseId}/terms/{termId}/workAssignments/{workAssignmentId}/reports/{reportId}")
     fun deleteReportInWorkItem(
             @PathVariable courseId: Int,
             @PathVariable workItemId: Int,
