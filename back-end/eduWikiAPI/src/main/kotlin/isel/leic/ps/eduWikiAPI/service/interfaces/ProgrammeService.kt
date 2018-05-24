@@ -6,6 +6,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Programme
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.report.ProgrammeReport
+import isel.leic.ps.eduWikiAPI.domain.model.version.ProgrammeVersion
 
 interface ProgrammeService {
 
@@ -56,5 +57,13 @@ interface ProgrammeService {
     fun partialUpdateOnProgramme(programmeId: Int, inputProgramme: ProgrammeInputModel)
 
     fun partialUpdateOnStagedProgramme(programmeId: Int, inputProgramme: ProgrammeInputModel)
+
+    fun getAllVersions(programmeId: Int): List<ProgrammeVersion>
+
+    fun getVersion(programmeId: Int, versionId: Int): ProgrammeVersion
+
+    fun deleteAllVersions(programmeId: Int): Int
+
+    fun deleteSpecificVersion(programmeId: Int, versionId: Int): Int
 
 }

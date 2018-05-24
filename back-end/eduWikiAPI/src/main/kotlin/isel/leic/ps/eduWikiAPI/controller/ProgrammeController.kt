@@ -42,6 +42,13 @@ class ProgrammeController {
     @GetMapping("/{programmeId}/courses")
     fun getCoursesOnSpecificProgramme(@PathVariable programmeId: Int) = programmeService.getCoursesOnSpecificProgramme(programmeId)
 
+    @GetMapping("/{programmeId}/versions")
+    fun getAllVersionsOfProgramme(@PathVariable programmeId: Int) = programmeService.getAllVersions(programmeId)
+
+    @GetMapping("/{programmeId}/versions/{versionId]")
+    fun getVersionOfProgramme(@PathVariable programmeId: Int, @PathVariable versionId: Int) = programmeService.getVersion(programmeId, versionId)
+
+
     /**
      * All POST Routes
      */
@@ -132,5 +139,11 @@ class ProgrammeController {
             @PathVariable programmeId: Int,
             @PathVariable reportId: Int
     ) = programmeService.deleteReportOnProgramme(programmeId, reportId)
+
+    @DeleteMapping("/{programmeId}/versions")
+    fun deleteAllVersions(@PathVariable programmeId: Int) = programmeService.deleteAllVersions(programmeId)
+
+    @DeleteMapping("/{programmeId}/versions/{versionId}")
+    fun deleteSpecificVersion(@PathVariable programmeId: Int, @PathVariable versionId: Int) = programmeService.deleteSpecificVersion(programmeId, versionId)
 
 }

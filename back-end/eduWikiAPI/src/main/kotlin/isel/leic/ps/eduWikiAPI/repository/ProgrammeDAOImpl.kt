@@ -218,61 +218,34 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .execute()
     }
 
-
-    override fun getVersionProgramme(versionProgrammeId: Int, version: Int): ProgrammeVersion = dbi.withHandle<ProgrammeVersion, Exception> {
-        it.createQuery(dsl
-                .select(
-                        field(PROG_ID),
-                        field(PROG_VERSION),
-                        field(PROG_FULL_NAME),
-                        field(PROG_SHORT_NAME),
-                        field(PROG_ACADEMIC_DEGREE),
-                        field(PROG_TOTAL_CREDITS),
-                        field(PROG_DURATION),
-                        field(PROG_CREATED_BY),
-                        field(PROG_VOTE),
-                        field(PROG_TIMESTAMP)
-                )
-                .from(table(PROG_VERSION_TABLE))
-                .where(field(PROG_ID).eq(versionProgrammeId).and(field(PROG_VERSION).eq(version)))
-                .sql
-        ).mapTo(ProgrammeVersion::class.java).first()
+    override fun getAllVersionsOfProgramme(programmeId: Int): List<ProgrammeVersion> = dbi.withHandle<List<ProgrammeVersion>, Exception> {
+        val query = "select * from $PROG_VERSION_TABLE where $PROG_ID = :programmeId"
+        it.createQuery(query).bind("programmeId", programmeId).mapTo(ProgrammeVersion::class.java).list()
     }
 
-    override fun getAllVersionProgrammes(): List<ProgrammeVersion> = dbi.withHandle<List<ProgrammeVersion>, Exception> {
-        it.createQuery(dsl
-                .select(
-                        field(PROG_ID),
-                        field(PROG_VERSION),
-                        field(PROG_FULL_NAME),
-                        field(PROG_SHORT_NAME),
-                        field(PROG_ACADEMIC_DEGREE),
-                        field(PROG_TOTAL_CREDITS),
-                        field(PROG_DURATION),
-                        field(PROG_CREATED_BY),
-                        field(PROG_VOTE),
-                        field(PROG_TIMESTAMP)
-                )
-                .from(table(PROG_VERSION_TABLE))
-                .sql
-        ).mapTo(ProgrammeVersion::class.java).list()
+    override fun getSpecificVersionOfProgramme(programmeId: Int, versionId: Int): ProgrammeVersion = dbi.withHandle<ProgrammeVersion, Exception> {
+        val query = "select * from $PROG_VERSION_TABLE where $PROG_ID = :programmeId and $PROG_VERSION = :versionId"
+        it.createQuery(query)
+                .bind("programmeId", programmeId)
+                .bind("versionId", versionId)
+                .mapTo(ProgrammeVersion::class.java).findOnly()
     }
 
-    override fun deleteVersionProgramme(versionProgrammeId: Int, version: Int) = dbi.withHandle<Int, Exception> {
-        it.execute(dsl
-                .delete(table(PROG_VERSION_TABLE))
-                .where(field(PROG_ID).eq(versionProgrammeId).and(field(PROG_VERSION).eq(version)))
-                .sql
-        )
+    override fun deleteVersionProgramme(versionProgrammeId: Int, version: Int): Int = dbi.withHandle<Int, Exception> {
+        val delete = "delete from $PROG_VERSION_TABLE where $PROG_ID = :id and $PROG_VERSION = :version"
+        it.createUpdate(delete)
+                .bind("id", versionProgrammeId)
+                .bind("version", version)
+                .execute()
     }
 
-    override fun deleteAllVersionProgrammes(): Int = dbi.withHandle<Int, Exception> {
-        it.execute(dsl
-                .delete(table(PROG_VERSION_TABLE))
-                .sql
-        )
+    override fun deleteAllVersionsOfProgramme(programmeId: Int): Int = dbi.withHandle<Int, Exception> {
+        val delete = "delete from $PROG_VERSION_TABLE where $PROG_ID = :id"
+        it.createUpdate(delete)
+                .bind("id", programmeId)
+                .execute()
     }
-
+/*
     override fun createVersionProgramme(programmeVersion: ProgrammeVersion) = dbi.useHandle<Exception> {
         it.execute(dsl
                 .insertInto(
@@ -300,7 +273,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 ).sql
         )
     }
-
+*/
     override fun reportProgramme(programmeId: Int, programmeReport: ProgrammeReport) = dbi.useHandle<Exception> {
         val insert = "insert into $PROG_REPORT_TABLE " +
                 "($PROG_ID, $PROG_FULL_NAME, " +

@@ -52,15 +52,13 @@ interface ProgrammeDAO {
      * Version entities queries
      */
 
-    fun getVersionProgramme(versionProgrammeId: Int, version: Int) : ProgrammeVersion
+    fun getAllVersionsOfProgramme(programmeId: Int): List<ProgrammeVersion>
 
-    fun getAllVersionProgrammes() : List<ProgrammeVersion>
+    fun getSpecificVersionOfProgramme(programmeId: Int, versionId: Int): ProgrammeVersion
 
     fun deleteVersionProgramme(versionProgrammeId: Int, version: Int) : Int
 
-    fun deleteAllVersionProgrammes() : Int
-
-    fun createVersionProgramme(programmeVersion: ProgrammeVersion)
+    fun deleteAllVersionsOfProgramme(programmeId: Int) : Int
 
     fun addToProgrammeVersion(programme: Programme)
 
@@ -79,5 +77,6 @@ interface ProgrammeDAO {
     fun deleteAllReportsOnProgramme(programmeId : Int)
 
     fun voteOnReportedProgramme(reportId: Int, inputVote: VoteInputModel)
+
 
 }

@@ -6,6 +6,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Programme
 import isel.leic.ps.eduWikiAPI.domain.model.report.ProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ProgrammeStage
+import isel.leic.ps.eduWikiAPI.domain.model.version.ProgrammeVersion
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ProgrammeDAO
 import isel.leic.ps.eduWikiAPI.service.interfaces.ProgrammeService
 import org.springframework.beans.factory.annotation.Autowired
@@ -191,6 +192,14 @@ class ProgrammeServiceImpl : ProgrammeService {
         )
         programmeRepo.updateStagedProgramme(programmeId, updatedProgramme)
     }
+
+    override fun getAllVersions(programmeId: Int): List<ProgrammeVersion> = programmeRepo.getAllVersionsOfProgramme(programmeId)
+
+    override fun getVersion(programmeId: Int, versionId: Int): ProgrammeVersion = programmeRepo.getSpecificVersionOfProgramme(programmeId, versionId)
+
+    override fun deleteAllVersions(programmeId: Int): Int = programmeRepo.deleteAllVersionsOfProgramme(programmeId)
+
+    override fun deleteSpecificVersion(programmeId: Int, versionId: Int): Int = programmeRepo.deleteVersionProgramme(programmeId, versionId)
 
 
 }
