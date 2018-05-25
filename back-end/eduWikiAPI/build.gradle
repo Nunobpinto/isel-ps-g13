@@ -58,4 +58,5 @@ dependencies {
 	compile group: 'com.googlecode.siren4j', name: 'siren4j', version: '2.1.0'
 	runtime('org.postgresql:postgresql')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
+	testCompile group: 'com.h2database', name: 'h2', version: '1.4.197'
 }
