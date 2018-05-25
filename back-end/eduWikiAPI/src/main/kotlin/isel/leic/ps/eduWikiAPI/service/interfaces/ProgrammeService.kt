@@ -44,15 +44,15 @@ interface ProgrammeService {
 
     fun deleteAllProgrammes()
 
-    fun deleteSpecificProgramme(programmeId: Int)
+    fun deleteSpecificProgramme(programmeId: Int): Int
 
     fun deleteAllStagedProgrammes()
 
-    fun deleteStagedProgramme(stageId : Int)
+    fun deleteStagedProgramme(stageId : Int) : Int
 
     fun deleteAllReportsOnProgramme(programmeId: Int)
 
-    fun deleteReportOnProgramme(programmeId: Int, reportId: Int)
+    fun deleteReportOnProgramme(programmeId: Int, reportId: Int) : Int
 
     fun partialUpdateOnProgramme(programmeId: Int, inputProgramme: ProgrammeInputModel)
 

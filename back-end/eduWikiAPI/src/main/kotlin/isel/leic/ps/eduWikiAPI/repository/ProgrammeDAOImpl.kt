@@ -59,7 +59,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         it.createQuery(select).mapTo(Programme::class.java).list()
     }
 
-    override fun deleteSpecificProgramme(programmeId: Int) = dbi.useHandle<Exception> {
+    override fun deleteSpecificProgramme(programmeId: Int) = dbi.withHandle<Int, Exception> {
         val delete = "delete from $PROG_TABLE where $PROG_ID = :programmeId"
         it.createUpdate(delete)
                 .bind("programmeId", programmeId)
@@ -70,7 +70,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         it.createUpdate("delete from $PROG_TABLE").execute()
     }
 
-    override fun updateProgramme(programmeId: Int, programme: Programme) = dbi.useHandle<Exception> {
+    override fun updateProgramme(programmeId: Int, programme: Programme) = dbi.withHandle<Int, Exception> {
         val update = "update $PROG_TABLE SET " +
                 "$PROG_VERSION = :version, $PROG_CREATED_BY = :createdBy, " +
                 "$PROG_FULL_NAME = :fullName, $PROG_SHORT_NAME = :shortName, " +
@@ -92,7 +92,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .execute()
     }
 
-    override fun createProgramme(programme: Programme) = dbi.useHandle<Exception> {
+    override fun createProgramme(programme: Programme): Int = dbi.withHandle<Int, Exception> {
         val insert = "insert into $PROG_TABLE " +
                 "($PROG_VERSION, $PROG_FULL_NAME, " +
                 "$PROG_SHORT_NAME, $PROG_ACADEMIC_DEGREE, $PROG_TOTAL_CREDITS, " +
@@ -157,7 +157,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         it.createUpdate("delete from $PROG_STAGE_TABLE").execute()
     }
 
-    override fun createStagingProgramme(programmeStage: ProgrammeStage) = dbi.useHandle<Exception> {
+    override fun createStagingProgramme(programmeStage: ProgrammeStage) = dbi.withHandle<Int,Exception> {
         val insert = "insert into $PROG_STAGE_TABLE " +
                 "($PROG_FULL_NAME, " +
                 "$PROG_SHORT_NAME, $PROG_ACADEMIC_DEGREE, $PROG_TOTAL_CREDITS, " +
@@ -188,7 +188,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .execute()
     }
 
-    override fun updateStagedProgramme(programmeId: Int, programme: ProgrammeStage) = dbi.useHandle<Exception>{
+    override fun updateStagedProgramme(programmeId: Int, programme: ProgrammeStage) = dbi.useHandle<Exception> {
         val update = "update $PROG_STAGE_TABLE SET" +
                 "$PROG_FULL_NAME = :fullName, $PROG_SHORT_NAME = :shortName, " +
                 "$PROG_ACADEMIC_DEGREE = :academicDegree, $PROG_TOTAL_CREDITS = :totalCredits, " +
@@ -209,7 +209,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .execute()
     }
 
-    override fun deleteStagedProgramme(stageId: Int) = dbi.useHandle<Exception> {
+    override fun deleteStagedProgramme(stageId: Int) = dbi.withHandle<Int,Exception> {
         val delete = "delete from $PROG_STAGE_TABLE where $PROG_ID = :programmeId"
         it.createUpdate(delete)
                 .bind("programmeId", stageId)
@@ -243,36 +243,37 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .bind("id", programmeId)
                 .execute()
     }
-/* //TODO mandar fora
-    override fun createVersionProgramme(programmeVersion: ProgrammeVersion) = dbi.useHandle<Exception> {
-        it.execute(dsl
-                .insertInto(
-                        table(PROG_VERSION_TABLE),
-                        field(PROG_ID),
-                        field(PROG_VERSION),
-                        field(PROG_FULL_NAME),
-                        field(PROG_SHORT_NAME),
-                        field(PROG_ACADEMIC_DEGREE),
-                        field(PROG_TOTAL_CREDITS),
-                        field(PROG_DURATION),
-                        field(PROG_TIMESTAMP),
-                        field(PROG_CREATED_BY)
-                )
-                .values(
-                        programmeVersion.programmeId,
-                        programmeVersion.version,
-                        programmeVersion.fullName,
-                        programmeVersion.shortName,
-                        programmeVersion.academicDegree,
-                        programmeVersion.totalCredits,
-                        programmeVersion.duration,
-                        programmeVersion.timestamp,
-                        programmeVersion.createdBy
-                ).sql
-        )
-    }
-*/
-    override fun reportProgramme(programmeId: Int, programmeReport: ProgrammeReport) = dbi.useHandle<Exception> {
+
+    /* //TODO mandar fora
+        override fun createVersionProgramme(programmeVersion: ProgrammeVersion) = dbi.useHandle<Exception> {
+            it.execute(dsl
+                    .insertInto(
+                            table(PROG_VERSION_TABLE),
+                            field(PROG_ID),
+                            field(PROG_VERSION),
+                            field(PROG_FULL_NAME),
+                            field(PROG_SHORT_NAME),
+                            field(PROG_ACADEMIC_DEGREE),
+                            field(PROG_TOTAL_CREDITS),
+                            field(PROG_DURATION),
+                            field(PROG_TIMESTAMP),
+                            field(PROG_CREATED_BY)
+                    )
+                    .values(
+                            programmeVersion.programmeId,
+                            programmeVersion.version,
+                            programmeVersion.fullName,
+                            programmeVersion.shortName,
+                            programmeVersion.academicDegree,
+                            programmeVersion.totalCredits,
+                            programmeVersion.duration,
+                            programmeVersion.timestamp,
+                            programmeVersion.createdBy
+                    ).sql
+            )
+        }
+    */
+    override fun reportProgramme(programmeId: Int, programmeReport: ProgrammeReport) = dbi.withHandle<Int, Exception> {
         val insert = "insert into $PROG_REPORT_TABLE " +
                 "($PROG_ID, $PROG_FULL_NAME, " +
                 "$PROG_SHORT_NAME, $PROG_ACADEMIC_DEGREE, $PROG_TOTAL_CREDITS, " +
@@ -313,7 +314,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .execute()
     }
 
-    override fun deleteReportOnProgramme(programmeId: Int, reportId: Int) = dbi.useHandle<Exception> {
+    override fun deleteReportOnProgramme(programmeId: Int, reportId: Int) = dbi.withHandle<Int,Exception> {
         val delete = "delete from $PROG_REPORT_TABLE where $PROG_ID = :programmeId and $PROG_REPORT_ID = :reportId"
         it.createUpdate(delete)
                 .bind("programmeId", programmeId)
@@ -334,7 +335,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .execute()
     }
 
-    override fun addToProgrammeVersion(programme: Programme) = dbi.useHandle<Exception> {
+    override fun addToProgrammeVersion(programme: Programme) = dbi.withHandle<Int,Exception> {
         val insert = "insert into $PROG_VERSION_TABLE " +
                 "($PROG_ID, $PROG_VERSION, $PROG_FULL_NAME, $PROG_SHORT_NAME, " +
                 "$PROG_ACADEMIC_DEGREE, $PROG_TOTAL_CREDITS," +
