@@ -24,7 +24,7 @@ interface OrganizationService {
 
     fun deleteAllOrganizations(): Int
 
-    fun updateOrganization(organization: Organization)
+    fun updateOrganization(organization: Organization) : Int
 
     fun getAllOrganizationReports(organizationId: Int): List<OrganizationReport>
 

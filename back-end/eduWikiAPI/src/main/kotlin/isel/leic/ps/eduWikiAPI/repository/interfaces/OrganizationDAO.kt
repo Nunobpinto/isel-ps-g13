@@ -19,9 +19,9 @@ interface OrganizationDAO {
 
     fun deleteAllOrganizations() : Int
 
-    fun updateOrganization(organization: Organization)
+    fun updateOrganization(organization: Organization) : Int
 
-    fun createOrganization(organization: Organization)
+    fun createOrganization(organization: Organization) : Int
 
     fun voteOnOrganization(organizationId: Int, vote: Vote)
 
@@ -39,13 +39,13 @@ interface OrganizationDAO {
 
     fun deleteVersion(organizationId: Int, version: Int): Int?
 
-    fun addToOrganizationVersion(organization: Organization)
+    fun addToOrganizationVersion(organization: Organization) : Int
 
     /**
      * Report entity queries
      */
 
-    fun reportOrganization(organizationReport: OrganizationReport)
+    fun reportOrganization(organizationReport: OrganizationReport) : Int
 
     fun deleteReportOnOrganization(reportId: Int) : Int
 

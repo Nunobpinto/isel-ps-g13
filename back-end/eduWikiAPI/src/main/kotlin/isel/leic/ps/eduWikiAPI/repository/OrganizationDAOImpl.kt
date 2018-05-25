@@ -57,7 +57,7 @@ class OrganizationDAOImpl : OrganizationDAO {
         it.createUpdate("delete from $ORG_TABLE").execute()
     }
 
-    override fun updateOrganization(organization: Organization) = dbi.useHandle<Exception> {
+    override fun updateOrganization(organization: Organization) = dbi.withHandle<Int,Exception> {
         val update = "update $ORG_TABLE SET " +
                 "$ORG_VERSION = :version, $ORG_CREATED_BY = :createdBy, " +
                 "$ORG_FULL_NAME = :fullName, $ORG_SHORT_NAME = :shortName, " +
@@ -78,7 +78,7 @@ class OrganizationDAOImpl : OrganizationDAO {
                 .execute()
     }
 
-    override fun createOrganization(organization: Organization) = dbi.useHandle<Exception> {
+    override fun createOrganization(organization: Organization) = dbi.withHandle<Int,Exception> {
         val insert = "insert into $ORG_TABLE " +
                 "($ORG_FULL_NAME, " +
                 "$ORG_SHORT_NAME, $ORG_CREATED_BY, $ORG_ADDRESS, " +
@@ -108,7 +108,7 @@ class OrganizationDAOImpl : OrganizationDAO {
 
     }
 
-    override fun reportOrganization(organizationReport: OrganizationReport) = dbi.useHandle<Exception> {
+    override fun reportOrganization(organizationReport: OrganizationReport) = dbi.withHandle<Int,Exception> {
         val insert = "insert into $ORG_REPORT_TABLE" +
                 "($ORG_FULL_NAME, $ORG_ID," +
                 "$ORG_SHORT_NAME, $ORG_REPORTED_BY, $ORG_ADDRESS, " +
@@ -200,14 +200,14 @@ class OrganizationDAOImpl : OrganizationDAO {
     }
 
     override fun deleteVersion(organizationId: Int, version: Int): Int = dbi.withHandle<Int, Exception> {
-        val delete = "delete from $ORG_REPORT_TABLE where $ORG_ID = :organizationId and $ORG_VERSION = :version"
+        val delete = "delete from $ORG_VERSION_TABLE where $ORG_ID = :organizationId and $ORG_VERSION = :version"
         it.createUpdate(delete)
                 .bind("organizationId", organizationId)
                 .bind("version", version)
                 .execute()
     }
 
-    override fun addToOrganizationVersion(organization: Organization) = dbi.useHandle<Exception> {
+    override fun addToOrganizationVersion(organization: Organization) = dbi.withHandle<Int,Exception> {
         val insert = "insert into $ORG_VERSION_TABLE " +
                 "($ORG_ID, $ORG_VERSION, $ORG_FULL_NAME, $ORG_SHORT_NAME, " +
                 "$ORG_CONTACT, $ORG_ADDRESS, $ORG_TIMESTAMP, $ORG_CREATED_BY) " +
