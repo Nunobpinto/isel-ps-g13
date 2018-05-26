@@ -279,23 +279,23 @@ class CourseController {
     fun createStagingWorkAssignment(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            @RequestBody workAssignment: WorkAssignmentInputModel
-    ) = NotImplementedError()
+            @RequestBody inputWorkAssignment: WorkAssignmentInputModel
+    ) = courseService.createStagingWorkAssignment(courseId, termId, inputWorkAssignment)
 
     @PostMapping("/{courseId}/terms/{termId}/workAssignments/stage/{stageId}")
     fun createWorkAssignmentFromStaged(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable stageId: Int
-    ) = NotImplementedError()
+    ) = courseService.createWorkAssignmentFromStaged(courseId, termId, stageId)
 
     @PostMapping("/{courseId}/terms/{termId}/workAssignments/stage/{stageId}/vote")
     fun voteOnStagedWorkAssignment(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable stageId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = NotImplementedError()
+            @RequestBody inputVote: VoteInputModel
+    ) = courseService.voteOnStagedWorkAssignment(stageId, inputVote)
 
     /**
      * ALL PATCH Routes

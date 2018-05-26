@@ -5,6 +5,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.CourseMiscUnit
 import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.domain.model.WorkAssignment
 import isel.leic.ps.eduWikiAPI.domain.model.report.WorkAssignmentReport
+import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseMiscUnitStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.WorkAssignmentVersion
 import isel.leic.ps.eduWikiAPI.repository.interfaces.WorkAssignmentDAO
@@ -131,26 +132,13 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         )*/
     }
 
-    override fun getWorkAssignmentStage(courseMiscUnitStageId: Int): WorkAssignmentStage = dbi.withHandle<WorkAssignmentStage, Exception> {
-        /*it.createQuery(dsl
-                .select(
-                        field(CourseDAOImpl.CRS_MISC_UNIT_ID),
-                        field(WRK_ASS_SHEET),
-                        field(WRK_ASS_SUPPLEMENT),
-                        field(WRK_ASS_DUE_DATE),
-                        field(WRK_ASS_INDIVIDUAL),
-                        field(WRK_ASS_LATE_DELIVERY),
-                        field(WRK_ASS_MULTIPLE_DELIVERIES),
-                        field(WRK_ASS_REQUIRES_REPORT),
-                        field(WRK_ASS_CREATED_BY),
-                        field(WRK_ASS_VOTES),
-                        field(WRK_ASS_TIMESTAMP)
-                )
-                .from(table(WRK_ASS_STAGE_TABLE))
-                .where(field(CourseDAOImpl.CRS_MISC_UNIT_ID).eq(courseMiscUnitStageId))
-                .sql
-        ).mapTo(WorkAssignmentStage::class.java).findOnly()*/
-        null
+    override fun getWorkAssignmentSpecificStageEntry(stageId: Int): WorkAssignmentStage = dbi.withHandle<WorkAssignmentStage, Exception> {
+        val select = "select * from $WRK_ASS_STAGE_TABLE" +
+                "where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :workAssignmentId"
+        it.createQuery(select)
+                .bind("workAssignmentId", stageId)
+                .mapTo(WorkAssignmentStage::class.java)
+                .findOnly()
     }
 
     override fun getAllWorkAssignmentStages(): List<WorkAssignmentStage> = dbi.withHandle<List<WorkAssignmentStage>, Exception> {
@@ -174,13 +162,17 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         null
     }
 
-    override fun deleteWorkAssignmentStage(courseMiscUnitStageId: Int): Int = dbi.withHandle<Int, Exception> {
-        /*it.execute(dsl
-                .delete(table(WRK_ASS_STAGE_TABLE))
-                .where(field(CourseDAOImpl.CRS_MISC_UNIT_ID).eq(courseMiscUnitStageId))
-                .sql
-        )*/
-        0
+    override fun deleteStagedWorkAssignment(stageId: Int): Int = dbi.withHandle<Int, Exception> {
+        val deleteFromCourseMiscUnitStageTable = "delete from ${CourseDAOImpl.COURSE_MISC_UNIT_STAGE_TABLE} " +
+                "where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :workAssignmentId"
+        it.createUpdate(deleteFromCourseMiscUnitStageTable)
+                .bind("workAssignmentId", stageId)
+                .execute()
+
+        val deleteFromWorkAssignmentStageTable = "delete from $WRK_ASS_STAGE_TABLE where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :workAssignmentId"
+        it.createUpdate(deleteFromWorkAssignmentStageTable)
+                .bind("workAssignmentId", stageId)
+                .execute()
     }
 
     override fun deleteAllWorkAssignmentStages(): Int = dbi.withHandle<Int, Exception> {
@@ -507,6 +499,53 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                 .bind("requiresReport", workAssignment.requiresReport)
                 .bind("createdBy", workAssignment.createdBy)
                 .bind("timestamp", workAssignment.timestamp)
+                .execute()
+    }
+
+    override fun createStagingWorkAssingment(courseId: Int, termId: Int, stage: WorkAssignmentStage): Int = dbi.inTransaction<Int, Exception>{
+        val insertInCourseMiscUnitStage = "insert into ${CourseDAOImpl.COURSE_MISC_UNIT_STAGE_TABLE} " +
+                "(${CourseDAOImpl.COURSE_ID}, ${TermDAOImpl.TERM_ID}, ${CourseDAOImpl.COURSE_MISC_TYPE}" +
+                "values(:courseId, :termId, :miscType)"
+
+        val courseMiscUnitStage = it.createUpdate(insertInCourseMiscUnitStage)
+                .bind("courseId", courseId)
+                .bind("termId", termId)
+                .bind("miscType", "Work Assignment")
+                .executeAndReturnGeneratedKeys()
+                .mapTo(CourseMiscUnitStage::class.java)
+                .findOnly()
+
+        val insertInWorkAssignmentStage = "insert into $WRK_ASS_STAGE_TABLE" +
+                "(${CourseDAOImpl.COURSE_MISC_UNIT_ID}, $WRK_ASS_SHEET, $WRK_ASS_SUPPLEMENT, $WRK_ASS_DUE_DATE," +
+                "$WRK_ASS_INDIVIDUAL, $WRK_ASS_LATE_DELIVERY, $WRK_ASS_MULTIPLE_DELIVERIES, $WRK_ASS_REQUIRES_REPORT, " +
+                "$WRK_ASS_CREATED_BY, $WRK_ASS_VOTES, $WRK_ASS_TIMESTAMP" +
+                "values(:courseMiscUnitId, :sheet, :supplement, :dueDate, :individual, :lateDelivery," +
+                ":multipleDeliveries, :requiresReport, :createdBy, :votes, :timestamp)"
+        it.createUpdate(insertInWorkAssignmentStage)
+                .bind("courseMiscUnitId", courseMiscUnitStage.id)
+                .bind("sheet", stage.sheet)
+                .bind("supplement", stage.supplement)
+                .bind("dueDate", stage.dueDate)
+                .bind("individual", stage.individual)
+                .bind("lateDelivery", stage.lateDelivery)
+                .bind("multipleDeliveries", stage.multipleDeliveries)
+                .bind("requiresReport", stage.requiresReport)
+                .bind("createdBy", stage.createdBy)
+                .bind("votes", stage.votes)
+                .bind("timestamp", stage.timestamp)
+                .execute()
+    }
+
+    override fun voteOnStagedWorkAssignment(stageId: Int, inputVote: VoteInputModel): Int = dbi.inTransaction<Int, Exception> {
+        val voteQuery = "select $WRK_ASS_VOTES from $WRK_ASS_STAGE_TABLE where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :workAssignmentId"
+        var votes = it.createQuery(voteQuery)
+                .bind("workAssignmentId", stageId)
+                .mapTo(Int::class.java).findOnly()
+        votes = if (inputVote.vote.equals(Vote.Down)) --votes else ++votes
+        val updateQuery = "update $WRK_ASS_STAGE_TABLE set $WRK_ASS_VOTES = :votes where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :workAssignmentId"
+        it.createUpdate(updateQuery)
+                .bind("votes", votes)
+                .bind("workAssignmentId", stageId)
                 .execute()
     }
 

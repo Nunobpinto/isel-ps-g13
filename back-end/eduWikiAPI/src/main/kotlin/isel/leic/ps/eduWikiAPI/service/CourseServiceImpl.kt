@@ -23,10 +23,8 @@ import isel.leic.ps.eduWikiAPI.repository.interfaces.CourseDAO
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ExamDAO
 import isel.leic.ps.eduWikiAPI.repository.interfaces.WorkAssignmentDAO
 import isel.leic.ps.eduWikiAPI.service.interfaces.CourseService
-import javafx.util.converter.TimeStringConverter
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.sql.Time
 import java.sql.Timestamp
 import java.time.LocalDateTime
 
@@ -285,4 +283,38 @@ class CourseServiceImpl : CourseService {
         workAssignmentDAO.deleteReportOnWorkAssignment(workAssignmentId, reportId)
         return workAssignmentDAO.updateWorkAssignment(workAssignmentId, updatedWorkAssignment)
     }
+
+    override fun createStagingWorkAssignment(courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): Int {
+        val stage = WorkAssignmentStage(
+                sheet = inputWorkAssignment.sheet,
+                supplement = inputWorkAssignment.supplement,
+                dueDate = inputWorkAssignment.dueDate,
+                individual = inputWorkAssignment.individual,
+                lateDelivery = inputWorkAssignment.lateDelivery,
+                multipleDeliveries = inputWorkAssignment.multipleDeliveries,
+                requiresReport = inputWorkAssignment.requiresReport,
+                createdBy = inputWorkAssignment.createdBy,
+                timestamp = Timestamp.valueOf(LocalDateTime.now())
+        )
+        return workAssignmentDAO.createStagingWorkAssingment(courseId, termId, stage)
+    }
+
+    override fun createWorkAssignmentFromStaged(courseId: Int, termId: Int, stageId: Int): Int {
+        val workAssignmentStage = workAssignmentDAO.getWorkAssignmentSpecificStageEntry(stageId)
+        val workAssignment = WorkAssignment(
+                createdBy = workAssignmentStage.createdBy,
+                sheet = workAssignmentStage.sheet,
+                supplement = workAssignmentStage.supplement,
+                dueDate = workAssignmentStage.dueDate,
+                individual = workAssignmentStage.individual,
+                lateDelivery = workAssignmentStage.lateDelivery,
+                multipleDeliveries = workAssignmentStage.multipleDeliveries,
+                requiresReport = workAssignmentStage.requiresReport,
+                timestamp = Timestamp.valueOf(LocalDateTime.now())
+        )
+        workAssignmentDAO.deleteStagedWorkAssignment(stageId) //TODO use transaction
+        return workAssignmentDAO.createWorkAssignmentOnCourseInTerm(courseId, termId, workAssignment)    //TODO use transaction
+    }
+
+    override fun voteOnStagedWorkAssignment(stageId: Int, inputVote: VoteInputModel): Int = workAssignmentDAO.voteOnStagedWorkAssignment(stageId, inputVote)
 }

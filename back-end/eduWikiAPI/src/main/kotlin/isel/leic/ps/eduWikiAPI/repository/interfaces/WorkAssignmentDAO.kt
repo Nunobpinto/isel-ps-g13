@@ -32,11 +32,11 @@ interface WorkAssignmentDAO {
      * Stage entities queries
      */
 
-    fun getWorkAssignmentStage(courseMiscUnitStageId: Int) : WorkAssignmentStage
+    fun getWorkAssignmentSpecificStageEntry(stageId: Int) : WorkAssignmentStage
 
     fun getAllWorkAssignmentStages() : List<WorkAssignmentStage>
 
-    fun deleteWorkAssignmentStage(courseMiscUnitStageId: Int) : Int
+    fun deleteStagedWorkAssignment(stageId: Int) : Int
 
     fun deleteAllWorkAssignmentStages() : Int
 
@@ -47,6 +47,10 @@ interface WorkAssignmentDAO {
     fun getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignmentStage>
 
     fun getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): WorkAssignmentStage
+
+    fun createStagingWorkAssingment(courseId: Int, termId: Int, stage: WorkAssignmentStage): Int
+
+    fun voteOnStagedWorkAssignment(stageId: Int, inputVote: VoteInputModel): Int
 
     /**
      * Version entities queries

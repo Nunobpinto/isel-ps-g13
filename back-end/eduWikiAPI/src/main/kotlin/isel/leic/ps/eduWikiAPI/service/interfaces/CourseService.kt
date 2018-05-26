@@ -101,4 +101,10 @@ interface CourseService {
 
     fun updateReportedWorkAssignment(workAssignmentId: Int, reportId: Int): Int
 
+    fun createStagingWorkAssignment(courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): Int
+
+    fun createWorkAssignmentFromStaged(courseId: Int, termId: Int, stageId: Int): Int
+
+    fun voteOnStagedWorkAssignment(stageId: Int, inputVote: VoteInputModel): Int
+
 }
