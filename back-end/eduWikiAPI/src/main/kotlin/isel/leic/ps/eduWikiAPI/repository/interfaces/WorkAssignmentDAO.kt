@@ -21,9 +21,13 @@ interface WorkAssignmentDAO {
 
     fun updateWorkAssignment(workAssignment: WorkAssignment) : Int
 
-    fun createWorkAssignment(workAssignment: WorkAssignment)
+    fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, workAssignment: WorkAssignment) : Int
 
     fun voteOnWorkAssignment(courseMiscUnitId: Int, voteType: Int)
+
+    fun getAllWorkAssignmentsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignment>
+
+    fun getSpecificWorkAssignmentFromSpecificTermOfCourse(workAssignmentId: Int): WorkAssignment
 
     /**
      * Stage entities queries
@@ -40,6 +44,10 @@ interface WorkAssignmentDAO {
     fun createWorkAssignmentStage(workAssignmentStage: WorkAssignmentStage)
 
     fun voteOnWorkAssignmentStage(courseMiscUnitStageId: Int, voteType: Int)
+
+    fun getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignmentStage>
+
+    fun getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): WorkAssignmentStage
 
     /**
      * Version entities queries
@@ -66,5 +74,9 @@ interface WorkAssignmentDAO {
     fun deleteAllReportsOnWorkAssignment(courseMiscUnitId : Int) : Int
 
     fun deleteAllReports(): Int
+
+    fun getAllReportsOnWorkUnitOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): List<WorkAssignmentReport>
+
+    fun getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(reportId: Int): WorkAssignmentReport
 
 }

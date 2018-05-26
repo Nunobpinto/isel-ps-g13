@@ -1,17 +1,10 @@
 package isel.leic.ps.eduWikiAPI.repository.interfaces
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
-import isel.leic.ps.eduWikiAPI.domain.model.Class
 import isel.leic.ps.eduWikiAPI.domain.model.Course
-import isel.leic.ps.eduWikiAPI.domain.model.Exam
 import isel.leic.ps.eduWikiAPI.domain.model.Term
-import isel.leic.ps.eduWikiAPI.domain.model.WorkAssignment
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
-import isel.leic.ps.eduWikiAPI.domain.model.report.ExamReport
-import isel.leic.ps.eduWikiAPI.domain.model.report.WorkAssignmentReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseStage
-import isel.leic.ps.eduWikiAPI.domain.model.staging.ExamStage
-import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
 
 interface CourseDAO {
@@ -30,49 +23,29 @@ interface CourseDAO {
 
     fun updateCourse(course: Course) : Int
 
-    fun createCourse(course: Course)
+    fun createCourse(course: Course) : Int
 
-    fun voteOnCourse(courseId: Int, inputVote: VoteInputModel)
+    fun voteOnCourse(courseId: Int, inputVote: VoteInputModel) : Int
 
     fun getTermsOfCourse(courseId: Int): List<Term>
 
     fun getSpecificTermOfCourse(courseId: Int, termId: Int): Term
 
-    fun getAllExamsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<Exam>
-
-    fun getSpecificExamFromSpecificTermOfCourse(courseId: Int, termId: Int, examId: Int): Exam
-
-    fun getAllWorkAssignmentsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignment>
-
-    fun getSpecificWorkAssignmentFromSpecificTermOfCourse(workAssignmentId: Int): WorkAssignment
-
-    fun getClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class>
-
-    fun createExamOnCourseInTerm(courseId: Int, termId: Int, exam: Exam)
-
     /**
      * Stage entities queries
      */
 
-    fun deleteStagedCourse(courseStageId: Int)
+    fun deleteStagedCourse(courseStageId: Int) : Int
 
     fun deleteAllCourseStages() : Int
 
-    fun createStagingCourse(courseStage: CourseStage)
+    fun createStagingCourse(courseStage: CourseStage) : Int
 
-    fun voteOnStagedCourse(courseStageId: Int, inputVote: VoteInputModel)
+    fun voteOnStagedCourse(courseStageId: Int, inputVote: VoteInputModel) : Int
 
     fun getAllCourseStageEntries(): List<CourseStage>
 
     fun getCourseSpecificStageEntry(stageId: Int): CourseStage
-
-    fun getStageEntriesFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int): List<ExamStage>
-
-    fun getStageEntryFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): ExamStage
-
-    fun getStageEntriesFromWorkItemOnSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignmentStage>
-
-    fun getStageEntryFromWorkItemOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): WorkAssignmentStage
 
     /**
      * Version entities queries
@@ -104,14 +77,6 @@ interface CourseDAO {
 
     fun getSpecificReportOfCourse(courseId: Int, reportId: Int): CourseReport
 
-    fun getAllReportsOnExamOnSpecificTermOfCourse(examId: Int): List<ExamReport>
-
-    fun getSpecificReportOnExamOnSpecificTermOfCourse(reportId: Int): ExamReport
-
-    fun getAllReportsOnWorkUnitOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): List<WorkAssignmentReport>
-
-    fun getSpecificReportFromWorkItemOnSpecificTermOfCourse(reportId: Int): WorkAssignmentReport
-
-    fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel)
+    fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel) : Int
 
 }

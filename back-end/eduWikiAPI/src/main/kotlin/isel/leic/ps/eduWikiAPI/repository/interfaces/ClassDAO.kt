@@ -6,6 +6,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.staging.ClassStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.ClassVersion
 
 interface ClassDAO {
+
     /**
      * Main entities queries
      */
@@ -25,6 +26,8 @@ interface ClassDAO {
     fun createClass(klass: Class)
 
     fun voteOnClass(courseId: Int, termId: Int, voteType: Int)
+
+    fun getClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class>
 
     /**
      * Stage entities queries

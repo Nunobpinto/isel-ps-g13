@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.repository.interfaces
 
+import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Exam
 import isel.leic.ps.eduWikiAPI.domain.model.report.ExamReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ExamStage
@@ -11,49 +12,61 @@ interface ExamDAO {
      * Main entities queries
      */
 
-    fun getExam(courseMiscUnitId: Int) : Exam
+    fun getSpecificExam(courseMiscUnitId: Int): Exam
 
-    fun getAllExams() : List<Exam>
+    fun getAllExams(): List<Exam>
 
-    fun deleteExam(courseMiscUnitId: Int) : Int
+    fun deleteExam(courseMiscUnitId: Int): Int
 
-    fun deleteAllExams() : Int
+    fun deleteAllExams(): Int
 
-    fun updateExam(exam: Exam) : Int
+    fun updateExam(examId: Int, exam: Exam): Int
 
-    fun createExam(exam: Exam)
+    fun createExam(courseId: Int, termId: Int, exam: Exam) : Int
+
+    fun getAllExamsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<Exam>
 
     fun voteOnExam(courseMiscUnitId: Int, voteType: Int)
+
+    fun getSpecificExamFromSpecificTermOfCourse(courseId: Int, termId: Int, examId: Int): Exam
+
+    fun createExamOnCourseInTerm(courseId: Int, termId: Int, exam: Exam): Int
 
     /**
      * Stage entities queries
      */
 
-    fun getExamStage(courseMiscUnitStageId: Int) : ExamStage
+    fun getExamSpecificStageEntry(stageId: Int): ExamStage
 
-    fun getAllExamStages() : List<ExamStage>
+    fun getAllExamStages(): List<ExamStage>
 
-    fun deleteExamStage(courseMiscUnitStageId: Int) : Int
+    fun deleteAllExamStages(): Int
 
-    fun deleteAllExamStages() : Int
+    fun createStagingExam(courseId: Int, termId: Int, examStage: ExamStage): Int
 
-    fun createExamStage(workAssignmentStage: ExamStage)
+    fun voteOnStagedExam(stageId: Int, inputVote: VoteInputModel) : Int
 
-    fun voteOnExamStage(courseMiscUnitStageId: Int, voteType: Int)
+    fun getStageEntriesFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int): List<ExamStage>
+
+    fun getStageEntryFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): ExamStage
+
+    fun deleteStagedExam(stageId: Int): Int
 
     /**
      * Version entities queries
      */
 
-    fun getVersionExam(versionExamId: Int, version: Int) : ExamVersion
+    fun getVersionExam(versionExamId: Int, version: Int): ExamVersion
 
-    fun getAllVersionExams() : List<ExamVersion>
+    fun getAllVersionExams(): List<ExamVersion>
 
-    fun deleteVersionExam(versionExamId: Int, version: Int) : Int
+    fun deleteVersionExam(versionExamId: Int, version: Int): Int
 
-    fun deleteAllVersionExams() : Int
+    fun deleteAllVersionExams(): Int
 
     fun createVersionExam(examVersion: ExamVersion)
+
+    fun addToExamVersion(exam: Exam): Int
 
     /**
      * Report entity queries
@@ -61,10 +74,22 @@ interface ExamDAO {
 
     fun reportExam(examReport: ExamReport)
 
-    fun deleteReportOnExam(reportId: Int) : Int
+    fun deleteReportOnExam(examId: Int, reportId: Int): Int
 
-    fun deleteAllReportsOnExam(courseMiscUnitId : Int) : Int
+    fun deleteAllReportsOnExam(courseMiscUnitId: Int): Int
 
-    fun deleteAllReports() : Int
+    fun deleteAllReports(): Int
+
+    fun getAllReportsOnExamOnSpecificTermOfCourse(examId: Int): List<ExamReport>
+
+    fun getSpecificReportOnExamOnSpecificTermOfCourse(reportId: Int): ExamReport
+
+    fun addReportToExamOnCourseInTerm(courseId: Int, examId: Int, examReport: ExamReport): Int
+
+    fun voteOnReportToExamOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int
+
+    fun getSpecificReportOfExam(examId: Int, reportId: Int): ExamReport
 
 }
+
+

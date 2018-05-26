@@ -3,7 +3,9 @@ package isel.leic.ps.eduWikiAPI.service.interfaces
 import isel.leic.ps.eduWikiAPI.domain.inputModel.CourseInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.ExamInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
+import isel.leic.ps.eduWikiAPI.domain.inputModel.WorkAssignmentInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ExamReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Class
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Exam
@@ -50,32 +52,46 @@ interface CourseService {
 
     fun getSpecificWorkAssignmentFromSpecificTermOfCourse(workAssignmentId: Int): WorkAssignment
 
-    fun getStageEntriesFromWorkItemOnSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignmentStage>
+    fun getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignmentStage>
 
-    fun getStageEntryFromWorkItemOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): WorkAssignmentStage
+    fun getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): WorkAssignmentStage
 
-    fun getAllReportsOnWorkUnitOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): List<WorkAssignmentReport>
+    fun getAllReportsOnWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): List<WorkAssignmentReport>
 
-    fun getSpecificReportFromWorkItemOnSpecificTermOfCourse(reportId: Int): WorkAssignmentReport
+    fun getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(reportId: Int): WorkAssignmentReport
 
     fun getClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class>
 
-    fun createCourse(inputCourse: CourseInputModel)
+    fun createCourse(inputCourse: CourseInputModel) : Int
 
-    fun voteOnCourse(courseId: Int, inputVote: VoteInputModel)
+    fun voteOnCourse(courseId: Int, inputVote: VoteInputModel) : Int
 
-    fun reportCourse(courseId: Int, inputReportCourse: CourseReportInputModel)
+    fun reportCourse(courseId: Int, inputReportCourse: CourseReportInputModel) : Int
 
-    fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel)
+    fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel) : Int
 
     fun updateReportedCourse(courseId: Int, reportId: Int)
 
-    fun createStagingCourse(inputCourse: CourseInputModel)
+    fun createStagingCourse(inputCourse: CourseInputModel) : Int
 
-    fun createCourseFromStaged(stageId: Int)
+    fun createCourseFromStaged(stageId: Int) : Int
 
-    fun voteOnStagedCourse(stageId: Int, inputVote: VoteInputModel)
+    fun voteOnStagedCourse(stageId: Int, inputVote: VoteInputModel) : Int
 
-    fun createExamOnCourseInTerm(courseId: Int, termId: Int, inputExam: ExamInputModel)
+    fun createExamOnCourseInTerm(courseId: Int, termId: Int, inputExam: ExamInputModel) : Int
+
+    fun addReportToExamOnCourseInTerm(courseId: Int, examId: Int, inputExamReport: ExamReportInputModel) : Int
+
+    fun voteOnReportToExamOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int
+
+    fun updateReportedExam(examId: Int, reportId: Int): Int
+
+    fun createStagingExam(courseId: Int, termId: Int, inputExam: ExamInputModel): Int
+
+    fun createExamFromStaged(courseId: Int, termId: Int, stageId: Int): Int
+
+    fun voteOnStagedExam(stageId: Int, inputVote: VoteInputModel): Int
+
+    fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): Int
 
 }

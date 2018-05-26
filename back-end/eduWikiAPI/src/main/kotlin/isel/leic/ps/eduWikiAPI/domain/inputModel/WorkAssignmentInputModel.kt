@@ -1,15 +1,12 @@
-package isel.leic.ps.eduWikiAPI.domain.model;
+package isel.leic.ps.eduWikiAPI.domain.inputModel
 
 import java.sql.Timestamp
 import java.time.LocalDate
 
-data class WorkAssignment (
-        val id: Int = 0,
-        val version: Int = 0,
-        val votes: Int = 0,
-        val createdBy: String = "",
-        val sheet: String? = null, //TODO
-        val supplement: String? = null, //TODO
+class WorkAssignmentInputModel(
+        val createdBy: String,
+        val sheet: String? = null,
+        val supplement: String? = null,
         val dueDate: LocalDate? = LocalDate.now(),
         val individual: Boolean? = false,
         val lateDelivery: Boolean? = false,

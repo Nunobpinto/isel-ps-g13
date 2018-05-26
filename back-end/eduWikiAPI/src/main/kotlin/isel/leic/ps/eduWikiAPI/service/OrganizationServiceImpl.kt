@@ -96,7 +96,7 @@ class OrganizationServiceImpl : OrganizationService {
         val report = organizationRepo.getSpecificReportOfOrganization(organizationId, reportId)
         val updatedOrganization = Organization(
                 id = organization.id,
-                version = organization.version + 1,
+                version = organization.version.inc(),
                 votes = organization.votes,
                 createdBy = organization.createdBy,
                 fullName = report.fullName ?: organization.fullName,

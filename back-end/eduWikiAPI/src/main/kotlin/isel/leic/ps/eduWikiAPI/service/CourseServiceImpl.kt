@@ -3,7 +3,9 @@ package isel.leic.ps.eduWikiAPI.service
 import isel.leic.ps.eduWikiAPI.domain.inputModel.CourseInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.ExamInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
+import isel.leic.ps.eduWikiAPI.domain.inputModel.WorkAssignmentInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ExamReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Class
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Exam
@@ -15,7 +17,10 @@ import isel.leic.ps.eduWikiAPI.domain.model.report.WorkAssignmentReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ExamStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
+import isel.leic.ps.eduWikiAPI.repository.interfaces.ClassDAO
 import isel.leic.ps.eduWikiAPI.repository.interfaces.CourseDAO
+import isel.leic.ps.eduWikiAPI.repository.interfaces.ExamDAO
+import isel.leic.ps.eduWikiAPI.repository.interfaces.WorkAssignmentDAO
 import isel.leic.ps.eduWikiAPI.service.interfaces.CourseService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -27,6 +32,13 @@ class CourseServiceImpl : CourseService {
 
     @Autowired
     lateinit var courseDAO: CourseDAO
+    @Autowired
+    lateinit var examDAO: ExamDAO
+    @Autowired
+    lateinit var workAssignmentDAO: WorkAssignmentDAO
+    @Autowired
+    lateinit var classDAO: ClassDAO
+
 
     override fun getAllCourses(): List<Course> = courseDAO.getAllCourses()
 
@@ -44,33 +56,33 @@ class CourseServiceImpl : CourseService {
 
     override fun getSpecificTermOfCourse(courseId: Int, termId: Int): Term = courseDAO.getSpecificTermOfCourse(courseId, termId)
 
-    override fun getAllExamsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<Exam> = courseDAO.getAllExamsFromSpecificTermOfCourse(courseId, termId)
+    override fun getAllExamsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<Exam> = examDAO.getAllExamsFromSpecificTermOfCourse(courseId, termId)
 
-    override fun getSpecificExamFromSpecificTermOfCourse(courseId: Int, termId: Int, examId: Int): Exam = courseDAO.getSpecificExamFromSpecificTermOfCourse(courseId, termId, examId)
+    override fun getSpecificExamFromSpecificTermOfCourse(courseId: Int, termId: Int, examId: Int): Exam = examDAO.getSpecificExamFromSpecificTermOfCourse(courseId, termId, examId)
 
-    override fun getStageEntriesFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int): List<ExamStage> = courseDAO.getStageEntriesFromExamOnSpecificTermOfCourse(courseId, termId)
+    override fun getStageEntriesFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int): List<ExamStage> = examDAO.getStageEntriesFromExamOnSpecificTermOfCourse(courseId, termId)
 
-    override fun getStageEntryFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): ExamStage = courseDAO.getStageEntryFromExamOnSpecificTermOfCourse(courseId, termId, stageId)
+    override fun getStageEntryFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): ExamStage = examDAO.getStageEntryFromExamOnSpecificTermOfCourse(courseId, termId, stageId)
 
-    override fun getAllReportsOnExamOnSpecificTermOfCourse(examId: Int): List<ExamReport> = courseDAO.getAllReportsOnExamOnSpecificTermOfCourse(examId)
+    override fun getAllReportsOnExamOnSpecificTermOfCourse(examId: Int): List<ExamReport> = examDAO.getAllReportsOnExamOnSpecificTermOfCourse(examId)
 
-    override fun getSpecificReportOnExamOnSpecificTermOfCourse(reportId: Int): ExamReport = courseDAO.getSpecificReportOnExamOnSpecificTermOfCourse(reportId)
+    override fun getSpecificReportOnExamOnSpecificTermOfCourse(reportId: Int): ExamReport = examDAO.getSpecificReportOnExamOnSpecificTermOfCourse(reportId)
 
-    override fun getAllWorkAssignmentsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignment> = courseDAO.getAllWorkAssignmentsFromSpecificTermOfCourse(courseId, termId)
+    override fun getAllWorkAssignmentsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignment> = workAssignmentDAO.getAllWorkAssignmentsFromSpecificTermOfCourse(courseId, termId)
 
-    override fun getSpecificWorkAssignmentFromSpecificTermOfCourse(workAssignmentId: Int): WorkAssignment = courseDAO.getSpecificWorkAssignmentFromSpecificTermOfCourse(workAssignmentId)
+    override fun getSpecificWorkAssignmentFromSpecificTermOfCourse(workAssignmentId: Int): WorkAssignment = workAssignmentDAO.getSpecificWorkAssignmentFromSpecificTermOfCourse(workAssignmentId)
 
-    override fun getStageEntriesFromWorkItemOnSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignmentStage> = courseDAO.getStageEntriesFromWorkItemOnSpecificTermOfCourse(courseId, termId)
+    override fun getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignmentStage> = workAssignmentDAO.getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(courseId, termId)
 
-    override fun getStageEntryFromWorkItemOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): WorkAssignmentStage = courseDAO.getStageEntryFromWorkItemOnSpecificTermOfCourse(courseId, termId, stageId)
+    override fun getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): WorkAssignmentStage = workAssignmentDAO.getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId, termId, stageId)
 
-    override fun getAllReportsOnWorkUnitOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): List<WorkAssignmentReport> = courseDAO.getAllReportsOnWorkUnitOnSpecificTermOfCourse(courseId, termId, workAssignmentId)
+    override fun getAllReportsOnWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): List<WorkAssignmentReport> = workAssignmentDAO.getAllReportsOnWorkUnitOnSpecificTermOfCourse(courseId, termId, workAssignmentId)
 
-    override fun getSpecificReportFromWorkItemOnSpecificTermOfCourse(reportId: Int): WorkAssignmentReport = courseDAO.getSpecificReportFromWorkItemOnSpecificTermOfCourse(reportId)
+    override fun getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(reportId: Int): WorkAssignmentReport = workAssignmentDAO.getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(reportId)
 
-    override fun getClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class> = courseDAO.getClassesOnSpecificTermOfCourse(courseId, termId)
+    override fun getClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class> = classDAO.getClassesOnSpecificTermOfCourse(courseId, termId)
 
-    override fun createCourse(inputCourse: CourseInputModel) {
+    override fun createCourse(inputCourse: CourseInputModel): Int {
         val course = Course(
                 organizationId = inputCourse.organizationId,
                 createdBy = inputCourse.createdBy,
@@ -78,12 +90,12 @@ class CourseServiceImpl : CourseService {
                 shortName = inputCourse.shortName,
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
-        courseDAO.createCourse(course)
+        return courseDAO.createCourse(course)
     }
 
-    override fun voteOnCourse(courseId: Int, inputVote: VoteInputModel) = courseDAO.voteOnCourse(courseId, inputVote)
+    override fun voteOnCourse(courseId: Int, inputVote: VoteInputModel): Int = courseDAO.voteOnCourse(courseId, inputVote)
 
-    override fun reportCourse(courseId: Int, inputReportCourse: CourseReportInputModel) {
+    override fun reportCourse(courseId: Int, inputReportCourse: CourseReportInputModel): Int {
         /*val courseReport = CourseReport(
                 courseId = courseId,
                 courseFullName = inputReportCourse.fullName,
@@ -92,17 +104,17 @@ class CourseServiceImpl : CourseService {
         )
         courseDAO.reportCourse(courseId, courseReport)
         */
-        NotImplementedError()
+        return 0
     }
 
-    override fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel) = courseDAO.voteOnReportedCourse(reportId, inputVote)
+    override fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel): Int = courseDAO.voteOnReportedCourse(reportId, inputVote)
 
     override fun updateReportedCourse(courseId: Int, reportId: Int) {
         /* val course = courseDAO.getSpecificCourse(courseId)
-         val report = courseDAO.getSpecificReportOfCourse(courseId, reportId)
+         val report = courseDAO.getSpecificReportOfExam(courseId, reportId)
          val updatedCourse = Course(
                  id = course.id,
-                 version = course.version + 1,
+                 version = course.version.inc(),
                  votes = course.votes,
                  createdBy = course.createdBy,
                  fullName = report.courseFullName ?: course.fullName,
@@ -116,17 +128,17 @@ class CourseServiceImpl : CourseService {
         NotImplementedError()
     }
 
-    override fun createStagingCourse(inputCourse: CourseInputModel) {
+    override fun createStagingCourse(inputCourse: CourseInputModel): Int {
         val stage = CourseStage(
                 fullName = inputCourse.fullName,
                 shortName = inputCourse.shortName,
                 createdBy = inputCourse.createdBy,
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
-        courseDAO.createStagingCourse(stage)
+        return courseDAO.createStagingCourse(stage)
     }
 
-    override fun createCourseFromStaged(stageId: Int) {
+    override fun createCourseFromStaged(stageId: Int): Int {
         val courseStage = courseDAO.getCourseSpecificStageEntry(stageId)
         val course = Course(
                 organizationId = courseStage.organizationId,
@@ -136,19 +148,100 @@ class CourseServiceImpl : CourseService {
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
         courseDAO.deleteStagedCourse(stageId) //TODO use transaction
-        courseDAO.createCourse(course)    //TODO use transaction
+        return courseDAO.createCourse(course)    //TODO use transaction
     }
 
-    override fun voteOnStagedCourse(stageId: Int, inputVote: VoteInputModel) = courseDAO.voteOnStagedCourse(stageId, inputVote)
+    override fun voteOnStagedCourse(stageId: Int, inputVote: VoteInputModel): Int = courseDAO.voteOnStagedCourse(stageId, inputVote)
 
-    override fun createExamOnCourseInTerm(courseId: Int, termId: Int, inputExam: ExamInputModel) {
+    override fun createExamOnCourseInTerm(courseId: Int, termId: Int, inputExam: ExamInputModel): Int {
         val exam = Exam(
                 createdBy = inputExam.createdBy,
                 sheet = inputExam.sheet,
                 dueDate = inputExam.dueDate,
                 phase = inputExam.phase,
-                location = inputExam.location
-                )
-        courseDAO.createExamOnCourseInTerm(courseId, termId, exam)
+                location = inputExam.location,
+                timestamp = Timestamp.valueOf(LocalDateTime.now())
+        )
+        return examDAO.createExamOnCourseInTerm(courseId, termId, exam)
     }
+
+    override fun addReportToExamOnCourseInTerm(courseId: Int, examId: Int, inputExamReport: ExamReportInputModel): Int {
+        val examReport = ExamReport(
+                courseMiscUnitId = examId,
+                sheet = inputExamReport.sheet,
+                dueDate = inputExamReport.dueDate,
+                phase = inputExamReport.phase,
+                location = inputExamReport.location,
+                reportedBy = inputExamReport.reportedBy,
+                timestamp = Timestamp.valueOf(LocalDateTime.now())
+        )
+        return examDAO.addReportToExamOnCourseInTerm(courseId, examId, examReport)
+    }
+
+    override fun voteOnReportToExamOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int = examDAO.voteOnReportToExamOnCourseInTerm(reportId, inputVote)
+
+    override fun updateReportedExam(examId: Int, reportId: Int): Int { //TODO mappers type
+        val exam = examDAO.getSpecificExam(examId)
+        val report = examDAO.getSpecificReportOfExam(examId, reportId)
+        val updatedExam = Exam(
+                id = exam.id,
+                version = exam.version.inc(),
+                createdBy = exam.createdBy,
+                sheet = exam.sheet,
+                dueDate = exam.dueDate,
+                type = exam.type,
+                phase = exam.phase,
+                location = exam.location,
+                timestamp = exam.timestamp
+        )
+        examDAO.addToExamVersion(exam)
+        examDAO.deleteReportOnExam(examId, reportId)
+        return examDAO.updateExam(examId, updatedExam)
+    }
+
+    override fun createStagingExam(courseId: Int, termId: Int, inputExam: ExamInputModel): Int { //TODO mappers p type
+        val stage = ExamStage(
+                sheet = inputExam.sheet,
+                dueDate = inputExam.dueDate,
+                type = inputExam.type,
+                phase = inputExam.phase,
+                location = inputExam.location,
+                createdBy = inputExam.createdBy,
+                timestamp = Timestamp.valueOf(LocalDateTime.now())
+        )
+        return examDAO.createStagingExam(courseId, termId, stage)
+    }
+
+    override fun createExamFromStaged(courseId: Int, termId: Int, stageId: Int): Int { //TODO mappers type?
+        val examStage = examDAO.getExamSpecificStageEntry(stageId)
+        val exam = Exam (
+                createdBy = examStage.createdBy,
+                sheet = examStage.sheet,
+                dueDate = examStage.dueDate,
+                type = examStage.type,
+                phase = examStage.phase,
+                location = examStage.location,
+                timestamp = Timestamp.valueOf(LocalDateTime.now())
+        )
+        examDAO.deleteStagedExam(stageId) //TODO use transaction
+        return examDAO.createExam(courseId, termId, exam)    //TODO use transaction
+    }
+
+    override fun voteOnStagedExam(stageId: Int, inputVote: VoteInputModel): Int = examDAO.voteOnStagedExam(stageId, inputVote)
+
+    override fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): Int {
+        val workAssignment = WorkAssignment(
+                createdBy = inputWorkAssignment.createdBy,
+                sheet = inputWorkAssignment.sheet,
+                supplement = inputWorkAssignment.supplement,
+                dueDate = inputWorkAssignment.dueDate,
+                individual = inputWorkAssignment.individual,
+                lateDelivery = inputWorkAssignment.lateDelivery,
+                multipleDeliveries = inputWorkAssignment.multipleDeliveries,
+                requiresReport = inputWorkAssignment.requiresReport,
+                timestamp = inputWorkAssignment.timestamp
+        )
+        return workAssignmentDAO.createWorkAssignmentOnCourseInTerm(courseId, termId, workAssignment)
+    }
+
 }

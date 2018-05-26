@@ -105,7 +105,7 @@ class ProgrammeServiceImpl : ProgrammeService {
         val report = programmeDAO.getSpecificReportOfProgramme(programmeId, reportId)
         val updatedProgramme = Programme(
                 id = programme.id,
-                version = programme.version + 1,
+                version = programme.version.inc(),
                 votes = programme.votes,
                 createdBy = programme.createdBy,
                 fullName = report.programmeFullName ?: programme.fullName,
@@ -139,7 +139,7 @@ class ProgrammeServiceImpl : ProgrammeService {
         val programme = programmeDAO.getSpecificProgramme(programmeId)
         val updatedProgramme = Programme(
                 id = programmeId,
-                version = inputProgramme.version + 1,
+                version = inputProgramme.version.inc(),
                 createdBy = inputProgramme.createdBy,
                 fullName = if(!inputProgramme.fullName.isEmpty()) inputProgramme.fullName else programme.fullName,
                 shortName = if(!inputProgramme.shortName.isEmpty()) inputProgramme.shortName else programme.shortName,

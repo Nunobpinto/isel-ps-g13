@@ -11,8 +11,6 @@ import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
 import isel.leic.ps.eduWikiAPI.repository.interfaces.CourseDAO
 import org.jdbi.v3.core.Jdbi
-import org.jooq.impl.DSL.field
-import org.jooq.impl.DSL.table
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 
@@ -31,8 +29,7 @@ class CourseDAOImpl : CourseDAO {
         const val COURSE_TERM_TABLE = "course_term"
         const val COURSE_MISC_UNIT_TABLE = "course_misc_unit"
         const val COURSE_MISC_UNIT_STAGE_TABLE = "course_misc_unit_stage"
-
-
+        const val COURSE_MISC_TYPE = "misc_type"
         // COURSE FIELDS
         const val COURSE_MISC_UNIT_ID = "id"
         const val COURSE_ID = "course_id"
@@ -71,23 +68,25 @@ class CourseDAOImpl : CourseDAO {
 
 
     override fun deleteCourse(courseId: Int): Int = dbi.withHandle<Int, Exception> {
-        it.execute(dsl
+        /*it.execute(dsl
                 .delete(table(COURSE_TABLE))
                 .where(field(COURSE_ID).eq(courseId))
                 .sql
-        )
+        )*/
+        0
     }
 
     override fun deleteAllCourses(): Int = dbi.withHandle<Int, Exception> {
-        it.execute(dsl
+        /*it.execute(dsl
                 .delete(table(COURSE_TABLE))
                 .sql
-        )
+        )*/
+        0
     }
 
     override fun updateCourse(course: Course): Int = TODO("dynamically update org by filled values in Organization parameter")
 
-    override fun createCourse(course: Course) = dbi.useHandle<Exception> {
+    override fun createCourse(course: Course) : Int = dbi.withHandle<Int, Exception> {
         val insert = "insert into $COURSE_TABLE" +
                 "(${OrganizationDAOImpl.ORG_ID}, $COURSE_VERSION, $COURSE_CREATED_BY, " +
                 "$COURSE_FULL_NAME, $COURSE_SHORT_NAME, $COURSE_VOTES, $COURSE_TIMESTAMP)" +
@@ -103,7 +102,7 @@ class CourseDAOImpl : CourseDAO {
                 .execute()
     }
 
-    override fun voteOnCourse(courseId: Int, inputVote: VoteInputModel) = dbi.useTransaction<Exception> {
+    override fun voteOnCourse(courseId: Int, inputVote: VoteInputModel) : Int = dbi.inTransaction<Int, Exception> {
         val voteQuery = "select $COURSE_VOTES from $COURSE_TABLE where $COURSE_ID :courseId"
         var votes = it.createQuery(voteQuery)
                 .bind("courseId", courseId)
@@ -116,7 +115,7 @@ class CourseDAOImpl : CourseDAO {
                 .execute()
     }
 
-    override fun deleteStagedCourse(courseStageId: Int) = dbi.useHandle<Exception> {
+    override fun deleteStagedCourse(courseStageId: Int) : Int = dbi.withHandle<Int, Exception> {
         val delete = "delete from $COURSE_STAGE_TABLE where $COURSE_ID = :courseId"
         it.createUpdate(delete)
                 .bind("courseId", courseStageId)
@@ -124,13 +123,14 @@ class CourseDAOImpl : CourseDAO {
     }
 
     override fun deleteAllCourseStages(): Int = dbi.withHandle<Int, Exception> {
-        it.execute(dsl
+        /*it.execute(dsl
                 .delete(table(COURSE_STAGE_TABLE))
                 .sql
-        )
+        )*/
+        0
     }
 
-    override fun createStagingCourse(courseStage: CourseStage) = dbi.useHandle<Exception> {
+    override fun createStagingCourse(courseStage: CourseStage) : Int = dbi.withHandle<Int, Exception> {
         val insert = "insert into $COURSE_STAGE_TABLE " +
                 "(${OrganizationDAOImpl.ORG_ID}, $COURSE_FULL_NAME" +
                 "$COURSE_SHORT_NAME, $COURSE_CREATED_BY, $COURSE_VOTES,, $COURSE_TIMESTAMP) " +
@@ -145,7 +145,7 @@ class CourseDAOImpl : CourseDAO {
                 .execute()
     }
 
-    override fun voteOnStagedCourse(courseStageId: Int, inputVote: VoteInputModel) = dbi.useTransaction<Exception> {
+    override fun voteOnStagedCourse(courseStageId: Int, inputVote: VoteInputModel) : Int = dbi.inTransaction<Int, Exception> {
         val voteQuery = "select $COURSE_VOTES from $COURSE_STAGE_TABLE where $COURSE_ID = :courseId"
         var votes = it.createQuery(voteQuery)
                 .bind("courseId", courseStageId)
@@ -159,7 +159,7 @@ class CourseDAOImpl : CourseDAO {
     }
 
     override fun getVersionCourse(versionCourseId: Int, version: Int): CourseVersion = dbi.withHandle<CourseVersion, Exception> {
-        it.createQuery(dsl
+        /*it.createQuery(dsl
                 .select(
                         field(COURSE_ID),
                         field(ORG_ID),
@@ -172,11 +172,12 @@ class CourseDAOImpl : CourseDAO {
                 .from(table(COURSE_VERSION_TABLE))
                 .where(field(COURSE_ID).eq(versionCourseId).and(field(COURSE_VERSION).eq(version)))
                 .sql
-        ).mapTo(CourseVersion::class.java).first()
+        ).mapTo(CourseVersion::class.java).first()*/
+        null
     }
 
     override fun getAllVersionCourses(): List<CourseVersion> = dbi.withHandle<List<CourseVersion>, Exception> {
-        it.createQuery(dsl
+        /*it.createQuery(dsl
                 .select(
                         field(COURSE_ID),
                         field(ORG_ID),
@@ -188,26 +189,29 @@ class CourseDAOImpl : CourseDAO {
                 )
                 .from(table(COURSE_VERSION_TABLE))
                 .sql
-        ).mapTo(CourseVersion::class.java).list()
+        ).mapTo(CourseVersion::class.java).list()*/
+        null
     }
 
     override fun deleteVersionCourse(versionCourseId: Int, version: Int): Int = dbi.withHandle<Int, Exception> {
-        it.execute(dsl
+        /*it.execute(dsl
                 .delete(table(COURSE_VERSION_TABLE))
                 .where(field(COURSE_ID).eq(versionCourseId).and(field(COURSE_VERSION).eq(version)))
                 .sql
-        )
+        )*/
+        0
     }
 
     override fun deleteAllVersionCourses(): Int = dbi.withHandle<Int, Exception> {
-        it.execute(dsl
+        /*it.execute(dsl
                 .delete(table(COURSE_VERSION_TABLE))
                 .sql
-        )
+        )*/
+        0
     }
 
     override fun createVersionCourse(courseVersion: CourseVersion) = dbi.useHandle<Exception> {
-        it.execute(dsl
+        /*it.execute(dsl
                 .insertInto(table(COURSE_VERSION_TABLE),
                         field(COURSE_ID),
                         field(ORG_ID),
@@ -225,7 +229,7 @@ class CourseDAOImpl : CourseDAO {
                         courseVersion.timestamp,
                         courseVersion.version
                 ).sql
-        )
+        )*/
     }
 
     override fun reportCourse(courseId: Int, courseReport: CourseReport) = dbi.useHandle<Exception> {
@@ -243,25 +247,25 @@ class CourseDAOImpl : CourseDAO {
     }
 
     override fun deleteReportOnCourse(reportId: Int): Int = dbi.withHandle<Int, Exception> {
-        it.execute(dsl
+        /*it.execute(dsl
                 .delete(table(COURSE_REPORT_TABLE))
                 .where(field(COURSE_REPORT_ID).eq(reportId))
                 .sql
-        )
+        )*/0
     }
 
     override fun deleteAllReportsOnCourse(courseId: Int): Int = dbi.withHandle<Int, Exception> {
-        it.execute(dsl
+        /*it.execute(dsl
                 .delete(table(COURSE_REPORT_TABLE))
                 .where(field(COURSE_ID).eq(courseId))
                 .sql
-        )
+        )*/0
     }
 
     override fun deleteAllReports(): Int = dbi.withHandle<Int, Exception> {
-        it.execute(dsl.delete(table(COURSE_REPORT_TABLE))
+        /*it.execute(dsl.delete(table(COURSE_REPORT_TABLE))
                 .sql
-        )
+        )*/0
     }
 
     override fun getAllReportsOnCourse(courseId: Int): List<CourseReport> = dbi.withHandle<List<CourseReport>, Exception> {
@@ -303,7 +307,7 @@ class CourseDAOImpl : CourseDAO {
                 "${TermDAOImpl.TERM_YEAR}, ${TermDAOImpl.TERM_TYPE}" +
                 "from ${TermDAOImpl.TERM_TABLE} as T" +
                 "inner join $COURSE_TERM_TABLE as C on T.${TermDAOImpl.TERM_ID} = C.${TermDAOImpl.TERM_ID}" +
-                "where T.$COURSE_ID = :courseId"
+                "where C.$COURSE_ID = :courseId"
         it.createQuery(select)
                 .bind("courseId", courseId)
                 .mapTo(Term::class.java)
@@ -315,166 +319,14 @@ class CourseDAOImpl : CourseDAO {
                 "${TermDAOImpl.TERM_YEAR}, ${TermDAOImpl.TERM_TYPE}" +
                 "from ${TermDAOImpl.TERM_TABLE} as T" +
                 "inner join $COURSE_TERM_TABLE as C on T.${TermDAOImpl.TERM_ID} = C.${TermDAOImpl.TERM_ID}" +
-                "where T.$COURSE_ID = :courseId"
+                "where C.$COURSE_ID = :courseId"
         it.createQuery(select)
                 .bind("courseId", courseId)
                 .mapTo(Term::class.java)
                 .findOnly()
     }
 
-    override fun getAllExamsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<Exam> = dbi.withHandle<List<Exam>, Exception> {
-        val select = "select * from ${ExamDAOImpl.EXM_TABLE} as E" +
-                "inner join $COURSE_MISC_UNIT_TABLE as C " +
-                "on E.$COURSE_MISC_UNIT_ID = C.$COURSE_MISC_UNIT_ID" +
-                "where C.$COURSE_ID = :courseId and C.${TermDAOImpl.TERM_ID} = :termId"
-        it.createQuery(select)
-                .bind("courseId", courseId)
-                .bind("termId", termId)
-                .mapTo(Exam::class.java)
-                .list()
-    }
-
-    override fun getSpecificExamFromSpecificTermOfCourse(courseId: Int, termId: Int, examId: Int): Exam = dbi.withHandle<Exam, Exception> {
-        val select = "select * from ${ExamDAOImpl.EXM_TABLE} as E" +
-                "inner join $COURSE_MISC_UNIT_TABLE as C " +
-                "on E.$COURSE_MISC_UNIT_ID = C.$COURSE_MISC_UNIT_ID" +
-                "where C.$COURSE_ID = :courseId " +
-                "and C.${TermDAOImpl.TERM_ID} = :termId " +
-                "and $COURSE_MISC_UNIT_ID = :examId"
-
-        it.createQuery(select)
-                .bind("courseId", courseId)
-                .bind("termId", termId)
-                .bind("examId", examId)
-                .mapTo(Exam::class.java)
-                .findOnly()
-    }
-
-    override fun getStageEntriesFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int): List<ExamStage> = dbi.withHandle<List<ExamStage>, Exception> {
-        val select = "select * from ${ExamDAOImpl.EXM_STAGE_TABLE} as E" +
-                "inner join $COURSE_MISC_UNIT_TABLE as C " +
-                "on E.$COURSE_MISC_UNIT_ID = C.$COURSE_MISC_UNIT_ID" +
-                "where C.$COURSE_ID = :courseId and C.${TermDAOImpl.TERM_ID} = :termId"
-        it.createQuery(select)
-                .bind("courseId", courseId)
-                .bind("termId", termId)
-                .mapTo(ExamStage::class.java)
-                .list()
-    }
-
-    override fun getStageEntryFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): ExamStage = dbi.withHandle<ExamStage, Exception> {
-        val select = "select * from ${ExamDAOImpl.EXM_STAGE_TABLE} as E" +
-                "inner join $COURSE_MISC_UNIT_TABLE as C " +
-                "on E.$COURSE_MISC_UNIT_ID = C.$COURSE_MISC_UNIT_ID" +
-                "where C.$COURSE_ID = :courseId " +
-                "and C.${TermDAOImpl.TERM_ID} = :termId " +
-                "and $COURSE_MISC_UNIT_ID = :stageId"
-
-        it.createQuery(select)
-                .bind("courseId", courseId)
-                .bind("termId", termId)
-                .bind("stageId", stageId)
-                .mapTo(ExamStage::class.java)
-                .findOnly()
-    }
-
-    override fun getAllReportsOnExamOnSpecificTermOfCourse(examId: Int): List<ExamReport> = dbi.withHandle<List<ExamReport>, Exception> {
-        val select = "select * from ${ExamDAOImpl.EXM_REPORT_TABLE}" +
-                "where $COURSE_MISC_UNIT_ID = :examId"
-        it.createQuery(select)
-                .bind("examId", examId)
-                .mapTo(ExamReport::class.java)
-                .list()
-    }
-
-    override fun getSpecificReportOnExamOnSpecificTermOfCourse(reportId: Int): ExamReport = dbi.withHandle<ExamReport, Exception> {
-        val select = "select * from ${ExamDAOImpl.EXM_REPORT_TABLE}" +
-                "where $COURSE_REPORT_ID = :reportId"
-        it.createQuery(select)
-                .bind("examId", reportId)
-                .mapTo(ExamReport::class.java)
-                .findOnly()
-    }
-
-    override fun getAllWorkAssignmentsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignment> = dbi.withHandle<List<WorkAssignment>, Exception> {
-        val select = "select * from ${WorkAssignmentDAOImpl.WRK_ASS_TABLE} as W" +
-                "inner join $COURSE_MISC_UNIT_TABLE as C " +
-                "on W.$COURSE_MISC_UNIT_ID = C.$COURSE_MISC_UNIT_ID" +
-                "where C.$COURSE_ID = :courseId and C.${TermDAOImpl.TERM_ID} = :termId"
-        it.createQuery(select)
-                .bind("courseId", courseId)
-                .bind("termId", termId)
-                .mapTo(WorkAssignment::class.java)
-                .list()
-    }
-
-    override fun getSpecificWorkAssignmentFromSpecificTermOfCourse(workAssignmentId: Int): WorkAssignment = dbi.withHandle<WorkAssignment, Exception> {
-        val select = "select * from ${WorkAssignmentDAOImpl.WRK_ASS_TABLE}" +
-                "where $COURSE_MISC_UNIT_ID = :workItemId"
-        it.createQuery(select)
-                .bind("courseId", workAssignmentId)
-                .mapTo(WorkAssignment::class.java)
-                .findOnly()
-    }
-
-
-    override fun getStageEntriesFromWorkItemOnSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignmentStage> = dbi.withHandle<List<WorkAssignmentStage>, Exception> {
-        val select = "select * from ${WorkAssignmentDAOImpl.WRK_ASS_STAGE_TABLE} as W" +
-                "inner join $COURSE_MISC_UNIT_TABLE as C " +
-                "on W.$COURSE_MISC_UNIT_ID = C.$COURSE_MISC_UNIT_ID" +
-                "where C.$COURSE_ID = :courseId and C.${TermDAOImpl.TERM_ID} = :termId"
-        it.createQuery(select)
-                .bind("courseId", courseId)
-                .bind("termId", termId)
-                .mapTo(WorkAssignmentStage::class.java)
-                .list()
-    }
-
-    override fun getStageEntryFromWorkItemOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): WorkAssignmentStage = dbi.withHandle<WorkAssignmentStage, Exception> {
-        val select = "select * from ${WorkAssignmentDAOImpl.WRK_ASS_STAGE_TABLE} as W" +
-                "inner join $COURSE_MISC_UNIT_TABLE as C " +
-                "on W.$COURSE_MISC_UNIT_ID = C.$COURSE_MISC_UNIT_ID" +
-                "where C.$COURSE_ID = :courseId " +
-                "and C.${TermDAOImpl.TERM_ID} = :termId " +
-                "and $COURSE_MISC_UNIT_ID = :stageId"
-
-        it.createQuery(select)
-                .bind("courseId", courseId)
-                .bind("termId", termId)
-                .bind("stageId", stageId)
-                .mapTo(WorkAssignmentStage::class.java)
-                .findOnly()
-    }
-
-    override fun getAllReportsOnWorkUnitOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): List<WorkAssignmentReport> = dbi.withHandle<List<WorkAssignmentReport>, Exception>{
-        val select = "select * from ${WorkAssignmentDAOImpl.WRK_ASS_REPORT_TABLE}" +
-                "where $COURSE_MISC_UNIT_ID = :workAssignmentId"
-        it.createQuery(select)
-                .bind("examId", workAssignmentId)
-                .mapTo(WorkAssignmentReport::class.java)
-                .list()
-    }
-
-    override fun getSpecificReportFromWorkItemOnSpecificTermOfCourse(reportId: Int): WorkAssignmentReport = dbi.withHandle<WorkAssignmentReport, Exception>{
-        val select = "select * from ${WorkAssignmentDAOImpl.WRK_ASS_REPORT_TABLE}" +
-                "where $COURSE_REPORT_ID = :reportId"
-        it.createQuery(select)
-                .bind("reportId", reportId)
-                .mapTo(WorkAssignmentReport::class.java)
-                .findOnly()
-    }
-
-    override fun getClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class> = dbi.withHandle<List<Class>, Exception>{
-        val select = "select * from $COURSE_CLASS_TABLE" +
-                "where $COURSE_ID = :courseId and ${TermDAOImpl.TERM_ID} = :termId"
-        it.createQuery(select)
-                .bind("courseId", courseId)
-                .bind("termId", termId)
-                .mapTo(Class::class.java)
-                .list()
-    }
-
-    override fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel) = dbi.useHandle<Exception>{
+    override fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel) : Int = dbi.withHandle<Int, Exception> {
         val voteQuery = "select $COURSE_VOTES from $COURSE_REPORT_TABLE where $COURSE_REPORT_ID = :reportId"
         var votes = it.createQuery(voteQuery)
                 .bind("reportId", reportId)
@@ -486,13 +338,5 @@ class CourseDAOImpl : CourseDAO {
                 .bind("reportId", reportId)
                 .execute()
     }
-
-    override fun createExamOnCourseInTerm(courseId: Int, termId: Int, exam: Exam) = dbi.useHandle<Exception> {
-        val insert = "insert into ${ExamDAOImpl.EXM_TABLE}" +
-                "($COURSE_ID, $COURSE_FULL_NAME, \" +\n" +
-                "                \"$COURSE_SHORT_NAME, $COURSE_REPORTED_BY, $COURSE_TIMESTAMP) \" +\n" +
-                "                \"values(:courseId, :fullName, :shortName, :reportedBy, :timestamp)"
-    }
-
 
 }
