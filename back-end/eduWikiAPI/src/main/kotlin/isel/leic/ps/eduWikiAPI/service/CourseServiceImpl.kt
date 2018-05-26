@@ -6,6 +6,7 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.WorkAssignmentInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ExamReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.WorkAssignmentReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Class
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Exam
@@ -22,8 +23,10 @@ import isel.leic.ps.eduWikiAPI.repository.interfaces.CourseDAO
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ExamDAO
 import isel.leic.ps.eduWikiAPI.repository.interfaces.WorkAssignmentDAO
 import isel.leic.ps.eduWikiAPI.service.interfaces.CourseService
+import javafx.util.converter.TimeStringConverter
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.sql.Time
 import java.sql.Timestamp
 import java.time.LocalDateTime
 
@@ -70,7 +73,7 @@ class CourseServiceImpl : CourseService {
 
     override fun getAllWorkAssignmentsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignment> = workAssignmentDAO.getAllWorkAssignmentsFromSpecificTermOfCourse(courseId, termId)
 
-    override fun getSpecificWorkAssignmentFromSpecificTermOfCourse(workAssignmentId: Int): WorkAssignment = workAssignmentDAO.getSpecificWorkAssignmentFromSpecificTermOfCourse(workAssignmentId)
+    override fun getSpecificWorkAssignmentFromSpecificTermOfCourse(workAssignmentId: Int): WorkAssignment = workAssignmentDAO.getSpecificWorkAssignment(workAssignmentId)
 
     override fun getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignmentStage> = workAssignmentDAO.getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(courseId, termId)
 
@@ -78,7 +81,7 @@ class CourseServiceImpl : CourseService {
 
     override fun getAllReportsOnWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): List<WorkAssignmentReport> = workAssignmentDAO.getAllReportsOnWorkUnitOnSpecificTermOfCourse(courseId, termId, workAssignmentId)
 
-    override fun getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(reportId: Int): WorkAssignmentReport = workAssignmentDAO.getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(reportId)
+    override fun getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(workAssignmentId: Int, reportId: Int): WorkAssignmentReport = workAssignmentDAO.getSpecificReportOfWorkAssignment(workAssignmentId, reportId)
 
     override fun getClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class> = classDAO.getClassesOnSpecificTermOfCourse(courseId, termId)
 
@@ -95,12 +98,12 @@ class CourseServiceImpl : CourseService {
 
     override fun voteOnCourse(courseId: Int, inputVote: VoteInputModel): Int = courseDAO.voteOnCourse(courseId, inputVote)
 
-    override fun reportCourse(courseId: Int, inputReportCourse: CourseReportInputModel): Int {
+    override fun reportCourse(courseId: Int, inputCourseReport: CourseReportInputModel): Int {
         /*val courseReport = CourseReport(
                 courseId = courseId,
-                courseFullName = inputReportCourse.fullName,
-                courseShortName = inputReportCourse.shortName,
-                reportedBy = inputReportCourse.reportedBy
+                courseFullName = inputCourseReport.fullName,
+                courseShortName = inputCourseReport.shortName,
+                reportedBy = inputCourseReport.reportedBy
         )
         courseDAO.reportCourse(courseId, courseReport)
         */
@@ -165,7 +168,7 @@ class CourseServiceImpl : CourseService {
         return examDAO.createExamOnCourseInTerm(courseId, termId, exam)
     }
 
-    override fun addReportToExamOnCourseInTerm(courseId: Int, examId: Int, inputExamReport: ExamReportInputModel): Int {
+    override fun addReportToExamOnCourseInTerm(examId: Int, inputExamReport: ExamReportInputModel): Int {
         val examReport = ExamReport(
                 courseMiscUnitId = examId,
                 sheet = inputExamReport.sheet,
@@ -175,7 +178,7 @@ class CourseServiceImpl : CourseService {
                 reportedBy = inputExamReport.reportedBy,
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
-        return examDAO.addReportToExamOnCourseInTerm(courseId, examId, examReport)
+        return examDAO.addReportToExamOnCourseInTerm(examId, examReport)
     }
 
     override fun voteOnReportToExamOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int = examDAO.voteOnReportToExamOnCourseInTerm(reportId, inputVote)
@@ -186,13 +189,13 @@ class CourseServiceImpl : CourseService {
         val updatedExam = Exam(
                 id = exam.id,
                 version = exam.version.inc(),
-                createdBy = exam.createdBy,
-                sheet = exam.sheet,
-                dueDate = exam.dueDate,
-                type = exam.type,
-                phase = exam.phase,
-                location = exam.location,
-                timestamp = exam.timestamp
+                createdBy = report.reportedBy,
+                sheet = report.sheet ?: exam.sheet,
+                dueDate = report.dueDate ?: exam.dueDate,
+                type = report.type ?: exam.type,
+                phase = report.phase ?: exam.phase,
+                location = report.location ?: exam.location,
+                timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
         examDAO.addToExamVersion(exam)
         examDAO.deleteReportOnExam(examId, reportId)
@@ -214,7 +217,7 @@ class CourseServiceImpl : CourseService {
 
     override fun createExamFromStaged(courseId: Int, termId: Int, stageId: Int): Int { //TODO mappers type?
         val examStage = examDAO.getExamSpecificStageEntry(stageId)
-        val exam = Exam (
+        val exam = Exam(
                 createdBy = examStage.createdBy,
                 sheet = examStage.sheet,
                 dueDate = examStage.dueDate,
@@ -244,4 +247,42 @@ class CourseServiceImpl : CourseService {
         return workAssignmentDAO.createWorkAssignmentOnCourseInTerm(courseId, termId, workAssignment)
     }
 
+    override fun addReportToWorkAssignmentOnCourseInTerm(workAssignmentId: Int, inputWorkAssignmentReport: WorkAssignmentReportInputModel): Int {
+        val workAssignmentReport = WorkAssignmentReport(
+                courseMiscUnitId = workAssignmentId,
+                sheet = inputWorkAssignmentReport.sheet,
+                supplement = inputWorkAssignmentReport.supplement,
+                dueDate = inputWorkAssignmentReport.dueDate,
+                individual = inputWorkAssignmentReport.individual,
+                lateDelivery = inputWorkAssignmentReport.lateDelivery,
+                multipleDeliveries = inputWorkAssignmentReport.multipleDeliveries,
+                requiresReport = inputWorkAssignmentReport.requiresReport,
+                reportedBy = inputWorkAssignmentReport.reportedBy,
+                timestamp = Timestamp.valueOf(LocalDateTime.now())
+        )
+        return workAssignmentDAO.addReportToWorkAssignmentOnCourseInTerm(workAssignmentId, workAssignmentReport)
+    }
+
+    override fun voteOnReportToWorkAssignmentOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int = workAssignmentDAO.voteOnReportToWorkAssignmentOnCourseInTerm(reportId, inputVote)
+
+    override fun updateReportedWorkAssignment(workAssignmentId: Int, reportId: Int): Int {
+        val workAssignment = workAssignmentDAO.getSpecificWorkAssignment(workAssignmentId)
+        val report = workAssignmentDAO.getSpecificReportOfWorkAssignment(workAssignmentId, reportId)
+        val updatedWorkAssignment = WorkAssignment(
+                id = workAssignmentId,
+                version = workAssignment.version.inc(),
+                createdBy = report.reportedBy,
+                sheet = report.sheet ?: workAssignment.sheet,
+                supplement = report.supplement ?: workAssignment.supplement,
+                dueDate = report.dueDate ?: workAssignment.dueDate,
+                individual = report.individual ?: workAssignment.individual,
+                lateDelivery = report.lateDelivery ?: workAssignment.lateDelivery,
+                multipleDeliveries = report.multipleDeliveries ?: workAssignment.multipleDeliveries,
+                requiresReport = report.requiresReport ?: workAssignment.requiresReport,
+                timestamp = Timestamp.valueOf(LocalDateTime.now())
+        )
+        workAssignmentDAO.addToWorkAssignmentVersion(workAssignment)
+        workAssignmentDAO.deleteReportOnWorkAssignment(workAssignmentId, reportId)
+        return workAssignmentDAO.updateWorkAssignment(workAssignmentId, updatedWorkAssignment)
+    }
 }

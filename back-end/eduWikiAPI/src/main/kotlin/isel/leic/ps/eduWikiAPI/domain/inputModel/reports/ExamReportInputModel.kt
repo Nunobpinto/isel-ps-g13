@@ -5,7 +5,6 @@ import java.time.LocalDate
 import java.time.Year
 
 class ExamReportInputModel(
-        @JsonProperty("sheet")
         val sheet: String? = null,
         @JsonProperty("due_date")
         val dueDate: LocalDate? = null,

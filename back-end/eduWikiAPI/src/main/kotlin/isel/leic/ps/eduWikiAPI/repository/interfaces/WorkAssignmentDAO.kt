@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.repository.interfaces
 
+import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.WorkAssignment
 import isel.leic.ps.eduWikiAPI.domain.model.report.WorkAssignmentReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
@@ -11,7 +12,7 @@ interface WorkAssignmentDAO {
      * Main entities queries
      */
 
-    fun getWorkAssignment(courseMiscUnitId: Int) : WorkAssignment
+    fun getSpecificWorkAssignment(courseMiscUnitId: Int) : WorkAssignment
 
     fun getAllWorkAssignment() : List<WorkAssignment>
 
@@ -19,15 +20,13 @@ interface WorkAssignmentDAO {
 
     fun deleteAllWorkAssignments() : Int
 
-    fun updateWorkAssignment(workAssignment: WorkAssignment) : Int
+    fun updateWorkAssignment(workAssignmentId: Int, workAssignment: WorkAssignment) : Int
 
     fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, workAssignment: WorkAssignment) : Int
 
     fun voteOnWorkAssignment(courseMiscUnitId: Int, voteType: Int)
 
     fun getAllWorkAssignmentsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignment>
-
-    fun getSpecificWorkAssignmentFromSpecificTermOfCourse(workAssignmentId: Int): WorkAssignment
 
     /**
      * Stage entities queries
@@ -61,7 +60,7 @@ interface WorkAssignmentDAO {
 
     fun deleteAllVersionWorkAssignments() : Int
 
-    fun createVersionWorkAssignment(workAssignmentVersion: WorkAssignmentVersion)
+    fun addToWorkAssignmentVersion(workAssignment: WorkAssignment) : Int
 
     /**
      * Report entity queries
@@ -69,7 +68,7 @@ interface WorkAssignmentDAO {
 
     fun reportWorkAssignment(workAssignmentReport: WorkAssignmentReport)
 
-    fun deleteReportOnWorkAssignment(reportId: Int) : Int
+    fun deleteReportOnWorkAssignment(workAssignmentId: Int, reportId: Int) : Int
 
     fun deleteAllReportsOnWorkAssignment(courseMiscUnitId : Int) : Int
 
@@ -77,6 +76,11 @@ interface WorkAssignmentDAO {
 
     fun getAllReportsOnWorkUnitOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): List<WorkAssignmentReport>
 
-    fun getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(reportId: Int): WorkAssignmentReport
+    fun addReportToWorkAssignmentOnCourseInTerm(workAssignmentId: Int, workAssignmentReport: WorkAssignmentReport): Int
+
+    fun voteOnReportToWorkAssignmentOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int
+
+    fun getSpecificReportOfWorkAssignment(workAssignmentId: Int, reportId: Int): WorkAssignmentReport
+
 
 }

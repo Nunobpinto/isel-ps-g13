@@ -84,7 +84,7 @@ interface ExamDAO {
 
     fun getSpecificReportOnExamOnSpecificTermOfCourse(reportId: Int): ExamReport
 
-    fun addReportToExamOnCourseInTerm(courseId: Int, examId: Int, examReport: ExamReport): Int
+    fun addReportToExamOnCourseInTerm(examId: Int, examReport: ExamReport): Int
 
     fun voteOnReportToExamOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int
 

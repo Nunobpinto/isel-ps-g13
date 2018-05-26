@@ -3,6 +3,7 @@ package isel.leic.ps.eduWikiAPI.controller
 import isel.leic.ps.eduWikiAPI.domain.inputModel.*
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ExamReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.WorkAssignmentReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
 import isel.leic.ps.eduWikiAPI.service.interfaces.CourseService
@@ -136,7 +137,7 @@ class CourseController {
             @PathVariable termInt: Int,
             @PathVariable workAssignmentId: Int,
             @PathVariable reportId: Int
-    ) = courseService.getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(reportId)
+    ) = courseService.getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(workAssignmentId, reportId)
 
     @GetMapping("/{courseId}/terms/{termId}/classes")
     fun getClassesOnSpecificTermOfCourse(
@@ -160,8 +161,8 @@ class CourseController {
     @PostMapping("/{courseId}/reports")
     fun reportCourse( //TODO fazer report do que? todos os campos?
             @PathVariable courseId: Int,
-            @RequestBody inputReportCourse: CourseReportInputModel
-    ) = courseService.reportCourse(courseId, inputReportCourse)
+            @RequestBody inputCourseReport: CourseReportInputModel
+    ) = courseService.reportCourse(courseId, inputCourseReport)
 
     @PostMapping("/{courseId}/reports/{reportId}/vote")
     fun voteOnReportedCourse(
@@ -201,7 +202,7 @@ class CourseController {
             @PathVariable termId: Int,
             @PathVariable examId: Int,
             @RequestBody inputExamReport: ExamReportInputModel
-    ) = courseService.addReportToExamOnCourseInTerm(courseId, examId, inputExamReport)
+    ) = courseService.addReportToExamOnCourseInTerm(examId, inputExamReport)
 
     @PostMapping("/{courseId}/terms/{termId}/exams/{examId}/reports/{reportId}/vote")
     fun voteOnReportToExamOnCourseInTerm(
@@ -254,8 +255,8 @@ class CourseController {
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable workAssignmentId: Int,
-            @RequestBody report: ReportInputModel
-    ) = NotImplementedError()
+            @RequestBody inputWorkAssignmentReport: WorkAssignmentReportInputModel
+    ) = courseService.addReportToWorkAssignmentOnCourseInTerm(workAssignmentId, inputWorkAssignmentReport)
 
     @PostMapping("/{courseId}/terms/{termId}/workAssignments/{workAssignmentId}/reports/{reportId}/vote")
     fun voteOnReportToWorkAssignmentOnCourseInTerm(
@@ -263,17 +264,16 @@ class CourseController {
             @PathVariable termId: Int,
             @PathVariable workAssignmentId: Int,
             @PathVariable reportId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = NotImplementedError()
+            @RequestBody inputVote: VoteInputModel
+    ) = courseService.voteOnReportToWorkAssignmentOnCourseInTerm(reportId, inputVote)
 
     @PostMapping("/{courseId}/terms/{termId}/workAssignments/{workAssignmentId}/reports/{reportId}")
     fun updateReportedWorkAssignment(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable workAssignmentId: Int,
-            @PathVariable reportId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = NotImplementedError()
+            @PathVariable reportId: Int
+    ) = courseService.updateReportedWorkAssignment(workAssignmentId, reportId)
 
     @PostMapping("/{courseId}/terms/{termId}/workAssignments/stage")
     fun createStagingWorkAssignment(

@@ -6,6 +6,7 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.WorkAssignmentInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ExamReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.WorkAssignmentReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Class
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Exam
@@ -58,7 +59,7 @@ interface CourseService {
 
     fun getAllReportsOnWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): List<WorkAssignmentReport>
 
-    fun getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(reportId: Int): WorkAssignmentReport
+    fun getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(workAssignmentId: Int, reportId: Int): WorkAssignmentReport
 
     fun getClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class>
 
@@ -66,7 +67,7 @@ interface CourseService {
 
     fun voteOnCourse(courseId: Int, inputVote: VoteInputModel) : Int
 
-    fun reportCourse(courseId: Int, inputReportCourse: CourseReportInputModel) : Int
+    fun reportCourse(courseId: Int, inputCourseReport: CourseReportInputModel) : Int
 
     fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel) : Int
 
@@ -80,7 +81,7 @@ interface CourseService {
 
     fun createExamOnCourseInTerm(courseId: Int, termId: Int, inputExam: ExamInputModel) : Int
 
-    fun addReportToExamOnCourseInTerm(courseId: Int, examId: Int, inputExamReport: ExamReportInputModel) : Int
+    fun addReportToExamOnCourseInTerm(examId: Int, inputExamReport: ExamReportInputModel) : Int
 
     fun voteOnReportToExamOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int
 
@@ -93,5 +94,11 @@ interface CourseService {
     fun voteOnStagedExam(stageId: Int, inputVote: VoteInputModel): Int
 
     fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): Int
+
+    fun addReportToWorkAssignmentOnCourseInTerm(workAssignmentId: Int, inputWorkAssignmentReport: WorkAssignmentReportInputModel): Int
+
+    fun voteOnReportToWorkAssignmentOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int
+
+    fun updateReportedWorkAssignment(workAssignmentId: Int, reportId: Int): Int
 
 }

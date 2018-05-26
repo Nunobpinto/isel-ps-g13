@@ -8,7 +8,7 @@ data class ExamReport (
         val courseMiscUnitId: Int = 0,
         val sheet: String? = null,
         val dueDate: LocalDate? = LocalDate.now(),
-        val type: String = "",
+        val type: String? = "",
         val phase: String? = null,
         val location: String? = null,
         val reportedBy: String = "",
