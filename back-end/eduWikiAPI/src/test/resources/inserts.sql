@@ -1,6 +1,5 @@
 -- Organization Insert
-insert into organization
-(created_by, organization_full_name, organization_short_name, organization_address, organization_contact, time_stamp)
+insert into organization (created_by, organization_full_name, organization_short_name, organization_address, organization_contact, time_stamp)
     values ('ze','Instituto Superior de Engenharia de Lisboa','ISEL','Rua Emídio Navarro','218 317 000',current_timestamp);
 
 -- Programmes Insert

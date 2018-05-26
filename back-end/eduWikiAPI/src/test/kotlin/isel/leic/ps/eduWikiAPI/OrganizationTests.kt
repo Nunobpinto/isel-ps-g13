@@ -4,14 +4,27 @@ import isel.leic.ps.eduWikiAPI.domain.model.Organization
 import isel.leic.ps.eduWikiAPI.domain.model.report.OrganizationReport
 import isel.leic.ps.eduWikiAPI.repository.interfaces.OrganizationDAO
 import junit.framework.TestCase.*
+import org.junit.After
 import org.junit.Test
+import org.junit.internal.runners.statements.Fail
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.jdbc.Sql
+import org.springframework.test.context.jdbc.SqlGroup
 import org.springframework.test.context.junit4.SpringRunner
 import java.sql.Timestamp
 import java.time.LocalDateTime
+import java.util.HashSet
+import java.sql.ResultSet
+import java.sql.SQLException
+import javax.sql.DataSource
 
+
+@SqlGroup(
+        (Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = ["classpath:createDB.sql","classpath:inserts.sql"])),
+        (Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = ["classpath:dropDB.sql"]))
+)
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [(EduWikiApiApplication::class), (H2Config::class)])
 class OrganizationTests {
@@ -70,5 +83,11 @@ class OrganizationTests {
         assertEquals(1, deleteReportRows)
         val deleteVersonRows = organizationDAO.deleteVersion(1, 1)
         assertEquals(1, deleteVersonRows)
+    }
+
+    @Test
+    fun testGetAllOrganizations(){
+        val orgs = organizationDAO.getAllOrganizations()
+        assertEquals(1,orgs.size)
     }
 }
