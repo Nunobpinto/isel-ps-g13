@@ -5,21 +5,81 @@ import isel.leic.ps.eduWikiAPI.domain.model.report.ProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ProgrammeStage
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ProgrammeDAO
 import junit.framework.TestCase.*
+import org.junit.After
 import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.annotation.DirtiesContext
+import org.springframework.test.context.jdbc.Sql
+import org.springframework.test.context.jdbc.SqlGroup
 import org.springframework.test.context.junit4.SpringRunner
+import java.sql.SQLException
 import java.sql.Timestamp
 import java.time.LocalDateTime
+import java.util.HashSet
+import javax.sql.DataSource
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes= [(EduWikiApiApplication::class), (H2Config::class)])
+@SqlGroup(
+        (Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = ["classpath:createDB.sql","classpath:inserts.sql"])),
+        (Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = ["classpath:dropDB.sql"]))
+)
 class ProgrammeTests {
 
     @Autowired
-    lateinit var programmeDAO: ProgrammeDAO
+    lateinit var datasource: DataSource
+    @After
+    fun tearDown() {
+        try {
+            clearDatabase()
+        } catch (e: Exception) {
 
+        }
+
+    }
+
+    @Throws(SQLException::class)
+    fun clearDatabase() {
+        val c = datasource.getConnection()
+        val s = c.createStatement()
+
+        // Disable FK
+        s.execute("SET REFERENTIAL_INTEGRITY FALSE")
+
+        // Find all tables and truncate them
+        val tables = HashSet<String>()
+        var rs = s.executeQuery("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES  where TABLE_SCHEMA='PUBLIC'")
+        while (rs.next()) {
+            tables.add(rs.getString(1))
+        }
+        rs.close()
+        for (table in tables) {
+            s.executeUpdate("TRUNCATE TABLE $table")
+        }
+
+        // Idem for sequences
+        val sequences = HashSet<String>()
+        rs = s.executeQuery("SELECT SEQUENCE_NAME FROM INFORMATION_SCHEMA.SEQUENCES WHERE SEQUENCE_SCHEMA='PUBLIC'")
+        while (rs.next()) {
+            sequences.add(rs.getString(1))
+        }
+        rs.close()
+        for (seq in sequences) {
+            s.executeUpdate("ALTER SEQUENCE $seq RESTART WITH 1")
+        }
+
+        // Enable FK
+        s.execute("SET REFERENTIAL_INTEGRITY TRUE")
+        s.close()
+        c.close()
+    }
+
+    @Autowired
+    lateinit var programmeDAO: ProgrammeDAO
     @Test
     fun testGetProgramme() {
         val prog = programmeDAO.getSpecificProgramme(1)
@@ -28,7 +88,7 @@ class ProgrammeTests {
         assertEquals("ze", prog.createdBy)
         assertEquals(180, prog.totalCredits)
     }
-    
+
     @Test
     fun testApprovedReportOfProgramme(){
         val report = ProgrammeReport(
