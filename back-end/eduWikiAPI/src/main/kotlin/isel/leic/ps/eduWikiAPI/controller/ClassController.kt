@@ -19,25 +19,31 @@ class ClassController {
      * All GET Routes
      */
     @GetMapping
-    fun getAllClasses() = NotImplementedError()
+    fun getAllClasses() = classService.getAllClasses()
 
     @GetMapping("/{classId}")
-    fun getSpecificClass(@PathVariable classId: Int) = NotImplementedError()
+    fun getSpecificClass(@PathVariable classId: Int) = classService.getSpecificClass(classId)
 
     @GetMapping("/{classId}/report")
-    fun getClassReports(@PathVariable classId: Int) = NotImplementedError()
+    fun getClassReports(@PathVariable classId: Int) = classService.getReportsOfClass(classId)
 
     @GetMapping("/{classId}/report/{reportId}")
     fun getSpecificClassReport(
             @PathVariable classId: Int,
             @PathVariable reportId: Int
-    ) = NotImplementedError()
+    ) = classService.getSpecificReportOfClass(classId, reportId)
 
     @GetMapping("/stage")
-    fun getAllClassStageEntries() = NotImplementedError()
+    fun getAllClassStageEntries() = classService.getAllStagedClasses()
 
     @GetMapping("/stage/{stageId}")
-    fun getClassSpecificStageEntry() = NotImplementedError()
+    fun getClassSpecificStageEntry(@PathVariable stageId: Int) = classService.getSpecificStagedClass(stageId)
+
+    @GetMapping("/{classId}/versions")
+    fun getVersionsOfClass(@PathVariable classId: Int) = NotImplementedError()
+
+    @GetMapping("/{classId}/versions/{versionId}")
+    fun getSpecificVersionOfClass(@PathVariable classId: Int, @PathVariable versionId: Int) = NotImplementedError()
 
     @GetMapping("/{classId}/courses")
     fun getCoursesOfClass(@PathVariable classId: Int) = NotImplementedError()
@@ -173,7 +179,7 @@ class ClassController {
     @PostMapping("/{classId}/report")
     fun reportClass(
             @PathVariable classId: Int,
-            @RequestBody report: ReportInputModel
+            @RequestBody report: ExamInputModel
     ) = NotImplementedError()
 
     @PostMapping("/{classId}/report/{reportId}/vote")
@@ -214,7 +220,7 @@ class ClassController {
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
             @PathVariable lessonId: Int,
-            @RequestBody report: ReportInputModel
+            @RequestBody report: ExamInputModel
     ) = NotImplementedError()
 
     @PostMapping("/{classId}/courses/{courseId}/lessons/{lessonId}/report/{reportId}/vote")
@@ -269,7 +275,7 @@ class ClassController {
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
             @PathVariable lessonId: Int,
-            @RequestBody report: ReportInputModel
+            @RequestBody report: ExamInputModel
     ) = NotImplementedError()
 
     @PostMapping("/{classId}/courses/{courseId}/homeworks/{homeWorkId}/report/{reportId}/vote")

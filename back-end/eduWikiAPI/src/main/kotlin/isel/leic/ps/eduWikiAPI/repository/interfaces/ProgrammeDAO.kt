@@ -25,11 +25,6 @@ interface ProgrammeDAO {
     fun createProgramme(programme: Programme) : Int
 
     fun voteOnProgramme(programmeId: Int, inputVote: VoteInputModel)
-
-    fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course>
-
-    fun addCourseToProgramme(programmeId: Int, course: Course)
-
     /**
      * Stage entities queries
      */

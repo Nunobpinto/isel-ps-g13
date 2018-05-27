@@ -4,9 +4,11 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.*
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ProgrammeReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Programme
+import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.ProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.ProgrammeVersion
+import isel.leic.ps.eduWikiAPI.repository.interfaces.CourseDAO
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ProgrammeDAO
 import isel.leic.ps.eduWikiAPI.service.interfaces.ProgrammeService
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,6 +21,9 @@ class ProgrammeServiceImpl : ProgrammeService {
 
     @Autowired
     lateinit var programmeDAO: ProgrammeDAO
+
+    @Autowired
+    lateinit var courseDAO: CourseDAO
 
     override fun getAllProgrammes(): List<Programme> = programmeDAO.getAllProgrammes()
 
@@ -78,9 +83,9 @@ class ProgrammeServiceImpl : ProgrammeService {
 
     override fun getSpecificReportOfProgramme(programmeId: Int, reportId: Int): ProgrammeReport = programmeDAO.getSpecificReportOfProgramme(programmeId, reportId)
 
-    override fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course> = programmeDAO.getCoursesOnSpecificProgramme(programmeId)
+    override fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course> = courseDAO.getCoursesOnSpecificProgramme(programmeId)
 
-    override fun addCourseToProgramme(programmeId: Int, course: Course) = programmeDAO.addCourseToProgramme(programmeId, course)
+    override fun addCourseToProgramme(programmeId: Int, course: Course) = courseDAO.addCourseToProgramme(programmeId, course)
 
     override fun voteOnProgramme(programmeId: Int, inputVote: VoteInputModel) = programmeDAO.voteOnProgramme(programmeId, inputVote)
 
@@ -97,6 +102,8 @@ class ProgrammeServiceImpl : ProgrammeService {
         )
         programmeDAO.reportProgramme(programmeId, programmeReport)
     }
+
+    override fun reportCourseOnProgramme(programmeId: Int, courseId: Int, inputCourseReport: CourseReport) = courseDAO.reportCourseOnProgramme(programmeId, courseId, inputCourseReport)
 
     override fun voteOnReportedProgramme(reportId: Int, inputVote: VoteInputModel) = programmeDAO.voteOnReportedProgramme(reportId, inputVote)
 
@@ -122,7 +129,7 @@ class ProgrammeServiceImpl : ProgrammeService {
 
     override fun deleteAllProgrammes() = programmeDAO.deleteAllProgrammes()
 
-    override fun deleteSpecificProgramme(programmeId: Int) = programmeDAO.deleteSpecificProgramme(programmeId)
+    override fun deleteSpecificProgramme(programmeId: Int): Int = programmeDAO.deleteSpecificProgramme(programmeId)
 
 
     override fun deleteAllStagedProgrammes() {

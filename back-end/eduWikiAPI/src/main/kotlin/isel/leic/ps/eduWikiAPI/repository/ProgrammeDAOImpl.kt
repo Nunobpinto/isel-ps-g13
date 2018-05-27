@@ -112,19 +112,6 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .execute()
     }
 
-    override fun addCourseToProgramme(programmeId: Int, course: Course) = dbi.useHandle<Exception> {
-        val insert = "insert into $CRS_PROG_TABLE " +
-                "($CRS_ID, $PROG_ID, $CRS_LECT_TERM, $CRS_OPT, " +
-                "$CRS_CRED, $PROG_VOTES) " +
-                "values(:courseId, :programmeId, :term, :optional, :credits)"
-        it.createUpdate(insert)
-                .bind("courseId", course.id)
-                .bind("programmeId", programmeId)
-                .bind("term", course.lecturedTerm)
-                .bind("optional", course.optional)
-                .bind("credits", course.credits)
-    }
-
     override fun voteOnProgramme(programmeId: Int, inputVote: VoteInputModel) = dbi.useTransaction<Exception> {
         val voteQuery = "select $PROG_VOTES from $PROG_TABLE where $PROG_ID = :programmeId"
         var votes = it.createQuery(voteQuery)
@@ -136,11 +123,6 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .bind("votes", votes)
                 .bind("programmeId", programmeId)
                 .execute()
-    }
-
-    override fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course> = dbi.withHandle<List<Course>, Exception> {
-        val select = "select * from $CRS_PROG_TABLE where $PROG_ID = :programmeId"
-        it.createQuery(select).bind("programmeId", programmeId).mapTo(Course::class.java).list()
     }
 
     override fun getSpecificProgrammeStage(programmeId: Int): ProgrammeStage = dbi.withHandle<ProgrammeStage, Exception> {

@@ -15,10 +15,10 @@ class ClassDAOImpl : ClassDAO {
 
     companion object {
         //TABLE NAMES
-        const val WRK_ASS_TABLE = "work_assignment"
-        const val WRK_ASS_VERSION_TABLE = "work_assignment_version"
-        const val WRK_ASS_REPORT_TABLE = "work_assignment_report"
-        const val WRK_ASS_STAGE_TABLE = "work_assignment_stage"
+        const val CLASS_TABLE = "class"
+        const val CLASS_REPORT_TABLE = "class_report"
+        const val CLASS_STAGE_TABLE = "class_stage"
+        const val CLASS_VERSION_TABLE = "class_stage"
         // FIELDS
         const val WRK_ASS_VERSION = "work_assignment_version"
         const val WRK_ASS_SHEET = "sheet"
@@ -35,22 +35,13 @@ class ClassDAOImpl : ClassDAO {
     }
 
     @Autowired
-    lateinit var dsl: DSLContext
-    @Autowired
     lateinit var dbi: Jdbi
 
-    override fun getClass(classId: Int, termId: Int): Class {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getClass(classId: Int): Class = Class()
 
-    override fun getAllClasses(): List<Class> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getAllClasses(): List<Class> = listOf()
 
-    override fun getAlLClassesInTerm(termId: Int): List<Class> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
+    override fun getAlLClassesInTerm(termId: Int): List<Class> = listOf()
     override fun deleteClass(classId: Int, termId: Int): Int {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -67,7 +58,35 @@ class ClassDAOImpl : ClassDAO {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun voteOnClass(courseId: Int, termId: Int, voteType: Int) {
+    override fun voteOnClass(courseId: Int, voteType: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getClassStage(classId: Int): ClassStage {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getAllClassStages(): List<ClassStage> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getAllClassStagesInTerm(termId: Int): List<ClassStage> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun deleteClassStage(classId: Int): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun deleteAllClassesStages(): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun deleteAllClassesInTermStages(termId: Int): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun deleteAllReportsOnCourse(classId: Int): Int {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -81,29 +100,6 @@ class ClassDAOImpl : ClassDAO {
                 .list()
     }
 
-    override fun getClassStage(classId: Int, termId: Int): ClassStage {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getAllClassStages(): List<ClassStage> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getAllClassStagesInTerm(termId: Int): List<ClassStage> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun deleteClassStage(classId: Int, termId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun deleteAllProgrammeStages(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun deleteAllProgrammeStages(termId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
     override fun createClassStage(classStage: ClassStage) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -141,11 +137,15 @@ class ClassDAOImpl : ClassDAO {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun deleteAllReportsOnCourse(classId: Int, termId: Int): Int {
+    override fun deleteAllReports(): Int {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun deleteAllReports(): Int {
+    override fun getAllReportsOfClass(classId: Int): List<ClassReport> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getReportOfClass(classId: Int, reportId: Int): ClassReport {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

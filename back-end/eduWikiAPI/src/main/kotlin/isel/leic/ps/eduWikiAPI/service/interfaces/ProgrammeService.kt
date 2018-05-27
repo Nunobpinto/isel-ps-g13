@@ -4,6 +4,7 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.*
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ProgrammeReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Programme
+import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.report.ProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.version.ProgrammeVersion
@@ -30,7 +31,7 @@ interface ProgrammeService {
 
     fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course>
 
-    fun addCourseToProgramme(programmeId: Int, course: Course)
+    fun addCourseToProgramme(programmeId: Int, course: Course): Int
 
     fun voteOnProgramme(programmeId: Int, inputVote: VoteInputModel)
 
@@ -66,4 +67,5 @@ interface ProgrammeService {
 
     fun deleteSpecificVersion(programmeId: Int, versionId: Int): Int
 
+    fun reportCourseOnProgramme(programmeId: Int, courseId: Int, inputCourseReport: CourseReport): Int
 }
