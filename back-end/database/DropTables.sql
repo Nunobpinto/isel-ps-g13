@@ -8,6 +8,8 @@ Drop Table IF EXISTS programme_report;
 
 Drop Table IF EXISTS course_report;
 
+DROP TABLE IF EXISTS course_programme_report;
+
 Drop Table IF EXISTS class_report;
 
 Drop Table IF EXISTS work_assignment_report;
@@ -55,6 +57,8 @@ Drop Table IF EXISTS organization_version;
 Drop Table IF EXISTS programme_version;
 
 Drop Table IF EXISTS course_version;
+
+DROP TABLE IF EXISTS course_programme_version;
 
 Drop Table IF EXISTS class_version;
 

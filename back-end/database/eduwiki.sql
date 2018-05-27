@@ -393,6 +393,19 @@ CREATE TABLE IF NOT EXISTS programme_report (
     PRIMARY KEY (report_id)
 );
 
+CREATE TABLE IF NOT EXISTS course_programme_report (
+	course_id INTEGER,
+	programme_id INTEGER,
+	course_lectured_term varchar(50),
+	course_optional BOOLEAN,
+	course_credits INTEGER,
+	time_stamp timestamp NOT NULL,
+	reported_by VARCHAR(20) NOT NULL,
+	votes INTEGER DEFAULT 0,
+	FOREIGN KEY (course_id, programme_id) REFERENCES course_programme(course_id, programme_id) ON DELETE CASCADE,
+	PRIMARY KEY (course_id, programme_id)
+);
+
 CREATE TABLE IF NOT EXISTS course_report (
     report_id SERIAL, 
     course_id INTEGER REFERENCES course ON DELETE CASCADE,
@@ -403,6 +416,8 @@ CREATE TABLE IF NOT EXISTS course_report (
     time_stamp timestamp NOT NULL,
     PRIMARY KEY (report_id)
 );
+
+
 
 CREATE TABLE IF NOT EXISTS class_report (
   report_id SERIAL,
@@ -521,6 +536,17 @@ CREATE TABLE IF NOT EXISTS course_version (
   created_by VARCHAR(20),
   time_stamp timestamp,
   PRIMARY KEY (course_id, course_version)
+);
+
+CREATE TABLE IF NOT EXISTS course_programme_version (
+	course_id INTEGER,
+	programme_id INTEGER,
+	course_lectured_term varchar(50) NOT NULL,
+	course_optional BOOLEAN NOT NULL,
+	course_credits INTEGER NOT NULL,
+	time_stamp timestamp NOT NULL,
+	created_by VARCHAR(20) NOT NULL,
+	PRIMARY KEY (course_id, programme_id)
 );
 
 CREATE TABLE IF NOT EXISTS class_version (
