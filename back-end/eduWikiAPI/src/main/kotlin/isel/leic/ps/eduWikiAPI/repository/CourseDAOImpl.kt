@@ -463,7 +463,23 @@ class CourseDAOImpl : CourseDAO {
                 .findOnly()
 
     }
-    override fun addCourseProgrammeToVersion(courseProgramme: Course): Int
+    override fun addCourseProgrammeToVersion(courseProgramme: Course): Int =  dbi.inTransaction<Int, Exception> {
+        val insert = "insert into $COURSE_PROGRAMME_VERSION_TABLE " +
+                "($COURSE_ID, $PROGRAMME_ID, $COURSE_PROGRAMME_VERSION, $LECTURED_TERM, $OPTIONAL, " +
+                "$COURSE_CREATED_BY, $COURSE_TIMESTAMP, $CREDITS)" +
+                "values (:courseId, :progId, :version, :lectured, " +
+                ":optional, :createdBy, :timestamp, :credits)"
+        it.createUpdate(insert)
+                .bind("courseId", courseProgramme.id)
+                .bind("progId", courseProgramme.programmeId)
+                .bind("version", courseProgramme.version)
+                .bind("lectured", courseProgramme.lecturedTerm)
+                .bind("optional", courseProgramme.optional)
+                .bind("createdBy", courseProgramme.createdBy)
+                .bind("timestamp", courseProgramme.timestamp)
+                .bind("credits", courseProgramme.credits)
+                .execute()
+    }
 
     override fun getAllReportsOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int): List<CourseProgrammeReport> = dbi.withHandle<List<CourseProgrammeReport>, Exception> {
         val select = "select cp.$COURSE_ID, cp.$PROGRAMME_ID, cp.${ProgrammeDAOImpl.CRS_PROG_VERSION}," +
@@ -492,8 +508,9 @@ class CourseDAOImpl : CourseDAO {
 
     }
 
-    override fun deleteReportOnCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun deleteReportOnCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int = dbi.withHandle<Int, Exception> {
+        val delete = "delete from $COURSE_PROGRAMME_REPORT_TABLE where $COURSE_REPORT_ID = :reportId"
+        it.createUpdate(delete).bind("reportId",reportId).execute()
     }
 
     override fun voteOnReportOfCourseProgramme(programmeId: Int, reportId: Int, vote: Vote): Int = dbi.inTransaction<Int, Exception> {
