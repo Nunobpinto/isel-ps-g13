@@ -61,8 +61,8 @@ CREATE TABLE IF NOT EXISTS course (
 );
 
 CREATE TABLE IF NOT EXISTS course_programme (
-  course_id INTEGER REFERENCES course ON DELETE RESTRICT,
-  programme_id INTEGER REFERENCES programme ON DELETE RESTRICT,
+  course_id INTEGER REFERENCES course ON DELETE CASCADE,
+  programme_id INTEGER REFERENCES programme ON DELETE CASCADE,
   course_programme_version INTEGER NOT NULL DEFAULT 1,
   course_lectured_term varchar(50) NOT NULL,
   course_optional BOOLEAN NOT NULL,
