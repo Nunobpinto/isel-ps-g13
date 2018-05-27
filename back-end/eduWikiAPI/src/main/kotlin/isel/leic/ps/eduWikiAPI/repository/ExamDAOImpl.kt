@@ -11,7 +11,6 @@ import isel.leic.ps.eduWikiAPI.domain.model.version.ExamVersion
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ExamDAO
 import org.jdbi.v3.core.Jdbi
 import org.jooq.DSLContext
-import org.jooq.impl.DSL.field
 import org.jooq.impl.DSL.table
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
@@ -20,13 +19,18 @@ import org.springframework.stereotype.Repository
 @Repository
 class ExamDAOImpl : ExamDAO {
 
+    //TODO Delete With Cascade All Course_misc_unit of type Exam
+
     companion object {
         //TABLE NAMES
         const val EXM_TABLE = "exam"
         const val EXM_VERSION_TABLE = "exam_version"
         const val EXM_REPORT_TABLE = "exam_report"
         const val EXM_STAGE_TABLE = "exam_stage"
+        const val COURSE_MISC_UNIT_TABLE = "course_misc_unit"
+        const val COURSE_MISC_UNIT_STAGE_TABLE = "course_misc_unit_stage"
         // FIELDS
+        const val EXM_ID = "id"
         const val EXM_VERSION = "exam_version"
         const val EXM_SHEET = "sheet"
         const val EXM_DUE_DATE = "due_date"
@@ -34,10 +38,14 @@ class ExamDAOImpl : ExamDAO {
         const val EXM_PHASE = "phase"
         const val EXM_LOCATION = "location"
         const val EXM_VOTES = "votes"
-        const val EXM_TIMESTAMP = "time_stamp"
+        const val TIMESTAMP = "time_stamp"
         const val EXM_REPORT_ID = "report_id"
         const val EXM_REPORTED_BY = "reported_by"
         const val EXM_CREATED_BY = "created_by"
+        const val COURSE_MISC_UNIT_ID = "id"
+        const val COURSE_MISC_UNIT_TYPE = "misc_type"
+        const val COURSE_MISC_UNIT_COURSE_ID = "course_id"
+        const val COURSE_MISC_UNIT_TERM_ID = "term_id"
     }
 
     @Autowired
@@ -85,19 +93,8 @@ class ExamDAOImpl : ExamDAO {
     }
 
     override fun deleteExam(courseMiscUnitId: Int): Int = dbi.withHandle<Int, Exception> {
-        /*it.execute(dsl
-                .delete(table(EXM_TABLE))
-                .where(field(CRS_MISC_UNIT_ID).eq(courseMiscUnitId))
-                .sql
-        )*/
-        0
-    }
-
-    override fun deleteAllExams(): Int = dbi.withHandle<Int, Exception> {
-        it.execute(dsl
-                .delete(table(EXM_TABLE))
-                .sql
-        )
+       val delete = "delete from $COURSE_MISC_UNIT_TABLE where $COURSE_MISC_UNIT_ID = :id"
+        it.createUpdate(delete).bind("id",courseMiscUnitId).execute()
     }
 
     override fun updateExam(examId: Int, exam: Exam): Int = dbi.withHandle<Int, Exception> {
@@ -105,7 +102,7 @@ class ExamDAOImpl : ExamDAO {
                 "$EXM_VERSION = :version, $EXM_CREATED_BY = :createdBy, " +
                 "$EXM_SHEET = :sheet, $EXM_DUE_DATE = :dueDate, " +
                 "$EXM_TYPE = :type, $EXM_PHASE = :phase, " +
-                "$EXM_LOCATION = :location, $EXM_VOTES = :votes, $EXM_TIMESTAMP = :timestamp " +
+                "$EXM_LOCATION = :location, $EXM_VOTES = :votes, $TIMESTAMP = :timestamp " +
                 "where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :examId"
 
         it.createUpdate(update)
@@ -126,7 +123,7 @@ class ExamDAOImpl : ExamDAO {
         //TODO type mappers?
         val insertInCourseMiscUnit = "insert into ${CourseDAOImpl.COURSE_MISC_UNIT_TABLE} " +
                 "(${CourseDAOImpl.COURSE_MISC_TYPE}, ${CourseDAOImpl.COURSE_ID}, " +
-                "${TermDAOImpl.TERM_ID}, $EXM_TIMESTAMP" +
+                "${TermDAOImpl.TERM_ID}, $TIMESTAMP" +
                 "values(:miscType, :courseId, :termId, :timestamp)"
 
         val courseMiscUnit = it.createUpdate(insertInCourseMiscUnit)
@@ -141,7 +138,7 @@ class ExamDAOImpl : ExamDAO {
         val insertInExam = "insert into $EXM_TABLE" +
                 "(${CourseDAOImpl.COURSE_MISC_UNIT_ID}, $EXM_VERSION, $EXM_CREATED_BY, " +
                 "$EXM_SHEET, $EXM_DUE_DATE, $EXM_TYPE, $EXM_PHASE, $EXM_LOCATION" +
-                "$EXM_VOTES, $EXM_TIMESTAMP" +
+                "$EXM_VOTES, $TIMESTAMP" +
                 "values(:courseMiscUnitId, :version, :createdBy, :sheet, :dueDate, :type," +
                 ":phase, :location, :votes, :timestamp)"
         it.createUpdate(insertInExam)
@@ -184,19 +181,12 @@ class ExamDAOImpl : ExamDAO {
                         field(EXM_LOCATION),
                         field(EXM_CREATED_BY),
                         field(EXM_VOTES),
-                        field(EXM_TIMESTAMP)
+                        field(TIMESTAMP)
                 )
                 .from(table(EXM_STAGE_TABLE))
                 .sql
         ).mapTo(ExamStage::class.java).toList()*/
         null
-    }
-
-    override fun deleteAllExamStages(): Int = dbi.withHandle<Int, Exception> {
-        it.execute(dsl
-                .delete(table(EXM_STAGE_TABLE))
-                .sql
-        )
     }
 
     override fun createStagingExam(courseId: Int, termId: Int, examStage: ExamStage): Int = dbi.inTransaction<Int, Exception> {
@@ -215,7 +205,7 @@ class ExamDAOImpl : ExamDAO {
         val insertInExamStage = "insert into $EXM_STAGE_TABLE" +
                 "(${CourseDAOImpl.COURSE_MISC_UNIT_ID}, $EXM_SHEET, $EXM_DUE_DATE," +
                 "$EXM_TYPE, $EXM_PHASE, $EXM_LOCATION, $EXM_VERSION, $EXM_CREATED_BY," +
-                "$EXM_VOTES, $EXM_TIMESTAMP" +
+                "$EXM_VOTES, $TIMESTAMP" +
                 "values(:courseMiscUnitId, :sheet, :dueDate, :type, :phase, :location, :version, " +
                 ":createdBy, :votes, :timestamp)"
         it.createUpdate(insertInExamStage)
@@ -255,7 +245,7 @@ class ExamDAOImpl : ExamDAO {
                         field(EXM_LOCATION),
                         field(EXM_CREATED_BY),
                         field(EXM_VERSION),
-                        field(EXM_TIMESTAMP)
+                        field(TIMESTAMP)
                 )
                 .from(table(EXM_VERSION_TABLE))
                 .where(field(CRS_MISC_UNIT_ID).eq(versionExamId).and(field(EXM_VERSION).eq(version)))
@@ -275,7 +265,7 @@ class ExamDAOImpl : ExamDAO {
                         field(EXM_LOCATION),
                         field(EXM_CREATED_BY),
                         field(EXM_VERSION),
-                        field(EXM_TIMESTAMP)
+                        field(TIMESTAMP)
                 )
                 .from(table(EXM_VERSION_TABLE))
                 .sql
@@ -284,18 +274,12 @@ class ExamDAOImpl : ExamDAO {
     }
 
     override fun deleteVersionExam(versionExamId: Int, version: Int): Int = dbi.withHandle<Int, Exception> {
-        /*it.execute(dsl
-                .delete(table(EXM_VERSION_TABLE))
-                .where(field(CRS_MISC_UNIT_ID).eq(versionExamId).and(field(EXM_VERSION).eq(version)))
-                .sql
-        )*/0
-    }
+        val delete = "delete from $EXM_VERSION_TABLE where $EXM_ID = :versionExamId and $EXM_VERSION = :version"
+        it.createUpdate(delete)
+                .bind("versionExamId",versionExamId)
+                .bind("version",version)
+                .execute()
 
-    override fun deleteAllVersionExams(): Int = dbi.withHandle<Int, Exception> {
-        it.execute(dsl
-                .delete(table(EXM_VERSION_TABLE))
-                .sql
-        )
     }
 
     override fun createVersionExam(examVersion: ExamVersion) = dbi.useHandle<Exception> {
@@ -309,7 +293,7 @@ class ExamDAOImpl : ExamDAO {
                         field(EXM_LOCATION),
                         field(EXM_CREATED_BY),
                         field(EXM_VERSION),
-                        field(EXM_TIMESTAMP))
+                        field(TIMESTAMP))
                 .values(
                         examVersion.courseMiscUnitId,
                         examVersion.sheet,
@@ -351,27 +335,17 @@ class ExamDAOImpl : ExamDAO {
     }
 
     override fun deleteReportOnExam(examId: Int, reportId: Int): Int = dbi.withHandle<Int, Exception> {
-        /*val delete = "delete from $EXM_REPORT_TABLE where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :examId and $EXM_REPORT_ID = :reportId"
+        val delete = "delete from $EXM_REPORT_TABLE where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :examId and $EXM_REPORT_ID = :reportId"
         it.createUpdate(delete)
                 .bind("examId", examId)
                 .bind("reportId", reportId)
-                .execute()*/
-        0
+                .execute()
+
     }
 
     override fun deleteAllReportsOnExam(courseMiscUnitId: Int): Int = dbi.withHandle<Int, Exception> {
-        /*it.execute(dsl
-                .delete(table(EXM_REPORT_TABLE))
-                .where(field(CRS_MISC_UNIT_ID).eq(courseMiscUnitId))
-                .sql
-        )*/
-        0
-    }
-
-    override fun deleteAllReports(): Int = dbi.withHandle<Int, Exception> {
-        it.execute(dsl.delete(table(EXM_REPORT_TABLE))
-                .sql
-        )
+        val delete = "delete from $EXM_REPORT_TABLE where $EXM_ID = :id"
+        it.createUpdate(delete).bind("id", courseMiscUnitId).execute()
     }
 
     override fun getAllExamsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<Exam> = dbi.withHandle<List<Exam>, Exception> {
@@ -465,7 +439,7 @@ class ExamDAOImpl : ExamDAO {
         val insertInExam = "insert into $EXM_TABLE" +
                 "(${CourseDAOImpl.COURSE_MISC_UNIT_ID}, $EXM_VERSION" +
                 "$EXM_CREATED_BY, $EXM_SHEET, $EXM_DUE_DATE, $EXM_TYPE," +
-                "$EXM_PHASE, $EXM_LOCATION, $EXM_VOTES, $EXM_TIMESTAMP" +
+                "$EXM_PHASE, $EXM_LOCATION, $EXM_VOTES, $TIMESTAMP" +
                 "values(:courseMiscUnitId, :version, :createdBy, :sheet," +
                 ":dueDate, :type, :phase, :location, :votes, :timestamp)"
         it.createUpdate(insertInExam)
@@ -487,7 +461,7 @@ class ExamDAOImpl : ExamDAO {
         val insert = "insert into $EXM_REPORT_TABLE" +
                 "(${CourseDAOImpl.COURSE_MISC_UNIT_ID}, $EXM_SHEET, " +
                 "$EXM_DUE_DATE, $EXM_TYPE, $EXM_PHASE, $EXM_LOCATION," +
-                "$EXM_REPORTED_BY, $EXM_VOTES, $EXM_TIMESTAMP ) " +
+                "$EXM_REPORTED_BY, $EXM_VOTES, $TIMESTAMP ) " +
                 "values(:examId, :sheet, :dueDate, :type, :phase, :location, :reportedBy, :votes, :timestamp)"
         it.createUpdate(insert)
                 .bind("examId", examId)
@@ -529,7 +503,7 @@ class ExamDAOImpl : ExamDAO {
         //TODO mappers por causa de type??
         val insert = "insert into $EXM_VERSION_TABLE " +
                 "(${CourseDAOImpl.COURSE_MISC_UNIT_ID}, $EXM_VERSION, $EXM_SHEET, $EXM_DUE_DATE, " +
-                "$EXM_TYPE, $EXM_PHASE, $EXM_LOCATION, $EXM_CREATED_BY, $EXM_TIMESTAMP" +
+                "$EXM_TYPE, $EXM_PHASE, $EXM_LOCATION, $EXM_CREATED_BY, $TIMESTAMP" +
                 "values (:examId, :version, :sheet, :dueDate, :type, " +
                 ":phase, :location,  createdBy, :timestamp)"
         it.createUpdate(insert)
@@ -547,7 +521,7 @@ class ExamDAOImpl : ExamDAO {
 
     override fun getExamSpecificStageEntry(stageId: Int): ExamStage = dbi.withHandle<ExamStage, Exception> {
         val select = "select * from $EXM_STAGE_TABLE" +
-                "where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :examId"
+                "where $COURSE_MISC_UNIT_ID = :examId"
         it.createQuery(select)
                 .bind("examId", stageId)
                 .mapTo(ExamStage::class.java)
@@ -555,15 +529,33 @@ class ExamDAOImpl : ExamDAO {
     }
 
     override fun deleteStagedExam(stageId: Int): Int = dbi.inTransaction<Int, Exception> {
-        val deleteFromCourseMiscUnitStageTable = "delete from ${CourseDAOImpl.COURSE_MISC_UNIT_STAGE_TABLE} " +
-                "where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :examId"
+        val deleteFromCourseMiscUnitStageTable = "delete from $COURSE_MISC_UNIT_STAGE_TABLE " +
+                "where $COURSE_MISC_UNIT_ID = :examId"
         it.createUpdate(deleteFromCourseMiscUnitStageTable)
                 .bind("examId", stageId)
                 .execute()
+    }
 
-        val deleteFromExamStageTable = "delete from $EXM_STAGE_TABLE where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :examId"
-        it.createUpdate(deleteFromExamStageTable)
-                .bind("examId", stageId)
+    override fun deleteAllExamsOfCourseInTerm(courseId: Int, termId: Int): Int = dbi.withHandle<Int, Exception> {
+        val delete = "delete from $COURSE_MISC_UNIT_TABLE where $COURSE_MISC_UNIT_COURSE_ID = :courseId and $COURSE_MISC_UNIT_TERM_ID = :termId and $COURSE_MISC_UNIT_TYPE = Exam/Test"
+        it.createUpdate(delete)
+                    .bind("courseId",courseId)
+                    .bind("termId",termId)
+                    .execute()
+    }
+
+    override fun deleteAllStagedExamsOfCourseInTerm(courseId: Int, termId: Int): Int = dbi.withHandle<Int, Exception> {
+        val delete = "delete from $COURSE_MISC_UNIT_STAGE_TABLE where $COURSE_MISC_UNIT_COURSE_ID = :courseId and $COURSE_MISC_UNIT_TERM_ID = :termId and $COURSE_MISC_UNIT_TYPE = Exam/Test"
+        it.createUpdate(delete)
+                .bind("courseId",courseId)
+                .bind("termId",termId)
+                .execute()
+    }
+
+    override fun deleteAllVersionExams(versionExamId: Int): Int = dbi.withHandle<Int, Exception> {
+        val delete = "delete from $EXM_VERSION_TABLE where $EXM_ID = :versionExamId"
+        it.createUpdate(delete)
+                .bind("versionExamId",versionExamId)
                 .execute()
     }
 

@@ -18,7 +18,7 @@ interface WorkAssignmentDAO {
 
     fun deleteWorkAssignment(courseMiscUnitId: Int) : Int
 
-    fun deleteAllWorkAssignments() : Int
+    fun deleteWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int
 
     fun updateWorkAssignment(workAssignmentId: Int, workAssignment: WorkAssignment) : Int
 
@@ -38,7 +38,7 @@ interface WorkAssignmentDAO {
 
     fun deleteStagedWorkAssignment(stageId: Int) : Int
 
-    fun deleteAllWorkAssignmentStages() : Int
+    fun deleteAllStagedWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int
 
     fun createWorkAssignmentStage(workAssignmentStage: WorkAssignmentStage)
 
@@ -58,11 +58,9 @@ interface WorkAssignmentDAO {
 
     fun getVersionWorkAssignment(versionWorkAssignmentId: Int, version: Int) : WorkAssignmentVersion
 
-    fun getAllVersionWorkAssignments() : List<WorkAssignmentVersion>
-
     fun deleteVersionWorkAssignment(versionWorkAssignmentId: Int, version: Int) : Int
 
-    fun deleteAllVersionWorkAssignments() : Int
+    fun deleteAllVersionWorkAssignments(versionWorkAssignmentId: Int) : Int
 
     fun addToWorkAssignmentVersion(workAssignment: WorkAssignment) : Int
 
@@ -75,8 +73,6 @@ interface WorkAssignmentDAO {
     fun deleteReportOnWorkAssignment(workAssignmentId: Int, reportId: Int) : Int
 
     fun deleteAllReportsOnWorkAssignment(courseMiscUnitId : Int) : Int
-
-    fun deleteAllReports(): Int
 
     fun getAllReportsOnWorkUnitOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): List<WorkAssignmentReport>
 

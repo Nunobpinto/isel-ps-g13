@@ -1,10 +1,17 @@
 package isel.leic.ps.eduWikiAPI.repository.interfaces
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
+import isel.leic.ps.eduWikiAPI.domain.model.Class
 import isel.leic.ps.eduWikiAPI.domain.model.Course
+import isel.leic.ps.eduWikiAPI.domain.model.Exam
 import isel.leic.ps.eduWikiAPI.domain.model.Term
+import isel.leic.ps.eduWikiAPI.domain.model.WorkAssignment
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
+import isel.leic.ps.eduWikiAPI.domain.model.report.ExamReport
+import isel.leic.ps.eduWikiAPI.domain.model.report.WorkAssignmentReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseStage
+import isel.leic.ps.eduWikiAPI.domain.model.staging.ExamStage
+import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
 
 interface CourseDAO {
@@ -30,6 +37,12 @@ interface CourseDAO {
     fun getTermsOfCourse(courseId: Int): List<Term>
 
     fun getSpecificTermOfCourse(courseId: Int, termId: Int): Term
+
+    fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course>
+
+    fun addCourseToProgramme(programmeId: Int, course: Course) : Int
+
+
 
     /**
      * Stage entities queries
@@ -57,7 +70,7 @@ interface CourseDAO {
 
     fun deleteVersionCourse(versionCourseId: Int, version: Int) : Int
 
-    fun deleteAllVersionCourses() : Int
+    fun deleteAllVersionCourses(versionCourseId: Int) : Int
 
     fun createVersionCourse(courseVersion: CourseVersion)
 
@@ -71,12 +84,12 @@ interface CourseDAO {
 
     fun deleteAllReportsOnCourse(courseId : Int) : Int
 
-    fun deleteAllReports() : Int
-
     fun getAllReportsOnCourse(courseId: Int) : List<CourseReport>
 
     fun getSpecificReportOfCourse(courseId: Int, reportId: Int): CourseReport
 
     fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel) : Int
+
+    fun reportCourseOnProgramme(programmeId: Int, courseId: Int, inputCourseReport: CourseReport): Int
 
 }

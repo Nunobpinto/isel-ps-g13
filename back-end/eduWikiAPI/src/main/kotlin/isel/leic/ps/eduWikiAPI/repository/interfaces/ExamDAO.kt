@@ -18,11 +18,11 @@ interface ExamDAO {
 
     fun deleteExam(courseMiscUnitId: Int): Int
 
-    fun deleteAllExams(): Int
+    fun deleteAllExamsOfCourseInTerm(courseId: Int, termId: Int): Int
 
     fun updateExam(examId: Int, exam: Exam): Int
 
-    fun createExam(courseId: Int, termId: Int, exam: Exam) : Int
+    fun createExam(courseId: Int, termId: Int, exam: Exam): Int
 
     fun getAllExamsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<Exam>
 
@@ -40,17 +40,17 @@ interface ExamDAO {
 
     fun getAllExamStages(): List<ExamStage>
 
-    fun deleteAllExamStages(): Int
-
     fun createStagingExam(courseId: Int, termId: Int, examStage: ExamStage): Int
 
-    fun voteOnStagedExam(stageId: Int, inputVote: VoteInputModel) : Int
+    fun voteOnStagedExam(stageId: Int, inputVote: VoteInputModel): Int
 
     fun getStageEntriesFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int): List<ExamStage>
 
     fun getStageEntryFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): ExamStage
 
     fun deleteStagedExam(stageId: Int): Int
+
+    fun deleteAllStagedExamsOfCourseInTerm(courseId: Int, termId: Int): Int
 
     /**
      * Version entities queries
@@ -62,7 +62,7 @@ interface ExamDAO {
 
     fun deleteVersionExam(versionExamId: Int, version: Int): Int
 
-    fun deleteAllVersionExams(): Int
+    fun deleteAllVersionExams(versionExamId: Int): Int
 
     fun createVersionExam(examVersion: ExamVersion)
 
@@ -78,7 +78,6 @@ interface ExamDAO {
 
     fun deleteAllReportsOnExam(courseMiscUnitId: Int): Int
 
-    fun deleteAllReports(): Int
 
     fun getAllReportsOnExamOnSpecificTermOfCourse(examId: Int): List<ExamReport>
 
@@ -89,6 +88,7 @@ interface ExamDAO {
     fun voteOnReportToExamOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int
 
     fun getSpecificReportOfExam(examId: Int, reportId: Int): ExamReport
+
 
 }
 

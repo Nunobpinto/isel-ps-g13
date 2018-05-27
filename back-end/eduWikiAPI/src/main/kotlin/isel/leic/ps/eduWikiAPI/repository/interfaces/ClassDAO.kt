@@ -11,7 +11,7 @@ interface ClassDAO {
      * Main entities queries
      */
 
-    fun getClass(classId: Int, termId: Int) : Class
+    fun getClass(classId: Int) : Class
 
     fun getAllClasses() : List<Class>
 
@@ -25,7 +25,7 @@ interface ClassDAO {
 
     fun createClass(klass: Class)
 
-    fun voteOnClass(courseId: Int, termId: Int, voteType: Int)
+    fun voteOnClass(courseId: Int, voteType: Int)
 
     fun getClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class>
 
@@ -33,17 +33,17 @@ interface ClassDAO {
      * Stage entities queries
      */
 
-    fun getClassStage(classId: Int, termId: Int) : ClassStage
+    fun getClassStage(classId: Int) : ClassStage
 
     fun getAllClassStages() : List<ClassStage>
 
     fun getAllClassStagesInTerm(termId: Int) : List<ClassStage>
 
-    fun deleteClassStage(classId: Int, termId: Int) : Int
+    fun deleteClassStage(classId: Int) : Int
 
-    fun deleteAllProgrammeStages() : Int
+    fun deleteAllClassesStages() : Int
 
-    fun deleteAllProgrammeStages(termId: Int) : Int
+    fun deleteAllClassesInTermStages(termId: Int) : Int
 
     fun createClassStage(classStage: ClassStage)
 
@@ -72,8 +72,12 @@ interface ClassDAO {
 
     fun deleteReportOnClass(reportId: Int) : Int
 
-    fun deleteAllReportsOnCourse(classId: Int, termId: Int) : Int
+    fun deleteAllReportsOnCourse(classId: Int) : Int
 
     fun deleteAllReports() : Int
+
+    fun getAllReportsOfClass(classId: Int): List<ClassReport>
+
+    fun getReportOfClass(classId: Int, reportId: Int): ClassReport
 
 }

@@ -27,12 +27,12 @@ class CourseController {
     }
 
     @GetMapping("/{courseId}")
-    fun getSpecificCourse(@PathVariable courseId: Int) : Course {
+    fun getSpecificCourse(@PathVariable courseId: Int): Course {
         return courseService.getSpecificCourse(courseId)
     }
 
     @GetMapping("/{courseId}/report")
-    fun getCourseReports(@PathVariable courseId: Int) : List<CourseReport>  {
+    fun getCourseReports(@PathVariable courseId: Int): List<CourseReport> {
         return courseService.getAllReportsOnCourse(courseId)
     }
 
@@ -316,104 +316,146 @@ class CourseController {
      * ALL DELETE Routes
      */
     @DeleteMapping
-    fun deleteAllCourses() = NotImplementedError()
+    fun deleteAllCourses() = courseService.deleteAllCourses()
 
     @DeleteMapping("/{courseId}")
-    fun deleteSpecificCourse(@PathVariable courseId: Int) = NotImplementedError()
+    fun deleteSpecificCourse(@PathVariable courseId: Int) = courseService.deleteSpecificCourse(courseId)
+
+    @DeleteMapping("/{courseId}/versions")
+    fun deleteVersionsCourse(@PathVariable courseId: Int) = courseService.deleteAllVersionsOfCourse(courseId)
+
+    @DeleteMapping("/{courseId}/versions/{version}")
+    fun deleteVersionCourse(
+            @PathVariable courseId: Int,
+            @PathVariable version: Int
+    ) = courseService.deleteVersionOfCourse(courseId, version)
 
     @DeleteMapping("/stage")
-    fun deleteAllStagedCourses() = NotImplementedError()
+    fun deleteAllStagedCourses() = courseService.deleteAllStagedCourses()
 
     @DeleteMapping("/stage/{stageId}")
-    fun deleteStagedCourse(@PathVariable stageId: Int) = NotImplementedError()
+    fun deleteStagedCourse(@PathVariable stageId: Int) = courseService.deleteSpecificStagedCourse(stageId)
 
     @DeleteMapping("/{courseId}/reports")
-    fun deleteAllReportsInCourse(@PathVariable courseId: Int) = NotImplementedError()
+    fun deleteAllReportsInCourse(@PathVariable courseId: Int) = courseService.deleteAllReportsOnCourse(courseId)
 
     @DeleteMapping("/{courseId}/reports/{reportId}")
     fun deleteReportInCourse(
             @PathVariable courseId: Int,
             @PathVariable reportId: Int
-    ) = NotImplementedError()
+    ) = courseService.deleteReportOnCourse(courseId, reportId)
 
     //exams
     @DeleteMapping("/{courseId}/terms/{termId}/exams")
     fun deleteAllExams(
             @PathVariable courseId: Int,
             @PathVariable termId: Int
-    ) = NotImplementedError()
+    ) = courseService.deleteExamsOfCourseInTerm(courseId, termId)
 
     @DeleteMapping("/{courseId}/terms/{termId}/exams/{examId}")
     fun deleteExam(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable examId: Int
-    ) = NotImplementedError()
+    ) = courseService.deleteExamOfCourseInTerm(courseId, termId, examId)
+
+    @DeleteMapping("/{courseId}/terms/{termId}/exams/{examId}/versions")
+    fun deleteAllVersionsExam(
+            @PathVariable courseId: Int,
+            @PathVariable termId: Int,
+            @PathVariable examId: Int
+    ) = courseService.deleteAllVersionsOfExam(courseId, termId, examId)
+
+    @DeleteMapping("/{courseId}/terms/{termId}/exams/{examId}/versions/{version}")
+    fun deleteVersionExam(
+            @PathVariable courseId: Int,
+            @PathVariable termId: Int,
+            @PathVariable examId: Int,
+            @PathVariable version: Int
+    ) = courseService.deleteVersionOfExam(courseId, termId, examId, version)
 
     @DeleteMapping("/{courseId}/terms/{termId}/exams/stage")
     fun deleteAllStagedExams(
             @PathVariable courseId: Int,
             @PathVariable termId: Int
-    ) = NotImplementedError()
+    ) = courseService.deleteStagedExamsOfCourseInTerm(courseId, termId)
 
     @DeleteMapping("/{courseId}/terms/{termId}/exams/stage/{stageId}")
     fun deleteStagedExam(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable stageId: Int
-    ) = NotImplementedError()
+    ) = courseService.deleteStagedExamOfCourseInTerm(courseId, termId, stageId)
 
     @DeleteMapping("/{courseId}/terms/{termId}/exams/{examId}/reports")
     fun deleteAllReportsInExams(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable examId: Int
-    ) = NotImplementedError()
+    ) = courseService.deleteAllReportsOnExamOfCourseInTerm(courseId, termId, examId)
 
     @DeleteMapping("/{courseId}/terms/{termId}/exams/{examId}/reports/{reportId}")
     fun deleteReportInExam(
             @PathVariable courseId: Int,
+            @PathVariable termId: Int,
             @PathVariable examId: Int,
             @PathVariable reportId: Int
-    ) = NotImplementedError()
+    ) = courseService.deleteReportOnExamOfCourseInTerm(courseId, termId, examId, reportId)
 
     @DeleteMapping("/{courseId}/terms/{termId}/workAssignments")
     fun deleteAllWorkAssignment(
             @PathVariable courseId: Int,
             @PathVariable termId: Int
-    ) = NotImplementedError()
+    ) = courseService.deleteWorkAssignmentsOfCourseInTerm(courseId, termId)
 
     @DeleteMapping("/{courseId}/terms/{termId}/workAssignments/{workAssignmentId}")
     fun deleteWorkAssignment(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable workAssignmentId: Int
-    ) = NotImplementedError()
+    ) = courseService.deleteWorkAssignmentOfCourseInTerm(courseId, termId, workAssignmentId)
+
+    @DeleteMapping("/{courseId}/terms/{termId}/workAssignments/{workAssignmentId}/versions")
+    fun deleteAllVersionsWorkAssignment(
+            @PathVariable courseId: Int,
+            @PathVariable termId: Int,
+            @PathVariable workAssignmentId: Int
+    ) = courseService.deleteAllVersionsOfWorkAssignment(courseId, termId, workAssignmentId)
+
+    @DeleteMapping("/{courseId}/terms/{termId}/workAssignments/{workAssignmentId}/versions/{version}")
+    fun deleteVersionWorkAssignment(
+            @PathVariable courseId: Int,
+            @PathVariable termId: Int,
+            @PathVariable workAssignmentId: Int,
+            @PathVariable version: Int
+    ) = courseService.deleteVersionOfWorkAssignment(courseId, termId, workAssignmentId, version)
+
 
     @DeleteMapping("/{courseId}/terms/{termId}/workAssignments/stage")
     fun deleteAllStagedWorkAssignment(
             @PathVariable courseId: Int,
             @PathVariable termId: Int
-    ) = NotImplementedError()
+    ) = courseService.deleteStagedWorkAssignmentsOfCourseInTerm(courseId, termId)
 
     @DeleteMapping("/{courseId}/terms/{termId}/workAssignments/stage/{stageId}")
     fun deleteStagedWorkAssignment(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable stageId: Int
-    ) = NotImplementedError()
+    ) = courseService.deleteStagedWorkAssignmentOfCourseInTerm(courseId, termId, stageId)
 
     @DeleteMapping("/{courseId}/terms/{termId}/workAssignments/{workAssignmentsId}/reports")
     fun deleteAllReportsInWorkAssignment(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable workAssignmentId: Int
-    ) = NotImplementedError()
+    ) = courseService.deleteAllReportsOfWorkAssignmentOfCourseInTerm(courseId, termId, workAssignmentId)
 
     @DeleteMapping("/{courseId}/terms/{termId}/workAssignments/{workAssignmentId}/reports/{reportId}")
     fun deleteReportInWorkAssignment(
             @PathVariable courseId: Int,
+            @PathVariable termId: Int,
             @PathVariable workAssignmentId: Int,
             @PathVariable reportId: Int
-    ) = NotImplementedError()
+    ) = courseService.deleteReportOfWorkAssignmentOfCourseInTerm(courseId, termId, workAssignmentId, reportId)
 }

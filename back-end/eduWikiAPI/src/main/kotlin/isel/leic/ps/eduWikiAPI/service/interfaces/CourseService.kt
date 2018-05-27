@@ -21,11 +21,11 @@ import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
 
 interface CourseService {
 
-    fun getAllCourses() : List<Course>
+    fun getAllCourses(): List<Course>
 
-    fun getSpecificCourse(courseId: Int) : Course
+    fun getSpecificCourse(courseId: Int): Course
 
-    fun getAllReportsOnCourse(courseId: Int) : List<CourseReport>
+    fun getAllReportsOnCourse(courseId: Int): List<CourseReport>
 
     fun getSpecificReportOfCourse(courseId: Int, reportId: Int): CourseReport
 
@@ -63,25 +63,25 @@ interface CourseService {
 
     fun getClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class>
 
-    fun createCourse(inputCourse: CourseInputModel) : Int
+    fun createCourse(inputCourse: CourseInputModel): Int
 
-    fun voteOnCourse(courseId: Int, inputVote: VoteInputModel) : Int
+    fun voteOnCourse(courseId: Int, inputVote: VoteInputModel): Int
 
-    fun reportCourse(courseId: Int, inputCourseReport: CourseReportInputModel) : Int
+    fun reportCourse(courseId: Int, inputCourseReport: CourseReportInputModel): Int
 
-    fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel) : Int
+    fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel): Int
 
     fun updateReportedCourse(courseId: Int, reportId: Int)
 
-    fun createStagingCourse(inputCourse: CourseInputModel) : Int
+    fun createStagingCourse(inputCourse: CourseInputModel): Int
 
-    fun createCourseFromStaged(stageId: Int) : Int
+    fun createCourseFromStaged(stageId: Int): Int
 
-    fun voteOnStagedCourse(stageId: Int, inputVote: VoteInputModel) : Int
+    fun voteOnStagedCourse(stageId: Int, inputVote: VoteInputModel): Int
 
-    fun createExamOnCourseInTerm(courseId: Int, termId: Int, inputExam: ExamInputModel) : Int
+    fun createExamOnCourseInTerm(courseId: Int, termId: Int, inputExam: ExamInputModel): Int
 
-    fun addReportToExamOnCourseInTerm(examId: Int, inputExamReport: ExamReportInputModel) : Int
+    fun addReportToExamOnCourseInTerm(examId: Int, inputExamReport: ExamReportInputModel): Int
 
     fun voteOnReportToExamOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int
 
@@ -106,5 +106,53 @@ interface CourseService {
     fun createWorkAssignmentFromStaged(courseId: Int, termId: Int, stageId: Int): Int
 
     fun voteOnStagedWorkAssignment(stageId: Int, inputVote: VoteInputModel): Int
+
+    fun deleteAllCourses(): Int
+
+    fun deleteSpecificCourse(courseId: Int): Int
+
+    fun deleteAllStagedCourses(): Int
+
+    fun deleteSpecificStagedCourse(stageId: Int): Int
+
+    fun deleteAllReportsOnCourse(courseId: Int): Int
+
+    fun deleteReportOnCourse(courseId: Int, reportId: Int): Int
+
+    fun deleteExamsOfCourseInTerm(courseId: Int, termId: Int): Int
+
+    fun deleteExamOfCourseInTerm(courseId: Int, termId: Int, examId: Int): Int
+
+    fun deleteStagedExamsOfCourseInTerm(courseId: Int, termId: Int): Int
+
+    fun deleteStagedExamOfCourseInTerm(courseId: Int, termId: Int, stageId: Int): Int
+
+    fun deleteAllReportsOnExamOfCourseInTerm(courseId: Int, termId: Int, examId: Int): Int
+
+    fun deleteReportOnExamOfCourseInTerm(courseId: Int, termId: Int, examId: Int, reportId: Int): Int
+
+    fun deleteWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int
+
+    fun deleteWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, workAssignmentId: Int): Int
+
+    fun deleteStagedWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int
+
+    fun deleteStagedWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, stageId: Int): Int
+
+    fun deleteAllReportsOfWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, workAssignmentId: Int): Int
+
+    fun deleteReportOfWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, workAssignmentId: Int, reportId: Int): Int
+
+    fun deleteAllVersionsOfCourse(courseId: Int): Int
+
+    fun deleteVersionOfCourse(courseId: Int, version: Int): Int
+
+    fun deleteAllVersionsOfWorkAssignment(courseId: Int, termId: Int, workAssignmentId: Int): Int
+
+    fun deleteVersionOfWorkAssignment(courseId: Int, termId: Int, workAssignmentId: Int, version: Int): Int
+
+    fun deleteAllVersionsOfExam(courseId: Int, termId: Int, examId: Int): Int
+
+    fun deleteVersionOfExam(courseId: Int, termId: Int, examId: Int, version: Int): Int
 
 }

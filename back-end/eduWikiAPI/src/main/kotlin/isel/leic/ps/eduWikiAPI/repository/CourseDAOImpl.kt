@@ -17,6 +17,8 @@ import org.springframework.stereotype.Repository
 @Repository
 class CourseDAOImpl : CourseDAO {
 
+    //TODO Delete With Cascade All Courses
+
     companion object {
         //TABLE NAMES
         const val COURSE_TABLE = "course"
@@ -68,25 +70,19 @@ class CourseDAOImpl : CourseDAO {
 
 
     override fun deleteCourse(courseId: Int): Int = dbi.withHandle<Int, Exception> {
-        /*it.execute(dsl
-                .delete(table(COURSE_TABLE))
-                .where(field(COURSE_ID).eq(courseId))
-                .sql
-        )*/
-        0
+        val delete = "delete from $COURSE_TABLE where $COURSE_ID = :courseId"
+        it.createUpdate(delete)
+                .bind("courseId", courseId)
+                .execute()
     }
 
     override fun deleteAllCourses(): Int = dbi.withHandle<Int, Exception> {
-        /*it.execute(dsl
-                .delete(table(COURSE_TABLE))
-                .sql
-        )*/
-        0
+        it.createUpdate("delete from $COURSE_TABLE").execute()
     }
 
     override fun updateCourse(course: Course): Int = TODO("dynamically update org by filled values in Organization parameter")
 
-    override fun createCourse(course: Course) : Int = dbi.withHandle<Int, Exception> {
+    override fun createCourse(course: Course): Int = dbi.withHandle<Int, Exception> {
         val insert = "insert into $COURSE_TABLE" +
                 "(${OrganizationDAOImpl.ORG_ID}, $COURSE_VERSION, $COURSE_CREATED_BY, " +
                 "$COURSE_FULL_NAME, $COURSE_SHORT_NAME, $COURSE_VOTES, $COURSE_TIMESTAMP)" +
@@ -102,7 +98,7 @@ class CourseDAOImpl : CourseDAO {
                 .execute()
     }
 
-    override fun voteOnCourse(courseId: Int, inputVote: VoteInputModel) : Int = dbi.inTransaction<Int, Exception> {
+    override fun voteOnCourse(courseId: Int, inputVote: VoteInputModel): Int = dbi.inTransaction<Int, Exception> {
         val voteQuery = "select $COURSE_VOTES from $COURSE_TABLE where $COURSE_ID :courseId"
         var votes = it.createQuery(voteQuery)
                 .bind("courseId", courseId)
@@ -115,7 +111,7 @@ class CourseDAOImpl : CourseDAO {
                 .execute()
     }
 
-    override fun deleteStagedCourse(courseStageId: Int) : Int = dbi.withHandle<Int, Exception> {
+    override fun deleteStagedCourse(courseStageId: Int): Int = dbi.withHandle<Int, Exception> {
         val delete = "delete from $COURSE_STAGE_TABLE where $COURSE_ID = :courseId"
         it.createUpdate(delete)
                 .bind("courseId", courseStageId)
@@ -123,14 +119,11 @@ class CourseDAOImpl : CourseDAO {
     }
 
     override fun deleteAllCourseStages(): Int = dbi.withHandle<Int, Exception> {
-        /*it.execute(dsl
-                .delete(table(COURSE_STAGE_TABLE))
-                .sql
-        )*/
-        0
+        it.createUpdate("delete from $COURSE_STAGE_TABLE").execute()
     }
 
-    override fun createStagingCourse(courseStage: CourseStage) : Int = dbi.withHandle<Int, Exception> {
+
+    override fun createStagingCourse(courseStage: CourseStage): Int = dbi.withHandle<Int, Exception> {
         val insert = "insert into $COURSE_STAGE_TABLE " +
                 "(${OrganizationDAOImpl.ORG_ID}, $COURSE_FULL_NAME" +
                 "$COURSE_SHORT_NAME, $COURSE_CREATED_BY, $COURSE_VOTES,, $COURSE_TIMESTAMP) " +
@@ -145,7 +138,7 @@ class CourseDAOImpl : CourseDAO {
                 .execute()
     }
 
-    override fun voteOnStagedCourse(courseStageId: Int, inputVote: VoteInputModel) : Int = dbi.inTransaction<Int, Exception> {
+    override fun voteOnStagedCourse(courseStageId: Int, inputVote: VoteInputModel): Int = dbi.inTransaction<Int, Exception> {
         val voteQuery = "select $COURSE_VOTES from $COURSE_STAGE_TABLE where $COURSE_ID = :courseId"
         var votes = it.createQuery(voteQuery)
                 .bind("courseId", courseStageId)
@@ -158,114 +151,31 @@ class CourseDAOImpl : CourseDAO {
                 .execute()
     }
 
-    override fun getVersionCourse(versionCourseId: Int, version: Int): CourseVersion = dbi.withHandle<CourseVersion, Exception> {
-        /*it.createQuery(dsl
-                .select(
-                        field(COURSE_ID),
-                        field(ORG_ID),
-                        field(COURSE_FULL_NAME),
-                        field(COURSE_SHORT_NAME),
-                        field(COURSE_CREATED_BY),
-                        field(COURSE_TIMESTAMP),
-                        field(COURSE_VERSION)
-                )
-                .from(table(COURSE_VERSION_TABLE))
-                .where(field(COURSE_ID).eq(versionCourseId).and(field(COURSE_VERSION).eq(version)))
-                .sql
-        ).mapTo(CourseVersion::class.java).first()*/
-        null
-    }
+    override fun getVersionCourse(versionCourseId: Int, version: Int): CourseVersion = CourseVersion()
 
-    override fun getAllVersionCourses(): List<CourseVersion> = dbi.withHandle<List<CourseVersion>, Exception> {
-        /*it.createQuery(dsl
-                .select(
-                        field(COURSE_ID),
-                        field(ORG_ID),
-                        field(COURSE_FULL_NAME),
-                        field(COURSE_SHORT_NAME),
-                        field(COURSE_CREATED_BY),
-                        field(COURSE_TIMESTAMP),
-                        field(COURSE_VERSION)
-                )
-                .from(table(COURSE_VERSION_TABLE))
-                .sql
-        ).mapTo(CourseVersion::class.java).list()*/
-        null
-    }
+    override fun getAllVersionCourses(): List<CourseVersion> = listOf()
 
     override fun deleteVersionCourse(versionCourseId: Int, version: Int): Int = dbi.withHandle<Int, Exception> {
-        /*it.execute(dsl
-                .delete(table(COURSE_VERSION_TABLE))
-                .where(field(COURSE_ID).eq(versionCourseId).and(field(COURSE_VERSION).eq(version)))
-                .sql
-        )*/
-        0
-    }
-
-    override fun deleteAllVersionCourses(): Int = dbi.withHandle<Int, Exception> {
-        /*it.execute(dsl
-                .delete(table(COURSE_VERSION_TABLE))
-                .sql
-        )*/
-        0
-    }
-
-    override fun createVersionCourse(courseVersion: CourseVersion) = dbi.useHandle<Exception> {
-        /*it.execute(dsl
-                .insertInto(table(COURSE_VERSION_TABLE),
-                        field(COURSE_ID),
-                        field(ORG_ID),
-                        field(COURSE_FULL_NAME),
-                        field(COURSE_SHORT_NAME),
-                        field(COURSE_CREATED_BY),
-                        field(COURSE_TIMESTAMP),
-                        field(COURSE_VERSION))
-                .values(
-                        courseVersion.courseId,
-                        courseVersion.organizationId,
-                        courseVersion.fullName,
-                        courseVersion.shortName,
-                        courseVersion.createdBy,
-                        courseVersion.timestamp,
-                        courseVersion.version
-                ).sql
-        )*/
-    }
-
-    override fun reportCourse(courseId: Int, courseReport: CourseReport) = dbi.useHandle<Exception> {
-        val insert = "insert into $COURSE_REPORT_TABLE " +
-                "($COURSE_ID, $COURSE_FULL_NAME, " +
-                "$COURSE_SHORT_NAME, $COURSE_REPORTED_BY, $COURSE_TIMESTAMP) " +
-                "values(:courseId, :fullName, :shortName, :reportedBy, :timestamp)"
-        it.createUpdate(insert)
-                .bind("courseId", courseId)
-                .bind("fullName", courseReport.courseFullName)
-                .bind("shortName", courseReport.courseShortName)
-                .bind("reportedBy", courseReport.reportedBy)
-                .bind("timestamp", courseReport.timestamp)
+        val delete = "delete from $COURSE_VERSION_TABLE where $COURSE_ID = :id and $COURSE_VERSION = :version"
+        it.createUpdate(delete)
+                .bind("id", versionCourseId)
+                .bind("version", version)
                 .execute()
     }
 
+    override fun createVersionCourse(courseVersion: CourseVersion) {}
+
+    override fun reportCourse(courseId: Int, courseReport: CourseReport) {}
+
     override fun deleteReportOnCourse(reportId: Int): Int = dbi.withHandle<Int, Exception> {
-        /*it.execute(dsl
-                .delete(table(COURSE_REPORT_TABLE))
-                .where(field(COURSE_REPORT_ID).eq(reportId))
-                .sql
-        )*/0
+        val delete = "delete from $COURSE_REPORT_TABLE where $COURSE_REPORT_ID = :id"
+        it.createUpdate(delete)
+                .bind("id", reportId)
+                .execute()
     }
 
     override fun deleteAllReportsOnCourse(courseId: Int): Int = dbi.withHandle<Int, Exception> {
-        /*it.execute(dsl
-                .delete(table(COURSE_REPORT_TABLE))
-                .where(field(COURSE_ID).eq(courseId))
-                .sql
-        )*/0
-    }
-
-    override fun deleteAllReports(): Int = dbi.withHandle<Int, Exception> {
-        /*it.execute(dsl.delete(table(COURSE_REPORT_TABLE))
-                .sql
-        )*/0
+        it.createUpdate("delete from $COURSE_REPORT_TABLE").execute()
     }
 
     override fun getAllReportsOnCourse(courseId: Int): List<CourseReport> = dbi.withHandle<List<CourseReport>, Exception> {
@@ -326,7 +236,7 @@ class CourseDAOImpl : CourseDAO {
                 .findOnly()
     }
 
-    override fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel) : Int = dbi.withHandle<Int, Exception> {
+    override fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel): Int = dbi.withHandle<Int, Exception> {
         val voteQuery = "select $COURSE_VOTES from $COURSE_REPORT_TABLE where $COURSE_REPORT_ID = :reportId"
         var votes = it.createQuery(voteQuery)
                 .bind("reportId", reportId)
@@ -336,6 +246,36 @@ class CourseDAOImpl : CourseDAO {
         it.createUpdate(updateQuery)
                 .bind("votes", votes)
                 .bind("reportId", reportId)
+                .execute()
+    }
+
+    override fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course> = dbi.withHandle<List<Course>, Exception> {
+        val select = "select * from ${ProgrammeDAOImpl.CRS_PROG_TABLE} where ${ProgrammeDAOImpl.PROG_ID} = :programmeId"
+        it.createQuery(select).bind("programmeId", programmeId).mapTo(Course::class.java).list()
+    }
+
+    override fun addCourseToProgramme(programmeId: Int, course: Course): Int = dbi.withHandle<Int, Exception> {
+        val insert = "insert into ${ProgrammeDAOImpl.CRS_PROG_TABLE} " +
+                "(${ProgrammeDAOImpl.CRS_ID}, ${ProgrammeDAOImpl.PROG_ID}, ${ProgrammeDAOImpl.CRS_LECT_TERM}, ${ProgrammeDAOImpl.CRS_OPT}, " +
+                "${ProgrammeDAOImpl.CRS_CRED}, ${ProgrammeDAOImpl.PROG_VOTES}) " +
+                "values(:courseId, :programmeId, :term, :optional, :credits)"
+        it.createUpdate(insert)
+                .bind("courseId", course.id)
+                .bind("programmeId", programmeId)
+                .bind("term", course.lecturedTerm)
+                .bind("optional", course.optional)
+                .bind("credits", course.credits)
+                .execute()
+    }
+
+    override fun reportCourseOnProgramme(programmeId: Int, courseId: Int, inputCourseReport: CourseReport): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun deleteAllVersionCourses(versionCourseId: Int): Int = dbi.withHandle<Int, Exception> {
+        val delete = "delete from $COURSE_VERSION_TABLE where $COURSE_ID = :id"
+        it.createUpdate(delete)
+                .bind("id", versionCourseId)
                 .execute()
     }
 
