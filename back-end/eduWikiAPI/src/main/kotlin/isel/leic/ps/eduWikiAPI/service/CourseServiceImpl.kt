@@ -7,11 +7,7 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.WorkAssignmentInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ExamReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.WorkAssignmentReportInputModel
-import isel.leic.ps.eduWikiAPI.domain.model.Class
-import isel.leic.ps.eduWikiAPI.domain.model.Course
-import isel.leic.ps.eduWikiAPI.domain.model.Exam
-import isel.leic.ps.eduWikiAPI.domain.model.Term
-import isel.leic.ps.eduWikiAPI.domain.model.WorkAssignment
+import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.ExamReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.WorkAssignmentReport
@@ -114,7 +110,7 @@ class CourseServiceImpl : CourseService {
         return 0
     }
 
-    override fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel): Int = courseDAO.voteOnReportedCourse(reportId, inputVote)
+    override fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel): Int = courseDAO.voteOnReportedCourse(reportId, Vote.valueOf(inputVote.vote))
 
     override fun updateReportedCourse(courseId: Int, reportId: Int) {
         /* val course = courseDAO.getSpecificCourse(courseId)
@@ -158,7 +154,7 @@ class CourseServiceImpl : CourseService {
         return courseDAO.createCourse(course)    //TODO use transaction
     }
 
-    override fun voteOnStagedCourse(stageId: Int, inputVote: VoteInputModel): Int = courseDAO.voteOnStagedCourse(stageId, inputVote)
+    override fun voteOnStagedCourse(stageId: Int, inputVote: VoteInputModel): Int = courseDAO.voteOnStagedCourse(stageId, Vote.valueOf(inputVote.vote))
 
     override fun createExamOnCourseInTerm(courseId: Int, termId: Int, inputExam: ExamInputModel): Int {
         val exam = Exam(

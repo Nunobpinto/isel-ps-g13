@@ -2,12 +2,10 @@ package isel.leic.ps.eduWikiAPI.repository
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.*
+import isel.leic.ps.eduWikiAPI.domain.model.report.CourseProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
-import isel.leic.ps.eduWikiAPI.domain.model.report.ExamReport
-import isel.leic.ps.eduWikiAPI.domain.model.report.WorkAssignmentReport
+import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseStage
-import isel.leic.ps.eduWikiAPI.domain.model.staging.ExamStage
-import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
 import isel.leic.ps.eduWikiAPI.repository.interfaces.CourseDAO
 import org.jdbi.v3.core.Jdbi
@@ -17,8 +15,6 @@ import org.springframework.stereotype.Repository
 @Repository
 class CourseDAOImpl : CourseDAO {
 
-    //TODO Delete With Cascade All Courses
-
     companion object {
         //TABLE NAMES
         const val COURSE_TABLE = "course"
@@ -27,6 +23,8 @@ class CourseDAOImpl : CourseDAO {
         const val COURSE_STAGE_TABLE = "course_stage"
         const val COURSE_PROGRAMME_TABLE = "course_programme"
         const val COURSE_PROGRAMME_STAGE_TABLE = "course_programme_stage"
+        const val COURSE_PROGRAMME_REPORT_TABLE = "course_programme_report"
+        const val COURSE_PROGRAMME_VERSION_TABLE = "course_programme_version"
         const val COURSE_CLASS_TABLE = "course_class"
         const val COURSE_TERM_TABLE = "course_term"
         const val COURSE_MISC_UNIT_TABLE = "course_misc_unit"
@@ -45,10 +43,10 @@ class CourseDAOImpl : CourseDAO {
         const val COURSE_CREATED_BY = "created_by"
         // COURSE_PROGRAMME FIELDS
         const val PROGRAMME_ID = "programme_id"
-        const val COURSE_PROGRAMME_VERSION = "course_programme_id"
         const val LECTURED_TERM = "course_lectured_term"
         const val OPTIONAL = "course_optional"
         const val CREDITS = "course_credits"
+        const val COURSE_PROGRAMME_VERSION = "course_programme_version"
 
     }
 
@@ -155,12 +153,12 @@ class CourseDAOImpl : CourseDAO {
                 .execute()
     }
 
-    override fun voteOnStagedCourse(courseStageId: Int, inputVote: VoteInputModel): Int = dbi.inTransaction<Int, Exception> {
+    override fun voteOnStagedCourse(courseStageId: Int, inputVote: Vote): Int = dbi.inTransaction<Int, Exception> {
         val voteQuery = "select $COURSE_VOTES from $COURSE_STAGE_TABLE where $COURSE_ID = :courseId"
         var votes = it.createQuery(voteQuery)
                 .bind("courseId", courseStageId)
                 .mapTo(Int::class.java).findOnly()
-        votes = if (inputVote.vote.equals(Vote.Down)) --votes else ++votes
+        votes = if (inputVote == Vote.Down) --votes else ++votes
         val updateQuery = "update $COURSE_STAGE_TABLE set $COURSE_VOTES = :votes where $COURSE_ID = :courseId"
         it.createUpdate(updateQuery)
                 .bind("votes", votes)
@@ -168,9 +166,9 @@ class CourseDAOImpl : CourseDAO {
                 .execute()
     }
 
-    override fun getVersionCourse(versionCourseId: Int, version: Int): CourseVersion = CourseVersion()
-
-    override fun getAllVersionCourses(): List<CourseVersion> = listOf()
+    override fun getVersionCourse(versionCourseId: Int, version: Int): CourseVersion {
+        //TODO get version course
+    }
 
     override fun deleteVersionCourse(versionCourseId: Int, version: Int): Int = dbi.withHandle<Int, Exception> {
         val delete = "delete from $COURSE_VERSION_TABLE where $COURSE_ID = :id and $COURSE_VERSION = :version"
@@ -180,9 +178,13 @@ class CourseDAOImpl : CourseDAO {
                 .execute()
     }
 
-    override fun createVersionCourse(courseVersion: CourseVersion) {}
+    override fun createVersionCourse(courseVersion: CourseVersion) {
+        //TODO create version course
+    }
 
-    override fun reportCourse(courseId: Int, courseReport: CourseReport) {}
+    override fun reportCourse(courseId: Int, courseReport: CourseReport) {
+        //TODO report course
+    }
 
     override fun deleteReportOnCourse(reportId: Int): Int = dbi.withHandle<Int, Exception> {
         val delete = "delete from $COURSE_REPORT_TABLE where $COURSE_REPORT_ID = :id"
@@ -253,12 +255,12 @@ class CourseDAOImpl : CourseDAO {
                 .findOnly()
     }
 
-    override fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel): Int = dbi.withHandle<Int, Exception> {
+    override fun voteOnReportedCourse(reportId: Int, inputVote: Vote): Int = dbi.withHandle<Int, Exception> {
         val voteQuery = "select $COURSE_VOTES from $COURSE_REPORT_TABLE where $COURSE_REPORT_ID = :reportId"
         var votes = it.createQuery(voteQuery)
                 .bind("reportId", reportId)
                 .mapTo(Int::class.java).findOnly()
-        votes = if (inputVote.vote.equals(Vote.Down)) --votes else ++votes
+        votes = if (inputVote == Vote.Down) --votes else ++votes
         val updateQuery = "update $COURSE_REPORT_TABLE set $COURSE_VOTES = :votes where $COURSE_REPORT_ID = :reportId"
         it.createUpdate(updateQuery)
                 .bind("votes", votes)
@@ -267,8 +269,30 @@ class CourseDAOImpl : CourseDAO {
     }
 
     override fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course> = dbi.withHandle<List<Course>, Exception> {
-        val select = "select * from ${ProgrammeDAOImpl.CRS_PROG_TABLE} where ${ProgrammeDAOImpl.PROG_ID} = :programmeId"
-        it.createQuery(select).bind("programmeId", programmeId).mapTo(Course::class.java).list()
+        val select = "select cp.$COURSE_ID, cp.$PROGRAMME_ID, cp.${ProgrammeDAOImpl.CRS_PROG_VERSION}," +
+                " cp.$LECTURED_TERM, c.$COURSE_CREATED_BY, c.$COURSE_FULL_NAME, c.$COURSE_SHORT_NAME, c.$COURSE_TIMESTAMP, c.$COURSE_VOTES " +
+                "from course as c " +
+                "inner join $COURSE_PROGRAMME_TABLE as cp on c.$COURSE_ID = cp.$COURSE_ID " +
+                "where cp.$PROGRAMME_ID = :programmeId"
+        it.createQuery(select)
+                .bind("programmeId", programmeId)
+                .mapTo(Course::class.java)
+                .list()
+
+    }
+
+    override fun getSpecificCourseOfProgramme(programmeId: Int, courseId: Int): Course = dbi.withHandle<Course, Exception> {
+        val select = "select cp.$COURSE_ID, cp.$PROGRAMME_ID, cp.${ProgrammeDAOImpl.CRS_PROG_VERSION}," +
+                " cp.$LECTURED_TERM, c.$COURSE_CREATED_BY, c.$COURSE_FULL_NAME, c.$COURSE_SHORT_NAME, c.$COURSE_TIMESTAMP, c.$COURSE_VOTES " +
+                "from course as c " +
+                "inner join $COURSE_PROGRAMME_TABLE as cp on c.$COURSE_ID = cp.$COURSE_ID " +
+                "where cp.$PROGRAMME_ID = :programmeId and cp.$COURSE_ID = :courseId"
+        it.createQuery(select)
+                .bind("programmeId", programmeId)
+                .bind("courseId", courseId)
+                .mapTo(Course::class.java)
+                .findOnly()
+
     }
 
     override fun addCourseToProgramme(programmeId: Int, course: Course): Int = dbi.withHandle<Int, Exception> {
@@ -285,8 +309,19 @@ class CourseDAOImpl : CourseDAO {
                 .execute()
     }
 
-    override fun reportCourseOnProgramme(programmeId: Int, courseId: Int, inputCourseReport: CourseReport): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun reportCourseOnProgramme(programmeId: Int, courseId: Int, courseProgrammeReport: CourseProgrammeReport): Int = dbi.withHandle<Int, Exception> {
+        val insert = "insert into $COURSE_PROGRAMME_REPORT_TABLE (" +
+                "$COURSE_ID, $PROGRAMME_ID, $LECTURED_TERM, $OPTIONAL, $CREDITS, $COURSE_TIMESTAMP, $COURSE_REPORTED_BY)" +
+                "values(:courseId, :programmeId, :lectured, :optional, :credits, :timestamp, :reportedBy"
+        it.createUpdate(insert)
+                .bind("courseId", courseId)
+                .bind("programmeId", programmeId)
+                .bind("lectured", courseProgrammeReport.lecturedTerm)
+                .bind("optional", courseProgrammeReport.optional)
+                .bind("credits", courseProgrammeReport.credits)
+                .bind("timestamp", courseProgrammeReport.timestamp)
+                .bind("reportedBy", courseProgrammeReport.reportedBy)
+                .execute()
     }
 
     override fun deleteAllVersionCourses(versionCourseId: Int): Int = dbi.withHandle<Int, Exception> {
@@ -328,6 +363,166 @@ class CourseDAOImpl : CourseDAO {
                 .bind("createdBy", updatedCourse.createdBy)
                 .bind("timestamp", updatedCourse.timestamp)
                 .execute()
+    }
+
+    override fun voteOnCourseOfProgramme(programmeId: Int, vote: Vote, courseId: Int): Int = dbi.inTransaction<Int, Exception> {
+        val voteQuery = "select $COURSE_VOTES from $COURSE_PROGRAMME_TABLE where $COURSE_ID = :courseId and $PROGRAMME_ID =:programmeId"
+        var votes = it.createQuery(voteQuery)
+                .bind("courseId", courseId)
+                .bind("programmeId", programmeId)
+                .mapTo(Int::class.java).findOnly()
+        votes = if (vote == Vote.Down) votes.dec() else votes.inc()
+        val updateQuery = "update $COURSE_PROGRAMME_TABLE set $COURSE_VOTES = :votes where $COURSE_ID = :courseId and $PROGRAMME_ID = :programmeId"
+        it.createUpdate(updateQuery)
+                .bind("votes", votes)
+                .bind("courseId", courseId)
+                .bind("programmeId", programmeId)
+                .execute()
+    }
+
+    override fun updateCourseProgramme(programmeId: Int, courseId: Int, updatedCourse: Course) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun createStagingCourseOfProgramme(courseProgrammeStage: CourseProgrammeStage): Int = dbi.withHandle<Int, Exception> {
+        val insert = "insert into $COURSE_PROGRAMME_STAGE_TABLE " +
+                "(${ProgrammeDAOImpl.CRS_ID}, ${ProgrammeDAOImpl.PROG_ID}, ${ProgrammeDAOImpl.CRS_LECT_TERM}, ${ProgrammeDAOImpl.CRS_OPT}, " +
+                "${ProgrammeDAOImpl.CRS_CRED}, ${ProgrammeDAOImpl.PROG_VOTES}) " +
+                "values(:courseId, :programmeId, :term, :optional, :credits)"
+        it.createUpdate(insert)
+                .bind("courseId", courseProgrammeStage.courseId)
+                .bind("programmeId", courseProgrammeStage.programmeId)
+                .bind("term", courseProgrammeStage.lecturedTerm)
+                .bind("optional", courseProgrammeStage.optional)
+                .bind("credits", courseProgrammeStage.credits)
+                .execute()
+    }
+
+    override fun getSpecificStagedCourseOfProgramme(programmeId: Int, stageId: Int): CourseProgrammeStage = dbi.withHandle<CourseProgrammeStage, Exception> {
+        val select = "select cp.$COURSE_ID, cp.$PROGRAMME_ID, cp.${ProgrammeDAOImpl.CRS_PROG_VERSION}," +
+                " cp.$LECTURED_TERM, c.$COURSE_CREATED_BY, c.$COURSE_FULL_NAME, c.$COURSE_SHORT_NAME, c.$COURSE_TIMESTAMP, c.$COURSE_VOTES " +
+                "from course as c " +
+                "inner join $COURSE_PROGRAMME_STAGE_TABLE as cp on c.$COURSE_ID = cp.$COURSE_ID " +
+                "where cp.$PROGRAMME_ID = :programmeId and cp.$COURSE_ID = :courseId"
+        it.createQuery(select)
+                .bind("programmeId", programmeId)
+                .bind("courseId", stageId)
+                .mapTo(CourseProgrammeStage::class.java)
+                .findOnly()
+
+    }
+
+    override fun deleteStagedCourseOfProgramme(programmeId: Int, stageId: Int): Int = dbi.withHandle<Int, Exception> {
+        val delete = "delete from $COURSE_PROGRAMME_STAGE_TABLE where $PROGRAMME_ID = :programmeId and $COURSE_ID = :courseId"
+        it.createUpdate(delete)
+                .bind("programmeId", programmeId)
+                .bind("courseId", stageId)
+                .execute()
+    }
+
+    override fun voteOnCourseProgrammeStaged(programmeId: Int, stageId: Int, vote: Vote): Int = dbi.inTransaction<Int, Exception> {
+        val voteQuery = "select $COURSE_VOTES from $COURSE_PROGRAMME_STAGE_TABLE where $COURSE_ID = :courseId and $PROGRAMME_ID =:programmeId"
+        var votes = it.createQuery(voteQuery)
+                .bind("courseId", stageId)
+                .bind("programmeId", programmeId)
+                .mapTo(Int::class.java).findOnly()
+        votes = if (vote == Vote.Down) votes.dec() else votes.inc()
+        val updateQuery = "update $COURSE_PROGRAMME_STAGE_TABLE set $COURSE_VOTES = :votes where $COURSE_ID = :courseId and $PROGRAMME_ID = :programmeId"
+        it.createUpdate(updateQuery)
+                .bind("votes", votes)
+                .bind("courseId", stageId)
+                .bind("programmeId", programmeId)
+                .execute()
+    }
+
+    override fun getAllVersionsOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int): List<CourseVersion> = dbi.withHandle<List<CourseVersion>, Exception> {
+        val select = "select cp.$COURSE_ID, cp.$PROGRAMME_ID, cp.${ProgrammeDAOImpl.CRS_PROG_VERSION}," +
+                " cp.$LECTURED_TERM, c.$COURSE_CREATED_BY, c.$COURSE_FULL_NAME, c.$COURSE_SHORT_NAME, c.$COURSE_TIMESTAMP, c.$COURSE_VOTES " +
+                "from course as c " +
+                "inner join $COURSE_PROGRAMME_VERSION_TABLE as cp on c.$COURSE_ID = cp.$COURSE_ID " +
+                "where cp.$PROGRAMME_ID = :programmeId and cp.$COURSE_ID = :courseId"
+        it.createQuery(select)
+                .bind("programmeId", programmeId)
+                .bind("courseId", courseId)
+                .mapTo(CourseVersion::class.java)
+                .list()
+
+    }
+
+    override fun getSpecificVersionOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int, versionId: Int): CourseVersion = dbi.withHandle<CourseVersion, Exception> {
+        val select = "select cp.$COURSE_ID, cp.$PROGRAMME_ID, cp.${ProgrammeDAOImpl.CRS_PROG_VERSION}," +
+                " cp.$LECTURED_TERM, c.$COURSE_CREATED_BY, c.$COURSE_FULL_NAME, c.$COURSE_SHORT_NAME, c.$COURSE_TIMESTAMP, c.$COURSE_VOTES " +
+                "from course as c " +
+                "inner join $COURSE_PROGRAMME_VERSION_TABLE as cp on c.$COURSE_ID = cp.$COURSE_ID " +
+                "where cp.$PROGRAMME_ID = :programmeId and cp.$COURSE_ID = :courseId and cp.$COURSE_PROGRAMME_VERSION = :versionId"
+        it.createQuery(select)
+                .bind("programmeId", programmeId)
+                .bind("courseId", courseId)
+                .bind("versionId", versionId)
+                .mapTo(CourseVersion::class.java)
+                .findOnly()
+
+    }
+    override fun addCourseProgrammeToVersion(courseProgramme: Course): Int
+
+    override fun getAllReportsOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int): List<CourseProgrammeReport> = dbi.withHandle<List<CourseProgrammeReport>, Exception> {
+        val select = "select cp.$COURSE_ID, cp.$PROGRAMME_ID, cp.${ProgrammeDAOImpl.CRS_PROG_VERSION}," +
+                " cp.$LECTURED_TERM, c.$COURSE_CREATED_BY, c.$COURSE_FULL_NAME, c.$COURSE_SHORT_NAME, c.$COURSE_TIMESTAMP, c.$COURSE_VOTES " +
+                "from course as c " +
+                "inner join $COURSE_PROGRAMME_REPORT_TABLE as cp on c.$COURSE_ID = cp.$COURSE_ID " +
+                "where cp.$PROGRAMME_ID = :programmeId and cp.$COURSE_ID = :courseId"
+        it.createQuery(select)
+                .bind("programmeId", programmeId)
+                .bind("courseId", courseId)
+                .mapTo(CourseProgrammeReport::class.java)
+                .list()
+
+    }
+
+    override fun getSpecificReportOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int, reportId: Int): CourseProgrammeReport = dbi.withHandle<CourseProgrammeReport, Exception> {
+        val select = "select cp.$COURSE_ID, cp.$PROGRAMME_ID, cp.${ProgrammeDAOImpl.CRS_PROG_VERSION}," +
+                " cp.$LECTURED_TERM, c.$COURSE_CREATED_BY, c.$COURSE_FULL_NAME, c.$COURSE_SHORT_NAME, c.$COURSE_TIMESTAMP, c.$COURSE_VOTES " +
+                "from course as c " +
+                "inner join $COURSE_PROGRAMME_REPORT_TABLE as cp on c.$COURSE_ID = cp.$COURSE_ID " +
+                "where cp.$COURSE_REPORT_ID = :reportId"
+        it.createQuery(select)
+                .bind("reportId", reportId)
+                .mapTo(CourseProgrammeReport::class.java)
+                .findOnly()
+
+    }
+
+    override fun deleteReportOnCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun voteOnReportOfCourseProgramme(programmeId: Int, reportId: Int, vote: Vote): Int = dbi.inTransaction<Int, Exception> {
+        val voteQuery = "select $COURSE_VOTES from $COURSE_PROGRAMME_REPORT_TABLE where $COURSE_ID = :courseId and $PROGRAMME_ID =:programmeId"
+        var votes = it.createQuery(voteQuery)
+                .bind("courseId", reportId)
+                .bind("programmeId", programmeId)
+                .mapTo(Int::class.java).findOnly()
+        votes = if (vote == Vote.Down) votes.dec() else votes.inc()
+        val updateQuery = "update $COURSE_PROGRAMME_REPORT_TABLE set $COURSE_VOTES = :votes where $COURSE_ID = :courseId and $PROGRAMME_ID = :programmeId"
+        it.createUpdate(updateQuery)
+                .bind("votes", votes)
+                .bind("courseId", reportId)
+                .bind("programmeId", programmeId)
+                .execute()
+    }
+
+
+    override fun getStagedCoursesOfProgramme(programmeId: Int): List<CourseProgrammeStage> = dbi.withHandle<List<CourseProgrammeStage>, Exception> {
+        val select = "select cp.$COURSE_ID, cp.$PROGRAMME_ID, cp.${ProgrammeDAOImpl.CRS_PROG_VERSION}," +
+                " cp.$LECTURED_TERM, c.$COURSE_CREATED_BY, c.$COURSE_SHORT_NAME, c.$COURSE_TIMESTAMP, cp.$COURSE_VOTES " +
+                "from course as c " +
+                "inner join $COURSE_PROGRAMME_STAGE_TABLE as cp on c.$COURSE_ID = cp.$COURSE_ID " +
+                "where cp.$PROGRAMME_ID = :programmeId"
+        it.createQuery(select)
+                .bind("programmeId", programmeId)
+                .mapTo(CourseProgrammeStage::class.java)
+                .list()
+
     }
 
 }

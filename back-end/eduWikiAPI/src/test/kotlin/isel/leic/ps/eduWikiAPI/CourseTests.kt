@@ -30,14 +30,32 @@ class CourseTests {
     lateinit var courseDAO: CourseDAO
 
     @Test
-    fun testGetCourse(){}
+    fun testGetCourse(){
+        val course =courseDAO.getSpecificCourse(1)
+        assertEquals("ze",course.createdBy)
+        assertEquals("PI",course.shortName)
+        assertEquals("Programação na Internet",course.fullName)
+    }
 
     @Test
-    fun testGetCourseOfProgramme(){}
+    fun testGetAllCourses(){
+        val courses = courseDAO.getAllCourses()
+        assertEquals(3,courses.size)
+    }
+
+    @Test
+    fun testGetCourseOfProgramme(){
+        val course = courseDAO.getCoursesOnSpecificProgramme(1)
+    }
 
     @Test
     fun testCreateCourseAndAddToProgramme(){}
 
     @Test
     fun testReportCourseOnProgramme(){}
+
+    @Test
+    fun testComplexDeleteOnCourse(){
+
+    }
 }

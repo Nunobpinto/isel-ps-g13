@@ -337,4 +337,8 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .execute()
     }
 
+    override fun updateCourseProgramme(programmeId: Int, courseId: Int, updatedCourseProgramme: Course) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
 }

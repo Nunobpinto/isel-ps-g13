@@ -68,6 +68,7 @@ CREATE TABLE IF NOT EXISTS course_programme (
   course_optional BOOLEAN NOT NULL,
   course_credits INTEGER NOT NULL,
   time_stamp timestamp NOT NULL,
+  created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   PRIMARY KEY (course_id, programme_id)
 );
@@ -166,7 +167,7 @@ CREATE TABLE IF NOT EXISTS lecture (
   created_by VARCHAR(20),
   weekday weekday,
   begins TIME,
-  duration INTEGER ,
+  duration INTERVAL,
   location varchar(30),
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
@@ -342,7 +343,7 @@ CREATE TABLE IF NOT EXISTS lecture_stage (
   id INTEGER REFERENCES class_misc_unit_stage ON DELETE CASCADE,
   weekday weekday NOT NULL,
   begins TIME NOT NULL,
-  duration INTEGER NOT NULL,
+  duration INTERVAL NOT NULL,
   created_by VARCHAR(20) NOT NULL,
   time_stamp timestamp NOT NULL,
   votes INTEGER DEFAULT 0,
@@ -391,6 +392,19 @@ CREATE TABLE IF NOT EXISTS programme_report (
     votes INTEGER DEFAULT 0,
     time_stamp timestamp NOT NULL,
     PRIMARY KEY (report_id)
+);
+
+CREATE TABLE IF NOT EXISTS course_programme_report (
+	course_id INTEGER,
+	programme_id INTEGER,
+	course_lectured_term varchar(50),
+	course_optional BOOLEAN,
+	course_credits INTEGER,
+	time_stamp timestamp NOT NULL,
+	reported_by VARCHAR(20) NOT NULL,
+	votes INTEGER DEFAULT 0,
+	FOREIGN KEY (course_id, programme_id) REFERENCES course_programme(course_id, programme_id) ON DELETE CASCADE,
+	PRIMARY KEY (course_id, programme_id)
 );
 
 CREATE TABLE IF NOT EXISTS course_report (
@@ -451,7 +465,7 @@ CREATE TABLE IF NOT EXISTS lecture_report (
   id INTEGER REFERENCES class_misc_unit ON DELETE CASCADE,
   weekday weekday,
   begins TIME,
-  duration INTEGER ,
+  duration INTERVAL,
   location varchar(30),
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
@@ -523,6 +537,17 @@ CREATE TABLE IF NOT EXISTS course_version (
   PRIMARY KEY (course_id, course_version)
 );
 
+CREATE TABLE IF NOT EXISTS course_programme_version (
+	course_id INTEGER,
+	programme_id INTEGER,
+	course_lectured_term varchar(50) NOT NULL,
+	course_optional BOOLEAN NOT NULL,
+	course_credits INTEGER NOT NULL,
+	time_stamp timestamp NOT NULL,
+	created_by VARCHAR(20) NOT NULL,
+	PRIMARY KEY (course_id, programme_id)
+);
+
 CREATE TABLE IF NOT EXISTS class_version (
   class_id INTEGER,
   term_id INTEGER,
@@ -567,7 +592,7 @@ CREATE TABLE IF NOT EXISTS lecture_version (
   created_by VARCHAR(20) NOT NULL,
   weekday weekday NOT NULL,
   begins TIME NOT NULL,
-  duration INTEGER NOT NULL,
+  duration INTERVAL NOT NULL,
   time_stamp timestamp NOT NULL,
   location varchar(30) NOT NULL,
   PRIMARY KEY (id, lecture_version)

@@ -1,8 +1,8 @@
 package isel.leic.ps.eduWikiAPI.controller
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.*
+import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseProgrammeReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ProgrammeReportInputModel
-import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.service.interfaces.ProgrammeService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
@@ -42,6 +42,45 @@ class ProgrammeController {
     @GetMapping("/{programmeId}/courses")
     fun getCoursesOnSpecificProgramme(@PathVariable programmeId: Int) = programmeService.getCoursesOnSpecificProgramme(programmeId)
 
+    @GetMapping("/{programmeId}/courses/stage")
+    fun getStagedCoursesOnSpecificProgramme(@PathVariable programmeId: Int) = programmeService.getStagedCoursesOfProgramme(programmeId)
+
+    @GetMapping("/{programmeId}/courses/stage/{stageId}")
+    fun getStagedCoursesOnSpecificProgramme(@PathVariable programmeId: Int, @PathVariable stageId: Int) = programmeService.getSpecificStagedCourseOfProgramme(programmeId, stageId)
+
+    @GetMapping("/{programmeId}/courses/{courseId}")
+    fun getCourseOnSpecificProgramme(
+            @PathVariable programmeId: Int,
+            @PathVariable courseId: Int
+    ) = programmeService.getSpecificCourseOnSpecificProgramme(programmeId, courseId)
+
+    @GetMapping("/{programmeId}/courses/{courseId}/versions")
+    fun getVersionsOfCourseOnSpecificProgramme(
+            @PathVariable programmeId: Int,
+            @PathVariable courseId: Int
+    ) = programmeService.getAllVersionsOfCourseOnSpecificProgramme(programmeId, courseId)
+
+    @GetMapping("/{programmeId}/courses/{courseId}/versions/{versionId}")
+    fun getVersionOfCourseOnSpecificProgramme(
+            @PathVariable programmeId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable versionId: Int
+    ) = programmeService.getSpecificVersionOfCourseOnSpecificProgramme(programmeId, courseId, versionId)
+
+    @GetMapping("/{programmeId}/courses/{courseId}/reports")
+    fun getReportsOfCourseOnSpecificProgramme(
+            @PathVariable programmeId: Int,
+            @PathVariable courseId: Int
+    ) = programmeService.getAllReportsOfCourseOnSpecificProgramme(programmeId, courseId)
+
+    @GetMapping("/{programmeId}/courses/{courseId}/reports/{reportId}")
+    fun getReportOfCourseOnSpecificProgramme(
+            @PathVariable programmeId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable reportId: Int
+    ) = programmeService.getSpecificReportOfCourseOnSpecificProgramme(programmeId, courseId, reportId)
+
+
     @GetMapping("/{programmeId}/versions")
     fun getAllVersionsOfProgramme(@PathVariable programmeId: Int) = programmeService.getAllVersions(programmeId)
 
@@ -54,13 +93,19 @@ class ProgrammeController {
      */
 
     @PostMapping()
-    fun createProgramme(@RequestBody inputProgramme: ProgrammeInputModel)
-            = programmeService.createProgramme(inputProgramme)
+    fun createProgramme(@RequestBody inputProgramme: ProgrammeInputModel) = programmeService.createProgramme(inputProgramme)
 
     @PostMapping("/{programmeId}/courses")
     fun addCourseToProgramme(@PathVariable programmeId: Int,
-                             @RequestBody course: Course
-    ) = programmeService.addCourseToProgramme(programmeId, course)
+                             @RequestBody inputCourseProgramme: CourseProgrammeInputModel
+    ) = programmeService.addCourseToProgramme(programmeId, inputCourseProgramme)
+
+    @PostMapping("/{programmeId}/courses/{courseId}/vote")
+    fun voteOnCourseProgramme(
+            @PathVariable programmeId: Int,
+            @PathVariable courseId: Int,
+            @RequestBody inputVote: VoteInputModel
+    ) = programmeService.voteOnCourseProgramme(programmeId, courseId,inputVote)
 
     @PostMapping("/{programmeId}/vote")
     fun voteOnProgramme(
@@ -99,6 +144,45 @@ class ProgrammeController {
             @RequestBody inputVote: VoteInputModel
     ) = programmeService.voteOnStagedProgramme(stageId, inputVote)
 
+    @PostMapping("/{programmeId}/courses/stage")
+    fun createdStagedCourssOnSpecificProgramme(
+            @PathVariable programmeId: Int,
+            @RequestBody inputCourseProgramme: CourseProgrammeInputModel
+    ) = programmeService.createStagedCourseOfProgramme(programmeId, inputCourseProgramme)
+
+    @PostMapping("/{programmeId}/courses/stage/{stageId}")
+    fun createCourseProgrammeFromStaged(@PathVariable programmeId: Int, @PathVariable stageId: Int) = programmeService.createCourseProgrammeFromStaged(programmeId, stageId)
+
+    @PostMapping("/{programmeId}/courses/stage/{stageId}/vote")
+    fun voteCourseProgrammeFromStaged(
+            @PathVariable programmeId: Int,
+            @PathVariable stageId: Int,
+            @RequestBody inputVote: VoteInputModel
+    ) = programmeService.voteOnCourseProgrammeStaged(programmeId, stageId, inputVote)
+
+    @PostMapping("/{programmeId}/courses/{courseId}/reports")
+    fun reportCourseOnSpecificProgramme(
+            @PathVariable programmeId: Int,
+            @PathVariable courseId: Int,
+            @RequestBody inputCourseProgrammeReport: CourseProgrammeReportInputModel
+    ) = programmeService.reportCourseOnProgramme(programmeId, courseId, inputCourseProgrammeReport)
+
+    @PostMapping("/{programmeId}/courses/{courseId}/reports/{reportId}")
+    fun updateReportedCourseProgramme(
+            @PathVariable programmeId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable reportId: Int
+    ) = programmeService.updateReportedCourseProgramme(programmeId, courseId, reportId)
+
+    @PostMapping("/{programmeId}/courses/{courseId}/reports/{reportId}/vote")
+    fun voteOnReportedCourseProgramme(
+            @PathVariable programmeId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable reportId: Int,
+            @RequestBody inputVote: VoteInputModel
+    ) = programmeService.voteOnReportedCourseProgramme(programmeId, courseId, reportId, inputVote)
+
+
     /**
      * ALL PATCH Routes
      */
@@ -108,12 +192,6 @@ class ProgrammeController {
             @PathVariable programmeId: Int,
             @RequestBody inputProgramme: ProgrammeInputModel
     ) = programmeService.partialUpdateOnProgramme(programmeId, inputProgramme)
-
-    @PatchMapping("/stage/{stageId}")
-    fun partialUpdateOnStagedProgramme(
-            @PathVariable stageId: Int,
-            @RequestBody inputProgramme: ProgrammeInputModel
-    ) = programmeService.partialUpdateOnStagedProgramme(stageId, inputProgramme)
 
     /**
      * ALL DELETE Routes

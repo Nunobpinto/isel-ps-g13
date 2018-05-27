@@ -25,6 +25,8 @@ interface ProgrammeDAO {
     fun createProgramme(programme: Programme) : Int
 
     fun voteOnProgramme(programmeId: Int, inputVote: VoteInputModel)
+
+    fun updateCourseProgramme(programmeId: Int, courseId: Int, updatedCourseProgramme: Course)
     /**
      * Stage entities queries
      */
@@ -72,6 +74,7 @@ interface ProgrammeDAO {
     fun deleteAllReportsOnProgramme(programmeId : Int)
 
     fun voteOnReportedProgramme(reportId: Int, inputVote: VoteInputModel)
+
 
 
 }
