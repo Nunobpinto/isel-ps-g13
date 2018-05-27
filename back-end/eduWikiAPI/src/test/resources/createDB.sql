@@ -583,4 +583,4 @@ CREATE TABLE IF NOT EXISTS homework_version (
   time_stamp timestamp NOT NULL,
   multiple_deliveries BOOLEAN NOT NULL,
   PRIMARY KEY (id, homework_version)
-););
+);
