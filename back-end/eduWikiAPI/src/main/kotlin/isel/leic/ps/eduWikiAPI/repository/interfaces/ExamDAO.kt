@@ -56,6 +56,10 @@ interface ExamDAO {
      * Version entities queries
      */
 
+    fun getAllVersionsOfSpecificExam(examId: Int): List<ExamVersion>
+
+    fun getVersionOfSpecificExam(examId: Int, versionId: Int): ExamVersion
+
     fun getVersionExam(versionExamId: Int, version: Int): ExamVersion
 
     fun getAllVersionExams(): List<ExamVersion>
@@ -78,7 +82,6 @@ interface ExamDAO {
 
     fun deleteAllReportsOnExam(courseMiscUnitId: Int): Int
 
-
     fun getAllReportsOnExamOnSpecificTermOfCourse(examId: Int): List<ExamReport>
 
     fun getSpecificReportOnExamOnSpecificTermOfCourse(reportId: Int): ExamReport
@@ -88,7 +91,6 @@ interface ExamDAO {
     fun voteOnReportToExamOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int
 
     fun getSpecificReportOfExam(examId: Int, reportId: Int): ExamReport
-
 
 }
 

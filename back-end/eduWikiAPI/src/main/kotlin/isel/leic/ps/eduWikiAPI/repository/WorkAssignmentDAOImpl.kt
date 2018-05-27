@@ -50,8 +50,6 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
     }
 
     @Autowired
-    lateinit var dsl: DSLContext
-    @Autowired
     lateinit var dbi: Jdbi
 
     override fun getSpecificWorkAssignment(courseMiscUnitId: Int): WorkAssignment = dbi.withHandle<WorkAssignment, Exception> {
@@ -215,27 +213,13 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         )*/
     }
 
-    override fun getVersionWorkAssignment(versionWorkAssignmentId: Int, version: Int): WorkAssignmentVersion = dbi.withHandle<WorkAssignmentVersion, Exception> {
-        /*it.createQuery(dsl
-                .select(
-                        field(CourseDAOImpl.CRS_MISC_UNIT_ID),
-                        field(WRK_ASS_SHEET),
-                        field(WRK_ASS_SUPPLEMENT),
-                        field(WRK_ASS_DUE_DATE),
-                        field(WRK_ASS_INDIVIDUAL),
-                        field(WRK_ASS_LATE_DELIVERY),
-                        field(WRK_ASS_MULTIPLE_DELIVERIES),
-                        field(WRK_ASS_REQUIRES_REPORT),
-                        field(WRK_ASS_CREATED_BY),
-                        field(WRK_ASS_VOTES),
-                        field(TIMESTAMP),
-                        field(WRK_ASS_VERSION)
-                )
-                .from(table(WRK_ASS_VERSION_TABLE))
-                .where(field(CourseDAOImpl.CRS_MISC_UNIT_ID).eq(versionWorkAssignmentId).and(field(WRK_ASS_VERSION).eq(version)))
-                .sql
-        ).mapTo(WorkAssignmentVersion::class.java).first()*/
-        null
+    override fun getVersionOfSpecificWorkAssignment(versionWorkAssignmentId: Int, version: Int): WorkAssignmentVersion = dbi.withHandle<WorkAssignmentVersion, Exception> {
+        val select = "select * from $WRK_ASS_VERSION_TABLE where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :workAssignmentId and $WRK_ASS_VERSION = :version"
+        it.createQuery(select)
+                .bind("workAssignmentId", versionWorkAssignmentId)
+                .bind("version", version)
+                .mapTo(WorkAssignmentVersion::class.java)
+                .findOnly()
     }
 
 
@@ -520,5 +504,14 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                 .bind("versionWorkAssignmentId",versionWorkAssignmentId)
                 .execute()
     }
+
+    override fun getAllVersionsOfSpecificWorkAssignment(workAssignmentId: Int): List<WorkAssignmentVersion> = dbi.withHandle<List<WorkAssignmentVersion>, Exception> {
+        val select = "select * from $WRK_ASS_VERSION_TABLE where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :workAssignmentId"
+        it.createQuery(select)
+                .bind("workAssignmentId", workAssignmentId)
+                .mapTo(WorkAssignmentVersion::class.java)
+                .list()
+    }
+
 
 }

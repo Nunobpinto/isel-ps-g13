@@ -27,7 +27,10 @@ interface ClassDAO {
 
     fun voteOnClass(courseId: Int, voteType: Int)
 
-    fun getClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class>
+    fun getAllClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class>
+
+    fun getClassOnSpecificTermOfCourse(courseId: Int, termId: Int, classId: Int): Class
+
 
     /**
      * Stage entities queries
@@ -55,6 +58,10 @@ interface ClassDAO {
      */
 
     fun getVersionClass(versionClassId: Int, versionTermId: Int, version: Int) : ClassVersion
+
+    fun getAllVersionsOfSpecificClass(classId: Int): List<ClassVersion>
+
+    fun getVersionOfSpecificClass(classId: Int, version: Int): ClassVersion
 
     fun getAllVersionCourses() : List<ClassVersion>
 

@@ -18,6 +18,10 @@ import isel.leic.ps.eduWikiAPI.domain.model.report.WorkAssignmentReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ExamStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
+import isel.leic.ps.eduWikiAPI.domain.model.version.ClassVersion
+import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
+import isel.leic.ps.eduWikiAPI.domain.model.version.ExamVersion
+import isel.leic.ps.eduWikiAPI.domain.model.version.WorkAssignmentVersion
 
 interface CourseService {
 
@@ -61,7 +65,7 @@ interface CourseService {
 
     fun getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(workAssignmentId: Int, reportId: Int): WorkAssignmentReport
 
-    fun getClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class>
+    fun getAllClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class>
 
     fun createCourse(inputCourse: CourseInputModel): Int
 
@@ -154,5 +158,25 @@ interface CourseService {
     fun deleteAllVersionsOfExam(courseId: Int, termId: Int, examId: Int): Int
 
     fun deleteVersionOfExam(courseId: Int, termId: Int, examId: Int, version: Int): Int
+
+    fun partialUpdateOnCourse(courseId: Int, inputCourse: CourseInputModel): Int
+
+    fun getClassOnSpecificTermOfCourse(courseId: Int, termId: Int, classId: Int): Class
+
+    fun getAllVersionsOfSpecificCourse(courseId: Int): List<CourseVersion>
+
+    fun getVersionOfSpecificCourse(courseId: Int, versionId: Int): CourseVersion
+
+    fun getAllVersionsOfSpecificExam(examId: Int): List<ExamVersion>
+
+    fun getVersionOfSpecificExam(examId: Int, versionId: Int): ExamVersion
+
+    fun getAllVersionsOfSpecificWorkAssignment(workAssignmentId: Int): List<WorkAssignmentVersion>
+
+    fun getVersionOfSpecificWorkAssignment(workAssignmentId: Int, versionId: Int): WorkAssignmentVersion
+
+    fun getAllVersionsOfSpecificClass(classId: Int): List<ClassVersion>
+
+    fun getVersionOfSpecificClass(classId: Int, versionId: Int): ClassVersion
 
 }

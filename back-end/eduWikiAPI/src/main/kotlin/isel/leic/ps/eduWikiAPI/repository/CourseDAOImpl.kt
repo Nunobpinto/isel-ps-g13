@@ -80,7 +80,24 @@ class CourseDAOImpl : CourseDAO {
         it.createUpdate("delete from $COURSE_TABLE").execute()
     }
 
-    override fun updateCourse(course: Course): Int = TODO("dynamically update org by filled values in Organization parameter")
+    override fun updateCourse(course: Course): Int = dbi.inTransaction<Int, Exception> {
+        val update = "update $COURSE_TABLE SET " +
+                "${OrganizationDAOImpl.ORG_ID} = :orgId, $COURSE_VERSION = :version, " +
+                "$COURSE_CREATED_BY = :createdBy, $COURSE_FULL_NAME = :fullName, " +
+                "$COURSE_SHORT_NAME = :shortName, $COURSE_VOTES = :votes, " +
+                "$COURSE_TIMESTAMP = :timestamp"
+                "where $COURSE_ID = :courseId"
+
+        it.createUpdate(update)
+                .bind("orgId", course.organizationId)
+                .bind("version", course.version)
+                .bind("createdBy", course.createdBy)
+                .bind("fullName", course.fullName)
+                .bind("shortName", course.shortName)
+                .bind("votes", course.votes)
+                .bind("timestamp", course.timestamp)
+                .execute()
+    }
 
     override fun createCourse(course: Course): Int = dbi.withHandle<Int, Exception> {
         val insert = "insert into $COURSE_TABLE" +
@@ -279,4 +296,39 @@ class CourseDAOImpl : CourseDAO {
                 .execute()
     }
 
+    override fun getAllVersionsOfSpecificCourse(courseId: Int): List<CourseVersion> = dbi.withHandle<List<CourseVersion>, Exception> {
+        val select = "select * from $COURSE_VERSION_TABLE where $COURSE_ID = :courseId"
+        it.createQuery(select)
+                .bind("courseId", courseId)
+                .mapTo(CourseVersion::class.java)
+                .list()
+    }
+
+    override fun getVersionOfSpecificCourse(courseId: Int, versionId: Int): CourseVersion = dbi.withHandle<CourseVersion, Exception> {
+        val select = "select * from $COURSE_VERSION_TABLE where $COURSE_ID = :courseId and $COURSE_VERSION = :versionId"
+        it.createQuery(select)
+                .bind("courseId", courseId)
+                .bind("versionId", versionId)
+                .mapTo(CourseVersion::class.java)
+                .findOnly()
+    }
+
+    override fun addToCourseVersion(updatedCourse: Course): Int = dbi.inTransaction<Int, Exception> {
+        val insert = "insert into $COURSE_VERSION_TABLE " +
+                "($COURSE_ID, ${OrganizationDAOImpl.ORG_ID}, $COURSE_VERSION, $COURSE_FULL_NAME, $COURSE_SHORT_NAME, " +
+                "$COURSE_CREATED_BY, $COURSE_TIMESTAMP)" +
+                "values (:courseId, :orgId, :version, :fullName, " +
+                ":shortName, :createdBy, :timestamp)"
+        it.createUpdate(insert)
+                .bind("courseId", updatedCourse.id)
+                .bind("orgId", updatedCourse.organizationId)
+                .bind("version", updatedCourse.version)
+                .bind("fullName", updatedCourse.fullName)
+                .bind("shortName", updatedCourse.shortName)
+                .bind("createdBy", updatedCourse.createdBy)
+                .bind("timestamp", updatedCourse.timestamp)
+                .execute()
+    }
+
 }
+

@@ -18,6 +18,10 @@ import isel.leic.ps.eduWikiAPI.domain.model.report.WorkAssignmentReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ExamStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
+import isel.leic.ps.eduWikiAPI.domain.model.version.ClassVersion
+import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
+import isel.leic.ps.eduWikiAPI.domain.model.version.ExamVersion
+import isel.leic.ps.eduWikiAPI.domain.model.version.WorkAssignmentVersion
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ClassDAO
 import isel.leic.ps.eduWikiAPI.repository.interfaces.CourseDAO
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ExamDAO
@@ -81,7 +85,9 @@ class CourseServiceImpl : CourseService {
 
     override fun getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(workAssignmentId: Int, reportId: Int): WorkAssignmentReport = workAssignmentDAO.getSpecificReportOfWorkAssignment(workAssignmentId, reportId)
 
-    override fun getClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class> = classDAO.getClassesOnSpecificTermOfCourse(courseId, termId)
+    override fun getAllClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class> = classDAO.getAllClassesOnSpecificTermOfCourse(courseId, termId)
+
+    override fun getClassOnSpecificTermOfCourse(courseId: Int, termId: Int, classId: Int): Class = classDAO.getClassOnSpecificTermOfCourse(courseId, termId, classId)
 
     override fun createCourse(inputCourse: CourseInputModel): Int {
         val course = Course(
@@ -316,7 +322,39 @@ class CourseServiceImpl : CourseService {
         return workAssignmentDAO.createWorkAssignmentOnCourseInTerm(courseId, termId, workAssignment)    //TODO use transaction
     }
 
+    override fun partialUpdateOnCourse(courseId: Int, inputCourse: CourseInputModel): Int {
+        val course = courseDAO.getSpecificCourse(courseId)
+        val updatedCourse = Course(
+                id = courseId,
+                version = course.version.inc(),
+                createdBy = inputCourse.createdBy,
+                fullName = inputCourse.fullName ?: course.fullName,
+                shortName = inputCourse.shortName ?: course.shortName,
+                timestamp = Timestamp.valueOf(LocalDateTime.now())
+        )
+        courseDAO.addToCourseVersion(updatedCourse)
+        return courseDAO.updateCourse(updatedCourse)
+    }
+
     override fun voteOnStagedWorkAssignment(stageId: Int, inputVote: VoteInputModel): Int = workAssignmentDAO.voteOnStagedWorkAssignment(stageId, inputVote)
+
+    override fun getAllVersionsOfSpecificCourse(courseId: Int): List<CourseVersion> = courseDAO.getAllVersionsOfSpecificCourse(courseId)
+
+    override fun getVersionOfSpecificCourse(courseId: Int, versionId: Int): CourseVersion = courseDAO.getVersionOfSpecificCourse(courseId, versionId)
+
+    override fun getAllVersionsOfSpecificExam(examId: Int): List<ExamVersion> = examDAO.getAllVersionsOfSpecificExam(examId)
+
+    override fun getVersionOfSpecificExam(examId: Int, versionId: Int): ExamVersion = examDAO.getVersionOfSpecificExam(examId, versionId)
+
+    override fun getAllVersionsOfSpecificWorkAssignment(workAssignmentId: Int): List<WorkAssignmentVersion> =
+            workAssignmentDAO.getAllVersionsOfSpecificWorkAssignment(workAssignmentId)
+
+    override fun getVersionOfSpecificWorkAssignment(workAssignmentId: Int, versionId: Int): WorkAssignmentVersion =
+            workAssignmentDAO.getVersionOfSpecificWorkAssignment(workAssignmentId, versionId)
+
+    override fun getAllVersionsOfSpecificClass(classId: Int): List<ClassVersion> = classDAO.getAllVersionsOfSpecificClass(classId)
+
+    override fun getVersionOfSpecificClass(classId: Int, versionId: Int): ClassVersion = classDAO.getVersionOfSpecificClass(classId, versionId)
 
     override fun deleteAllCourses(): Int = courseDAO.deleteAllCourses()
 
@@ -365,4 +403,5 @@ class CourseServiceImpl : CourseService {
     override fun deleteAllVersionsOfExam(courseId: Int, termId: Int, examId: Int): Int = examDAO.deleteAllVersionExams(examId)
 
     override fun deleteVersionOfExam(courseId: Int, termId: Int, examId: Int, version: Int): Int = examDAO.deleteVersionExam(examId, version)
+
 }

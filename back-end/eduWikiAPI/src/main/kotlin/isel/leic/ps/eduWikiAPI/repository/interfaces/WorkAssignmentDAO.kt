@@ -56,7 +56,9 @@ interface WorkAssignmentDAO {
      * Version entities queries
      */
 
-    fun getVersionWorkAssignment(versionWorkAssignmentId: Int, version: Int) : WorkAssignmentVersion
+    fun getAllVersionsOfSpecificWorkAssignment(workAssignmentId: Int): List<WorkAssignmentVersion>
+
+    fun getVersionOfSpecificWorkAssignment(versionWorkAssignmentId: Int, version: Int) : WorkAssignmentVersion
 
     fun deleteVersionWorkAssignment(versionWorkAssignmentId: Int, version: Int) : Int
 
@@ -81,6 +83,5 @@ interface WorkAssignmentDAO {
     fun voteOnReportToWorkAssignmentOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int
 
     fun getSpecificReportOfWorkAssignment(workAssignmentId: Int, reportId: Int): WorkAssignmentReport
-
 
 }

@@ -20,18 +20,8 @@ class ClassDAOImpl : ClassDAO {
         const val CLASS_STAGE_TABLE = "class_stage"
         const val CLASS_VERSION_TABLE = "class_stage"
         // FIELDS
-        const val WRK_ASS_VERSION = "work_assignment_version"
-        const val WRK_ASS_SHEET = "sheet"
-        const val WRK_ASS_SUPPLEMENT = "supplement"
-        const val WRK_ASS_DUE_DATE = "due_date"
-        const val WRK_ASS_INDIVIDUAL = "individual"
-        const val WRK_ASS_LATE_DELIVERY = "late_delivery"
-        const val WRK_ASS_MULTIPLE_DELIVERIES = "multiple_deliveries"
-        const val WRK_ASS_REQUIRES_REPORT = "requires_report"
-        const val WRK_ASS_VOTE = "votes"
-        const val WRK_ASS_TIMESTAMP = "time_stamp"
-        const val WRK_ASS_REPORT_ID = "report_id"
-        const val WRK_ASS_CREATED_BY = "created_by"
+        const val CLASS_ID = "class_id"
+        const val CLASS_VERSION = "class_version"
     }
 
     @Autowired
@@ -42,6 +32,7 @@ class ClassDAOImpl : ClassDAO {
     override fun getAllClasses(): List<Class> = listOf()
 
     override fun getAlLClassesInTerm(termId: Int): List<Class> = listOf()
+
     override fun deleteClass(classId: Int, termId: Int): Int {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -90,7 +81,7 @@ class ClassDAOImpl : ClassDAO {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class>  = dbi.withHandle<List<Class>, Exception>{
+    override fun getAllClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class>  = dbi.withHandle<List<Class>, Exception>{
         val select = "select * from ${CourseDAOImpl.COURSE_CLASS_TABLE}" +
                 "where ${CourseDAOImpl.COURSE_ID} = :courseId and ${TermDAOImpl.TERM_ID} = :termId"
         it.createQuery(select)
@@ -100,6 +91,16 @@ class ClassDAOImpl : ClassDAO {
                 .list()
     }
 
+    override fun getClassOnSpecificTermOfCourse(courseId: Int, termId: Int, classId: Int): Class  = dbi.withHandle<Class, Exception>{
+        val select = "select * from ${CourseDAOImpl.COURSE_CLASS_TABLE}" +
+                "where ${CourseDAOImpl.COURSE_ID} = :courseId and ${TermDAOImpl.TERM_ID} = :termId and $CLASS_ID = :classId"
+        it.createQuery(select)
+                .bind("courseId", courseId)
+                .bind("termId", termId)
+                .bind("classId", classId)
+                .mapTo(Class::class.java)
+                .findOnly()
+    }
 
     override fun createClassStage(classStage: ClassStage) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -148,4 +149,22 @@ class ClassDAOImpl : ClassDAO {
     override fun getReportOfClass(classId: Int, reportId: Int): ClassReport {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+
+    override fun getAllVersionsOfSpecificClass(classId: Int): List<ClassVersion> = dbi.withHandle<List<ClassVersion>, Exception> {
+        val select = "select * from $CLASS_VERSION_TABLE where $CLASS_ID = :classId"
+        it.createQuery(select)
+                .bind("classId", classId)
+                .mapTo(ClassVersion::class.java)
+                .list()
+    }
+
+    override fun getVersionOfSpecificClass(classId: Int, version: Int): ClassVersion = dbi.withHandle<ClassVersion, Exception> {
+        val select = "select * from $CLASS_VERSION_TABLE where $CLASS_ID = :classId and $CLASS_VERSION = :version"
+        it.createQuery(select)
+                .bind("classId", classId)
+                .bind("version", version)
+                .mapTo(ClassVersion::class.java)
+                .findOnly()
+    }
+
 }

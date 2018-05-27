@@ -4,7 +4,6 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.*
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ExamReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.WorkAssignmentReportInputModel
-import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
 import isel.leic.ps.eduWikiAPI.service.interfaces.CourseService
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,19 +21,23 @@ class CourseController {
      */
 
     @GetMapping
-    fun getAllCourses(): List<Course> {
-        return courseService.getAllCourses();
-    }
+    fun getAllCourses() = courseService.getAllCourses()
 
     @GetMapping("/{courseId}")
-    fun getSpecificCourse(@PathVariable courseId: Int): Course {
-        return courseService.getSpecificCourse(courseId)
-    }
+    fun getSpecificCourse(@PathVariable courseId: Int) = courseService.getSpecificCourse(courseId)
+
+    @GetMapping("/{courseId}/versions")
+    fun getAllVersionsOfSpecificCourse(@PathVariable courseId: Int) =
+            courseService.getAllVersionsOfSpecificCourse(courseId)
+
+    @GetMapping("/{courseId}/versions/{versionId}")
+    fun getVersionOfSpecificCourse(
+            @PathVariable courseId: Int,
+            @PathVariable versionId: Int
+    ) = courseService.getVersionOfSpecificCourse(courseId, versionId)
 
     @GetMapping("/{courseId}/report")
-    fun getCourseReports(@PathVariable courseId: Int): List<CourseReport> {
-        return courseService.getAllReportsOnCourse(courseId)
-    }
+    fun getCourseReports(@PathVariable courseId: Int): List<CourseReport> = courseService.getAllReportsOnCourse(courseId)
 
     @GetMapping("/{courseId}/report/{reportId}")
     fun getSpecificReportOfCourse(
@@ -69,6 +72,21 @@ class CourseController {
             @PathVariable termId: Int,
             @PathVariable examId: Int
     ) = courseService.getSpecificExamFromSpecificTermOfCourse(courseId, termId, examId)
+
+    @GetMapping("/{courseId}/terms/{termId}/exams/{examId}/versions")
+    fun getAllVersionsOfSpecificExam(
+            @PathVariable courseId: Int,
+            @PathVariable termId: Int,
+            @PathVariable examId: Int
+    ) = courseService.getAllVersionsOfSpecificExam(examId)
+
+    @GetMapping("/{courseId}/terms/{termId}/exams/{examId}/versions/{versionId}")
+    fun getVersionOfSpecificExam(
+            @PathVariable courseId: Int,
+            @PathVariable termId: Int,
+            @PathVariable examId: Int,
+            @PathVariable versionId: Int
+    ) = courseService.getVersionOfSpecificExam(examId, versionId)
 
     @GetMapping("/{courseId}/terms/{termId}/exams/stage")
     fun getStageEntriesFromExamOnSpecificTermOfCourse(
@@ -111,6 +129,21 @@ class CourseController {
             @PathVariable workAssignmentId: Int
     ) = courseService.getSpecificWorkAssignmentFromSpecificTermOfCourse(workAssignmentId)
 
+    @GetMapping("/{courseId}/terms/{termId}/workAssignments/{workAssignmentId}/versions")
+    fun getAllVersionsOfSpecificWorkAssignment(
+            @PathVariable courseId: Int,
+            @PathVariable termId: Int,
+            @PathVariable workAssignmentId: Int
+    ) = courseService.getAllVersionsOfSpecificWorkAssignment(workAssignmentId)
+
+    @GetMapping("/{courseId}/terms/{termId}/workAssignments/{workAssignmentId}/versions/{versionId}")
+    fun getVersionOfSpecificWorkAssignment(
+            @PathVariable courseId: Int,
+            @PathVariable termId: Int,
+            @PathVariable workAssignmentId: Int,
+            @PathVariable versionId: Int
+    ) = courseService.getVersionOfSpecificWorkAssignment(workAssignmentId, versionId)
+
     @GetMapping("/{courseId}/terms/{termId}/workAssignments/stage")
     fun getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(
             @PathVariable courseId: Int,
@@ -143,7 +176,29 @@ class CourseController {
     fun getClassesOnSpecificTermOfCourse(
             @PathVariable courseId: Int,
             @PathVariable termId: Int
-    ) = courseService.getClassesOnSpecificTermOfCourse(courseId, termId)
+    ) = courseService.getAllClassesOnSpecificTermOfCourse(courseId, termId)
+
+    @GetMapping("/{courseId}/terms/{termId}/classes/{classId}")
+    fun getClassOnSpecificTermOfCourse(
+            @PathVariable courseId: Int,
+            @PathVariable termId: Int,
+            @PathVariable classId: Int
+    ) = courseService.getClassOnSpecificTermOfCourse(courseId, termId, classId)
+
+    @GetMapping("/{courseId}/terms/{termId}/classes/{classId}/versions")
+    fun getAllVersionsOfSpecificClass(
+            @PathVariable courseId: Int,
+            @PathVariable termId: Int,
+            @PathVariable classId: Int
+    ) = courseService.getAllVersionsOfSpecificClass(classId)
+
+    @GetMapping("/{courseId}/terms/{termId}/classes/{classId}/versions/{versionId}")
+    fun getVersionOfSpecificClass(
+            @PathVariable courseId: Int,
+            @PathVariable termId: Int,
+            @PathVariable classId: Int,
+            @PathVariable versionId: Int
+    ) = courseService.getVersionOfSpecificClass(classId, versionId)
 
     /**
      * All POST Routes
@@ -303,18 +358,13 @@ class CourseController {
     @PatchMapping("/{courseId}")
     fun partialUpdateOnCourse(
             @PathVariable courseId: Int,
-            @RequestBody course: CourseInputModel
-    ) = NotImplementedError()
-
-    @PatchMapping("/stage/{stageId}")
-    fun partialUpdateOnStagedCourse(
-            @PathVariable stageId: Int,
-            @RequestBody course: CourseInputModel
-    ) = NotImplementedError()
+            @RequestBody inputCourse: CourseInputModel
+    ) = courseService.partialUpdateOnCourse(courseId, inputCourse)
 
     /**
      * ALL DELETE Routes
      */
+
     @DeleteMapping
     fun deleteAllCourses() = courseService.deleteAllCourses()
 
@@ -458,4 +508,5 @@ class CourseController {
             @PathVariable workAssignmentId: Int,
             @PathVariable reportId: Int
     ) = courseService.deleteReportOfWorkAssignmentOfCourseInTerm(courseId, termId, workAssignmentId, reportId)
+
 }

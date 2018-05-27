@@ -64,6 +64,10 @@ interface CourseDAO {
      * Version entities queries
      */
 
+    fun getAllVersionsOfSpecificCourse(courseId: Int): List<CourseVersion>
+
+    fun getVersionOfSpecificCourse(courseId: Int, versionId: Int): CourseVersion
+
     fun getVersionCourse(versionCourseId: Int, version: Int) : CourseVersion
 
     fun getAllVersionCourses() : List<CourseVersion>
@@ -73,6 +77,8 @@ interface CourseDAO {
     fun deleteAllVersionCourses(versionCourseId: Int) : Int
 
     fun createVersionCourse(courseVersion: CourseVersion)
+
+    fun addToCourseVersion(updatedCourse: Course) : Int
 
     /**
      * Report entity queries
@@ -91,5 +97,6 @@ interface CourseDAO {
     fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel) : Int
 
     fun reportCourseOnProgramme(programmeId: Int, courseId: Int, inputCourseReport: CourseReport): Int
+
 
 }
