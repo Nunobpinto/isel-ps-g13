@@ -99,36 +99,33 @@ class CourseServiceImpl : CourseService {
     override fun voteOnCourse(courseId: Int, inputVote: VoteInputModel): Int = courseDAO.voteOnCourse(courseId, inputVote)
 
     override fun reportCourse(courseId: Int, inputCourseReport: CourseReportInputModel): Int {
-        /*val courseReport = CourseReport(
+        val courseReport = CourseReport(
                 courseId = courseId,
                 courseFullName = inputCourseReport.fullName,
                 courseShortName = inputCourseReport.shortName,
-                reportedBy = inputCourseReport.reportedBy
+                reportedBy = inputCourseReport.reportedBy,
+                timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
-        courseDAO.reportCourse(courseId, courseReport)
-        */
-        return 0
+        return courseDAO.reportCourse(courseId, courseReport)
     }
 
     override fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel): Int = courseDAO.voteOnReportedCourse(reportId, Vote.valueOf(inputVote.vote))
 
-    override fun updateReportedCourse(courseId: Int, reportId: Int) {
-        /* val course = courseDAO.getSpecificCourse(courseId)
-         val report = courseDAO.getSpecificReportOfExam(courseId, reportId)
+    override fun updateReportedCourse(courseId: Int, reportId: Int) : Int {
+         val course = courseDAO.getSpecificCourse(courseId)
+         val report = courseDAO.getSpecificReportOfCourse(courseId, reportId)
          val updatedCourse = Course(
-                 id = course.id,
+                 id = courseId,
+                 organizationId = course.organizationId,
                  version = course.version.inc(),
-                 votes = course.votes,
-                 createdBy = course.createdBy,
-                 fullName = report.courseFullName ?: course.fullName,
-                 shortName = report.courseShortName ?: course.shortName,
+                 createdBy = report.reportedBy,
+                 fullName = report.courseFullName,
+                 shortName = report.courseShortName,
                  timestamp = Timestamp.valueOf(LocalDateTime.now())
          )
-         courseDAO.addToProgrammeVersion(programme)
-         courseDAO.updateProgramme(programmeId, updatedProgramme)
-         courseDAO.deleteReportOnProgramme(programmeId,reportId)
-          */
-        NotImplementedError()
+         courseDAO.addToCourseVersion(updatedCourse)
+         courseDAO.deleteReportOnCourse(reportId)
+         return courseDAO.updateCourse(updatedCourse)
     }
 
     override fun createStagingCourse(inputCourse: CourseInputModel): Int {
