@@ -88,7 +88,7 @@ class ExamDAOImpl : ExamDAO {
     override fun createExam(courseId: Int, termId: Int, exam: Exam): Int = dbi.inTransaction<Int, Exception> {
         val insertInCourseMiscUnit = "insert into ${CourseDAOImpl.COURSE_MISC_UNIT_TABLE} " +
                 "(${CourseDAOImpl.COURSE_MISC_TYPE}, ${CourseDAOImpl.COURSE_ID}, " +
-                "${TermDAOImpl.TERM_ID}, $EXM_TIMESTAMP" +
+                "${TermDAOImpl.TERM_ID}, $EXM_TIMESTAMP)" +
                 "values(:miscType, :courseId, :termId, :timestamp)"
 
         val courseMiscUnit = it.createUpdate(insertInCourseMiscUnit)
@@ -102,8 +102,8 @@ class ExamDAOImpl : ExamDAO {
 
         val insertInExam = "insert into $EXM_TABLE" +
                 "(${CourseDAOImpl.COURSE_MISC_UNIT_ID}, $EXM_VERSION, $EXM_CREATED_BY, " +
-                "$EXM_SHEET, $EXM_DUE_DATE, $EXM_TYPE, $EXM_PHASE, $EXM_LOCATION" +
-                "$EXM_VOTES, $EXM_TIMESTAMP" +
+                "$EXM_SHEET, $EXM_DUE_DATE, $EXM_TYPE, $EXM_PHASE, $EXM_LOCATION," +
+                "$EXM_VOTES, $EXM_TIMESTAMP)" +
                 "values(:courseMiscUnitId, :version, :createdBy, :sheet, :dueDate, :type," +
                 ":phase, :location, :votes, :timestamp)"
         it.createUpdate(insertInExam)
