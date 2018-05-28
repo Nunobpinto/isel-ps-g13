@@ -168,6 +168,7 @@ class CourseDAOImpl : CourseDAO {
 
     override fun getVersionCourse(versionCourseId: Int, version: Int): CourseVersion {
         //TODO get version course
+        return CourseVersion()
     }
 
     override fun deleteVersionCourse(versionCourseId: Int, version: Int): Int = dbi.withHandle<Int, Exception> {
@@ -271,6 +272,7 @@ class CourseDAOImpl : CourseDAO {
     override fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course> = dbi.withHandle<List<Course>, Exception> {
         val select = "select cp.$COURSE_ID, cp.$PROGRAMME_ID, cp.${ProgrammeDAOImpl.CRS_PROG_VERSION}," +
                 " cp.$LECTURED_TERM, c.$COURSE_CREATED_BY, c.$COURSE_FULL_NAME, c.$COURSE_SHORT_NAME, c.$COURSE_TIMESTAMP, c.$COURSE_VOTES " +
+                ", cp.$OPTIONAL, cp.$CREDITS " +
                 "from course as c " +
                 "inner join $COURSE_PROGRAMME_TABLE as cp on c.$COURSE_ID = cp.$COURSE_ID " +
                 "where cp.$PROGRAMME_ID = :programmeId"
@@ -284,6 +286,7 @@ class CourseDAOImpl : CourseDAO {
     override fun getSpecificCourseOfProgramme(programmeId: Int, courseId: Int): Course = dbi.withHandle<Course, Exception> {
         val select = "select cp.$COURSE_ID, cp.$PROGRAMME_ID, cp.${ProgrammeDAOImpl.CRS_PROG_VERSION}," +
                 " cp.$LECTURED_TERM, c.$COURSE_CREATED_BY, c.$COURSE_FULL_NAME, c.$COURSE_SHORT_NAME, c.$COURSE_TIMESTAMP, c.$COURSE_VOTES " +
+                ", cp.$OPTIONAL, cp.$CREDITS " +
                 "from course as c " +
                 "inner join $COURSE_PROGRAMME_TABLE as cp on c.$COURSE_ID = cp.$COURSE_ID " +
                 "where cp.$PROGRAMME_ID = :programmeId and cp.$COURSE_ID = :courseId"
@@ -380,8 +383,23 @@ class CourseDAOImpl : CourseDAO {
                 .execute()
     }
 
-    override fun updateCourseProgramme(programmeId: Int, courseId: Int, updatedCourse: Course) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun updateCourseProgramme(programmeId: Int, courseId: Int, updatedCourse: Course) = dbi.useHandle<Exception> {
+        val update = "update $COURSE_PROGRAMME_TABLE SET " +
+                " $COURSE_VERSION = :version, " +
+                "$COURSE_CREATED_BY = :createdBy, $LECTURED_TERM = :lecture, " +
+                "$OPTIONAL = :optional, $COURSE_VOTES = :votes, " +
+                "$COURSE_TIMESTAMP = :timestamp, $CREDITS = :credits "
+        "where $COURSE_ID = :courseId"
+
+        it.createUpdate(update)
+                .bind("version", updatedCourse.version)
+                .bind("createdBy", updatedCourse.createdBy)
+                .bind("lecture", updatedCourse.lecturedTerm)
+                .bind("optional", updatedCourse.optional)
+                .bind("votes", updatedCourse.votes)
+                .bind("timestamp", updatedCourse.timestamp)
+                .bind("timestamp", updatedCourse.credits)
+                .execute()
     }
 
     override fun createStagingCourseOfProgramme(courseProgrammeStage: CourseProgrammeStage): Int = dbi.withHandle<Int, Exception> {
@@ -401,6 +419,7 @@ class CourseDAOImpl : CourseDAO {
     override fun getSpecificStagedCourseOfProgramme(programmeId: Int, stageId: Int): CourseProgrammeStage = dbi.withHandle<CourseProgrammeStage, Exception> {
         val select = "select cp.$COURSE_ID, cp.$PROGRAMME_ID, cp.${ProgrammeDAOImpl.CRS_PROG_VERSION}," +
                 " cp.$LECTURED_TERM, c.$COURSE_CREATED_BY, c.$COURSE_FULL_NAME, c.$COURSE_SHORT_NAME, c.$COURSE_TIMESTAMP, c.$COURSE_VOTES " +
+                ", cp.$OPTIONAL, cp.$CREDITS " +
                 "from course as c " +
                 "inner join $COURSE_PROGRAMME_STAGE_TABLE as cp on c.$COURSE_ID = cp.$COURSE_ID " +
                 "where cp.$PROGRAMME_ID = :programmeId and cp.$COURSE_ID = :courseId"
@@ -438,6 +457,7 @@ class CourseDAOImpl : CourseDAO {
     override fun getAllVersionsOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int): List<CourseVersion> = dbi.withHandle<List<CourseVersion>, Exception> {
         val select = "select cp.$COURSE_ID, cp.$PROGRAMME_ID, cp.${ProgrammeDAOImpl.CRS_PROG_VERSION}," +
                 " cp.$LECTURED_TERM, c.$COURSE_CREATED_BY, c.$COURSE_FULL_NAME, c.$COURSE_SHORT_NAME, c.$COURSE_TIMESTAMP, c.$COURSE_VOTES " +
+                ", cp.$OPTIONAL, cp.$CREDITS " +
                 "from course as c " +
                 "inner join $COURSE_PROGRAMME_VERSION_TABLE as cp on c.$COURSE_ID = cp.$COURSE_ID " +
                 "where cp.$PROGRAMME_ID = :programmeId and cp.$COURSE_ID = :courseId"
@@ -452,6 +472,7 @@ class CourseDAOImpl : CourseDAO {
     override fun getSpecificVersionOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int, versionId: Int): CourseVersion = dbi.withHandle<CourseVersion, Exception> {
         val select = "select cp.$COURSE_ID, cp.$PROGRAMME_ID, cp.${ProgrammeDAOImpl.CRS_PROG_VERSION}," +
                 " cp.$LECTURED_TERM, c.$COURSE_CREATED_BY, c.$COURSE_FULL_NAME, c.$COURSE_SHORT_NAME, c.$COURSE_TIMESTAMP, c.$COURSE_VOTES " +
+                ", cp.$OPTIONAL, cp.$CREDITS " +
                 "from course as c " +
                 "inner join $COURSE_PROGRAMME_VERSION_TABLE as cp on c.$COURSE_ID = cp.$COURSE_ID " +
                 "where cp.$PROGRAMME_ID = :programmeId and cp.$COURSE_ID = :courseId and cp.$COURSE_PROGRAMME_VERSION = :versionId"
@@ -484,6 +505,7 @@ class CourseDAOImpl : CourseDAO {
     override fun getAllReportsOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int): List<CourseProgrammeReport> = dbi.withHandle<List<CourseProgrammeReport>, Exception> {
         val select = "select cp.$COURSE_ID, cp.$PROGRAMME_ID, cp.${ProgrammeDAOImpl.CRS_PROG_VERSION}," +
                 " cp.$LECTURED_TERM, c.$COURSE_CREATED_BY, c.$COURSE_FULL_NAME, c.$COURSE_SHORT_NAME, c.$COURSE_TIMESTAMP, c.$COURSE_VOTES " +
+                ", cp.$OPTIONAL, cp.$CREDITS " +
                 "from course as c " +
                 "inner join $COURSE_PROGRAMME_REPORT_TABLE as cp on c.$COURSE_ID = cp.$COURSE_ID " +
                 "where cp.$PROGRAMME_ID = :programmeId and cp.$COURSE_ID = :courseId"

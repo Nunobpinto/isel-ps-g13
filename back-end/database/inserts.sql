@@ -12,14 +12,14 @@ insert into programme (created_by, programme_full_name, programme_short_name, pr
 
 -- Courses Insert
 
-insert into course (organization_id, created_by, course_full_name, course_short_name, time_stamp)
-    values (1,'ze', 'Programação na Internet', 'PI', current_timestamp);
+insert into course (organization_id, created_by, course_full_name, course_short_name, time_stamp, created_by)
+    values (1,'ze', 'Programação na Internet', 'PI', current_timestamp,'ze');
 
-insert into course (organization_id, created_by, course_full_name, course_short_name, time_stamp)
-    values (1,'ze', 'Redes de Computadores', 'RCP', current_timestamp);
+insert into course (organization_id, created_by, course_full_name, course_short_name, time_stamp, created_by)
+    values (1,'ze', 'Redes de Computadores', 'RCP', current_timestamp,'ze');
 
-insert into course (organization_id, created_by, course_full_name, course_short_name, time_stamp)
-    values (1,'ze', 'Modelação de Ambientes Virtuais', 'MAV', current_timestamp);
+insert into course (organization_id, created_by, course_full_name, course_short_name, time_stamp, created_by)
+    values (1,'ze', 'Modelação de Ambientes Virtuais', 'MAV', current_timestamp,'ze');
 
 -- Course-Programme Insert
 

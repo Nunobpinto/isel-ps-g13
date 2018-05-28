@@ -22,17 +22,17 @@ insert into course (organization_id, created_by, course_full_name, course_short_
 
 -- Course-Programme Insert
 
-insert into course_programme (course_id, programme_id, course_lectured_term, course_optional, course_credits, time_stamp)
-    values(1,1,'quinto',false,6,current_timestamp);
+insert into course_programme (course_id, programme_id, course_lectured_term, course_optional, course_credits, time_stamp, created_by)
+    values(1,1,'quinto',false,6,current_timestamp,'ze');
 
-insert into course_programme (course_id, programme_id, course_lectured_term, course_optional, course_credits, time_stamp)
-    values(2,1,'quarto',false,6,current_timestamp);
+insert into course_programme (course_id, programme_id, course_lectured_term, course_optional, course_credits, time_stamp, created_by)
+    values(2,1,'quarto',false,6,current_timestamp,'ze');
 
-insert into course_programme (course_id, programme_id, course_lectured_term, course_optional, course_credits, time_stamp)
-    values(2,2,'quarto',false,6,current_timestamp);
+insert into course_programme (course_id, programme_id, course_lectured_term, course_optional, course_credits, time_stamp, created_by)
+    values(2,2,'quarto',false,6,current_timestamp,'ze');
 
-insert into course_programme (course_id, programme_id, course_lectured_term, course_optional, course_credits, time_stamp)
-    values(3,2,'quarto',false,6,current_timestamp);
+insert into course_programme (course_id, programme_id, course_lectured_term, course_optional, course_credits, time_stamp, created_by)
+    values(3,2,'quarto',false,6,current_timestamp,'ze');
 
 -- Terms Insert
 

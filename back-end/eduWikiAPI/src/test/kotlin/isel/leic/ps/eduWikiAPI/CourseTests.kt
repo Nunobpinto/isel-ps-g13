@@ -44,8 +44,16 @@ class CourseTests {
     }
 
     @Test
+    fun testGetCoursesOfProgramme(){
+        val courses = courseDAO.getCoursesOnSpecificProgramme(1)
+        assertEquals(2,courses.size)
+    }
+
+    @Test
     fun testGetCourseOfProgramme(){
-        val course = courseDAO.getCoursesOnSpecificProgramme(1)
+        val course = courseDAO.getSpecificCourseOfProgramme(1,1)
+        assertEquals(6,course.credits)
+        assertEquals(false,course.optional)
     }
 
     @Test
