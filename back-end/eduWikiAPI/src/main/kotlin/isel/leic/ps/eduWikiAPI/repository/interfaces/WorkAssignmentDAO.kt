@@ -25,7 +25,7 @@ interface WorkAssignmentDAO {
 
     fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, workAssignment: WorkAssignment) : Int
 
-    fun voteOnWorkAssignment(courseMiscUnitId: Int, voteType: Int)
+    fun voteOnWorkAssignment(courseMiscUnitId: Int, vote: Vote)
 
     fun getAllWorkAssignmentsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignment>
 
@@ -40,8 +40,6 @@ interface WorkAssignmentDAO {
     fun deleteSpecificStagedWorkAssignment(stageId: Int) : Int
 
     fun deleteAllStagedWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int
-
-    fun createWorkAssignmentStage(workAssignmentStage: WorkAssignmentStage)
 
     fun getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignmentStage>
 
@@ -68,8 +66,6 @@ interface WorkAssignmentDAO {
     /**
      * Report entity queries
      */
-
-    fun reportWorkAssignment(workAssignmentReport: WorkAssignmentReport)
 
     fun deleteReportOnWorkAssignment(workAssignmentId: Int, reportId: Int) : Int
 
