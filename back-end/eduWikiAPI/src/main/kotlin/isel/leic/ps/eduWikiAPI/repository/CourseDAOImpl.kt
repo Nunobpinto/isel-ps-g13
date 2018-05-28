@@ -53,19 +53,18 @@ class CourseDAOImpl : CourseDAO {
     @Autowired
     lateinit var dbi: Jdbi
 
-    override fun getSpecificCourse(courseId: Int): Course = dbi.withHandle<Course, Exception> {
-        it.createQuery("select * from $COURSE_TABLE where $COURSE_ID = :courseId")
-                .bind("courseId", courseId)
-                .mapTo(Course::class.java)
-                .findOnly()
-    }
-
     override fun getAllCourses(): List<Course> = dbi.withHandle<List<Course>, Exception> {
         it.createQuery("select * from $COURSE_TABLE")
                 .mapTo(Course::class.java)
                 .list()
     }
 
+    override fun getSpecificCourse(courseId: Int): Course = dbi.withHandle<Course, Exception> {
+        it.createQuery("select * from $COURSE_TABLE where $COURSE_ID = :courseId")
+                .bind("courseId", courseId)
+                .mapTo(Course::class.java)
+                .findOnly()
+    }
 
     override fun deleteCourse(courseId: Int): Int = dbi.withHandle<Int, Exception> {
         val delete = "delete from $COURSE_TABLE where $COURSE_ID = :courseId"
@@ -84,7 +83,7 @@ class CourseDAOImpl : CourseDAO {
                 "$COURSE_CREATED_BY = :createdBy, $COURSE_FULL_NAME = :fullName, " +
                 "$COURSE_SHORT_NAME = :shortName, $COURSE_VOTES = :votes, " +
                 "$COURSE_TIMESTAMP = :timestamp"
-                "where $COURSE_ID = :courseId"
+        "where $COURSE_ID = :courseId"
 
         it.createUpdate(update)
                 .bind("orgId", course.organizationId)
@@ -166,11 +165,6 @@ class CourseDAOImpl : CourseDAO {
                 .execute()
     }
 
-    override fun getVersionCourse(versionCourseId: Int, version: Int): CourseVersion {
-        //TODO get version course
-        return CourseVersion()
-    }
-
     override fun deleteVersionCourse(versionCourseId: Int, version: Int): Int = dbi.withHandle<Int, Exception> {
         val delete = "delete from $COURSE_VERSION_TABLE where $COURSE_ID = :id and $COURSE_VERSION = :version"
         it.createUpdate(delete)
@@ -179,12 +173,20 @@ class CourseDAOImpl : CourseDAO {
                 .execute()
     }
 
-    override fun createVersionCourse(courseVersion: CourseVersion) {
-        //TODO create version course
-    }
 
-    override fun reportCourse(courseId: Int, courseReport: CourseReport) {
-        //TODO report course
+    override fun reportCourse(courseId: Int, courseReport: CourseReport): Int = dbi.withHandle<Int, Exception> {
+        val insert = "insert into $COURSE_REPORT_TABLE " +
+                "($COURSE_ID}, $COURSE_FULL_NAME" +
+                "$COURSE_SHORT_NAME, $COURSE_REPORTED_BY, $COURSE_VOTES, $COURSE_TIMESTAMP) " +
+                "values(:courseId, :fullName, :shortName, :reportedBy, :votes, :timestamp)"
+        it.createUpdate(insert)
+                .bind("courseId", courseId)
+                .bind("fullName", courseReport.courseFullName)
+                .bind("shortName", courseReport.courseShortName)
+                .bind("reportedBy", courseReport.reportedBy)
+                .bind("votes", courseReport.votes)
+                .bind("timestamp", courseReport.timestamp)
+                .execute()
     }
 
     override fun deleteReportOnCourse(reportId: Int): Int = dbi.withHandle<Int, Exception> {
@@ -532,7 +534,7 @@ class CourseDAOImpl : CourseDAO {
 
     override fun deleteReportOnCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int = dbi.withHandle<Int, Exception> {
         val delete = "delete from $COURSE_PROGRAMME_REPORT_TABLE where $COURSE_REPORT_ID = :reportId"
-        it.createUpdate(delete).bind("reportId",reportId).execute()
+        it.createUpdate(delete).bind("reportId", reportId).execute()
     }
 
     override fun voteOnReportOfCourseProgramme(programmeId: Int, reportId: Int, vote: Vote): Int = dbi.inTransaction<Int, Exception> {

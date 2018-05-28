@@ -214,7 +214,7 @@ class CourseController {
     ) = courseService.voteOnCourse(courseId, inputVote)
 
     @PostMapping("/{courseId}/reports")
-    fun reportCourse( //TODO fazer report do que? todos os campos?
+    fun reportCourse(
             @PathVariable courseId: Int,
             @RequestBody inputCourseReport: CourseReportInputModel
     ) = courseService.reportCourse(courseId, inputCourseReport)
@@ -227,7 +227,7 @@ class CourseController {
     ) = courseService.voteOnReportedCourse(reportId, inputVote)
 
     @PostMapping("/{courseId}/reports/{reportId}")
-    fun updateReportedCourse( //TODO fazer report de que campos?
+    fun updateReportedCourse(
             @PathVariable courseId: Int,
             @PathVariable reportId: Int
     ) = courseService.updateReportedCourse(courseId, reportId)
