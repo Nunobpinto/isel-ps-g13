@@ -269,6 +269,10 @@ class CourseServiceImpl : CourseService {
 
     override fun voteOnReportToWorkAssignmentOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int = workAssignmentDAO.voteOnReportToWorkAssignmentOnCourseInTerm(reportId, Vote.valueOf(inputVote.vote))
 
+    override fun voteOnExam(examId: Int, inputVote: VoteInputModel): Int = examDAO.voteOnExam(examId, Vote.valueOf(inputVote.vote))
+
+    override fun voteOnWorkAssignment(workAssignmentId: Int, inputVote: VoteInputModel): Int = workAssignmentDAO.voteOnWorkAssignment(workAssignmentId, Vote.valueOf(inputVote.vote))
+
     override fun updateReportedWorkAssignment(workAssignmentId: Int, reportId: Int): Int {
         val workAssignment = workAssignmentDAO.getSpecificWorkAssignment(workAssignmentId)
         val report = workAssignmentDAO.getSpecificReportOfWorkAssignment(workAssignmentId, reportId)

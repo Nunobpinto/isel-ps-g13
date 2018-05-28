@@ -25,7 +25,7 @@ interface WorkAssignmentDAO {
 
     fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, workAssignment: WorkAssignment) : Int
 
-    fun voteOnWorkAssignment(courseMiscUnitId: Int, vote: Vote)
+    fun voteOnWorkAssignment(courseMiscUnitId: Int, vote: Vote) : Int
 
     fun getAllWorkAssignmentsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignment>
 

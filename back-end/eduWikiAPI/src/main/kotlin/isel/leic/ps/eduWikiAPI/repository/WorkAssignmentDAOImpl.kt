@@ -91,7 +91,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                 .execute()
     }
 
-    override fun voteOnWorkAssignment(courseMiscUnitId: Int, vote: Vote) = dbi.useTransaction<Exception> {
+    override fun voteOnWorkAssignment(courseMiscUnitId: Int, vote: Vote) : Int = dbi.withHandle<Int, Exception> {
         val voteQuery = "select $WRK_ASS_VOTES from $WRK_ASS_TABLE where $WRK_ASS_ID = :workAssignmentId"
         var votes = it.createQuery(voteQuery)
                 .bind("workAssignmentId", courseMiscUnitId)

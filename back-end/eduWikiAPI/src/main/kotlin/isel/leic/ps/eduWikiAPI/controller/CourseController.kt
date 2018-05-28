@@ -251,6 +251,14 @@ class CourseController {
             @RequestBody exam: ExamInputModel
     ) = courseService.createExamOnCourseInTerm(courseId, termId, exam)
 
+    @PostMapping("/{courseId}/terms/{termId}/exams/{examId}/vote")
+    fun voteOnExam(
+            @PathVariable courseId: Int,
+            @PathVariable termId: Int,
+            @PathVariable examId : Int,
+            @RequestBody inputVote: VoteInputModel
+    ) = courseService.voteOnExam(examId, inputVote)
+
     @PostMapping("/{courseId}/terms/{termId}/exams/{examId}/reports")
     fun addReportToExamOnCourseInTerm(
             @PathVariable courseId: Int,
@@ -304,6 +312,13 @@ class CourseController {
             @PathVariable termId: Int,
             @RequestBody inputWorkAssignment: WorkAssignmentInputModel
     ) = courseService.createWorkAssignmentOnCourseInTerm(courseId, termId, inputWorkAssignment)
+
+    @PostMapping("/{courseId}/terms/{termId}/workAssignments/{workAssignmentId}/vote")
+    fun voteOnWorkAssignment(@PathVariable courseId: Int,
+                             @PathVariable termId: Int,
+                             @PathVariable workAssignmentId: Int,
+                             @RequestBody inputVote: VoteInputModel
+    ) = courseService.voteOnWorkAssignment(workAssignmentId, inputVote)
 
     @PostMapping("/{courseId}/terms/{termId}/workAssignments/{workAssignmentId}/reports")
     fun addReportToWorkAssignmentOnCourseInTerm(

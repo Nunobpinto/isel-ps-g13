@@ -27,7 +27,7 @@ interface ExamDAO {
 
     fun getAllExamsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<Exam>
 
-    fun voteOnExam(courseMiscUnitId: Int, voteType: Int)
+    fun voteOnExam(courseMiscUnitId: Int, vote: Vote) : Int
 
     fun getSpecificExamFromSpecificTermOfCourse(courseId: Int, termId: Int, examId: Int): Exam
 
