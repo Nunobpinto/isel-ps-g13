@@ -1,19 +1,41 @@
 package isel.leic.ps.eduWikiAPI.domain.model.version
 
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_UNIT_ID
+import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.TIMESTAMP
+import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WRK_ASS_CREATED_BY
+import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WRK_ASS_DUE_DATE
+import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WRK_ASS_INDIVIDUAL
+import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WRK_ASS_LATE_DELIVERY
+import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WRK_ASS_MULTIPLE_DELIVERIES
+import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WRK_ASS_REQUIRES_REPORT
+import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WRK_ASS_SHEET
+import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WRK_ASS_SUPPLEMENT
+import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WRK_ASS_VERSION
+import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.sql.Timestamp
 import java.time.LocalDate
-import java.util.function.BooleanSupplier
 
 data class WorkAssignmentVersion (
+        @ColumnName(COURSE_MISC_UNIT_ID)
         val courseMiscUnitId: Int = 0,
+        @ColumnName(WRK_ASS_SHEET)
         val sheet: String = "", //TODO
+        @ColumnName(WRK_ASS_SUPPLEMENT)
         val supplement: String = "", //TODO
+        @ColumnName(WRK_ASS_DUE_DATE)
         val dueDate: LocalDate = LocalDate.now(),
+        @ColumnName(WRK_ASS_INDIVIDUAL)
         val individual: Boolean = false,
+        @ColumnName(WRK_ASS_LATE_DELIVERY)
         val lateDelivery: Boolean = false,
+        @ColumnName(WRK_ASS_MULTIPLE_DELIVERIES)
         val multipleDeliveries: Boolean = false,
+        @ColumnName(WRK_ASS_REQUIRES_REPORT)
         val requiresReport: Boolean = false,
+        @ColumnName(WRK_ASS_CREATED_BY)
         val createdBy: String = "",
+        @ColumnName(TIMESTAMP)
         val timestamp: Timestamp = Timestamp(0),
+        @ColumnName(WRK_ASS_VERSION)
         val version: Int = 0
 )

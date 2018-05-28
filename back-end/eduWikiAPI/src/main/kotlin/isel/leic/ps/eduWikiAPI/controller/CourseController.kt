@@ -37,7 +37,7 @@ class CourseController {
     ) = courseService.getVersionOfSpecificCourse(courseId, versionId)
 
     @GetMapping("/{courseId}/report")
-    fun getCourseReports(@PathVariable courseId: Int): List<CourseReport> = courseService.getAllReportsOnCourse(courseId)
+    fun getAllReportsOnCourse(@PathVariable courseId: Int): List<CourseReport> = courseService.getAllReportsOnCourse(courseId)
 
     @GetMapping("/{courseId}/report/{reportId}")
     fun getSpecificReportOfCourse(

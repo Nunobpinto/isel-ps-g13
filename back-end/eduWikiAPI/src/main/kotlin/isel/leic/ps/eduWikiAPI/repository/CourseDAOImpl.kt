@@ -112,12 +112,12 @@ class CourseDAOImpl : CourseDAO {
                 .execute()
     }
 
-    override fun voteOnCourse(courseId: Int, inputVote: VoteInputModel): Int = dbi.inTransaction<Int, Exception> {
+    override fun voteOnCourse(courseId: Int, vote: Vote): Int = dbi.inTransaction<Int, Exception> {
         val voteQuery = "select $COURSE_VOTES from $COURSE_TABLE where $COURSE_ID :courseId"
         var votes = it.createQuery(voteQuery)
                 .bind("courseId", courseId)
                 .mapTo(Int::class.java).findOnly()
-        votes = if (inputVote.vote.equals(Vote.Down)) --votes else ++votes
+        votes = if (vote == Vote.Down) --votes else ++votes
         val updateQuery = "update $COURSE_TABLE set $COURSE_VOTES = :votes where $COURSE_ID = :courseId"
         it.createUpdate(updateQuery)
                 .bind("votes", votes)
@@ -225,11 +225,11 @@ class CourseDAOImpl : CourseDAO {
                 .list()
     }
 
-    override fun getCourseSpecificStageEntry(stageId: Int): CourseStage = dbi.withHandle<CourseStage, Exception> {
+    override fun getCourseSpecificStageEntry(courseStageId: Int): CourseStage = dbi.withHandle<CourseStage, Exception> {
         val select = "select * from $COURSE_STAGE_TABLE" +
                 "where $COURSE_ID = :courseId"
         it.createQuery(select)
-                .bind("courseId", stageId)
+                .bind("courseId", courseStageId)
                 .mapTo(CourseStage::class.java)
                 .findOnly()
     }
@@ -258,12 +258,12 @@ class CourseDAOImpl : CourseDAO {
                 .findOnly()
     }
 
-    override fun voteOnReportedCourse(reportId: Int, inputVote: Vote): Int = dbi.withHandle<Int, Exception> {
+    override fun voteOnReportedCourse(reportId: Int, vote: Vote): Int = dbi.withHandle<Int, Exception> {
         val voteQuery = "select $COURSE_VOTES from $COURSE_REPORT_TABLE where $COURSE_REPORT_ID = :reportId"
         var votes = it.createQuery(voteQuery)
                 .bind("reportId", reportId)
                 .mapTo(Int::class.java).findOnly()
-        votes = if (inputVote == Vote.Down) --votes else ++votes
+        votes = if (vote == Vote.Down) --votes else ++votes
         val updateQuery = "update $COURSE_REPORT_TABLE set $COURSE_VOTES = :votes where $COURSE_REPORT_ID = :reportId"
         it.createUpdate(updateQuery)
                 .bind("votes", votes)

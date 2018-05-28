@@ -35,7 +35,7 @@ interface CourseDAO {
 
     fun createCourse(course: Course) : Int
 
-    fun voteOnCourse(courseId: Int, inputVote: VoteInputModel) : Int
+    fun voteOnCourse(courseId: Int, vote: Vote) : Int
 
     fun voteOnCourseOfProgramme(programmeId: Int, vote: Vote, courseId: Int): Int
 
@@ -51,7 +51,7 @@ interface CourseDAO {
 
     fun getAllCourseStageEntries(): List<CourseStage>
 
-    fun getCourseSpecificStageEntry(stageId: Int): CourseStage
+    fun getCourseSpecificStageEntry(courseStageId: Int): CourseStage
 
     fun getStagedCoursesOfProgramme(programmeId: Int): List<CourseProgrammeStage>
 

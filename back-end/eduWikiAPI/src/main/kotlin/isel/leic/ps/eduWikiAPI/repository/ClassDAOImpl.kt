@@ -22,6 +22,9 @@ class ClassDAOImpl : ClassDAO {
         // FIELDS
         const val CLASS_ID = "class_id"
         const val CLASS_VERSION = "class_version"
+        const val CLASS_NAME = "class_name"
+        const val CLASS_CREATED_BY = "created_by"
+        const val CLASS_TIMESTAMP = "timestamp"
     }
 
     @Autowired
@@ -88,7 +91,7 @@ class ClassDAOImpl : ClassDAO {
                 .bind("courseId", courseId)
                 .bind("termId", termId)
                 .mapTo(Class::class.java)
-                .list()
+                .list() //TODO rever query
     }
 
     override fun getClassOnSpecificTermOfCourse(courseId: Int, termId: Int, classId: Int): Class  = dbi.withHandle<Class, Exception>{
@@ -99,7 +102,7 @@ class ClassDAOImpl : ClassDAO {
                 .bind("termId", termId)
                 .bind("classId", classId)
                 .mapTo(Class::class.java)
-                .findOnly()
+                .findOnly() //TODO rever query
     }
 
     override fun createClassStage(classStage: ClassStage) {
@@ -158,11 +161,11 @@ class ClassDAOImpl : ClassDAO {
                 .list()
     }
 
-    override fun getVersionOfSpecificClass(classId: Int, version: Int): ClassVersion = dbi.withHandle<ClassVersion, Exception> {
+    override fun getVersionOfSpecificClass(classId: Int, versionId: Int): ClassVersion = dbi.withHandle<ClassVersion, Exception> {
         val select = "select * from $CLASS_VERSION_TABLE where $CLASS_ID = :classId and $CLASS_VERSION = :version"
         it.createQuery(select)
                 .bind("classId", classId)
-                .bind("version", version)
+                .bind("version", versionId)
                 .mapTo(ClassVersion::class.java)
                 .findOnly()
     }

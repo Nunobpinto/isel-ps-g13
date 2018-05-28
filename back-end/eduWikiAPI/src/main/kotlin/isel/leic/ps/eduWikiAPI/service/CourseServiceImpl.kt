@@ -93,10 +93,11 @@ class CourseServiceImpl : CourseService {
                 shortName = inputCourse.shortName,
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
+        courseDAO.addToCourseVersion(course)
         return courseDAO.createCourse(course)
     }
 
-    override fun voteOnCourse(courseId: Int, inputVote: VoteInputModel): Int = courseDAO.voteOnCourse(courseId, inputVote)
+    override fun voteOnCourse(courseId: Int, inputVote: VoteInputModel): Int = courseDAO.voteOnCourse(courseId, Vote.valueOf(inputVote.vote))
 
     override fun reportCourse(courseId: Int, inputCourseReport: CourseReportInputModel): Int {
         val courseReport = CourseReport(
@@ -130,6 +131,7 @@ class CourseServiceImpl : CourseService {
 
     override fun createStagingCourse(inputCourse: CourseInputModel): Int {
         val stage = CourseStage(
+                organizationId = inputCourse.organizationId,
                 fullName = inputCourse.fullName,
                 shortName = inputCourse.shortName,
                 createdBy = inputCourse.createdBy,
@@ -148,6 +150,7 @@ class CourseServiceImpl : CourseService {
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
         courseDAO.deleteStagedCourse(stageId) //TODO use transaction
+        courseDAO.addToCourseVersion(course)
         return courseDAO.createCourse(course)    //TODO use transaction
     }
 
@@ -158,10 +161,12 @@ class CourseServiceImpl : CourseService {
                 createdBy = inputExam.createdBy,
                 sheet = inputExam.sheet,
                 dueDate = inputExam.dueDate,
+                type = inputExam.type,
                 phase = inputExam.phase,
                 location = inputExam.location,
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
+        examDAO.addToExamVersion(exam)
         return examDAO.createExamOnCourseInTerm(courseId, termId, exam)
     }
 
@@ -170,6 +175,7 @@ class CourseServiceImpl : CourseService {
                 courseMiscUnitId = examId,
                 sheet = inputExamReport.sheet,
                 dueDate = inputExamReport.dueDate,
+                type = inputExamReport.type,
                 phase = inputExamReport.phase,
                 location = inputExamReport.location,
                 reportedBy = inputExamReport.reportedBy,
@@ -178,7 +184,7 @@ class CourseServiceImpl : CourseService {
         return examDAO.addReportToExamOnCourseInTerm(examId, examReport)
     }
 
-    override fun voteOnReportToExamOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int = examDAO.voteOnReportToExamOnCourseInTerm(reportId, inputVote)
+    override fun voteOnReportToExamOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int = examDAO.voteOnReportToExamOnCourseInTerm(reportId, Vote.valueOf(inputVote.vote))
 
     override fun updateReportedExam(examId: Int, reportId: Int): Int { //TODO mappers type
         val exam = examDAO.getSpecificExam(examId)
@@ -194,7 +200,7 @@ class CourseServiceImpl : CourseService {
                 location = report.location ?: exam.location,
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
-        examDAO.addToExamVersion(exam)
+        examDAO.addToExamVersion(updatedExam)
         examDAO.deleteReportOnExam(examId, reportId)
         return examDAO.updateExam(examId, updatedExam)
     }
@@ -223,6 +229,7 @@ class CourseServiceImpl : CourseService {
                 location = examStage.location,
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
+        examDAO.addToExamVersion(exam)
         examDAO.deleteStagedExam(stageId) //TODO use transaction
         return examDAO.createExam(courseId, termId, exam)    //TODO use transaction
     }

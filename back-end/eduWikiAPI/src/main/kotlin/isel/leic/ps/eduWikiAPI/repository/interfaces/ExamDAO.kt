@@ -2,6 +2,7 @@ package isel.leic.ps.eduWikiAPI.repository.interfaces
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Exam
+import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.domain.model.report.ExamReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ExamStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.ExamVersion
@@ -88,7 +89,7 @@ interface ExamDAO {
 
     fun addReportToExamOnCourseInTerm(examId: Int, examReport: ExamReport): Int
 
-    fun voteOnReportToExamOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int
+    fun voteOnReportToExamOnCourseInTerm(reportId: Int, vote: Vote): Int
 
     fun getSpecificReportOfExam(examId: Int, reportId: Int): ExamReport
 

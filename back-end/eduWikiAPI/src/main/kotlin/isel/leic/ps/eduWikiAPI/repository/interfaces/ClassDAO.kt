@@ -61,7 +61,7 @@ interface ClassDAO {
 
     fun getAllVersionsOfSpecificClass(classId: Int): List<ClassVersion>
 
-    fun getVersionOfSpecificClass(classId: Int, version: Int): ClassVersion
+    fun getVersionOfSpecificClass(classId: Int, versionId: Int): ClassVersion
 
     fun getAllVersionCourses() : List<ClassVersion>
 

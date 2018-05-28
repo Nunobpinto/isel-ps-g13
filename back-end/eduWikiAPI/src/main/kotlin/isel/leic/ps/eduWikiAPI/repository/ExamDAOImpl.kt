@@ -407,7 +407,7 @@ class ExamDAOImpl : ExamDAO {
         val select = "select * from $EXM_REPORT_TABLE" +
                 "where $EXM_REPORT_ID = :reportId"
         it.createQuery(select)
-                .bind("examId", reportId)
+                .bind("reportId", reportId)
                 .mapTo(ExamReport::class.java)
                 .findOnly()
     }
@@ -448,7 +448,6 @@ class ExamDAOImpl : ExamDAO {
     }
 
     override fun addReportToExamOnCourseInTerm(examId: Int, examReport: ExamReport): Int = dbi.withHandle<Int, Exception> {
-        //TODO mapper por causa do type??
         val insert = "insert into $EXM_REPORT_TABLE" +
                 "(${CourseDAOImpl.COURSE_MISC_UNIT_ID}, $EXM_SHEET, " +
                 "$EXM_DUE_DATE, $EXM_TYPE, $EXM_PHASE, $EXM_LOCATION," +
@@ -467,12 +466,12 @@ class ExamDAOImpl : ExamDAO {
                 .execute()
     }
 
-    override fun voteOnReportToExamOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int = dbi.inTransaction<Int, Exception> {
+    override fun voteOnReportToExamOnCourseInTerm(reportId: Int, vote: Vote): Int = dbi.inTransaction<Int, Exception> {
         val voteQuery = "select $EXM_VOTES from $EXM_REPORT_TABLE where $EXM_REPORT_ID = :reportId"
         var votes = it.createQuery(voteQuery)
                 .bind("reportId", reportId)
                 .mapTo(Int::class.java).findOnly()
-        votes = if (inputVote.vote.equals(Vote.Down)) --votes else ++votes
+        votes = if (vote == Vote.Down) --votes else ++votes
         val updateQuery = "update $EXM_REPORT_TABLE set $EXM_VOTES = :votes where $EXM_REPORT_ID = :reportId"
         it.createUpdate(updateQuery)
                 .bind("votes", votes)
@@ -491,7 +490,6 @@ class ExamDAOImpl : ExamDAO {
     }
 
     override fun addToExamVersion(exam: Exam): Int = dbi.withHandle<Int, Exception> {
-        //TODO mappers por causa de type??
         val insert = "insert into $EXM_VERSION_TABLE " +
                 "(${CourseDAOImpl.COURSE_MISC_UNIT_ID}, $EXM_VERSION, $EXM_SHEET, $EXM_DUE_DATE, " +
                 "$EXM_TYPE, $EXM_PHASE, $EXM_LOCATION, $EXM_CREATED_BY, $TIMESTAMP" +

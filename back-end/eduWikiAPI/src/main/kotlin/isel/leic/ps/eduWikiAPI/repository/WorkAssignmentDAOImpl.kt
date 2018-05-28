@@ -323,7 +323,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         val select = "select * from $WRK_ASS_REPORT_TABLE" +
                 "where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :workAssignmentId"
         it.createQuery(select)
-                .bind("examId", workAssignmentId)
+                .bind("workAssignmentId", workAssignmentId)
                 .mapTo(WorkAssignmentReport::class.java)
                 .list()
     }
