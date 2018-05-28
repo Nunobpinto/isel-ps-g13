@@ -263,6 +263,12 @@ class ProgrammeServiceImpl : ProgrammeService {
 
     override fun getSpecificStagedCourseOfProgramme(programmeId: Int, stageId: Int): CourseProgrammeStage = courseDAO.getSpecificStagedCourseOfProgramme(programmeId, stageId)
 
+    override fun deleteSpecificCourseOfProgramme(programmeId: Int, courseId: Int): Int = courseDAO.deleteSpecificCourseOfProgramme(programmeId, courseId)
 
+    override fun deleteSpecificVersionOfCourseOfProgramme(programmeId: Int, courseId: Int, versionId: Int): Int = courseDAO.deleteSpecificVersionOfCourseOfProgramme(programmeId, courseId, versionId)
+
+    override fun deleteSpecificReportOfCourseOfProgramme(programmeId: Int, courseId: Int, reportId: Int): Int = courseDAO.deleteSpecificReportOfCourseOfProgramme(programmeId, courseId, reportId)
+
+    override fun deleteSpecificStagedCourseOfProgramme(programmeId: Int, courseId: Int, stageId: Int): Int = courseDAO.deleteSpecificStagedCourseOfProgramme(programmeId, courseId, stageId)
 
 }

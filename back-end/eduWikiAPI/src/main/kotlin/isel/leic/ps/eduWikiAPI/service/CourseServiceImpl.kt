@@ -113,7 +113,7 @@ class CourseServiceImpl : CourseService {
     override fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel): Int = courseDAO.voteOnReportedCourse(reportId, Vote.valueOf(inputVote.vote))
 
     override fun updateReportedCourse(courseId: Int, reportId: Int) : Int {
-         val course = courseDAO.getSpecificCourse(courseId)
+         val course = courseDAO.getSpecificCourse(courseId).get()
          val report = courseDAO.getSpecificReportOfCourse(courseId, reportId)
          val updatedCourse = Course(
                  id = courseId,
@@ -323,7 +323,7 @@ class CourseServiceImpl : CourseService {
     }
 
     override fun partialUpdateOnCourse(courseId: Int, inputCourse: CourseInputModel): Int {
-        val course = courseDAO.getSpecificCourse(courseId)
+        val course = courseDAO.getSpecificCourse(courseId).get()
         val updatedCourse = Course(
                 id = courseId,
                 version = course.version.inc(),

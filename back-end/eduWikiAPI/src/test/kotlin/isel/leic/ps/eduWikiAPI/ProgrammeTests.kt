@@ -111,6 +111,4 @@ class ProgrammeTests {
         assertEquals(2,progs.size)
     }
 
-
-    //TODO = Testing all courses with programme functionality
 }

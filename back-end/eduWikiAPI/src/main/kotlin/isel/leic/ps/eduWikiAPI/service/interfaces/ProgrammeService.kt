@@ -93,5 +93,14 @@ interface ProgrammeService {
     fun getStagedCoursesOfProgramme(programmeId: Int): List<CourseProgrammeStage>
 
     fun getSpecificStagedCourseOfProgramme(programmeId: Int, stageId: Int): CourseProgrammeStage
+
     fun updateReportedCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int
+
+    fun deleteSpecificCourseOfProgramme(programmeId: Int, courseId: Int): Int
+
+    fun deleteSpecificVersionOfCourseOfProgramme(programmeId: Int, courseId: Int, versionId: Int): Int
+
+    fun deleteSpecificReportOfCourseOfProgramme(programmeId: Int, courseId: Int, reportId: Int): Int
+
+    fun deleteSpecificStagedCourseOfProgramme(programmeId: Int, courseId: Int, stageId: Int): Int
 }

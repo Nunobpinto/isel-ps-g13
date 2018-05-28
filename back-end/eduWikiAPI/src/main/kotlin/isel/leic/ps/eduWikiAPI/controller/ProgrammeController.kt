@@ -105,7 +105,7 @@ class ProgrammeController {
             @PathVariable programmeId: Int,
             @PathVariable courseId: Int,
             @RequestBody inputVote: VoteInputModel
-    ) = programmeService.voteOnCourseProgramme(programmeId, courseId,inputVote)
+    ) = programmeService.voteOnCourseProgramme(programmeId, courseId, inputVote)
 
     @PostMapping("/{programmeId}/vote")
     fun voteOnProgramme(
@@ -220,6 +220,33 @@ class ProgrammeController {
 
     @DeleteMapping("/{programmeId}/versions")
     fun deleteAllVersions(@PathVariable programmeId: Int) = programmeService.deleteAllVersions(programmeId)
+
+    @DeleteMapping("/{programmeId}/courses/{courseId}")
+    fun deleteSpecificCourseOfProgramme(
+            @PathVariable programmeId: Int,
+            @PathVariable courseId: Int
+    ) = programmeService.deleteSpecificCourseOfProgramme(programmeId, courseId)
+
+    @DeleteMapping("/{programmeId}/courses/{courseId}/version/{versionId}")
+    fun deleteSpecificVersionOfCourseOfProgramme(
+            @PathVariable programmeId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable versionId: Int
+    ) = programmeService.deleteSpecificVersionOfCourseOfProgramme(programmeId, courseId, versionId)
+
+    @DeleteMapping("/{programmeId}/courses/{courseId}/reports/{reportId}")
+    fun deleteSpecificReportOfCourseOfProgramme(
+            @PathVariable programmeId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable reportId: Int
+    ) = programmeService.deleteSpecificReportOfCourseOfProgramme(programmeId, courseId, reportId)
+
+    @DeleteMapping("/{programmeId}/courses/stage/{stageId}")
+    fun deleteSpecificStagedCourseOfProgramme(
+            @PathVariable programmeId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable stageId: Int
+    ) = programmeService.deleteSpecificStagedCourseOfProgramme(programmeId, courseId, stageId)
 
     @DeleteMapping("/{programmeId}/versions/{versionId}")
     fun deleteSpecificVersion(@PathVariable programmeId: Int, @PathVariable versionId: Int) = programmeService.deleteSpecificVersion(programmeId, versionId)

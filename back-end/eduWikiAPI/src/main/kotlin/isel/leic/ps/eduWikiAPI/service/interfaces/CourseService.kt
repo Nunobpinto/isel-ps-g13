@@ -22,6 +22,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.version.ClassVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.ExamVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.WorkAssignmentVersion
+import java.util.*
 
 interface CourseService {
 
@@ -31,7 +32,7 @@ interface CourseService {
 
     fun getAllCourses(): List<Course>
 
-    fun getSpecificCourse(courseId: Int): Course
+    fun getSpecificCourse(courseId: Int): Optional<Course>
 
     fun getTermsOfCourse(courseId: Int): List<Term>
 

@@ -1,6 +1,5 @@
 -- Organization Insert
-insert into organization
-(created_by, organization_full_name, organization_short_name, organization_address, organization_contact, time_stamp)
+insert into organization (created_by, organization_full_name, organization_short_name, organization_address, organization_contact, time_stamp)
     values ('ze','Instituto Superior de Engenharia de Lisboa','ISEL','Rua Emídio Navarro','218 317 000',current_timestamp);
 
 -- Programmes Insert
@@ -12,19 +11,19 @@ insert into programme (created_by, programme_full_name, programme_short_name, pr
 
 -- Courses Insert
 
-insert into course (organization_id, created_by, course_full_name, course_short_name, time_stamp, created_by)
-    values (1,'ze', 'Programação na Internet', 'PI', current_timestamp,'ze');
+insert into course (organization_id, created_by, course_full_name, course_short_name, time_stamp)
+    values (1,'ze', 'Programação na Internet', 'PI', current_timestamp);
 
-insert into course (organization_id, created_by, course_full_name, course_short_name, time_stamp, created_by)
-    values (1,'ze', 'Redes de Computadores', 'RCP', current_timestamp,'ze');
+insert into course (organization_id, created_by, course_full_name, course_short_name, time_stamp)
+    values (1,'ze', 'Redes de Computadores', 'RCP', current_timestamp);
 
-insert into course (organization_id, created_by, course_full_name, course_short_name, time_stamp, created_by)
-    values (1,'ze', 'Modelação de Ambientes Virtuais', 'MAV', current_timestamp,'ze');
+insert into course (organization_id, created_by, course_full_name, course_short_name, time_stamp)
+    values (1,'ze', 'Modelação de Ambientes Virtuais', 'MAV', current_timestamp);
 
 -- Course-Programme Insert
 
 insert into course_programme (course_id, programme_id, course_lectured_term, course_optional, course_credits, time_stamp, created_by)
-    values(1,1,'quinto',false,6,current_timestamp, 'ze');
+    values(1,1,'quinto',false,6,current_timestamp,'ze');
 
 insert into course_programme (course_id, programme_id, course_lectured_term, course_optional, course_credits, time_stamp, created_by)
     values(2,1,'quarto',false,6,current_timestamp,'ze');

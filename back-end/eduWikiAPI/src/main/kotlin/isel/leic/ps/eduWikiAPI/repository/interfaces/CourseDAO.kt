@@ -1,15 +1,14 @@
 package isel.leic.ps.eduWikiAPI.repository.interfaces
 
-import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Term
 import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
-import isel.leic.ps.eduWikiAPI.domain.model.report.ExamReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
+import java.util.*
 
 interface CourseDAO {
 
@@ -19,7 +18,7 @@ interface CourseDAO {
 
     fun getAllCourses() : List<Course>
 
-    fun getSpecificCourse(courseId: Int) : Course
+    fun getSpecificCourse(courseId: Int): Optional<Course>
 
     fun getTermsOfCourse(courseId: Int): List<Term>
 
@@ -44,6 +43,8 @@ interface CourseDAO {
     fun deleteCourse(courseId: Int) : Int
 
     fun deleteAllCourses() : Int
+
+    fun deleteSpecificCourseOfProgramme(programmeId: Int, courseId: Int): Int
 
     /**
      * Stage entities queries
@@ -71,6 +72,9 @@ interface CourseDAO {
 
     fun deleteStagedCourseOfProgramme(programmeId: Int,stageId: Int) : Int
 
+    fun deleteSpecificStagedCourseOfProgramme(programmeId: Int, courseId: Int, stageId: Int): Int
+
+
     /**
      * Version entities queries
      */
@@ -90,6 +94,8 @@ interface CourseDAO {
     fun deleteVersionCourse(versionCourseId: Int, version: Int) : Int
 
     fun deleteAllVersionCourses(versionCourseId: Int) : Int
+
+    fun deleteSpecificVersionOfCourseOfProgramme(programmeId: Int, courseId: Int, versionId: Int): Int
 
     /**
      * Report entity queries
@@ -117,4 +123,5 @@ interface CourseDAO {
 
     fun deleteAllReportsOnCourse(courseId : Int) : Int
 
+    fun deleteSpecificReportOfCourseOfProgramme(programmeId: Int, courseId: Int, reportId: Int): Int
 }
