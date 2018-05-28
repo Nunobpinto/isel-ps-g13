@@ -9,7 +9,6 @@ import isel.leic.ps.eduWikiAPI.domain.model.staging.ProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.ProgrammeVersion
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ProgrammeDAO
 import org.jdbi.v3.core.Jdbi
-import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 
@@ -44,8 +43,6 @@ class ProgrammeDAOImpl : ProgrammeDAO {
 
     }
 
-    @Autowired
-    lateinit var dsl: DSLContext
     @Autowired
     lateinit var dbi: Jdbi
 
