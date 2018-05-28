@@ -83,9 +83,11 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
     }
 
 
-    override fun deleteWorkAssignment(courseMiscUnitId: Int): Int = dbi.withHandle<Int, Exception> {
+    override fun deleteSpecificWorkAssignment(courseMiscUnitId: Int): Int = dbi.withHandle<Int, Exception> {
         val delete = "delete from $COURSE_MISC_UNIT_TABLE where $COURSE_MISC_UNIT_ID = :id"
-        it.createUpdate(delete).bind("id",courseMiscUnitId).execute()
+        it.createUpdate(delete)
+                .bind("id",courseMiscUnitId)
+                .execute()
     }
 
     override fun updateWorkAssignment(workAssignmentId: Int, workAssignment: WorkAssignment): Int = dbi.inTransaction<Int, Exception>{
@@ -109,6 +111,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                 .bind("requiresReport", workAssignment.requiresReport)
                 .bind("votes", workAssignment.votes)
                 .bind("timestamp", workAssignment.timestamp)
+                .bind("workAssignmentId", workAssignmentId)
                 .execute()
     }
 
@@ -157,7 +160,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         null
     }
 
-    override fun deleteStagedWorkAssignment(stageId: Int): Int = dbi.inTransaction<Int, Exception> {
+    override fun deleteSpecificStagedWorkAssignment(stageId: Int): Int = dbi.inTransaction<Int, Exception> {
         val deleteFromCourseMiscUnitStageTable = "delete from $COURSE_MISC_UNIT_STAGE_TABLE " +
                 "where $COURSE_MISC_UNIT_ID = :examId"
         it.createUpdate(deleteFromCourseMiscUnitStageTable)
@@ -196,21 +199,6 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                 ).sql
         )*/
 
-    }
-
-    override fun voteOnWorkAssignmentStage(courseMiscUnitStageId: Int, voteType: Int) = dbi.useTransaction<Exception> {
-       /* val votes: Int = it.createQuery(dsl
-                .select(field(WRK_ASS_VOTES))
-                .from(table(WRK_ASS_STAGE_TABLE))
-                .where(field(CourseDAOImpl.CRS_MISC_UNIT_ID).eq(courseMiscUnitStageId))
-                .sql
-        ).mapTo(Int::class.java).findOnly()
-        it.execute(dsl
-                .update(table(WRK_ASS_STAGE_TABLE))
-                .set(field(WRK_ASS_VOTES), if (voteType == -1) votes.dec() else votes.inc())
-                .where(field(CourseDAOImpl.CRS_MISC_UNIT_ID).eq(courseMiscUnitStageId))
-                .sql
-        )*/
     }
 
     override fun getVersionOfSpecificWorkAssignment(versionWorkAssignmentId: Int, version: Int): WorkAssignmentVersion = dbi.withHandle<WorkAssignmentVersion, Exception> {
@@ -388,12 +376,12 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                 .execute()
     }
 
-    override fun voteOnReportToWorkAssignmentOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int = dbi.withHandle<Int, Exception>{
+    override fun voteOnReportToWorkAssignmentOnCourseInTerm(reportId: Int, vote: Vote): Int = dbi.withHandle<Int, Exception>{
         val voteQuery = "select $WRK_ASS_VOTES from $WRK_ASS_REPORT_TABLE where $WRK_ASS_REPORT_ID = :reportId"
         var votes = it.createQuery(voteQuery)
                 .bind("reportId", reportId)
                 .mapTo(Int::class.java).findOnly()
-        votes = if (inputVote.vote.equals(Vote.Down)) --votes else ++votes
+        votes = if (vote == Vote.Down) --votes else ++votes
         val updateQuery = "update $WRK_ASS_REPORT_TABLE set $WRK_ASS_VOTES = :votes where $WRK_ASS_REPORT_ID = :reportId"
         it.createUpdate(updateQuery)
                 .bind("votes", votes)
@@ -412,7 +400,6 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
     }
 
     override fun addToWorkAssignmentVersion(workAssignment: WorkAssignment): Int = dbi.inTransaction<Int, Exception> {
-        //TODO mappers por causa de type??
         val insert = "insert into $WRK_ASS_VERSION_TABLE " +
                 "(${CourseDAOImpl.COURSE_MISC_UNIT_ID}, $WRK_ASS_VERSION, $WRK_ASS_SHEET," +
                 "$WRK_ASS_SUPPLEMENT, $WRK_ASS_DUE_DATE, $WRK_ASS_INDIVIDUAL, $WRK_ASS_LATE_DELIVERY" +
@@ -469,12 +456,12 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                 .execute()
     }
 
-    override fun voteOnStagedWorkAssignment(stageId: Int, inputVote: VoteInputModel): Int = dbi.inTransaction<Int, Exception> {
+    override fun voteOnStagedWorkAssignment(stageId: Int, vote: Vote): Int = dbi.inTransaction<Int, Exception> {
         val voteQuery = "select $WRK_ASS_VOTES from $WRK_ASS_STAGE_TABLE where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :workAssignmentId"
         var votes = it.createQuery(voteQuery)
                 .bind("workAssignmentId", stageId)
                 .mapTo(Int::class.java).findOnly()
-        votes = if (inputVote.vote.equals(Vote.Down)) --votes else ++votes
+        votes = if (vote == Vote.Down) --votes else ++votes
         val updateQuery = "update $WRK_ASS_STAGE_TABLE set $WRK_ASS_VOTES = :votes where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :workAssignmentId"
         it.createUpdate(updateQuery)
                 .bind("votes", votes)
@@ -482,7 +469,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                 .execute()
     }
 
-    override fun deleteWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int = dbi.withHandle<Int, Exception> {
+    override fun deleteAllWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int = dbi.withHandle<Int, Exception> {
         val delete = "delete from $COURSE_MISC_UNIT_TABLE where $COURSE_MISC_UNIT_COURSE_ID = :courseId and $COURSE_MISC_UNIT_TERM_ID = :termId and $COURSE_MISC_UNIT_TYPE = Work Assignment"
         it.createUpdate(delete)
                 .bind("courseId",courseId)
@@ -498,7 +485,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                 .execute()
     }
 
-    override fun deleteAllVersionWorkAssignments(versionWorkAssignmentId: Int): Int = dbi.withHandle<Int, Exception> {
+    override fun deleteAllVersionOfWorkAssignments(versionWorkAssignmentId: Int): Int = dbi.withHandle<Int, Exception> {
         val delete = "delete from $WRK_ASS_VERSION_TABLE where $WRK_ASS_ID = :versionWorkAssignmentId"
         it.createUpdate(delete)
                 .bind("versionWorkAssignmentId",versionWorkAssignmentId)

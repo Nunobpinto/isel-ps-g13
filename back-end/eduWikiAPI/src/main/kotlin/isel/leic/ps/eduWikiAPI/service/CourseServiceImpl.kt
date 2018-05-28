@@ -218,7 +218,7 @@ class CourseServiceImpl : CourseService {
         return examDAO.createStagingExam(courseId, termId, stage)
     }
 
-    override fun createExamFromStaged(courseId: Int, termId: Int, stageId: Int): Int { //TODO mappers type?
+    override fun createExamFromStaged(courseId: Int, termId: Int, stageId: Int): Int {
         val examStage = examDAO.getExamSpecificStageEntry(stageId)
         val exam = Exam(
                 createdBy = examStage.createdBy,
@@ -234,7 +234,7 @@ class CourseServiceImpl : CourseService {
         return examDAO.createExam(courseId, termId, exam)    //TODO use transaction
     }
 
-    override fun voteOnStagedExam(stageId: Int, inputVote: VoteInputModel): Int = examDAO.voteOnStagedExam(stageId, inputVote)
+    override fun voteOnStagedExam(stageId: Int, inputVote: VoteInputModel): Int = examDAO.voteOnStagedExam(stageId, Vote.valueOf(inputVote.vote))
 
     override fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): Int {
         val workAssignment = WorkAssignment(
@@ -267,7 +267,7 @@ class CourseServiceImpl : CourseService {
         return workAssignmentDAO.addReportToWorkAssignmentOnCourseInTerm(workAssignmentId, workAssignmentReport)
     }
 
-    override fun voteOnReportToWorkAssignmentOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int = workAssignmentDAO.voteOnReportToWorkAssignmentOnCourseInTerm(reportId, inputVote)
+    override fun voteOnReportToWorkAssignmentOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int = workAssignmentDAO.voteOnReportToWorkAssignmentOnCourseInTerm(reportId, Vote.valueOf(inputVote.vote))
 
     override fun updateReportedWorkAssignment(workAssignmentId: Int, reportId: Int): Int {
         val workAssignment = workAssignmentDAO.getSpecificWorkAssignment(workAssignmentId)
@@ -285,7 +285,7 @@ class CourseServiceImpl : CourseService {
                 requiresReport = report.requiresReport ?: workAssignment.requiresReport,
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
-        workAssignmentDAO.addToWorkAssignmentVersion(workAssignment)
+        workAssignmentDAO.addToWorkAssignmentVersion(updatedWorkAssignment)
         workAssignmentDAO.deleteReportOnWorkAssignment(workAssignmentId, reportId)
         return workAssignmentDAO.updateWorkAssignment(workAssignmentId, updatedWorkAssignment)
     }
@@ -318,7 +318,8 @@ class CourseServiceImpl : CourseService {
                 requiresReport = workAssignmentStage.requiresReport,
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
-        workAssignmentDAO.deleteStagedWorkAssignment(stageId) //TODO use transaction
+        workAssignmentDAO.addToWorkAssignmentVersion(workAssignment)
+        workAssignmentDAO.deleteSpecificStagedWorkAssignment(stageId) //TODO use transaction
         return workAssignmentDAO.createWorkAssignmentOnCourseInTerm(courseId, termId, workAssignment)    //TODO use transaction
     }
 
@@ -336,7 +337,7 @@ class CourseServiceImpl : CourseService {
         return courseDAO.updateCourse(updatedCourse)
     }
 
-    override fun voteOnStagedWorkAssignment(stageId: Int, inputVote: VoteInputModel): Int = workAssignmentDAO.voteOnStagedWorkAssignment(stageId, inputVote)
+    override fun voteOnStagedWorkAssignment(stageId: Int, inputVote: VoteInputModel): Int = workAssignmentDAO.voteOnStagedWorkAssignment(stageId, Vote.valueOf(inputVote.vote))
 
     override fun getAllVersionsOfSpecificCourse(courseId: Int): List<CourseVersion> = courseDAO.getAllVersionsOfSpecificCourse(courseId)
 
@@ -358,9 +359,9 @@ class CourseServiceImpl : CourseService {
 
     override fun deleteAllCourses(): Int = courseDAO.deleteAllCourses()
 
-    override fun deleteSpecificCourse(courseId: Int): Int = courseDAO.deleteCourse(courseId)
+    override fun deleteSpecificCourse(courseId: Int): Int = courseDAO.deleteSpecificCourse(courseId)
 
-    override fun deleteAllStagedCourses(): Int = courseDAO.deleteAllCourseStages()
+    override fun deleteAllStagedCourses(): Int = courseDAO.deleteAllStagedCourses()
 
     override fun deleteSpecificStagedCourse(stageId: Int): Int = courseDAO.deleteStagedCourse(stageId)
 
@@ -368,40 +369,40 @@ class CourseServiceImpl : CourseService {
 
     override fun deleteReportOnCourse(courseId: Int, reportId: Int): Int = courseDAO.deleteReportOnCourse(reportId)
 
-    override fun deleteExamsOfCourseInTerm(courseId: Int, termId: Int): Int = examDAO.deleteAllExamsOfCourseInTerm(courseId, termId)
+    override fun deleteAllExamsOfCourseInTerm(courseId: Int, termId: Int): Int = examDAO.deleteAllExamsOfCourseInTerm(courseId, termId)
 
-    override fun deleteExamOfCourseInTerm(courseId: Int, termId: Int, examId: Int): Int = examDAO.deleteExam(examId)
+    override fun deleteSpecificExamOfCourseInTerm(courseId: Int, termId: Int, examId: Int): Int = examDAO.deleteSpecificExamOfCourseInTerm(examId)
 
-    override fun deleteStagedExamsOfCourseInTerm(courseId: Int, termId: Int): Int = examDAO.deleteAllStagedExamsOfCourseInTerm(courseId, termId)
+    override fun deleteAllStagedExamsOfCourseInTerm(courseId: Int, termId: Int): Int = examDAO.deleteAllStagedExamsOfCourseInTerm(courseId, termId)
 
-    override fun deleteStagedExamOfCourseInTerm(courseId: Int, termId: Int, stageId: Int): Int = examDAO.deleteStagedExam(stageId)
+    override fun deleteStagedExam(stageId: Int): Int = examDAO.deleteStagedExam(stageId)
 
-    override fun deleteAllReportsOnExamOfCourseInTerm(courseId: Int, termId: Int, examId: Int): Int = examDAO.deleteAllReportsOnExam(examId)
+    override fun deleteAllReportsOnExam(examId: Int): Int = examDAO.deleteAllReportsOnExam(examId)
 
-    override fun deleteReportOnExamOfCourseInTerm(courseId: Int, termId: Int, examId: Int, reportId: Int): Int = examDAO.deleteReportOnExam(examId, reportId)
+    override fun deleteReportOnExam(examId: Int, reportId: Int): Int = examDAO.deleteReportOnExam(examId, reportId)
 
-    override fun deleteWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int = workAssignmentDAO.deleteWorkAssignmentsOfCourseInTerm(courseId, termId)
+    override fun deleteAllWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int = workAssignmentDAO.deleteAllWorkAssignmentsOfCourseInTerm(courseId, termId)
 
-    override fun deleteWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, workAssignmentId: Int): Int = workAssignmentDAO.deleteWorkAssignment(workAssignmentId)
+    override fun deleteSpecificWorkAssignment(workAssignmentId: Int): Int = workAssignmentDAO.deleteSpecificWorkAssignment(workAssignmentId)
 
-    override fun deleteStagedWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int = workAssignmentDAO.deleteAllStagedWorkAssignmentsOfCourseInTerm(courseId, termId)
+    override fun deleteAllStagedWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int = workAssignmentDAO.deleteAllStagedWorkAssignmentsOfCourseInTerm(courseId, termId)
 
-    override fun deleteStagedWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, stageId: Int): Int = workAssignmentDAO.deleteStagedWorkAssignment(stageId)
+    override fun deleteSpecificStagedWorkAssignment(stageId: Int): Int = workAssignmentDAO.deleteSpecificStagedWorkAssignment(stageId)
 
-    override fun deleteAllReportsOfWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, workAssignmentId: Int): Int = workAssignmentDAO.deleteAllReportsOnWorkAssignment(workAssignmentId)
+    override fun deleteAllReportsOnWorkAssignment(workAssignmentId: Int): Int = workAssignmentDAO.deleteAllReportsOnWorkAssignment(workAssignmentId)
 
-    override fun deleteReportOfWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, workAssignmentId: Int, reportId: Int): Int = workAssignmentDAO.deleteReportOnWorkAssignment(workAssignmentId, reportId)
+    override fun deleteReportOnWorkAssignment(workAssignmentId: Int, reportId: Int): Int = workAssignmentDAO.deleteReportOnWorkAssignment(workAssignmentId, reportId)
 
-    override fun deleteAllVersionsOfCourse(courseId: Int): Int = courseDAO.deleteAllVersionCourses(courseId)
+    override fun deleteAllVersionsOfCourse(courseId: Int): Int = courseDAO.deleteAllVersionsOfCourse(courseId)
 
-    override fun deleteVersionOfCourse(courseId: Int, version: Int): Int = courseDAO.deleteVersionCourse(courseId, version)
+    override fun deleteVersionOfCourse(courseId: Int, version: Int): Int = courseDAO.deleteVersionOfCourse(courseId, version)
 
-    override fun deleteAllVersionsOfWorkAssignment(courseId: Int, termId: Int, workAssignmentId: Int): Int = workAssignmentDAO.deleteAllVersionWorkAssignments(workAssignmentId)
+    override fun deleteAllVersionsOfWorkAssignment(workAssignmentId: Int): Int = workAssignmentDAO.deleteAllVersionOfWorkAssignments(workAssignmentId)
 
-    override fun deleteVersionOfWorkAssignment(courseId: Int, termId: Int, workAssignmentId: Int, version: Int): Int = workAssignmentDAO.deleteVersionWorkAssignment(workAssignmentId, version)
+    override fun deleteVersionOfWorkAssignment(workAssignmentId: Int, version: Int): Int = workAssignmentDAO.deleteVersionWorkAssignment(workAssignmentId, version)
 
-    override fun deleteAllVersionsOfExam(courseId: Int, termId: Int, examId: Int): Int = examDAO.deleteAllVersionExams(examId)
+    override fun deleteAllVersionsOfExam(examId: Int): Int = examDAO.deleteAllVersionOfExam(examId)
 
-    override fun deleteVersionOfExam(courseId: Int, termId: Int, examId: Int, version: Int): Int = examDAO.deleteVersionExam(examId, version)
+    override fun deleteVersionOfExam(examId: Int, version: Int): Int = examDAO.deleteVersionOfExam(examId, version)
 
 }

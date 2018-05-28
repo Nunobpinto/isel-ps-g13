@@ -40,7 +40,7 @@ interface CourseDAO {
 
     fun addCourseToProgramme(programmeId: Int, course: Course) : Int
 
-    fun deleteCourse(courseId: Int) : Int
+    fun deleteSpecificCourse(courseId: Int) : Int
 
     fun deleteAllCourses() : Int
 
@@ -68,7 +68,7 @@ interface CourseDAO {
 
     fun deleteStagedCourse(courseStageId: Int) : Int
 
-    fun deleteAllCourseStages() : Int
+    fun deleteAllStagedCourses() : Int
 
     fun deleteStagedCourseOfProgramme(programmeId: Int,stageId: Int) : Int
 
@@ -91,9 +91,9 @@ interface CourseDAO {
 
     fun addToCourseVersion(updatedCourse: Course) : Int
 
-    fun deleteVersionCourse(versionCourseId: Int, version: Int) : Int
+    fun deleteVersionOfCourse(courseId: Int, version: Int) : Int
 
-    fun deleteAllVersionCourses(versionCourseId: Int) : Int
+    fun deleteAllVersionsOfCourse(versionCourseId: Int) : Int
 
     fun deleteSpecificVersionOfCourseOfProgramme(programmeId: Int, courseId: Int, versionId: Int): Int
 

@@ -1,6 +1,7 @@
 package isel.leic.ps.eduWikiAPI.repository.interfaces
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
+import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.domain.model.WorkAssignment
 import isel.leic.ps.eduWikiAPI.domain.model.report.WorkAssignmentReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
@@ -16,9 +17,9 @@ interface WorkAssignmentDAO {
 
     fun getAllWorkAssignment() : List<WorkAssignment>
 
-    fun deleteWorkAssignment(courseMiscUnitId: Int) : Int
+    fun deleteSpecificWorkAssignment(courseMiscUnitId: Int) : Int
 
-    fun deleteWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int
+    fun deleteAllWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int
 
     fun updateWorkAssignment(workAssignmentId: Int, workAssignment: WorkAssignment) : Int
 
@@ -36,13 +37,11 @@ interface WorkAssignmentDAO {
 
     fun getAllWorkAssignmentStages() : List<WorkAssignmentStage>
 
-    fun deleteStagedWorkAssignment(stageId: Int) : Int
+    fun deleteSpecificStagedWorkAssignment(stageId: Int) : Int
 
     fun deleteAllStagedWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int
 
     fun createWorkAssignmentStage(workAssignmentStage: WorkAssignmentStage)
-
-    fun voteOnWorkAssignmentStage(courseMiscUnitStageId: Int, voteType: Int)
 
     fun getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignmentStage>
 
@@ -50,7 +49,7 @@ interface WorkAssignmentDAO {
 
     fun createStagingWorkAssingment(courseId: Int, termId: Int, stage: WorkAssignmentStage): Int
 
-    fun voteOnStagedWorkAssignment(stageId: Int, inputVote: VoteInputModel): Int
+    fun voteOnStagedWorkAssignment(stageId: Int, vote: Vote): Int
 
     /**
      * Version entities queries
@@ -62,7 +61,7 @@ interface WorkAssignmentDAO {
 
     fun deleteVersionWorkAssignment(versionWorkAssignmentId: Int, version: Int) : Int
 
-    fun deleteAllVersionWorkAssignments(versionWorkAssignmentId: Int) : Int
+    fun deleteAllVersionOfWorkAssignments(versionWorkAssignmentId: Int) : Int
 
     fun addToWorkAssignmentVersion(workAssignment: WorkAssignment) : Int
 
@@ -80,7 +79,7 @@ interface WorkAssignmentDAO {
 
     fun addReportToWorkAssignmentOnCourseInTerm(workAssignmentId: Int, workAssignmentReport: WorkAssignmentReport): Int
 
-    fun voteOnReportToWorkAssignmentOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int
+    fun voteOnReportToWorkAssignmentOnCourseInTerm(reportId: Int, vote: Vote): Int
 
     fun getSpecificReportOfWorkAssignment(workAssignmentId: Int, reportId: Int): WorkAssignmentReport
 

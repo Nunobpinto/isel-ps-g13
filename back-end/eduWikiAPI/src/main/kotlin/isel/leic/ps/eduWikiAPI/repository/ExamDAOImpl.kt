@@ -83,9 +83,11 @@ class ExamDAOImpl : ExamDAO {
         null
     }
 
-    override fun deleteExam(courseMiscUnitId: Int): Int = dbi.withHandle<Int, Exception> {
+    override fun deleteSpecificExamOfCourseInTerm(courseMiscUnitId: Int): Int = dbi.withHandle<Int, Exception> {
         val delete = "delete from $COURSE_MISC_UNIT_TABLE where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :id"
-        it.createUpdate(delete).bind("id", courseMiscUnitId).execute()
+        it.createUpdate(delete)
+                .bind("id", courseMiscUnitId)
+                .execute()
     }
 
     override fun updateExam(examId: Int, exam: Exam): Int = dbi.withHandle<Int, Exception> {
@@ -212,12 +214,12 @@ class ExamDAOImpl : ExamDAO {
                 .execute()
     }
 
-    override fun voteOnStagedExam(stageId: Int, inputVote: VoteInputModel): Int = dbi.inTransaction<Int, Exception> {
+    override fun voteOnStagedExam(stageId: Int, vote: Vote): Int = dbi.inTransaction<Int, Exception> {
         val voteQuery = "select $EXM_VOTES from $EXM_STAGE_TABLE where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :examId"
         var votes = it.createQuery(voteQuery)
                 .bind("examId", stageId)
                 .mapTo(Int::class.java).findOnly()
-        votes = if (inputVote.vote.equals(Vote.Down)) --votes else ++votes
+        votes = if (vote == Vote.Down) --votes else ++votes
         val updateQuery = "update $EXM_STAGE_TABLE set $EXM_VOTES = :votes where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :examId"
         it.createUpdate(updateQuery)
                 .bind("votes", votes)
@@ -264,7 +266,7 @@ class ExamDAOImpl : ExamDAO {
         null
     }
 
-    override fun deleteVersionExam(versionExamId: Int, version: Int): Int = dbi.withHandle<Int, Exception> {
+    override fun deleteVersionOfExam(versionExamId: Int, version: Int): Int = dbi.withHandle<Int, Exception> {
         val delete = "delete from $EXM_VERSION_TABLE where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :versionExamId and $EXM_VERSION = :version"
         it.createUpdate(delete)
                 .bind("versionExamId", versionExamId)
@@ -336,7 +338,9 @@ class ExamDAOImpl : ExamDAO {
 
     override fun deleteAllReportsOnExam(courseMiscUnitId: Int): Int = dbi.withHandle<Int, Exception> {
         val delete = "delete from $EXM_REPORT_TABLE where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :id"
-        it.createUpdate(delete).bind("id", courseMiscUnitId).execute()
+        it.createUpdate(delete)
+                .bind("id", courseMiscUnitId)
+                .execute()
     }
 
     override fun getAllExamsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<Exam> = dbi.withHandle<List<Exam>, Exception> {
@@ -541,7 +545,7 @@ class ExamDAOImpl : ExamDAO {
                 .execute()
     }
 
-    override fun deleteAllVersionExams(versionExamId: Int): Int = dbi.withHandle<Int, Exception> {
+    override fun deleteAllVersionOfExam(versionExamId: Int): Int = dbi.withHandle<Int, Exception> {
         val delete = "delete from $EXM_VERSION_TABLE where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :versionExamId"
         it.createUpdate(delete)
                 .bind("versionExamId", versionExamId)

@@ -70,13 +70,13 @@ interface CourseService {
 
     fun deleteSpecificCourse(courseId: Int): Int
 
-    fun deleteExamsOfCourseInTerm(courseId: Int, termId: Int): Int
+    fun deleteAllExamsOfCourseInTerm(courseId: Int, termId: Int): Int
 
-    fun deleteExamOfCourseInTerm(courseId: Int, termId: Int, examId: Int): Int
+    fun deleteSpecificExamOfCourseInTerm(courseId: Int, termId: Int, examId: Int): Int
 
-    fun deleteWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int
+    fun deleteAllWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int
 
-    fun deleteWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, workAssignmentId: Int): Int
+    fun deleteSpecificWorkAssignment(workAssignmentId: Int): Int
 
     /**
      * Stage entities queries
@@ -106,17 +106,17 @@ interface CourseService {
 
     fun voteOnStagedWorkAssignment(stageId: Int, inputVote: VoteInputModel): Int
 
-    fun deleteStagedWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int
+    fun deleteAllStagedWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int
 
-    fun deleteStagedWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, stageId: Int): Int
+    fun deleteSpecificStagedWorkAssignment(stageId: Int): Int
 
     fun deleteAllStagedCourses(): Int
 
     fun deleteSpecificStagedCourse(stageId: Int): Int
 
-    fun deleteStagedExamsOfCourseInTerm(courseId: Int, termId: Int): Int
+    fun deleteAllStagedExamsOfCourseInTerm(courseId: Int, termId: Int): Int
 
-    fun deleteStagedExamOfCourseInTerm(courseId: Int, termId: Int, stageId: Int): Int
+    fun deleteStagedExam(stageId: Int): Int
 
     /**
      * Version entities queries
@@ -142,13 +142,13 @@ interface CourseService {
 
     fun deleteVersionOfCourse(courseId: Int, version: Int): Int
 
-    fun deleteAllVersionsOfWorkAssignment(courseId: Int, termId: Int, workAssignmentId: Int): Int
+    fun deleteAllVersionsOfWorkAssignment(workAssignmentId: Int): Int
 
-    fun deleteVersionOfWorkAssignment(courseId: Int, termId: Int, workAssignmentId: Int, version: Int): Int
+    fun deleteVersionOfWorkAssignment(workAssignmentId: Int, version: Int): Int
 
-    fun deleteAllVersionsOfExam(courseId: Int, termId: Int, examId: Int): Int
+    fun deleteAllVersionsOfExam(examId: Int): Int
 
-    fun deleteVersionOfExam(courseId: Int, termId: Int, examId: Int, version: Int): Int
+    fun deleteVersionOfExam(examId: Int, version: Int): Int
 
     /**
      * Report entities queries
@@ -188,12 +188,12 @@ interface CourseService {
 
     fun deleteReportOnCourse(courseId: Int, reportId: Int): Int
 
-    fun deleteAllReportsOnExamOfCourseInTerm(courseId: Int, termId: Int, examId: Int): Int
+    fun deleteAllReportsOnExam(examId: Int): Int
 
-    fun deleteReportOnExamOfCourseInTerm(courseId: Int, termId: Int, examId: Int, reportId: Int): Int
+    fun deleteReportOnExam(examId: Int, reportId: Int): Int
 
-    fun deleteAllReportsOfWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, workAssignmentId: Int): Int
+    fun deleteAllReportsOnWorkAssignment(workAssignmentId: Int): Int
 
-    fun deleteReportOfWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, workAssignmentId: Int, reportId: Int): Int
+    fun deleteReportOnWorkAssignment(workAssignmentId: Int, reportId: Int): Int
 
 }

@@ -17,7 +17,7 @@ interface ExamDAO {
 
     fun getAllExams(): List<Exam>
 
-    fun deleteExam(courseMiscUnitId: Int): Int
+    fun deleteSpecificExamOfCourseInTerm(courseMiscUnitId: Int): Int
 
     fun deleteAllExamsOfCourseInTerm(courseId: Int, termId: Int): Int
 
@@ -43,7 +43,7 @@ interface ExamDAO {
 
     fun createStagingExam(courseId: Int, termId: Int, examStage: ExamStage): Int
 
-    fun voteOnStagedExam(stageId: Int, inputVote: VoteInputModel): Int
+    fun voteOnStagedExam(stageId: Int, vote: Vote): Int
 
     fun getStageEntriesFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int): List<ExamStage>
 
@@ -65,9 +65,9 @@ interface ExamDAO {
 
     fun getAllVersionExams(): List<ExamVersion>
 
-    fun deleteVersionExam(versionExamId: Int, version: Int): Int
+    fun deleteVersionOfExam(versionExamId: Int, version: Int): Int
 
-    fun deleteAllVersionExams(versionExamId: Int): Int
+    fun deleteAllVersionOfExam(versionExamId: Int): Int
 
     fun createVersionExam(examVersion: ExamVersion)
 

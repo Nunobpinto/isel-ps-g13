@@ -66,7 +66,7 @@ class CourseDAOImpl : CourseDAO {
                 .findFirst()
     }
 
-    override fun deleteCourse(courseId: Int): Int = dbi.withHandle<Int, Exception> {
+    override fun deleteSpecificCourse(courseId: Int): Int = dbi.withHandle<Int, Exception> {
         val delete = "delete from $COURSE_TABLE where $COURSE_ID = :courseId"
         it.createUpdate(delete)
                 .bind("courseId", courseId)
@@ -132,7 +132,7 @@ class CourseDAOImpl : CourseDAO {
                 .execute()
     }
 
-    override fun deleteAllCourseStages(): Int = dbi.withHandle<Int, Exception> {
+    override fun deleteAllStagedCourses(): Int = dbi.withHandle<Int, Exception> {
         it.createUpdate("delete from $COURSE_STAGE_TABLE").execute()
     }
 
@@ -165,10 +165,10 @@ class CourseDAOImpl : CourseDAO {
                 .execute()
     }
 
-    override fun deleteVersionCourse(versionCourseId: Int, version: Int): Int = dbi.withHandle<Int, Exception> {
+    override fun deleteVersionOfCourse(courseId: Int, version: Int): Int = dbi.withHandle<Int, Exception> {
         val delete = "delete from $COURSE_VERSION_TABLE where $COURSE_ID = :id and $COURSE_VERSION = :version"
         it.createUpdate(delete)
-                .bind("id", versionCourseId)
+                .bind("id", courseId)
                 .bind("version", version)
                 .execute()
     }
@@ -331,7 +331,7 @@ class CourseDAOImpl : CourseDAO {
                 .execute()
     }
 
-    override fun deleteAllVersionCourses(versionCourseId: Int): Int = dbi.withHandle<Int, Exception> {
+    override fun deleteAllVersionsOfCourse(versionCourseId: Int): Int = dbi.withHandle<Int, Exception> {
         val delete = "delete from $COURSE_VERSION_TABLE where $COURSE_ID = :id"
         it.createUpdate(delete)
                 .bind("id", versionCourseId)
