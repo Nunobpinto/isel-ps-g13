@@ -44,10 +44,10 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
     lateinit var dbi: Jdbi
 
     override fun getSpecificWorkAssignment(courseMiscUnitId: Int): WorkAssignment = dbi.withHandle<WorkAssignment, Exception> {
-        val select = "select * from $WRK_ASS_TABLE" +
+        val select = "select * from $WRK_ASS_TABLE " +
                 "where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :workItemId"
         it.createQuery(select)
-                .bind("courseId", courseMiscUnitId)
+                .bind("workItemId", courseMiscUnitId)
                 .mapTo(WorkAssignment::class.java)
                 .findOnly()
     }
@@ -214,7 +214,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
     override fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, workAssignment: WorkAssignment): Int = dbi.inTransaction<Int, Exception>{
         val insertInCourseMiscUnit = "insert into ${CourseDAOImpl.COURSE_MISC_UNIT_TABLE}" +
                 "(${CourseDAOImpl.COURSE_MISC_TYPE}, ${CourseDAOImpl.COURSE_ID}, " +
-                "${TermDAOImpl.TERM_ID}, ${CourseDAOImpl.COURSE_TIMESTAMP}" +
+                "${TermDAOImpl.TERM_ID}, ${CourseDAOImpl.COURSE_TIMESTAMP})" +
                 "values(:miscType, :courseId, :termId, :timestamp)"
 
         val courseMiscUnit = it.createUpdate(insertInCourseMiscUnit)
@@ -230,7 +230,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                 "(${CourseDAOImpl.COURSE_MISC_UNIT_ID}, $WRK_ASS_VERSION, " +
                 "$WRK_ASS_CREATED_BY, $WRK_ASS_SHEET, $WRK_ASS_SUPPLEMENT, $WRK_ASS_DUE_DATE, " +
                 "$WRK_ASS_INDIVIDUAL, $WRK_ASS_LATE_DELIVERY, $WRK_ASS_MULTIPLE_DELIVERIES, " +
-                "$WRK_ASS_REQUIRES_REPORT, $WRK_ASS_VOTES, $WRK_ASS_TIMESTAMP" +
+                "$WRK_ASS_REQUIRES_REPORT, $WRK_ASS_VOTES, $WRK_ASS_TIMESTAMP)" +
                 "values(:courseMiscUnitId, :version, :createdBy, :sheet," +
                 ":supplement, :dueDate, :individual, :lateDelivery, :multipleDeliveries, :requiresReport, :votes, :timestamp)"
         it.createUpdate(insertInWorkAssignment)
@@ -241,7 +241,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                 .bind("supplement", workAssignment.supplement)
                 .bind("dueDate", workAssignment.dueDate)
                 .bind("individual", workAssignment.individual)
-                .bind("lateDelivey", workAssignment.lateDelivery)
+                .bind("lateDelivery", workAssignment.lateDelivery)
                 .bind("multipleDeliveries", workAssignment.multipleDeliveries)
                 .bind("requiresReport", workAssignment.requiresReport)
                 .bind("votes", workAssignment.votes)

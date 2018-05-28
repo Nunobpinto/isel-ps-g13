@@ -9,7 +9,7 @@ import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXM_SHEET
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXM_TYPE
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXM_VERSION
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXM_VOTES
-import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.TIMESTAMP
+import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXM_TIMESTAMP
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.sql.Timestamp
 import java.time.LocalDate;
@@ -33,6 +33,6 @@ data class Exam (
         val phase: String = "",
         @ColumnName(EXM_LOCATION)
         val location: String = "",
-        @ColumnName(TIMESTAMP)
+        @ColumnName(EXM_TIMESTAMP)
         val timestamp: Timestamp = Timestamp(1)
 )

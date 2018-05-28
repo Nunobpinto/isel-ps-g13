@@ -1,7 +1,7 @@
 package isel.leic.ps.eduWikiAPI.domain.model.report
 
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_UNIT_ID
-import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.TIMESTAMP
+import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WRK_ASS_TIMESTAMP
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WRK_ASS_DUE_DATE
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WRK_ASS_INDIVIDUAL
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WRK_ASS_LATE_DELIVERY
@@ -39,6 +39,6 @@ data class WorkAssignmentReport (
         val reportedBy: String = "",
         @ColumnName(WRK_ASS_VOTES)
         val votes: Int = 0,
-        @ColumnName(TIMESTAMP)
+        @ColumnName(WRK_ASS_TIMESTAMP)
         val timestamp: Timestamp
 )

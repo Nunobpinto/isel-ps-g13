@@ -222,7 +222,8 @@ class ExamDAOImpl : ExamDAO {
     }
 
     override fun getAllExamsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<Exam> = dbi.withHandle<List<Exam>, Exception> {
-        val select = "select * from $EXM_TABLE as E" +
+        val select = "select $EXM_LOCATION, $EXM_VERSION, $EXM_DUE_DATE, $EXM_PHASE" +
+                ", $EXM_SHEET, $EXM_TYPE, $EXM_VOTES from $EXM_TABLE as E" +
                 "inner join ${CourseDAOImpl.COURSE_MISC_UNIT_TABLE} as C " +
                 "on E.${CourseDAOImpl.COURSE_MISC_UNIT_ID} = C.${CourseDAOImpl.COURSE_MISC_UNIT_ID}" +
                 "where C.${CourseDAOImpl.COURSE_ID} = :courseId and C.${TermDAOImpl.TERM_ID} = :termId"
@@ -234,12 +235,13 @@ class ExamDAOImpl : ExamDAO {
     }
 
     override fun getSpecificExamFromSpecificTermOfCourse(courseId: Int, termId: Int, examId: Int): Exam = dbi.withHandle<Exam, Exception> {
-        val select = "select * from $EXM_TABLE as E" +
+        val select = "select $EXM_LOCATION, $EXM_VERSION, $EXM_DUE_DATE, $EXM_PHASE" +
+                ", $EXM_SHEET, $EXM_TYPE, $EXM_VOTES from $EXM_TABLE as E " +
                 "inner join ${CourseDAOImpl.COURSE_MISC_UNIT_TABLE} as C " +
-                "on E.${CourseDAOImpl.COURSE_MISC_UNIT_TABLE} = C.${CourseDAOImpl.COURSE_MISC_UNIT_ID}" +
-                "where C.$${CourseDAOImpl.COURSE_ID} = :courseId " +
+                "on E.${CourseDAOImpl.COURSE_MISC_UNIT_ID} = C.${CourseDAOImpl.COURSE_MISC_UNIT_ID} " +
+                "where C.${CourseDAOImpl.COURSE_ID} = :courseId " +
                 "and C.${TermDAOImpl.TERM_ID} = :termId " +
-                "and ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :examId"
+                "and C.${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :examId"
         it.createQuery(select)
                 .bind("courseId", courseId)
                 .bind("termId", termId)
@@ -249,7 +251,8 @@ class ExamDAOImpl : ExamDAO {
     }
 
     override fun getStageEntriesFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int): List<ExamStage> = dbi.withHandle<List<ExamStage>, Exception> {
-        val select = "select * from $EXM_STAGE_TABLE as E" +
+        val select = "select $EXM_LOCATION, $EXM_VERSION, $EXM_DUE_DATE, $EXM_PHASE" +
+                ", $EXM_SHEET, $EXM_TYPE, $EXM_VOTES, $EXM_CREATED_BY from $EXM_STAGE_TABLE as E" +
                 "inner join ${CourseDAOImpl.COURSE_MISC_UNIT_TABLE} as C " +
                 "on E.${CourseDAOImpl.COURSE_MISC_UNIT_ID} = C.${CourseDAOImpl.COURSE_MISC_UNIT_ID}" +
                 "where C.${CourseDAOImpl.COURSE_ID} = :courseId and C.${TermDAOImpl.TERM_ID} = :termId"
@@ -261,7 +264,8 @@ class ExamDAOImpl : ExamDAO {
     }
 
     override fun getStageEntryFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): ExamStage = dbi.withHandle<ExamStage, Exception> {
-        val select = "select * from $EXM_STAGE_TABLE as E" +
+        val select = "select $EXM_LOCATION, $EXM_VERSION, $EXM_DUE_DATE, $EXM_PHASE" +
+                ", $EXM_SHEET, $EXM_TYPE, $EXM_VOTES from $EXM_STAGE_TABLE as E" +
                 "inner join ${CourseDAOImpl.COURSE_MISC_UNIT_TABLE} as C " +
                 "on E.${CourseDAOImpl.COURSE_MISC_UNIT_ID} = C.${CourseDAOImpl.COURSE_MISC_UNIT_ID}" +
                 "where C.${CourseDAOImpl.COURSE_ID} = :courseId " +

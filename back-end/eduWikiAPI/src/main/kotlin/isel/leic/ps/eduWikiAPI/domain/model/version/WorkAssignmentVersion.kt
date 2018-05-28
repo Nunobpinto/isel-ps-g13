@@ -1,7 +1,7 @@
 package isel.leic.ps.eduWikiAPI.domain.model.version
 
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_UNIT_ID
-import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.TIMESTAMP
+import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WRK_ASS_TIMESTAMP
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WRK_ASS_CREATED_BY
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WRK_ASS_DUE_DATE
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WRK_ASS_INDIVIDUAL
@@ -34,7 +34,7 @@ data class WorkAssignmentVersion (
         val requiresReport: Boolean = false,
         @ColumnName(WRK_ASS_CREATED_BY)
         val createdBy: String = "",
-        @ColumnName(TIMESTAMP)
+        @ColumnName(WRK_ASS_TIMESTAMP)
         val timestamp: Timestamp = Timestamp(0),
         @ColumnName(WRK_ASS_VERSION)
         val version: Int = 0
