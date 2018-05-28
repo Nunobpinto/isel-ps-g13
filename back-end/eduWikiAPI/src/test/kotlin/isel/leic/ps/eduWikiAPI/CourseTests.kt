@@ -99,7 +99,7 @@ class CourseTests {
 
     @Test
     fun testDeleteCourseWithCascade() {
-        val deletedRows = courseDAO.deleteCourse(1)
+        val deletedRows = courseDAO.deleteSpecificCourse(1)
         assertEquals(1, deletedRows)
         val course = courseDAO.getSpecificCourse(1)
         assertFalse(course.isPresent)
