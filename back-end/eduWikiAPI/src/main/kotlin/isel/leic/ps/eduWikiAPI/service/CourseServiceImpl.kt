@@ -40,7 +40,6 @@ class CourseServiceImpl : CourseService {
     @Autowired
     lateinit var classDAO: ClassDAO
 
-
     override fun getAllCourses(): List<Course> = courseDAO.getAllCourses()
 
     override fun getSpecificCourse(courseId: Int) = courseDAO.getSpecificCourse(courseId)
@@ -110,7 +109,7 @@ class CourseServiceImpl : CourseService {
         return courseDAO.reportCourse(courseId, courseReport)
     }
 
-    override fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel): Int = courseDAO.voteOnReportedCourse(reportId, Vote.valueOf(inputVote.vote))
+    override fun voteOnReportOfCourse(reportId: Int, inputVote: VoteInputModel): Int = courseDAO.voteOnReportOfCourse(reportId, Vote.valueOf(inputVote.vote))
 
     override fun updateReportedCourse(courseId: Int, reportId: Int) : Int {
          val course = courseDAO.getSpecificCourse(courseId).get()

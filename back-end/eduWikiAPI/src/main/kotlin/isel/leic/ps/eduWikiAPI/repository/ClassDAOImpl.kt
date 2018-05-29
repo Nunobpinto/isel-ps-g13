@@ -15,15 +15,24 @@ class ClassDAOImpl : ClassDAO {
     companion object {
         //TABLE NAMES
         const val CLASS_TABLE = "class"
+        const val COURSE_CLASS_TABLE = "course_class"
         const val CLASS_REPORT_TABLE = "class_report"
         const val CLASS_STAGE_TABLE = "class_stage"
         const val CLASS_VERSION_TABLE = "class_stage"
         // FIELDS
+        const val CLASS_TERM_ID = "term_id"
         const val CLASS_ID = "class_id"
         const val CLASS_VERSION = "class_version"
         const val CLASS_NAME = "class_name"
         const val CLASS_CREATED_BY = "created_by"
         const val CLASS_TIMESTAMP = "timestamp"
+        const val CLASS_VOTES = "votes"
+        // COURSE_CLASS_FIELDS
+        const val CRS_CLASS_CLASS_ID = "class_id"
+        const val CRS_CLASS_TERM_ID = "term_id"
+        const val CRS_CLASS_COURSE_ID = "course_id"
+        const val CRS_CLASS_VOTES = "votes"
+        const val CRS_CLASS_TIMESTAMP = "time_stamp"
     }
 
     @Autowired
@@ -83,9 +92,17 @@ class ClassDAOImpl : ClassDAO {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getAllClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class>  = dbi.withHandle<List<Class>, Exception>{
-        val select = "select * from ${CourseDAOImpl.COURSE_CLASS_TABLE}" +
-                "where ${CourseDAOImpl.COURSE_ID} = :courseId and ${TermDAOImpl.TERM_ID} = :termId"
+    override fun getAllClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class> = dbi.withHandle<List<Class>, Exception> {
+        val select = "select " +
+                "$CLASS_TABLE.$CLASS_ID, " +
+                "$CLASS_TABLE.$CLASS_VERSION, " +
+                "$CLASS_TABLE.$CLASS_CREATED_BY, " +
+                "$CLASS_TABLE.$CLASS_NAME, " +
+                "$CLASS_TABLE.$CLASS_TERM_ID, " +
+                "$CLASS_TABLE.$CLASS_VOTES, " +
+                "$CLASS_TABLE.$CLASS_TIMESTAMP, " +
+                "inner join $COURSE_CLASS_TABLE on $CLASS_TABLE.$CLASS_TERM_ID = $COURSE_CLASS_TABLE.$CRS_CLASS_TERM_ID " +
+                "where $COURSE_CLASS_TABLE.$CRS_CLASS_COURSE_ID = :courseId and $COURSE_CLASS_TABLE.$CRS_CLASS_TERM_ID = :termId"
         it.createQuery(select)
                 .bind("courseId", courseId)
                 .bind("termId", termId)
@@ -93,9 +110,17 @@ class ClassDAOImpl : ClassDAO {
                 .list() //TODO rever query
     }
 
-    override fun getClassOnSpecificTermOfCourse(courseId: Int, termId: Int, classId: Int): Class  = dbi.withHandle<Class, Exception>{
-        val select = "select * from ${CourseDAOImpl.COURSE_CLASS_TABLE}" +
-                "where ${CourseDAOImpl.COURSE_ID} = :courseId and ${TermDAOImpl.TERM_ID} = :termId and $CLASS_ID = :classId"
+    override fun getClassOnSpecificTermOfCourse(courseId: Int, termId: Int, classId: Int): Class = dbi.withHandle<Class, Exception> {
+        val select = "select " +
+                "$CLASS_TABLE.$CLASS_ID, " +
+                "$CLASS_TABLE.$CLASS_VERSION, " +
+                "$CLASS_TABLE.$CLASS_CREATED_BY, " +
+                "$CLASS_TABLE.$CLASS_NAME, " +
+                "$CLASS_TABLE.$CLASS_TERM_ID, " +
+                "$CLASS_TABLE.$CLASS_VOTES, " +
+                "$CLASS_TABLE.$CLASS_TIMESTAMP, " +
+                "inner join $COURSE_CLASS_TABLE on $CLASS_TABLE.$CLASS_TERM_ID = $COURSE_CLASS_TABLE.$CRS_CLASS_TERM_ID " +
+                "where $COURSE_CLASS_TABLE.$CRS_CLASS_COURSE_ID = :courseId and $COURSE_CLASS_TABLE.$CRS_CLASS_TERM_ID = :termId and $COURSE_CLASS_TABLE.$CRS_CLASS_CLASS_ID = :classId"
         it.createQuery(select)
                 .bind("courseId", courseId)
                 .bind("termId", termId)

@@ -168,7 +168,7 @@ interface CourseService {
 
     fun reportCourse(courseId: Int, inputCourseReport: CourseReportInputModel): Int
 
-    fun voteOnReportedCourse(reportId: Int, inputVote: VoteInputModel): Int
+    fun voteOnReportOfCourse(reportId: Int, inputVote: VoteInputModel): Int
 
     fun voteOnReportToExamOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int
 

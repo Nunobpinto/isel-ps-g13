@@ -258,7 +258,7 @@ class CourseDAOImpl : CourseDAO {
                 .findOnly()
     }
 
-    override fun voteOnReportedCourse(reportId: Int, vote: Vote): Int = dbi.withHandle<Int, Exception> {
+    override fun voteOnReportOfCourse(reportId: Int, vote: Vote): Int = dbi.withHandle<Int, Exception> {
         val voteQuery = "select $COURSE_VOTES from $COURSE_REPORT_TABLE where $COURSE_REPORT_ID = :reportId"
         var votes = it.createQuery(voteQuery)
                 .bind("reportId", reportId)

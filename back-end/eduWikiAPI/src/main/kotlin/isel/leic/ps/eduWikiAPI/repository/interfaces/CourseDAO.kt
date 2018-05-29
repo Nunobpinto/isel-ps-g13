@@ -109,7 +109,7 @@ interface CourseDAO {
 
     fun getSpecificReportOfCourse(courseId: Int, reportId: Int): CourseReport
 
-    fun voteOnReportedCourse(reportId: Int, vote: Vote) : Int
+    fun voteOnReportOfCourse(reportId: Int, vote: Vote) : Int
 
     fun voteOnReportOfCourseProgramme(programmeId: Int, reportId: Int, vote: Vote): Int
 
