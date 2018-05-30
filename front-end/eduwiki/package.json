@@ -1,8 +1,8 @@
 {
-  "name": "yacma",
+  "name": "eduwiki",
   "version": "0.1.0",
   "private": true,
-  "description": "Web Application using React for Checklists Management",
+  "description": "Web Application using our EduWikiAPI",
   "dependencies": {
     "antd": "^3.5.0",
     "bluebird": "^3.5.1",

@@ -80,7 +80,7 @@ export default class extends React.Component {
           throw new Error('Unable to access content')
         }
         const ct = resp.headers.get('content-type') || ''
-        if (ct === 'application/vnd.siren+json' || ct.startsWith('application/vnd.siren+json;')) {
+        if (ct === 'application/json' || ct.startsWith('application/json;')) {
           return resp.json().then(json => [resp, json])
         }
         throw new Error(`unexpected content type ${ct}`)
