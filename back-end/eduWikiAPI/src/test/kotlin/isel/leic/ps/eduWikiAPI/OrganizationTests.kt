@@ -1,12 +1,12 @@
 package isel.leic.ps.eduWikiAPI
 
 import isel.leic.ps.eduWikiAPI.domain.model.Organization
+import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.domain.model.report.OrganizationReport
 import isel.leic.ps.eduWikiAPI.repository.interfaces.OrganizationDAO
 import junit.framework.TestCase.*
-import org.junit.After
+import org.jdbi.v3.core.Handle
 import org.junit.Test
-import org.junit.internal.runners.statements.Fail
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -15,10 +15,6 @@ import org.springframework.test.context.jdbc.SqlGroup
 import org.springframework.test.context.junit4.SpringRunner
 import java.sql.Timestamp
 import java.time.LocalDateTime
-import java.util.HashSet
-import java.sql.ResultSet
-import java.sql.SQLException
-import javax.sql.DataSource
 
 
 @SqlGroup(
@@ -32,16 +28,69 @@ class OrganizationTests {
     @Autowired
     lateinit var organizationDAO: OrganizationDAO
 
+    @Autowired
+    lateinit var handle: Handle
+
     @Test
     fun testGetOrganization() {
-        val org = organizationDAO.getSpecificOrganization(1)
+        handle.begin()
+        val org = organizationDAO.getSpecificOrganization(1).get()
         assertEquals("ISEL", org.shortName)
         assertEquals("Instituto Superior de Engenharia de Lisboa", org.fullName)
         assertEquals("ze", org.createdBy)
+        handle.commit()
+    }
+
+    @Test
+    fun testGetAllOrganizations(){
+        handle.begin()
+        val orgs = organizationDAO.getAllOrganizations()
+        assertEquals(1,orgs.size)
+        handle.commit()
+    }
+
+    @Test
+    fun testDeleteOrganization() {
+        handle.begin()
+        assertEquals(organizationDAO.deleteOrganization(1), 1)
+        handle.commit()
+    }
+
+    @Test
+    fun testDeleteAllOrganizations() {
+        handle.begin()
+        assertEquals(organizationDAO.deleteAllOrganizations(), 1)
+        handle.commit()
+    }
+
+    @Test
+    fun testUpdateOrganization() {
+        handle.begin()
+        val time = Timestamp.valueOf(LocalDateTime.now())
+        val org = Organization(
+                id = 1,
+                version = 2,
+                fullName = "Instituto Superior de Engenharia de Lisboa",
+                shortName = "ISEL",
+                address = "Rua Emídio Navarro 1",
+                contact = "218 317 000",
+                createdBy = "joao",
+                timestamp = time
+        )
+        assertEquals(organizationDAO.updateOrganization(org), 1)
+
+
+        val currOrg = organizationDAO.getSpecificOrganization(1).get()
+        assertEquals(currOrg.version, 2)
+        assertEquals(currOrg.address, "Rua Emídio Navarro 1")
+        assertEquals(currOrg.createdBy, "joao")
+        assertEquals(currOrg.timestamp, time)
+        handle.commit()
     }
 
     @Test
     fun testInsertOrganization() {
+        handle.begin()
         val newOrg = Organization(
                 createdBy = "nuno",
                 fullName = "Instituto Superior Técnico",
@@ -49,22 +98,41 @@ class OrganizationTests {
                 address = "Alameda D.Afonso Henriques",
                 contact = "222222"
         )
-        val rows = organizationDAO.createOrganization(newOrg)
-        assertEquals(1, rows)
-        val deleteRows = organizationDAO.deleteOrganization(2)
-        assertEquals(1, deleteRows)
+        val dbOrg = organizationDAO.createOrganization(newOrg).get()
+        //TODO: verificar se o ReturnGeneratedKeys() não esta a funcionar por estar-se no H2
+        assertEquals(dbOrg.id, 2)
+        val deleteRows = organizationDAO.deleteOrganization(dbOrg.id)
+        assertEquals(deleteRows, 1)
+        handle.commit()
+    }
+
+    @Test
+    fun testVoteOnOrganization() {
+        handle.begin()
+        var updatedRows = organizationDAO.voteOnOrganization(1, Vote.Up)
+        assertEquals(updatedRows, 1)
+        var org = organizationDAO.getSpecificOrganization(1).get()
+        assertEquals(org.votes, 1)
+
+        updatedRows = organizationDAO.voteOnOrganization(1, Vote.Down)
+        assertEquals(updatedRows, 1)
+        org = organizationDAO.getSpecificOrganization(1).get()
+        assertEquals(org.votes, 0)
+        handle.commit()
     }
 
     @Test
     fun testApprovedReport() {
+        handle.begin()
         val report = OrganizationReport(
-                id = 1,
+                organization_id = 1,
                 contact = "+351218317000",
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
-        val rows = organizationDAO.reportOrganization(organizationReport = report)
-        assertEquals(1, rows)
-        val organization = organizationDAO.getSpecificOrganization(1)
+        val orgReport = organizationDAO.reportOrganization(report).get()
+        assertEquals(orgReport.reportId, 1)
+        handle.commit()
+        /*val organization = organizationDAO.getSpecificOrganization(1).get()
         val versionRows = organizationDAO.addToOrganizationVersion(organization)
         assertEquals(1, versionRows)
         val updatedOrganization = Organization(
@@ -77,17 +145,11 @@ class OrganizationTests {
         )
         val updateRow = organizationDAO.updateOrganization(updatedOrganization)
         assertEquals(1, updateRow)
-        val newOrg = organizationDAO.getSpecificOrganization(1)
+        val newOrg = organizationDAO.getSpecificOrganization(1).get()
         assertEquals(2, newOrg.version)
         val deleteReportRows = organizationDAO.deleteReportOnOrganization(1)
         assertEquals(1, deleteReportRows)
-        val deleteVersonRows = organizationDAO.deleteVersion(1, 1)
-        assertEquals(1, deleteVersonRows)
-    }
-
-    @Test
-    fun testGetAllOrganizations(){
-        val orgs = organizationDAO.getAllOrganizations()
-        assertEquals(1,orgs.size)
+        val deleteVersonRows = organizationDAO.deleteSpecificVersionOfOrganization(1, 1)
+        assertEquals(1, deleteVersonRows)*/
     }
 }

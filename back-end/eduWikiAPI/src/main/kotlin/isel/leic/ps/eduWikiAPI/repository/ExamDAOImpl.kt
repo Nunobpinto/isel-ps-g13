@@ -57,9 +57,9 @@ class ExamDAOImpl : ExamDAO {
     }
 
     override fun deleteSpecificExamOfCourseInTerm(courseMiscUnitId: Int): Int = dbi.withHandle<Int, Exception> {
-        val delete = "delete from ${CourseDAOImpl.COURSE_MISC_UNIT_TABLE} where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :id"
+        val delete = "delete from ${CourseDAOImpl.COURSE_MISC_UNIT_TABLE} where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :organization_id"
         it.createUpdate(delete)
-                .bind("id", courseMiscUnitId)
+                .bind("organization_id", courseMiscUnitId)
                 .execute()
     }
 
@@ -215,9 +215,9 @@ class ExamDAOImpl : ExamDAO {
     }
 
     override fun deleteAllReportsOnExam(courseMiscUnitId: Int): Int = dbi.withHandle<Int, Exception> {
-        val delete = "delete from $EXM_REPORT_TABLE where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :id"
+        val delete = "delete from $EXM_REPORT_TABLE where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :organization_id"
         it.createUpdate(delete)
-                .bind("id", courseMiscUnitId)
+                .bind("organization_id", courseMiscUnitId)
                 .execute()
     }
 

@@ -16,21 +16,19 @@ data class OrganizationReport (
         @ColumnName(ORG_REPORT_ID)
         val reportId: Int = 0,
         @ColumnName(ORG_ID)
-        val id: Int = 0,
+        val organization_id: Int = 0,
         @ColumnName(ORG_FULL_NAME)
-        val fullName: String? = "",
+        val fullName: String? = null,
         @ColumnName(ORG_SHORT_NAME)
-        val shortName: String? = "",
+        val shortName: String? = null,
         @ColumnName(ORG_ADDRESS)
-        val address: String? = "",
+        val address: String? = null,
         @ColumnName(ORG_CONTACT)
-        val contact: String? = "",
+        val contact: String? = null,
         @ColumnName(ORG_REPORTED_BY)
         val reportedBy:String = "",
         @ColumnName(ORG_VOTE)
         val votes: Int = 0,
-        @ColumnName(ORG_REPORTED_BY)
-        val reporter: String = "",
         @ColumnName(ORG_TIMESTAMP)
-        val timestamp: Timestamp
+        val timestamp: Timestamp = Timestamp(1)
 )

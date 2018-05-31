@@ -3,52 +3,46 @@ package isel.leic.ps.eduWikiAPI.service.interfaces
 import isel.leic.ps.eduWikiAPI.domain.inputModel.OrganizationInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.OrganizationReportInputModel
-import isel.leic.ps.eduWikiAPI.domain.inputModel.versions.OrganizationVersionInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Organization
 import isel.leic.ps.eduWikiAPI.domain.model.report.OrganizationReport
 import isel.leic.ps.eduWikiAPI.domain.model.version.OrganizationVersion
+import java.util.*
 
 interface OrganizationService {
 
-    /**
-     * Main entities queries
-     */
-
-    fun getSpecificOrganization(organizationId: Int): Organization
+    fun getSpecificOrganization(organizationId: Int): Optional<Organization>
 
     fun getAllOrganizations(): List<Organization>
 
-    fun createOrganization(organizationInputModel: OrganizationInputModel)
+    fun createOrganization(organizationInputModel: OrganizationInputModel) : Optional<Organization>
 
     fun deleteOrganization(organizationId: Int): Int
 
     fun deleteAllOrganizations(): Int
 
-    fun updateOrganization(organization: Organization) : Int
+    fun updateOrganization(organizationId: Int, organizationInputModel: OrganizationInputModel): Int
 
-    fun getAllOrganizationReports(organizationId: Int): List<OrganizationReport>
+    fun getAllReportsOnOrganization(organizationId: Int): List<OrganizationReport>
 
-    fun getSpecificReport(organizationId: Int, reportId: Int): OrganizationReport
+    fun getSpecificReportOnOrganization(organizationId: Int, reportId: Int): Optional<OrganizationReport>
 
-    fun reportOrganization(organizationId: Int, input: OrganizationReportInputModel)
+    fun reportOrganization(organizationId: Int, input: OrganizationReportInputModel): Optional<OrganizationReport>
 
-    fun deleteAllReports(organizationId: Int): Int
+    fun deleteAllReportsOnOrganization(organizationId: Int): Int
 
-    fun deleteSpecificReport(organizationId: Int, reportId: Int): Int
+    fun deleteSpecificReportOnOrganization(organizationId: Int, reportId: Int): Int
 
-    fun voteOrganization(organizationId: Int, input: VoteInputModel)
+    fun voteOnOrganization(organizationId: Int, input: VoteInputModel): Int
 
-    fun voteOnReport(organizationId: Int, reportId: Int, input: VoteInputModel)
+    fun voteOnReport(organizationId: Int, reportId: Int, input: VoteInputModel): Int
 
-    fun getAllVersions(organizationId: Int): List<OrganizationVersion>
+    fun getAllVersionsOfOrganization(organizationId: Int): List<OrganizationVersion>
 
-    fun getVersion(organizationId: Int, version: Int): OrganizationVersion
+    fun getSpecificVersionOfOrganization(organizationId: Int, version: Int): Optional<OrganizationVersion>
 
-    fun createVersion(organizationId: Int, input: OrganizationVersionInputModel)
+    fun deleteAllVersionsOfOrganization(organizationId: Int): Int
 
-    fun deleteAllVersions(organizationId: Int): Int?
-
-    fun deleteSpecificVersion(organizationId: Int, version: Int): Int?
+    fun deleteSpecificVersionOfOrganization(organizationId: Int, version: Int): Int
 
     fun updateReportedOrganization(organizationId: Int, reportId: Int)
 }
