@@ -44,8 +44,16 @@ class ProgrammeServiceImpl : ProgrammeService {
                 duration = inputProgramme.duration!!,
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
-        programmeDAO.createProgramme(programme)
-        programmeDAO.addToProgrammeVersion(programme)
+        val id =programmeDAO.createProgramme(programme)
+        programmeDAO.addToProgrammeVersion(Programme(
+                id = id,
+                createdBy = programme.createdBy,
+                fullName = programme.fullName,
+                shortName = programme.shortName,
+                academicDegree = programme.academicDegree,
+                totalCredits = programme.totalCredits,
+                duration = programme.duration,
+                timestamp = programme.timestamp))
     }
 
     override fun createStagingProgramme(inputProgramme: ProgrammeInputModel) {

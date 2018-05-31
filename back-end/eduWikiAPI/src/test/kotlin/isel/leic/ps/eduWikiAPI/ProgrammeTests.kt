@@ -104,4 +104,18 @@ class ProgrammeTests {
         assertEquals(2,progs.size)
     }
 
+    @Test
+    fun testCreateProgramme(){
+        val programme = Programme(
+                createdBy = "ze",
+                fullName = "Licenciatura em Engenharia I",
+                shortName = "LI",
+                academicDegree = "Licenciatura",
+                totalCredits = 180,
+                duration = 6
+        )
+        val id = programmeDAO.createProgramme(programme)
+        assertNull(id)
+    }
+
 }

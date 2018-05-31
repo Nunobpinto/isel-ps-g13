@@ -106,7 +106,9 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .bind("votes", programme.votes)
                 .bind("credits", programme.createdBy)
                 .bind("timestamp", programme.timestamp)
-                .execute()
+                .executeAndReturnGeneratedKeys()
+                .mapTo(Int::class.java)
+                .findOnly()
     }
 
     override fun voteOnProgramme(programmeId: Int, inputVote: VoteInputModel) = dbi.useTransaction<Exception> {
