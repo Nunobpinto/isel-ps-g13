@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS programme (
 -- Add column column restricting the terms where it can be lectured (winter only, summer only, both)
 CREATE TABLE IF NOT EXISTS course (
   course_id SERIAL,
-  organization_id INTEGER REFERENCES organization ON DELETE RESTRICT,
+  organization_id INTEGER REFERENCES organization ON DELETE CASCADE,
   course_version INTEGER NOT NULL DEFAULT 1,
   created_by VARCHAR(20) NOT NULL,
   course_full_name VARCHAR(100) UNIQUE NOT NULL,
