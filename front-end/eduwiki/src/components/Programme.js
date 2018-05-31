@@ -1,8 +1,6 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
-import {makeCancellable} from './promises'
-import HttpGet from './http-get'
-import HttpGetSwitch from './http-get-switch'
+import {Link} from 'react-router-dom'
 
 export default class extends React.Component {
   constructor (props) {
@@ -14,127 +12,97 @@ export default class extends React.Component {
       total_credits: 0,
       duration: 0,
       createdBy: '',
-      redirect: false
+      votes: 0,
+      timestamp: '',
+      courses: [],
+      voteType: undefined,
+      progError: undefined,
+      courseError: undefined
     }
-    this.handleChange = this.handleChange.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
-    this.createProgrammeForm = this.createProgrammeForm.bind(this)
-  }
-
-  handleChange (ev) {
-    this.setState({
-      [ev.target.name]: ev.target.value
-    })
-  }
-
-  handleSubmit (ev) {
-    ev.preventDefault()
-    const data = {
-      full_name: this.state.full_name,
-      short_name: this.state.short_name,
-      academic_degree: this.state.academic_degree,
-      total_credits: this.state.total_credits,
-      duration: this.state.duration,
-      created_by: this.state.createdBy,
-      organization_id: 1
-    }
-    const body = {
-      method: 'POST',
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    }
-    const url = 'http://localhost:8080/programmes'
-    this.promise = makeCancellable(fetch(url, body))
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
-        const ct = resp.headers.get('content-type') || ''
-        if (ct === 'application/json') {
-          return resp.json().then(json => [resp, json])
-        }
-        throw new Error(`unexpected content type ${ct}`)
-      })
-      .then(([resp, json]) => {
-        this.promise = undefined
-        this.setState({
-          redirect: true
-        })
-      })
-      .catch(error => {
-        this.setState({
-          loading: false,
-          error: error,
-          json: undefined,
-          response: undefined
-        })
-        this.promise = undefined
-      })
   }
 
   render () {
     return (
       <div>
-        <HttpGet
-          url={'http://localhost:8080/programmes'}
-          headers={{headers: { 'Access-Control-Allow-Origin': '*' }}}
-          render={(result) => (
-            <div>
-              <HttpGetSwitch
-                result={result}
-                onJson={json =>
-                  (
-                    <div>
-                      <ul>
-                        {json.map(item => <li key={item.id}>
-                          <p><strong>Full Name</strong> : {item.fullName}</p>
-                          <p><strong>Short Name</strong> : {item.shortName}</p>
-                          <p><strong>Academic Degree</strong> : {item.academicDegree}</p>
-                          <p><strong>Total Credits</strong> :{item.totalCredits}</p>
-                          <p><strong>Duration</strong> :{item.duration}</p>
-                          <p><strong>Created By</strong> : {item.createdBy}</p>
-                          <p><strong>Votes</strong> : {item.votes}</p>
-                        </li>)}
-                      </ul>
-                      <form onSubmit={this.handleSubmit}>
-                        <input placeholder='Full Name' type='text' name='full_name' value={this.state.full_name} onChange={this.handleChange} />
-                        <input placeholder='Short Name' type='text' name='short_name' value={this.state.short_name} onChange={this.handleChange} />
-                        <input placeholder='Academic Degree' type='text' name='academic_degree' value={this.state.academic_degree} onChange={this.handleChange} />
-                        <input placeholder='Total Credits' type='number' name='total_credits' value={this.state.total_credits} onChange={this.handleChange} />
-                        <input placeholder='Duration' type='number' name='duration' value={this.state.duration} onChange={this.handleChange} />
-                        <input placeholder='Created By' type='text' name='createdBy' value={this.state.createdBy} onChange={this.handleChange} />
-                        <input type='submit' value='Submit' />
-                      </form>
-                    </div>
-                  )
-                }
-                onError={_ => (
-                  <div>
-                    {this.createProgrammeForm()}
-                  </div>
-                )
-                }
-              />
-            </div>
-          )}
-        />
+        <div>
+          <h1>{this.state.full_name} - {this.state.short_name} <small>({this.state.timestamp})</small> </h1>
+          <button>About</button>
+          <div>
+            <p>Academic Degree : {this.state.academic_degree}</p>
+            <p>Total Credits : {this.state.total_credits}</p>
+            <p>Duration : {this.state.duration}</p>
+            <p>Created By : {this.state.createdBy}</p>
+            <p>Votes : {this.state.votes}</p>
+          </div>
+          <button>Courses</button>
+          <div>
+            <ul>
+              {this.state.courses.map(item => <li key={item.id}>
+                <p>{item.fullName} - {item.createdBy}</p>
+              </li>
+              )}
+            </ul>
+          </div>
+        </div>
       </div>
     )
   }
 
-  createProgrammeForm () {
-    return (
-      <form onSubmit={this.handleSubmit}>
-        <input placeholder='insert Full Name' type='text' value={this.state.full_name} onChange={this.handleChange} />
-        <input placeholder='insert Short Name' type='text' value={this.state.short_name} onChange={this.handleChange} />
-        <input placeholder='insert Academic Degrees' type='text' value={this.state.academic_degree} onChange={this.handleChange} />
-        <input placeholder='insert Total Credits' type='number' value={this.state.total_credits} onChange={this.handleChange} />
-        <input placeholder='insert Duration' type='number' value={this.state.duration} onChange={this.handleChange} />
-        <input type='submit' value='Submit' />
-      </form>
-    )
+  componentDidMount () {
+    const id = this.props.match.params.id
+    const uri = 'http://localhost:8080/programmes/' + id
+    const header = {
+      headers: { 'Access-Control-Allow-Origin': '*' }
+    }
+    fetch(uri, header)
+      .then(resp => {
+        if (resp.status >= 400) {
+          throw new Error('Unable to access content')
+        }
+        const ct = resp.headers.get('content-type') || ''
+        if (ct === 'application/json' || ct.startsWith('application/json;')) {
+          return resp.json().then(json => [resp, json])
+        }
+        throw new Error(`unexpected content type ${ct}`)
+      })
+      .then(([resp, json]) => {
+        const coursesUri = `http://localhost:8080/programmes/${id}/courses`
+        fetch(coursesUri, header)
+          .then(response => {
+            if (response.status >= 400) {
+              throw new Error('Unable to access content')
+            }
+            const ct = resp.headers.get('content-type') || ''
+            if (ct === 'application/json' || ct.startsWith('application/json;')) {
+              return response.json()
+            }
+            throw new Error(`unexpected content type ${ct}`)
+          })
+          .then(courses =>
+            this.setState({
+              full_name: json.fullName,
+              short_name: json.shortName,
+              academic_degree: json.academicDegree,
+              total_credits: json.totalCredits,
+              duration: json.duration,
+              createdBy: json.createdBy,
+              timestamp: json.timestamp,
+              votes: json.votes,
+              progError: undefined,
+              courseError: undefined,
+              courses: courses
+            })
+          )
+          .catch(err => this.setState({courseError: err}))
+      })
+      .catch(error => {
+        this.setState({
+          progError: error
+        })
+      })
+  }
+
+  componentDidUpdate () {
+
   }
 }
