@@ -223,9 +223,9 @@ class ExamDAOImpl : ExamDAO {
 
     override fun getAllExamsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<Exam> = dbi.withHandle<List<Exam>, Exception> {
         val select = "select $EXM_LOCATION, $EXM_VERSION, $EXM_DUE_DATE, $EXM_PHASE" +
-                ", $EXM_SHEET, $EXM_TYPE, $EXM_VOTES from $EXM_TABLE as E" +
-                "inner join ${CourseDAOImpl.COURSE_MISC_UNIT_TABLE} as C " +
-                "on E.${CourseDAOImpl.COURSE_MISC_UNIT_ID} = C.${CourseDAOImpl.COURSE_MISC_UNIT_ID}" +
+                ", $EXM_SHEET, $EXM_TYPE, $EXM_VOTES from $EXM_TABLE as E " +
+                "inner join ${CourseDAOImpl.COURSE_MISC_UNIT_TABLE} as C  " +
+                "on E.${CourseDAOImpl.COURSE_MISC_UNIT_ID} = C.${CourseDAOImpl.COURSE_MISC_UNIT_ID} " +
                 "where C.${CourseDAOImpl.COURSE_ID} = :courseId and C.${TermDAOImpl.TERM_ID} = :termId"
         it.createQuery(select)
                 .bind("courseId", courseId)

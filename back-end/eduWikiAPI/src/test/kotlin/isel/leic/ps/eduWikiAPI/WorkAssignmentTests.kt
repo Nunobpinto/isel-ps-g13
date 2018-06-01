@@ -22,7 +22,7 @@ import java.time.LocalDate
 
 
 @SqlGroup(
-        (Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = ["classpath:createDB.sql","classpath:inserts.sql"])),
+        (Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = ["classpath:createDB.sql", "classpath:inserts.sql"])),
         (Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = ["classpath:dropDB.sql"]))
 )
 @RunWith(SpringRunner::class)
@@ -33,15 +33,21 @@ class WorkAssignmentTests {
     lateinit var workAssignmentDAO: WorkAssignmentDAO
 
     @Test
-    fun testGetWorkAssignment(){
-        val wrs = workAssignmentDAO.getSpecificWorkAssignment(1)
-        assertEquals("Apoio",wrs.supplement)
-        assertEquals("Exemplo-PI",wrs.sheet)
-        assertEquals(false,wrs.individual)
+    fun testGetAlWorkAssignments() {
+        val works = workAssignmentDAO.getAllWorkAssignmentsFromSpecificTermOfCourse(1,1)
+        assertEquals(1,works.size)
     }
 
     @Test
-    fun testAddWorkAssignment(){
+    fun testGetWorkAssignment() {
+        val wrs = workAssignmentDAO.getSpecificWorkAssignment(1)
+        assertEquals("Apoio", wrs.supplement)
+        assertEquals("Exemplo-PI", wrs.sheet)
+        assertEquals(false, wrs.individual)
+    }
+
+    @Test
+    fun testAddWorkAssignment() {
         val wrs = WorkAssignment(
                 createdBy = "bruno",
                 dueDate = LocalDate.now(),
@@ -52,7 +58,7 @@ class WorkAssignmentTests {
                 multipleDeliveries = true,
                 requiresReport = false
         )
-        val insertedRows = workAssignmentDAO.createWorkAssignmentOnCourseInTerm(1,1,wrs)
+        val insertedRows = workAssignmentDAO.createWorkAssignmentOnCourseInTerm(1, 1, wrs)
         assertEquals(1, insertedRows)
     }
 }

@@ -163,9 +163,11 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
     }
 
     override fun getAllWorkAssignmentsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignment> = dbi.withHandle<List<WorkAssignment>, Exception> {
-        val select = "select * from $WRK_ASS_TABLE as W" +
+        val select = "select C.${CourseDAOImpl.COURSE_MISC_UNIT_ID}," +
+                "W.$WRK_ASS_DUE_DATE, W.$WRK_ASS_INDIVIDUAL, W.$WRK_ASS_SHEET, W.$WRK_ASS_SUPPLEMENT " +
+                "from $WRK_ASS_TABLE as W " +
                 "inner join ${CourseDAOImpl.COURSE_MISC_UNIT_TABLE} as C " +
-                "on W.${CourseDAOImpl.COURSE_MISC_UNIT_ID} = C.${CourseDAOImpl.COURSE_MISC_UNIT_ID}" +
+                "on W.${CourseDAOImpl.COURSE_MISC_UNIT_ID} = C.${CourseDAOImpl.COURSE_MISC_UNIT_ID} " +
                 "where C.${CourseDAOImpl.COURSE_ID} = :courseId and C.${TermDAOImpl.TERM_ID} = :termId"
         it.createQuery(select)
                 .bind("courseId", courseId)

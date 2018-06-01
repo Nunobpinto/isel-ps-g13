@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 
 @SqlGroup(
-        (Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = ["classpath:createDB.sql","classpath:inserts.sql"])),
+        (Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = ["classpath:createDB.sql", "classpath:inserts.sql"])),
         (Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = ["classpath:dropDB.sql"]))
 )
 @RunWith(SpringRunner::class)
@@ -31,15 +31,21 @@ class ExamTests {
     lateinit var examDAO: ExamDAO
 
     @Test
-    fun testGetExam(){
-        val exam = examDAO.getSpecificExamFromSpecificTermOfCourse(1,1,4)
+    fun testGetAllExams() {
+        val exams = examDAO.getAllExamsFromSpecificTermOfCourse(1, 1)
+        assertEquals(1, exams.size)
+    }
+
+    @Test
+    fun testGetExam() {
+        val exam = examDAO.getSpecificExamFromSpecificTermOfCourse(1, 1, 4)
         assertEquals("1ºexame de PI 1718v", exam.sheet)
         assertEquals("1ª", exam.phase)
         assertEquals("A.2.14", exam.location)
     }
 
     @Test
-    fun testAddExam(){
+    fun testAddExam() {
         val exam = Exam(
                 createdBy = "bruno",
                 dueDate = LocalDate.now(),
@@ -48,7 +54,7 @@ class ExamTests {
                 type = "Exam",
                 phase = "E.E"
         )
-        val insertedRows = examDAO.createExam(1,1,exam)
+        val insertedRows = examDAO.createExam(1, 1, exam)
         assertEquals(1, insertedRows)
     }
 }
