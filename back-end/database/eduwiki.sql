@@ -229,7 +229,7 @@ CREATE TABLE IF NOT EXISTS student_course_class (
 --------------------------
 
 CREATE TABLE IF NOT EXISTS programme_stage (
-  programme_id SERIAL,
+  programme_stage_id SERIAL,
   programme_full_name VARCHAR(100) NOT NULL,
   programme_short_name VARCHAR(10) NOT NULL,
   programme_academic_degree VARCHAR(50) NOT NULL,
@@ -238,21 +238,22 @@ CREATE TABLE IF NOT EXISTS programme_stage (
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  PRIMARY KEY (programme_id)
+  PRIMARY KEY (programme_stage_id)
 );
 
 CREATE TABLE IF NOT EXISTS course_stage (
-  course_id SERIAL,
+  course_stage_id SERIAL,
   organization_id INTEGER REFERENCES organization ON DELETE CASCADE,
   course_full_name VARCHAR(100) NOT NULL,
   course_short_name VARCHAR(10) NOT NULL,
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  PRIMARY KEY (course_id)
+  PRIMARY KEY (course_stage_id)
 );
 
 CREATE TABLE IF NOT EXISTS course_programme_stage (
+  course_programme_stage_id SERIAL,
   course_id INTEGER REFERENCES course ON DELETE CASCADE,
   programme_id INTEGER REFERENCES programme ON DELETE CASCADE,
   course_lectured_term VARCHAR(50) NOT NULL,
@@ -261,17 +262,17 @@ CREATE TABLE IF NOT EXISTS course_programme_stage (
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  PRIMARY KEY (course_id, programme_id)
+  PRIMARY KEY (course_programme_stage_id)
 );
 
 CREATE TABLE IF NOT EXISTS class_stage (
-  class_id SERIAL,
+  class_stage_id SERIAL,
   term_id INTEGER REFERENCES term ON DELETE CASCADE,
   class_name VARCHAR(10) NOT NULL,
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  PRIMARY KEY (class_id, term_id)
+  PRIMARY KEY (class_stage_id, term_id)
 );
 
 CREATE TABLE IF NOT EXISTS course_class_stage (

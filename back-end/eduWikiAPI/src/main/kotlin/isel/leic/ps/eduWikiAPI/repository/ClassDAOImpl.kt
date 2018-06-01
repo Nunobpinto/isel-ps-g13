@@ -27,6 +27,7 @@ class ClassDAOImpl : ClassDAO {
         const val CLASS_CREATED_BY = "created_by"
         const val CLASS_TIMESTAMP = "timestamp"
         const val CLASS_VOTES = "votes"
+        const val CLASS_STAGE_ID = "course_stage_id"
         // COURSE_CLASS_FIELDS
         const val CRS_CLASS_CLASS_ID = "class_id"
         const val CRS_CLASS_TERM_ID = "term_id"
