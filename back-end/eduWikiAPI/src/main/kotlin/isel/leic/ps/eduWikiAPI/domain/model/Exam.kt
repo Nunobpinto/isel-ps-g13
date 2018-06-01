@@ -10,6 +10,7 @@ import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXM_TYPE
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXM_VERSION
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXM_VOTES
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXM_TIMESTAMP
+import isel.leic.ps.eduWikiAPI.repository.TermDAOImpl
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.sql.Timestamp
 import java.time.LocalDate;
@@ -17,6 +18,8 @@ import java.time.LocalDate;
 data class Exam (
         @ColumnName(COURSE_MISC_UNIT_ID)
         val id: Int = 0,
+        @ColumnName(TermDAOImpl.TERM_ID)
+        val termId: Int = 0,
         @ColumnName(EXM_VERSION)
         val version: Int = 0,
         @ColumnName(EXM_VOTES)

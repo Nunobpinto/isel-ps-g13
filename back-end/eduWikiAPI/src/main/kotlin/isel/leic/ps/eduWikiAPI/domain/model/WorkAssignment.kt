@@ -1,6 +1,7 @@
 package isel.leic.ps.eduWikiAPI.domain.model;
 
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_UNIT_ID
+import isel.leic.ps.eduWikiAPI.repository.TermDAOImpl
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WRK_ASS_TIMESTAMP
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WRK_ASS_CREATED_BY
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WRK_ASS_DUE_DATE
@@ -19,6 +20,8 @@ import java.time.LocalDate
 data class WorkAssignment (
         @ColumnName(COURSE_MISC_UNIT_ID)
         val id: Int = 0,
+        @ColumnName(TermDAOImpl.TERM_ID)
+        val termId: Int = 0,
         @ColumnName(WRK_ASS_VERSION)
         val version: Int = 0,
         @ColumnName(WRK_ASS_VOTES)
