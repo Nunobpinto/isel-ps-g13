@@ -1,6 +1,10 @@
 package isel.leic.ps.eduWikiAPI.controller
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.*
+import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ClassReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseClassReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.HomeworkReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.LessonReportInputModel
 import isel.leic.ps.eduWikiAPI.service.interfaces.ClassService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
@@ -9,29 +13,83 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/classes")
 class ClassController {
 
-    //TODO implementation of Class Controller methods
-    //TODO should report have a relational to specific course or all courses
-    //TODO presentations
     @Autowired
     lateinit var classService: ClassService
 
-    /**
-     * All GET Routes
-     */
+    // ---------- COURSE ----------
+
+    // ----------------------------
+    // Class Endpoints
+    // ----------------------------
+
     @GetMapping
     fun getAllClasses() = classService.getAllClasses()
 
     @GetMapping("/{classId}")
     fun getSpecificClass(@PathVariable classId: Int) = classService.getSpecificClass(classId)
 
-    @GetMapping("/{classId}/report")
+    @PostMapping
+    fun createCourse(@RequestBody input: ClassInputModel) = classService.createClass(input)
+
+    @PostMapping("/{classId}/vote")
+    fun voteOnClass(
+            @PathVariable classId: Int,
+            @RequestBody vote: VoteInputModel
+    ) = classService.voteOnClass(classId, vote)
+
+    @PatchMapping("/{classId}")
+    fun partialUpdateOnClass(
+            @PathVariable classId: Int,
+            @RequestBody input: ClassInputModel
+    ) = classService.updateClass(classId, input)
+
+    @DeleteMapping("/{classId}")
+    fun deleteSpecificClass(@PathVariable classId: Int) = classService.deleteSpecificClass(classId)
+
+    // ----------------------------
+    // Course Report Endpoints
+    // ----------------------------
+
+    @GetMapping("/{classId}/reports")
     fun getClassReports(@PathVariable classId: Int) = classService.getReportsOfClass(classId)
 
-    @GetMapping("/{classId}/report/{reportId}")
+    @GetMapping("/{classId}/reports/{reportId}")
     fun getSpecificClassReport(
             @PathVariable classId: Int,
             @PathVariable reportId: Int
     ) = classService.getSpecificReportOfClass(classId, reportId)
+
+    @PostMapping("/{classId}/reports")
+    fun reportClass(
+            @PathVariable classId: Int,
+            @RequestBody report: ClassReportInputModel
+    ) = classService.reportClass(classId, report)
+
+    @PostMapping("/{classId}/reports/{reportId}/vote")
+    fun voteOnReportedClass(
+            @PathVariable classId: Int,
+            @PathVariable reportId: Int,
+            @RequestBody vote: VoteInputModel
+    ) = classService.voteOnReportClass(classId, reportId, vote)
+
+    @PostMapping("/{classId}/reports/{reportId}")
+    fun updateReportedClass(
+            @PathVariable classId: Int,
+            @PathVariable reportId: Int
+    ) = classService.updateClassFromReport(classId, reportId)
+
+    @DeleteMapping("/{classId}/reports")
+    fun deleteAllReportsInClass(@PathVariable classId: Int) = classService.deleteAllReportsInClass(classId)
+
+    @DeleteMapping("/{classId}/reports/{reportId}")
+    fun deleteReportInClass(
+            @PathVariable classId: Int,
+            @PathVariable reportId: Int
+    ) = classService.deleteSpecificReportInClass(classId, reportId)
+
+    // ----------------------------
+    // Course Stage Endpoints
+    // ----------------------------
 
     @GetMapping("/stage")
     fun getAllClassStageEntries() = classService.getAllStagedClasses()
@@ -39,11 +97,52 @@ class ClassController {
     @GetMapping("/stage/{stageId}")
     fun getClassSpecificStageEntry(@PathVariable stageId: Int) = classService.getSpecificStagedClass(stageId)
 
+    @PostMapping("/stage")
+    fun createStagingClass(@RequestBody input: ClassInputModel) = NotImplementedError()
+
+    @PostMapping("/stage/{stageId}")
+    fun createClassFromStaged(@PathVariable stageId: Int) = NotImplementedError()
+
+    @PostMapping("/stage/{stageId}/vote")
+    fun voteOnStagedClass(
+            @PathVariable stageId: Int,
+            @RequestBody vote: VoteInputModel
+    ) = NotImplementedError()
+
+    @PatchMapping("/stage/{stageId}")
+    fun partialUpdateOnStagedClass(
+            @PathVariable stageId: Int,
+            @RequestBody input: ClassInputModel
+    ) = NotImplementedError()
+
+    @DeleteMapping("/stage")
+    fun deleteAllStagedClasses() = NotImplementedError()
+
+    @DeleteMapping("/stage/{stageId}")
+    fun deleteStagedClass(@PathVariable stageId: Int) = NotImplementedError()
+
+    // ----------------------------
+    // Course Version Endpoints
+    // ----------------------------
+
     @GetMapping("/{classId}/versions")
     fun getVersionsOfClass(@PathVariable classId: Int) = NotImplementedError()
 
     @GetMapping("/{classId}/versions/{versionId}")
     fun getSpecificVersionOfClass(@PathVariable classId: Int, @PathVariable versionId: Int) = NotImplementedError()
+
+    @DeleteMapping("/{courseId}/versions")
+    fun deleteAllVersionsOfClass(@PathVariable courseId: Int) = NotImplementedError()
+
+    @DeleteMapping("/{courseId}/versions/{version}")
+    fun deleteSpecificVersionOfClass(
+            @PathVariable courseId: Int,
+            @PathVariable version: Int
+    ) = NotImplementedError()
+
+    // ----------------------------
+    // Course Class Endpoints
+    // ----------------------------
 
     @GetMapping("/{classId}/courses")
     fun getCoursesOfClass(@PathVariable classId: Int) = NotImplementedError()
@@ -54,18 +153,68 @@ class ClassController {
             @PathVariable courseId: Int
     ) = NotImplementedError()
 
-    @GetMapping("/{classId}/courses/{courseId}/report")
+    @PostMapping("/{classId}/courses/{courseId}/vote")
+    fun voteOnCourseInClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @RequestBody vote: VoteInputModel
+    ) = NotImplementedError()
+
+    @DeleteMapping("/{classId}/courses/{courseId}")
+    fun deleteCourseInClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int
+    ) = NotImplementedError()
+
+    // ----------------------------
+    // Course Class Report Endpoints
+    // ----------------------------
+
+    @GetMapping("/{classId}/courses/{courseId}/reports")
     fun getReportsOfSpecificCourseOfClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int
     ) = NotImplementedError()
 
-    @GetMapping("/{classId}/courses/{courseId}/report/{reportId}")
+    @GetMapping("/{classId}/courses/{courseId}/reports/{reportId}")
     fun getReportOfSpecificCourseOfClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
             @PathVariable reportId: Int
     ) = NotImplementedError()
+
+    @PostMapping("/{classId}/courses/{courseId}/reports")
+    fun createReportOfCourseInClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @RequestBody courseClassReportInputModel: CourseClassReportInputModel
+    ) = NotImplementedError()
+
+    @PostMapping("/{classId}/courses/{courseId}/reports/{reportId}")
+    fun updateCourseInClassFromReport(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable reportId: Int
+    ) = NotImplementedError()
+
+    @GetMapping("/{classId}/courses/{courseId}/reports/{reportId}/vote")
+    fun voteOnReportOfSpecificCourseOfClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @RequestBody vote: VoteInputModel
+    ) = NotImplementedError()
+
+    @DeleteMapping("/{classId}/courses/{courseId}/reports/{reportId}")
+    fun deleteCourseReportInClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable reportId: Int
+    ) = NotImplementedError()
+
+
+    // ----------------------------
+    // Course Class Stage Endpoints
+    // ----------------------------
 
     @GetMapping("/{classId}/courses/{courseId}/stage")
     fun getStageEntriesOfSpecificCourseOfClass(
@@ -80,7 +229,69 @@ class ClassController {
             @PathVariable stageId: Int
     ) = NotImplementedError()
 
-    //lessons
+    @PostMapping("/{classId}/courses/{courseId}/stage/{stageId}")
+    fun createCourseOnClassFromStage(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable stageId: Int
+    ) = NotImplementedError()
+
+    @PostMapping("/{classId}/courses/{courseId}/stage/{stageId}/vote")
+    fun voteOnStagedCourseOnClassFromStage(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable stageId: Int,
+            @RequestBody vote: VoteInputModel
+    ) = NotImplementedError()
+
+    @DeleteMapping("/{classId}/courses/{courseId}/stage")
+    fun deleteStageEntriesOfSpecificCourseOfClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int
+    ) = NotImplementedError()
+
+    @DeleteMapping("/{classId}/courses/{courseId}/stage/{stageId}")
+    fun deleteSpecificStageEntryOfSpecificCourseOfClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable stageId: Int
+    ) = NotImplementedError()
+
+    // ----------------------------
+    // Course Class Version Endpoints
+    // ----------------------------
+
+    @GetMapping("/{classId}/courses/{courseId}/versions")
+    fun getVersionsOfCourseClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int
+    ) = NotImplementedError()
+
+    @GetMapping("/{classId}/courses/{courseId}/versions/{versionId}")
+    fun getSpecificVersionOfCourseInClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable versionId: Int
+    ) = NotImplementedError()
+
+    @DeleteMapping("/{classId}/courses/{courseId}/versions")
+    fun deleteAllVersionsOfCourseInClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int
+    ) = NotImplementedError()
+
+    @DeleteMapping("/{classId}/courses/{courseId}/versions/{version}")
+    fun deleteSpecificVersionOfClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable version: Int
+    ) = NotImplementedError()
+
+
+    // ----------------------------
+    // Lessons in Class Endpoints
+    // ----------------------------
+
     @GetMapping("/{classId}/courses/{courseId}/lessons")
     fun getLessonsFromSpecificCourseOfClass(
             @PathVariable classId: Int,
@@ -93,6 +304,83 @@ class ClassController {
             @PathVariable courseId: Int,
             @PathVariable lessonId: Int
     ) = NotImplementedError()
+
+    @PostMapping("/{classId}/courses/{courseId}/lessons")
+    fun createLessonOnCourseInClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @RequestBody lesson: LessonInputModel
+    ) = NotImplementedError()
+
+    @PostMapping("/{classId}/courses/{courseId}/lessons/{lessonId}/vote")
+    fun voteOnLessonOnCourseInClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @RequestBody vote: VoteInputModel
+    ) = NotImplementedError()
+
+    // ----------------------------
+    // Lessons in Report Class Endpoints
+    // ----------------------------
+
+    @GetMapping("/{classId}/courses/{courseId}/lessons/{lessonId}/reports")
+    fun getReportsFromLessonOnSpecificCourseOfClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable lessonId: Int
+    ) = NotImplementedError()
+
+    @GetMapping("/{classId}/courses/{courseId}/lessons/{lessonId}/reports/{reportId}")
+    fun getReportFromLessonOnSpecificCourseOfClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable lessonId: Int,
+            @PathVariable reportId: Int
+    ) = NotImplementedError()
+
+    @DeleteMapping("/{classId}/courses/{courseId}/lessons/{lessonId}/reports")
+    fun deleteReportOnAllLessonOfCourseInClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable lessonId: Int
+    ) = NotImplementedError()
+
+    @DeleteMapping("/{classId}/courses/{courseId}/lessons/{lessonId}/reports/{reportId}")
+    fun deleteReportOnLessonOfCourseInClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable lessonId: Int,
+            @PathVariable reportId: Int
+    ) = NotImplementedError()
+
+    @PostMapping("/{classId}/courses/{courseId}/lessons/{lessonId}/reports")
+    fun createReportOnLessonOnSpecificCourseOfClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable lessonId: Int,
+            @RequestBody report: LessonReportInputModel
+    ) = NotImplementedError()
+
+    @PostMapping("/{classId}/courses/{courseId}/lessons/{lessonId}/reports/{reportId}/vote")
+    fun voteOnReportFromLessonOnSpecificCourseOfClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable lessonId: Int,
+            @PathVariable reportId: Int,
+            @PathVariable vote: VoteInputModel
+    ) = NotImplementedError()
+
+    @PostMapping("/{classId}/courses/{courseId}/lessons/{lessonId}/reports/{reportId}")
+    fun updateLessonFromReport(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable lessonId: Int,
+            @PathVariable reportId: Int
+    ) = NotImplementedError()
+
+    // ----------------------------
+    // Lessons in Stage Class Endpoints
+    // ----------------------------
 
     @GetMapping("/{classId}/courses/{courseId}/lessons/stage")
     fun getStageEntriesFromLessonOnSpecificCourseOfClass(
@@ -107,22 +395,73 @@ class ClassController {
             @PathVariable stageId: Int
     ) = NotImplementedError()
 
-    @GetMapping("/{classId}/courses/{courseId}/lessons/{lessonId}/report")
-    fun getReportsFromLessonOnSpecificCourseOfClass(
+    @PostMapping("/{classId}/courses/{courseId}/lessons/stage")
+    fun createStagedLessonOfCourseInClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @RequestBody lesson: LessonInputModel
+    ) = NotImplementedError()
+
+    @DeleteMapping("/{classId}/courses/{courseId}/lessons/stage/{stageId}")
+    fun deleteStageEntryFromLessonOnSpecificCourseOfClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable stageId: Int
+    ) = NotImplementedError()
+
+    @PostMapping("/{classId}/courses/{courseId}/lessons/stage/{stageId}/vote")
+    fun voteOnStageEntryFromLessonOnSpecificCourseOfClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable stageId: Int,
+            @RequestBody vote: VoteInputModel
+    ) = NotImplementedError()
+
+    @PostMapping("/{classId}/courses/{courseId}/lessons/stage/{stageId}")
+    fun createLessonFromStage(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable stageId: Int
+    ) = NotImplementedError()
+
+    // ----------------------------
+    // Lessons Versions in Class Endpoints
+    // ----------------------------
+
+    @GetMapping("/{classId}/courses/{courseId}/lessons/{lessonId}/versions")
+    fun getVersionsOfLessonsOfCourseClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
             @PathVariable lessonId: Int
     ) = NotImplementedError()
 
-    @GetMapping("/{classId}/courses/{courseId}/lessons/{lessonId}/report/{reportId}")
-    fun getReportFromLessonOnSpecificCourseOfClass(
+    @GetMapping("/{classId}/courses/{courseId}/lessons/{lessonId}/versions/{versionId}")
+    fun getSpecificVersionOfLessonCourseInClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
             @PathVariable lessonId: Int,
-            @PathVariable reportId: Int
+            @PathVariable versionId: Int
     ) = NotImplementedError()
 
-    //homeworks
+    @DeleteMapping("/{classId}/courses/{courseId}/lessons/{lessonId}/versions")
+    fun deleteAllVersionsOfLessonCourseInClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable lessonId: Int
+    ) = NotImplementedError()
+
+    @DeleteMapping("/{classId}/courses/{courseId}/lessons/{lessonId}/versions/{versionId}")
+    fun deleteSpecificVersionOfLessonCourseInClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable lessonId: Int,
+            @PathVariable version: Int
+    ) = NotImplementedError()
+
+    // ----------------------------
+    // Homeworks in Class Endpoints
+    // ----------------------------
+
     @GetMapping("/{classId}/courses/{courseId}/homeworks")
     fun getHomeWorksFromSpecificCourseOfClass(
             @PathVariable classId: Int,
@@ -136,170 +475,44 @@ class ClassController {
             @PathVariable homeWorkId: Int
     ) = NotImplementedError()
 
+    @PostMapping("/{classId}/courses/{courseId}/homeworks")
+    fun createHomeWork(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @RequestBody homeworkInputModel: HomeworkInputModel
+    ) = NotImplementedError()
+
+    @PostMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}/vote")
+    fun voteOnHomeworkOfCourseInClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable homeworkId: Int,
+            @RequestBody vote: VoteInputModel
+    ) = NotImplementedError()
+
+
+    // ----------------------------
+    // Homeworks Staged in Class Endpoints
+    // ----------------------------
+
     @GetMapping("/{classId}/courses/{courseId}/homeworks/stage")
-    fun getStageEntriesFromHomeWorkOnSpecificCourseOfClass(
+    fun getAllStagedHomeWorksFromSpecificCourseOfClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int
     ) = NotImplementedError()
 
     @GetMapping("/{classId}/courses/{courseId}/homeworks/stage/{stageId}")
-    fun getStageEntryFromHomeWorkOnSpecificCourseOfClass(
+    fun getSpecificStagedHomeWorkFromSpecificCourseOfClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
             @PathVariable stageId: Int
     ) = NotImplementedError()
 
-    @GetMapping("/{classId}/courses/{courseId}/homeworks/{homeWorkId}/report")
-    fun getReportsFromHomeWorkOnSpecificCourseOfClass(
+    @PostMapping("/{classId}/courses/{courseId}/stage")
+    fun createStagedHomeWork(
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
-            @PathVariable homeWorkId: Int
-    ) = NotImplementedError()
-
-    @GetMapping("/{classId}/courses/{courseId}/homeworks/{homeWorkId}/report/{reportId}")
-    fun getReportFromHomeWorkOnSpecificCourseOfClass(
-            @PathVariable classId: Int,
-            @PathVariable courseId: Int,
-            @PathVariable homeWorkId: Int,
-            @PathVariable reportId: Int
-    ) = NotImplementedError()
-
-    /**
-     * All POST Routes
-     */
-    @PostMapping()
-    fun createCourse(@RequestBody input: ClassInputModel) = NotImplementedError()
-
-    @PostMapping("/{classId}/vote")
-    fun voteOnClass(
-            @PathVariable classId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = NotImplementedError()
-
-    @PostMapping("/{classId}/report")
-    fun reportClass(
-            @PathVariable classId: Int,
-            @RequestBody report: ExamInputModel
-    ) = NotImplementedError()
-
-    @PostMapping("/{classId}/report/{reportId}/vote")
-    fun voteOnReportedClass(
-            @PathVariable classId: Int,
-            @PathVariable reportId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = NotImplementedError()
-
-    @PostMapping("/{classId}/report/{reportId}")
-    fun updateReportedClass(
-            @PathVariable classId: Int,
-            @PathVariable reportId: Int
-    ) = NotImplementedError()
-
-    @PostMapping("/stage")
-    fun createStagingClass(@RequestBody input: ClassInputModel) = NotImplementedError()
-
-    @PostMapping("/stage/{stageId}")
-    fun createClassFromStaged(@PathVariable stageId: Int) = NotImplementedError()
-
-    @PostMapping("/stage/{stageId}/vote")
-    fun voteOnStagedClass(
-            @PathVariable stageId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = NotImplementedError()
-
-    //lessons
-    @PostMapping("/{classId}/courses/{courseId}/lessons")
-    fun createLessonOnCourseInClass(
-            @PathVariable classId: Int,
-            @PathVariable courseId: Int,
-            @RequestBody lesson: LessonInputModel
-    ) = NotImplementedError()
-
-    @PostMapping("/{classId}/courses/{courseId}/lessons/{lessonId}/report")
-    fun addReportToLessonOnCourseInClass(
-            @PathVariable classId: Int,
-            @PathVariable courseId: Int,
-            @PathVariable lessonId: Int,
-            @RequestBody report: ExamInputModel
-    ) = NotImplementedError()
-
-    @PostMapping("/{classId}/courses/{courseId}/lessons/{lessonId}/report/{reportId}/vote")
-    fun voteOnReportToLessonOnCourseInClass(
-            @PathVariable classId: Int,
-            @PathVariable courseId: Int,
-            @PathVariable lessonId: Int,
-            @PathVariable reportId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = NotImplementedError()
-
-    @PostMapping("/{classId}/courses/{courseId}/lessons/{lessonId}/report/{reportId}")
-    fun updateReportedLesson(
-            @PathVariable classId: Int,
-            @PathVariable courseId: Int,
-            @PathVariable lessonId: Int,
-            @PathVariable reportId: Int
-    ) = NotImplementedError()
-
-    @PostMapping("/{classId}/courses/{courseId}/lessons/stage")
-    fun createStagingLesson(
-            @PathVariable classId: Int,
-            @PathVariable courseId: Int,
-            @RequestBody exam: ExamInputModel
-    ) = NotImplementedError()
-
-    @PostMapping("/{classId}/courses/{courseId}/lessons/stage/{stageId}")
-    fun createLessonFromStaged(
-            @PathVariable classId: Int,
-            @PathVariable courseId: Int,
-            @PathVariable stageId: Int
-    ) = NotImplementedError()
-
-    @PostMapping("/{classId}/courses/{courseId}/lessons/stage/{stageId}/vote")
-    fun voteOnStagedLesson(
-            @PathVariable classId: Int,
-            @PathVariable courseId: Int,
-            @PathVariable stageId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = NotImplementedError()
-
-    //workItems
-    @PostMapping("/{classId}/courses/{courseId}/homeworks")
-    fun createHomeWorknOnCourseInClass(
-            @PathVariable classId: Int,
-            @PathVariable courseId: Int,
-            @RequestBody homework: HomeworkInputModel
-    ) = NotImplementedError()
-
-    @PostMapping("/{classId}/courses/{courseId}/homeworks/{homeWorkId}/report")
-    fun addReportToHomeWorkOnCourseInClass(
-            @PathVariable classId: Int,
-            @PathVariable courseId: Int,
-            @PathVariable lessonId: Int,
-            @RequestBody report: ExamInputModel
-    ) = NotImplementedError()
-
-    @PostMapping("/{classId}/courses/{courseId}/homeworks/{homeWorkId}/report/{reportId}/vote")
-    fun voteOnReportToHomeWorkOnCourseInClass(
-            @PathVariable classId: Int,
-            @PathVariable courseId: Int,
-            @PathVariable homeWorkId: Int,
-            @PathVariable reportId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = NotImplementedError()
-
-    @PostMapping("/{classId}/courses/{courseId}/homeworks/{homeWorkId}/report/{reportId}")
-    fun updateReportedHomeWork(
-            @PathVariable classId: Int,
-            @PathVariable courseId: Int,
-            @PathVariable homeWorkId: Int,
-            @PathVariable reportId: Int
-    ) = NotImplementedError()
-
-    @PostMapping("/{classId}/courses/{courseId}/homeworks/stage")
-    fun createStagingHomeWork(
-            @PathVariable classId: Int,
-            @PathVariable courseId: Int,
-            @RequestBody homework: HomeworkInputModel
+            @RequestBody homeworkInputModel: HomeworkInputModel
     ) = NotImplementedError()
 
     @PostMapping("/{classId}/courses/{courseId}/homeworks/stage/{stageId}")
@@ -310,106 +523,11 @@ class ClassController {
     ) = NotImplementedError()
 
     @PostMapping("/{classId}/courses/{courseId}/homeworks/stage/{stageId}/vote")
-    fun voteOnStagedHomeWork(
+    fun voteOnStagedHomeworkOfCourseInClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
             @PathVariable stageId: Int,
             @RequestBody vote: VoteInputModel
-    ) = NotImplementedError()
-
-    /**
-     * ALL PATCH Routes
-     */
-    @PatchMapping("/{classId}")
-    fun partialUpdateOnClass(
-            @PathVariable classId: Int,
-            @RequestBody input: ClassInputModel
-    ) = NotImplementedError()
-
-    @PatchMapping("/stage/{stageId}")
-    fun partialUpdateOnStagedClass(
-            @PathVariable stageId: Int,
-            @RequestBody input: ClassInputModel
-    ) = NotImplementedError()
-
-    /**
-     * ALL DELETE Routes
-     */
-    @DeleteMapping
-    fun deleteAllClasses() = NotImplementedError()
-
-    @DeleteMapping("/{classId}")
-    fun deleteSpecificClass(@PathVariable classId: Int) = NotImplementedError()
-
-    @DeleteMapping("/stage")
-    fun deleteAllStagedClasses() = NotImplementedError()
-
-    @DeleteMapping("/stage/{stageId}")
-    fun deleteStagedClass(@PathVariable stageId: Int) = NotImplementedError()
-
-    @DeleteMapping("/{classId}/report")
-    fun deleteAllReportsInClass(@PathVariable courseId: Int) = NotImplementedError()
-
-    @DeleteMapping("/{classId}/report/{reportId}")
-    fun deleteReportInClass(
-            @PathVariable classId: Int,
-            @PathVariable reportId: Int
-    ) = NotImplementedError()
-
-    //lessons
-    @DeleteMapping("/{classId}/courses/{courseId}/lessons")
-    fun deleteAllLessons(
-            @PathVariable classId: Int,
-            @PathVariable courseId: Int
-    ) = NotImplementedError()
-
-    @DeleteMapping("/{classId}/courses/{courseId}/lessons/{lessonId}")
-    fun deleteLesson(
-            @PathVariable classId: Int,
-            @PathVariable courseId: Int,
-            @PathVariable lessonId: Int
-    ) = NotImplementedError()
-
-    @DeleteMapping("/{classId}/courses/{courseId}/lessons/stage")
-    fun deleteAllStagedLesson(
-            @PathVariable classId: Int,
-            @PathVariable courseId: Int
-    ) = NotImplementedError()
-
-    @DeleteMapping("/{classId}/courses/{courseId}/lessons/stage/{stageId}")
-    fun deleteStagedLesson(
-            @PathVariable classId: Int,
-            @PathVariable courseId: Int,
-            @PathVariable stageId: Int
-    ) = NotImplementedError()
-
-    @DeleteMapping("/{classId}/courses/{courseId}/lessons/{lessonId}/report")
-    fun deleteAllReportsInLesson(
-            @PathVariable classId: Int,
-            @PathVariable courseId: Int,
-            @PathVariable lessonId: Int
-    ) = NotImplementedError()
-
-    @DeleteMapping("/{classId}/courses/{courseId}/lessons/{lessonId}/report/{reportId}")
-    fun deleteReportInLesson(
-            @PathVariable classId: Int,
-            @PathVariable courseId: Int,
-            @PathVariable lessonId: Int,
-            @PathVariable reportId: Int
-    ) = NotImplementedError()
-
-    //homeWorks
-    @DeleteMapping("/{classId}/courses/{courseId}/homeworks")
-    fun deleteAllHomeWorks(
-            @PathVariable classId: Int,
-            @PathVariable courseId: Int
-    ) = NotImplementedError()
-
-    @DeleteMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}")
-    fun deleteHomeWork(
-            @PathVariable classId: Int,
-            @PathVariable courseId: Int,
-            @PathVariable homeworkId: Int
     ) = NotImplementedError()
 
     @DeleteMapping("/{classId}/courses/{courseId}/homeworks/stage")
@@ -425,18 +543,94 @@ class ClassController {
             @PathVariable stageId: Int
     ) = NotImplementedError()
 
-    @DeleteMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}/report")
-    fun deleteAllReportsInHomeWork(
+    // ----------------------------
+    // Homeworks Reports in Class Endpoints
+    // ----------------------------
+
+    @GetMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}/reports")
+    fun getAllReportsOfHomeWorksFromSpecificCourseOfClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable homeWorkId: Int
+    ) = NotImplementedError()
+
+    @GetMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}/reports/{reportId}")
+    fun getSpecificReportOfHomeWorkFromSpecificCourseOfClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable reportId: Int
+    ) = NotImplementedError()
+
+    @PostMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}/reports")
+    fun createReportOnHomeWork(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @RequestBody homeworkReportInputModel: HomeworkReportInputModel
+    ) = NotImplementedError()
+
+    @PostMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}/reports/{reportId}")
+    fun updateHomeworkFromReport(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable homeWorkId: Int,
+            @PathVariable reportId: Int
+    ) = NotImplementedError()
+
+    @PostMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}/reports/{reportId}/vote")
+    fun voteOnReportOfHomeworkOfCourseInClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable homeWorkId: Int,
+            @PathVariable reportId: Int,
+            @RequestBody vote: VoteInputModel
+    ) = NotImplementedError()
+
+    @DeleteMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}/reports")
+    fun deleteAllReportsOnHomeWork(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable homeWorkId: Int
+    ) = NotImplementedError()
+
+    @DeleteMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}/reports/{reportId}")
+    fun deleteSpecificReportOnHomeWork(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable homeWorkId: Int,
+            @PathVariable reportId: Int
+    ) = NotImplementedError()
+
+    // ----------------------------
+    // Homeworks Version in Class Endpoints
+    // ----------------------------
+
+    @GetMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}/versions")
+    fun getVersionsOfHomeworkOfCourseClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable lessonId: Int
+    ) = NotImplementedError()
+
+    @GetMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}/versions/{versionId}")
+    fun getSpecificVersionOfHomeworkCourseInClass(
+            @PathVariable classId: Int,
+            @PathVariable courseId: Int,
+            @PathVariable homeworkId: Int,
+            @PathVariable versionId: Int
+    ) = NotImplementedError()
+
+    @DeleteMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}/versions")
+    fun deleteAllVersionsOfHomeworkCourseInClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
             @PathVariable homeworkId: Int
     ) = NotImplementedError()
 
-    @DeleteMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}/report/{reportId}")
-    fun deleteReportInHomeWork(
+    @DeleteMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}/versions/{versionId}")
+    fun deleteSpecificVersionOfHomeworkOfCourseInClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
             @PathVariable homeworkId: Int,
-            @PathVariable reportId: Int
+            @PathVariable version: Int
     ) = NotImplementedError()
 }
