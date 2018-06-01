@@ -432,6 +432,18 @@ CREATE TABLE IF NOT EXISTS class_report (
   PRIMARY KEY (report_id)
 );
 
+CREATE TABLE IF NOT EXISTS course_class_report (
+  report_id SERIAL
+  course_id INTEGER REFERENCES course ON DELETE CASCADE,
+  class_id INTEGER,
+  term_id INTEGER,
+  reported_by VARCHAR(20) NOT NULL,
+  votes INTEGER DEFAULT 0,
+  time_stamp timestamp NOT NULL,
+  FOREIGN KEY (class_id, term_id) REFERENCES class(class_id, term_id) ON DELETE CASCADE,
+  PRIMARY KEY (report_id)
+);
+
 CREATE TABLE IF NOT EXISTS work_assignment_report (
   report_id SERIAL,
   id INTEGER REFERENCES course_misc_unit ON DELETE CASCADE,
