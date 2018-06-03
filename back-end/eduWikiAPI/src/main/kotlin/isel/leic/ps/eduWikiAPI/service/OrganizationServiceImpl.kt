@@ -10,15 +10,12 @@ import isel.leic.ps.eduWikiAPI.domain.model.version.OrganizationVersion
 import isel.leic.ps.eduWikiAPI.repository.interfaces.OrganizationDAO
 import isel.leic.ps.eduWikiAPI.service.interfaces.OrganizationService
 import org.jdbi.v3.core.Handle
-import org.jdbi.v3.sqlobject.transaction.Transaction
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import java.util.*
 
-@Transactional
 @Service
 class OrganizationServiceImpl : OrganizationService {
 

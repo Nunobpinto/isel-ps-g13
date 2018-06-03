@@ -7,19 +7,19 @@ import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_SHORT_N
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_TIMESTAMP
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_VERSION
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_VOTES
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.CREDITS
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.LECTURED_TERM
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.OPTIONAL
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.PROGRAMME_ID
-import isel.leic.ps.eduWikiAPI.repository.OrganizationDAOImpl
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_PROG_CREDITS
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_PROG_LECTURED_TERM
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_PROG_OPTIONAL
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_PROG_PROG_ID
+import isel.leic.ps.eduWikiAPI.repository.OrganizationDAOImpl.Companion.ORG_ID
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.sql.Timestamp
 
 data class Course(
         @ColumnName(COURSE_ID)
         val id: Int = 0,
-        @ColumnName(OrganizationDAOImpl.ORG_ID)
-        val organizationId: Int? = null,
+        @ColumnName(ORG_ID)
+        val organizationId: Int = 0,
         @ColumnName(COURSE_VERSION)
         val version: Int = 1,
         @ColumnName(COURSE_VOTES)
@@ -27,17 +27,17 @@ data class Course(
         @ColumnName(COURSE_CREATED_BY)
         val createdBy: String = "",
         @ColumnName(COURSE_FULL_NAME)
-        val fullName: String ? = null,
+        val fullName: String = "",
         @ColumnName(COURSE_SHORT_NAME)
-        val shortName: String ? = null,
-        @ColumnName(LECTURED_TERM)
-        val lecturedTerm: String ? = null,
-        @ColumnName(PROGRAMME_ID)
+        val shortName: String = "",
+        @ColumnName(COURSE_PROG_LECTURED_TERM)
+        val lecturedTerm: String = "",
+        @ColumnName(COURSE_PROG_PROG_ID)
         val programmeId: Int = 0,
-        @ColumnName(OPTIONAL)
-        val optional: Boolean? = null,
-        @ColumnName(CREDITS)
-        val credits: Int? = null,
+        @ColumnName(COURSE_PROG_OPTIONAL)
+        val optional: Boolean = false,
+        @ColumnName(COURSE_PROG_CREDITS)
+        val credits: Int = 0,
         @ColumnName(COURSE_TIMESTAMP)
         val timestamp: Timestamp = Timestamp(1)
 )

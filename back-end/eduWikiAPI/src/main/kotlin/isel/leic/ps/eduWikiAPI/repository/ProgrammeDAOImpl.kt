@@ -18,18 +18,18 @@ class ProgrammeDAOImpl : ProgrammeDAO {
     companion object {
         //TABLE NAMES
         const val PROG_TABLE = "programme"
-        const val CRS_PROG_TABLE = "course_programme"
+//        const val COURSE_PROG_TABLE = "course_programme"
         const val PROG_VERSION_TABLE = "programme_version"
         const val PROG_REPORT_TABLE = "programme_report"
         const val PROG_STAGE_TABLE = "programme_stage"
         // FIELDS
         const val PROG_ID = "programme_id"
-        const val CRS_ID = "course_id"
         const val PROG_VERSION = "programme_version"
-        const val CRS_PROG_VERSION = "course_programme_version"
-        const val CRS_LECT_TERM = "course_lectured_term"
-        const val CRS_OPT = "course_optional"
-        const val CRS_CRED = "course_credits"
+//        const val COURSE_ID = "course_id"
+//        const val COURSE_PROG_VERSION = "course_programme_version"
+//        const val CRS_LECT_TERM = "course_lectured_term"
+//        const val CRS_OPT = "course_optional"
+//        const val COURSE_CREDITS = "course_credits"
         const val PROG_FULL_NAME = "programme_full_name"
         const val PROG_SHORT_NAME = "programme_short_name"
         const val PROG_ACADEMIC_DEGREE = "programme_academic_degree"
@@ -40,6 +40,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         const val PROG_REPORT_ID = "report_id"
         const val PROG_CREATED_BY = "created_by"
         const val PROG_REPORTED_BY = "reported_by"
+        const val PROG_STAGE_ID = "programme_stage_id"
 
     }
 

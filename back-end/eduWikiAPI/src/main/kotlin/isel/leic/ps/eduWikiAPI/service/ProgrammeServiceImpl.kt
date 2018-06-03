@@ -10,6 +10,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.report.CourseProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.ProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ProgrammeStage
+import isel.leic.ps.eduWikiAPI.domain.model.version.CourseProgrammeVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.ProgrammeVersion
 import isel.leic.ps.eduWikiAPI.repository.interfaces.CourseDAO
@@ -19,18 +20,17 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.sql.Timestamp
 import java.time.LocalDateTime
+import java.util.*
 
 @Service
 class ProgrammeServiceImpl : ProgrammeService {
 
     @Autowired
     lateinit var programmeDAO: ProgrammeDAO
-
     @Autowired
     lateinit var courseDAO: CourseDAO
 
     override fun getAllProgrammes(): List<Programme> = programmeDAO.getAllProgrammes()
-
 
     override fun getSpecificProgramme(programmeId: Int): Programme = programmeDAO.getSpecificProgramme(programmeId)
 
@@ -44,7 +44,7 @@ class ProgrammeServiceImpl : ProgrammeService {
                 duration = inputProgramme.duration!!,
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
-        val id =programmeDAO.createProgramme(programme)
+        val id = programmeDAO.createProgramme(programme)
         programmeDAO.addToProgrammeVersion(Programme(
                 id = id,
                 createdBy = programme.createdBy,
@@ -70,7 +70,7 @@ class ProgrammeServiceImpl : ProgrammeService {
         programmeDAO.createStagingProgramme(stage)
     }
 
-    override fun getSpecificStagedProgramme(stageId: Int) : ProgrammeStage = programmeDAO.getSpecificProgrammeStage(stageId)
+    override fun getSpecificStagedProgramme(stageId: Int): ProgrammeStage = programmeDAO.getSpecificProgrammeStage(stageId)
 
     override fun createProgrammeFromStaged(stageId: Int) {
         val programmeStage = programmeDAO.getSpecificProgrammeStage(stageId)
@@ -99,8 +99,8 @@ class ProgrammeServiceImpl : ProgrammeService {
 
     override fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course> = courseDAO.getCoursesOnSpecificProgramme(programmeId)
 
-    override fun addCourseToProgramme(programmeId: Int, input: CourseProgrammeInputModel) : Int{
-        val course = Course (
+    override fun addCourseToProgramme(programmeId: Int, input: CourseProgrammeInputModel): Optional<CourseProgrammeVersion> {
+        val course = Course(
                 id = input.courseId,
                 lecturedTerm = input.lecturedTerm,
                 programmeId = input.programmeId,
@@ -128,13 +128,14 @@ class ProgrammeServiceImpl : ProgrammeService {
         programmeDAO.reportProgramme(programmeId, programmeReport)
     }
 
-    override fun reportCourseOnProgramme(programmeId: Int, courseId: Int, inputCourseReport: CourseProgrammeReportInputModel): Int {
+    override fun reportCourseOnProgramme(programmeId: Int, courseId: Int, inputCourseReport: CourseProgrammeReportInputModel): Optional<CourseProgrammeReport> {
         val courseProgrammeReport = CourseProgrammeReport(
-                optional = inputCourseReport.optional,
-                credits = inputCourseReport.credits,
+                courseId = courseId,
                 programmeId = programmeId,
-                id = courseId,
-                reportedBy = inputCourseReport.reportedBy
+                reportedBy = inputCourseReport.reportedBy,
+                lecturedTerm = inputCourseReport.lecturedTerm,
+                optional = inputCourseReport.optional,
+                credits = inputCourseReport.credits
         )
         return courseDAO.reportCourseOnProgramme(programmeId, courseId, courseProgrammeReport)
     }
@@ -150,15 +151,15 @@ class ProgrammeServiceImpl : ProgrammeService {
                 votes = programme.votes,
                 createdBy = programme.createdBy,
                 fullName = report.programmeFullName ?: programme.fullName,
-                shortName =report.programmeShortName ?: programme.shortName,
+                shortName = report.programmeShortName ?: programme.shortName,
                 academicDegree = report.programmeAcademicDegree ?: programme.academicDegree,
-                totalCredits = if(report.programmeTotalCredits != 0) report.programmeTotalCredits!! else programme.totalCredits,
-                duration = if(report.programmeDuration!=0) report.programmeDuration!! else programme.duration,
+                totalCredits = if (report.programmeTotalCredits != 0) report.programmeTotalCredits!! else programme.totalCredits,
+                duration = if (report.programmeDuration != 0) report.programmeDuration!! else programme.duration,
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
         programmeDAO.updateProgramme(programmeId, updatedProgramme)
         programmeDAO.addToProgrammeVersion(updatedProgramme)
-        programmeDAO.deleteReportOnProgramme(programmeId,reportId)
+        programmeDAO.deleteReportOnProgramme(programmeId, reportId)
     }
 
     override fun deleteAllProgrammes() = programmeDAO.deleteAllProgrammes()
@@ -199,24 +200,19 @@ class ProgrammeServiceImpl : ProgrammeService {
 
     override fun deleteSpecificVersion(programmeId: Int, versionId: Int): Int = programmeDAO.deleteVersionProgramme(programmeId, versionId)
 
-    override fun getSpecificCourseOnSpecificProgramme(programmeId: Int, courseId: Int): Course
-            = courseDAO.getSpecificCourseOfProgramme(programmeId, courseId)
+    override fun getSpecificCourseOnSpecificProgramme(programmeId: Int, courseId: Int): Optional<Course> = courseDAO.getSpecificCourseOfProgramme(programmeId, courseId)
 
-    override fun getAllVersionsOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int): List<CourseVersion>
-            = courseDAO.getAllVersionsOfCourseOnSpecificProgramme(programmeId, courseId)
+    override fun getAllVersionsOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int): List<CourseProgrammeVersion> = courseDAO.getAllVersionsOfCourseOnSpecificProgramme(programmeId, courseId)
 
-
-    override fun getSpecificVersionOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int, versionId: Int): CourseVersion
-            = courseDAO.getSpecificVersionOfCourseOnSpecificProgramme (programmeId, courseId, versionId)
+    override fun getSpecificVersionOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int, versionId: Int): Optional<CourseProgrammeVersion> = courseDAO.getSpecificVersionOfCourseOnSpecificProgramme(programmeId, courseId, versionId)
 
     override fun getAllReportsOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int): List<CourseProgrammeReport> = courseDAO.getAllReportsOfCourseOnSpecificProgramme(programmeId, courseId)
 
-    override fun getSpecificReportOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int, reportId: Int): CourseProgrammeReport = courseDAO.getSpecificReportOfCourseOnSpecificProgramme(programmeId, courseId, reportId)
+    override fun getSpecificReportOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int, reportId: Int): Optional<CourseProgrammeReport> = courseDAO.getSpecificReportOfCourseOnSpecificProgramme(programmeId, courseId, reportId)
 
-    override fun voteOnCourseProgramme(programmeId: Int, courseId: Int,inputVote: VoteInputModel): Int
-            = courseDAO.voteOnCourseOfProgramme(programmeId, Vote.valueOf(inputVote.vote), courseId)
+    override fun voteOnCourseProgramme(programmeId: Int, courseId: Int, inputVote: VoteInputModel): Int = courseDAO.voteOnCourseOfProgramme(programmeId, Vote.valueOf(inputVote.vote), courseId)
 
-    override fun createStagedCourseOfProgramme(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel): Int {
+    override fun createStagedCourseOfProgramme(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel): Optional<CourseProgrammeStage> {
         val courseProgrammeStage = CourseProgrammeStage(
                 courseId = inputCourseProgramme.courseId,
                 programmeId = programmeId,
@@ -228,8 +224,8 @@ class ProgrammeServiceImpl : ProgrammeService {
         return courseDAO.createStagingCourseOfProgramme(courseProgrammeStage)
     }
 
-    override fun createCourseProgrammeFromStaged(programmeId: Int, stageId: Int): Int {
-        val courseProgrammeStage = courseDAO.getSpecificStagedCourseOfProgramme(programmeId, stageId)
+    override fun createCourseProgrammeFromStaged(programmeId: Int, stageId: Int): Optional<CourseProgrammeVersion> {
+        val courseProgrammeStage = courseDAO.getSpecificStagedCourseProgramme(programmeId).get()
         val courseProgramme = Course(
                 createdBy = courseProgrammeStage.createdBy,
                 programmeId = programmeId,
@@ -239,16 +235,16 @@ class ProgrammeServiceImpl : ProgrammeService {
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
 
         )
-        courseDAO.deleteStagedCourseOfProgramme(programmeId,stageId)
-        courseDAO.addCourseToProgramme(programmeId,courseProgramme)
+        courseDAO.deleteStagedCourseOfProgramme(programmeId)
+        courseDAO.addCourseToProgramme(programmeId, courseProgramme)
         return courseDAO.addCourseProgrammeToVersion(courseProgramme)
     }
 
-    override fun voteOnCourseProgrammeStaged(programmeId: Int, stageId: Int, inputVote: VoteInputModel): Int = courseDAO.voteOnCourseProgrammeStaged(programmeId, stageId, Vote.valueOf(inputVote.vote))
+    override fun voteOnCourseProgrammeStaged(programmeId: Int, stageId: Int, inputVote: VoteInputModel): Int = courseDAO.voteOnCourseProgrammeStaged(stageId, Vote.valueOf(inputVote.vote))
 
     override fun updateReportedCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int {
-        val course = courseDAO.getSpecificCourseOfProgramme(programmeId, courseId)
-        val report = courseDAO.getSpecificReportOfCourseOnSpecificProgramme(programmeId,courseId, reportId)
+        val course = courseDAO.getSpecificCourseOfProgramme(programmeId, courseId).get()
+        val report = courseDAO.getSpecificReportOfCourseOnSpecificProgramme(programmeId, courseId, reportId).get()
         val updatedCourse = Course(
                 id = course.id,
                 version = course.version.inc(),
@@ -269,7 +265,7 @@ class ProgrammeServiceImpl : ProgrammeService {
 
     override fun getStagedCoursesOfProgramme(programmeId: Int): List<CourseProgrammeStage> = courseDAO.getStagedCoursesOfProgramme(programmeId)
 
-    override fun getSpecificStagedCourseOfProgramme(programmeId: Int, stageId: Int): CourseProgrammeStage = courseDAO.getSpecificStagedCourseOfProgramme(programmeId, stageId)
+    override fun getSpecificStagedCourseOfProgramme(programmeId: Int, stageId: Int): Optional<CourseProgrammeStage> = courseDAO.getSpecificStagedCourseProgramme(programmeId)
 
     override fun deleteSpecificCourseOfProgramme(programmeId: Int, courseId: Int): Int = courseDAO.deleteSpecificCourseOfProgramme(programmeId, courseId)
 

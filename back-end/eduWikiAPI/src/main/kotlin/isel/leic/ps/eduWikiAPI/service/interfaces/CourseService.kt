@@ -32,7 +32,7 @@ interface CourseService {
 
     fun getTermsOfCourse(courseId: Int): List<Term>
 
-    fun getSpecificTermOfCourse(courseId: Int, termId: Int): Term
+    fun getSpecificTermOfCourse(courseId: Int, termId: Int): Optional<Term>
 
     fun getAllExamsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<Exam>
 
@@ -46,9 +46,9 @@ interface CourseService {
 
     fun getClassOnSpecificTermOfCourse(courseId: Int, termId: Int, classId: Int): Class
 
-    fun createCourse(inputCourse: CourseInputModel): Int
+    fun createCourse(inputCourse: CourseInputModel): Optional<Course>
 
-    fun createCourseFromStaged(stageId: Int): Int
+    fun createCourseFromStaged(stageId: Int): Optional<Course>
 
     fun createExamOnCourseInTerm(courseId: Int, termId: Int, inputExam: ExamInputModel): Int
 
@@ -84,7 +84,7 @@ interface CourseService {
 
     fun getAllCourseStageEntries(): List<CourseStage>
 
-    fun getCourseSpecificStageEntry(stageId: Int): CourseStage
+    fun getCourseSpecificStageEntry(stageId: Int): Optional<CourseStage>
 
     fun getStageEntriesFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int): List<ExamStage>
 
@@ -94,7 +94,7 @@ interface CourseService {
 
     fun getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): WorkAssignmentStage
 
-    fun createStagingCourse(inputCourse: CourseInputModel): Int
+    fun createStagingCourse(inputCourse: CourseInputModel): Optional<CourseStage>
 
     fun createStagingExam(courseId: Int, termId: Int, inputExam: ExamInputModel): Int
 
@@ -124,7 +124,7 @@ interface CourseService {
 
     fun getAllVersionsOfSpecificCourse(courseId: Int): List<CourseVersion>
 
-    fun getVersionOfSpecificCourse(courseId: Int, versionId: Int): CourseVersion
+    fun getVersionOfSpecificCourse(courseId: Int, versionId: Int): Optional<CourseVersion>
 
     fun getAllVersionsOfSpecificExam(examId: Int): List<ExamVersion>
 
@@ -156,7 +156,7 @@ interface CourseService {
 
     fun getAllReportsOnCourse(courseId: Int): List<CourseReport>
 
-    fun getSpecificReportOfCourse(courseId: Int, reportId: Int): CourseReport
+    fun getSpecificReportOfCourse(courseId: Int, reportId: Int): Optional<CourseReport>
 
     fun getAllReportsOnExamOnSpecificTermOfCourse(examId: Int): List<ExamReport>
 

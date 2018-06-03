@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 class CourseInputModel(
         @JsonProperty("full_name")
-        val fullName: String?,
+        val fullName: String = "",
         @JsonProperty("short_name")
-        val shortName: String?,
+        val shortName: String = "",
         @JsonProperty("organization_id")
-        val organizationId: Int?,
+        val organizationId: Int = 0,
         @JsonProperty("created_by")
         val createdBy: String = ""
 )

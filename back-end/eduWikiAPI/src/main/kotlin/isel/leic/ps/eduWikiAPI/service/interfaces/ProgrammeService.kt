@@ -9,8 +9,10 @@ import isel.leic.ps.eduWikiAPI.domain.model.report.CourseProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.report.ProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseProgrammeStage
+import isel.leic.ps.eduWikiAPI.domain.model.version.CourseProgrammeVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.ProgrammeVersion
+import java.util.*
 
 interface ProgrammeService {
 
@@ -34,7 +36,7 @@ interface ProgrammeService {
 
     fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course>
 
-    fun addCourseToProgramme(programmeId: Int, input: CourseProgrammeInputModel): Int
+    fun addCourseToProgramme(programmeId: Int, input: CourseProgrammeInputModel): Optional<CourseProgrammeVersion>
 
     fun voteOnProgramme(programmeId: Int, inputVote: VoteInputModel)
 
@@ -68,23 +70,23 @@ interface ProgrammeService {
 
     fun deleteSpecificVersion(programmeId: Int, versionId: Int): Int
 
-    fun reportCourseOnProgramme(programmeId: Int, courseId: Int, inputCourseReport: CourseProgrammeReportInputModel): Int
+    fun reportCourseOnProgramme(programmeId: Int, courseId: Int, inputCourseReport: CourseProgrammeReportInputModel): Optional<CourseProgrammeReport>
 
-    fun getSpecificCourseOnSpecificProgramme(programmeId: Int, courseId: Int): Course
+    fun getSpecificCourseOnSpecificProgramme(programmeId: Int, courseId: Int): Optional<Course>
 
-    fun getAllVersionsOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int): List<CourseVersion>
+    fun getAllVersionsOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int): List<CourseProgrammeVersion>
 
-    fun getSpecificVersionOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int, versionId: Int): CourseVersion
+    fun getSpecificVersionOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int, versionId: Int): Optional<CourseProgrammeVersion>
 
     fun getAllReportsOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int): List<CourseProgrammeReport>
 
-    fun getSpecificReportOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int, reportId: Int): CourseProgrammeReport
+    fun getSpecificReportOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int, reportId: Int): Optional<CourseProgrammeReport>
 
     fun voteOnCourseProgramme(programmeId: Int, courseId: Int, inputVote: VoteInputModel): Int
 
-    fun createStagedCourseOfProgramme(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel): Int
+    fun createStagedCourseOfProgramme(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel): Optional<CourseProgrammeStage>
 
-    fun createCourseProgrammeFromStaged(programmeId: Int, stageId: Int): Int
+    fun createCourseProgrammeFromStaged(programmeId: Int, stageId: Int): Optional<CourseProgrammeVersion>
 
     fun voteOnCourseProgrammeStaged(programmeId: Int, stageId: Int, inputVote: VoteInputModel): Int
 
@@ -92,7 +94,7 @@ interface ProgrammeService {
 
     fun getStagedCoursesOfProgramme(programmeId: Int): List<CourseProgrammeStage>
 
-    fun getSpecificStagedCourseOfProgramme(programmeId: Int, stageId: Int): CourseProgrammeStage
+    fun getSpecificStagedCourseOfProgramme(programmeId: Int, stageId: Int): Optional<CourseProgrammeStage>
 
     fun updateReportedCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int
 
