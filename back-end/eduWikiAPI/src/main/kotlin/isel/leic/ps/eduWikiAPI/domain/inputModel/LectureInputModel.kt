@@ -2,7 +2,7 @@ package isel.leic.ps.eduWikiAPI.domain.inputModel
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-class LessonInputModel (
+class LectureInputModel (
     @JsonProperty("begin_hour")
     val beginHour: String,
     val duration: String,
