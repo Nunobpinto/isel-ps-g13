@@ -22,6 +22,8 @@ Drop Table IF EXISTS homework_report;
 
 Drop Table IF EXISTS student_report;
 
+Drop Table IF EXISTS course_class_report;
+
 --------------------------
 -- Drop Staged Tables
 --------------------------

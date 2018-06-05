@@ -105,7 +105,6 @@ CREATE TABLE IF NOT EXISTS course_misc_unit (
   misc_type course_misc_unit_type NOT NULL,
   course_id INTEGER,
   term_id INTEGER,
-  time_stamp timestamp NOT NULL,
   FOREIGN KEY (course_id, term_id) REFERENCES course_term(course_id, term_id) ON DELETE CASCADE,
   PRIMARY KEY (id)
 );
@@ -156,7 +155,6 @@ CREATE TABLE IF NOT EXISTS class_misc_unit (
   course_id INTEGER,
   class_id INTEGER,
   term_id INTEGER,
-  time_stamp timestamp NOT NULL,
   FOREIGN KEY (course_id, class_id, term_id) REFERENCES course_class(course_id, class_id, term_id) ON DELETE CASCADE,
   PRIMARY KEY (id)
 );
@@ -433,7 +431,7 @@ CREATE TABLE IF NOT EXISTS class_report (
 );
 
 CREATE TABLE IF NOT EXISTS course_class_report (
-  report_id SERIAL
+  report_id SERIAL,
   course_id INTEGER REFERENCES course ON DELETE CASCADE,
   class_id INTEGER,
   term_id INTEGER,
