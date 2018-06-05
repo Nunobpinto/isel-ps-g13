@@ -16,7 +16,5 @@ class CourseMiscUnit(
         @ColumnName(COURSE_ID)
         val courseId: Int? = 0,
         @ColumnName(TERM_ID)
-        val termId: Int? = 0,
-        @ColumnName(COURSE_TIMESTAMP)
-        val timestamp: Timestamp = Timestamp(1)
+        val termId: Int? = 0
 )

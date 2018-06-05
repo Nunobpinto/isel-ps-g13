@@ -250,10 +250,10 @@ class CourseDAOImpl : CourseDAO {
 
     override fun getSpecificTermOfCourse(courseId: Int, termId: Int) =
             handle.createQuery(
-                    "select $TERM_ID, $TERM_SHORT_NAME, " +
-                            "$TERM_YEAR, $TERM_TYPE" +
-                            "from $TERM_TABLE as T" +
-                            "inner join $COURSE_TERM_TABLE as C on T.$TERM_ID = C.$TERM_ID" +
+                    "select T.$TERM_ID, T.$TERM_SHORT_NAME, " +
+                            "T.$TERM_YEAR, T.$TERM_TYPE " +
+                            "from $TERM_TABLE as T " +
+                            "inner join $COURSE_TERM_TABLE as C on T.$TERM_ID = C.$TERM_ID " +
                             "where C.$COURSE_ID = :courseId"
             )
                     .bind("courseId", courseId)

@@ -278,7 +278,7 @@ class CourseController {
             @PathVariable termId: Int,
             @PathVariable examId: Int,
             @PathVariable reportId: Int
-    ) = courseService.updateReportedExam(examId, reportId)
+    ) = courseService.updateReportedExam(examId, reportId, courseId, termId)
 
     @DeleteMapping("/{courseId}/terms/{termId}/exams/{examId}/reports")
     fun deleteAllReportsOnExam(
