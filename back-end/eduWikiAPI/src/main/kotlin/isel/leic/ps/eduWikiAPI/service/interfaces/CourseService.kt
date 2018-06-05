@@ -44,7 +44,7 @@ interface CourseService {
 
     fun getAllClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class>
 
-    fun getClassOnSpecificTermOfCourse(courseId: Int, termId: Int, classId: Int): Class
+    fun getClassOnSpecificTermOfCourse(courseId: Int, termId: Int, classId: Int): Optional<Class>
 
     fun createCourse(inputCourse: CourseInputModel): Optional<Course>
 
@@ -136,7 +136,7 @@ interface CourseService {
 
     fun getAllVersionsOfSpecificClass(classId: Int): List<ClassVersion>
 
-    fun getVersionOfSpecificClass(classId: Int, versionId: Int): ClassVersion
+    fun getVersionOfSpecificClass(classId: Int, versionId: Int): Optional<ClassVersion>
 
     fun deleteAllVersionsOfCourse(courseId: Int): Int
 

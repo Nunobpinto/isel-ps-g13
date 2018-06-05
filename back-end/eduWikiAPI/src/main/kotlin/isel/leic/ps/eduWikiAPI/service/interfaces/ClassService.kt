@@ -4,6 +4,7 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.ClassInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.HomeworkInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.LectureInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
+import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ClassReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseClassReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.LessonReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Class
@@ -32,29 +33,29 @@ interface ClassService {
 
     fun voteOnClass(classId: Int, vote: VoteInputModel): Int
 
-    fun updateClass(classId: Int, input: ClassInputModel): Int
+    fun partialUpdateOnClass(classId: Int, input: ClassInputModel): Int
 
     fun deleteSpecificClass(classId: Int): Int
 
     /**
-     * Course Report
+     * Class Report
      */
     fun getAllReportsOfClass(classId: Int): List<ClassReport>
 
     fun getSpecificReportOfClass(classId: Int, reportId: Int): Optional<ClassReport>
 
-    fun reportClass(classId: Int, report: Any): Int
+    fun reportClass(classId: Int, report: ClassReportInputModel): Optional<ClassReport>
 
     fun voteOnReportClass(classId: Int, reportId: Int, vote: VoteInputModel): Int
 
-    fun updateClassFromReport(classId: Int, reportId: Int): Class
+    fun updateClassFromReport(classId: Int, reportId: Int): Int
 
     fun deleteAllReportsInClass(classId: Int): Int
 
     fun deleteSpecificReportInClass(classId: Int, reportId: Int): Int
 
     /**
-     * Course Stage
+     * Class Stage
      */
     fun getAllStagedClasses(): List<ClassStage>
 
@@ -66,14 +67,12 @@ interface ClassService {
 
     fun voteOnStagedClass(stageId: Int, vote: VoteInputModel): Int
 
-    fun partialUpdateOnStagedClass(stageId: Int, input: ClassInputModel): ClassStage
-
     fun deleteAllStagedClasses(): Int
 
     fun deleteSpecificStagedClass(stageId: Int): Int
 
     /**
-     * Course version
+     * Class version
      */
     fun getAllVersionsOfClass(classId: Int): List<ClassVersion>
 
@@ -88,7 +87,7 @@ interface ClassService {
      */
     fun getAllCoursesOfClass(classId: Int): List<Course>
 
-    fun getSpecificCourseOfClass(classId: Int, classId1: Int): Optional<Course>
+    fun getSpecificCourseOfClass(classId: Int, courseId: Int): Optional<Course>
 
     fun addCourseToClass(classId: Int, courseId: Int): Optional<Course>
 

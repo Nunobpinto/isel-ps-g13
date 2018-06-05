@@ -87,7 +87,7 @@ class CourseServiceImpl : CourseService {
 
     override fun getAllClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class> = classDAO.getAllClassesOnSpecificTermOfCourse(courseId, termId)
 
-    override fun getClassOnSpecificTermOfCourse(courseId: Int, termId: Int, classId: Int): Class = classDAO.getClassOnSpecificTermOfCourse(courseId, termId, classId)
+    override fun getClassOnSpecificTermOfCourse(courseId: Int, termId: Int, classId: Int): Optional<Class> = classDAO.getClassOnSpecificTermOfCourse(courseId, termId, classId)
 
     override fun createCourse(inputCourse: CourseInputModel): Optional<Course> {
         handle.begin()
@@ -455,7 +455,7 @@ class CourseServiceImpl : CourseService {
 
     override fun getAllVersionsOfSpecificClass(classId: Int): List<ClassVersion> = classDAO.getAllVersionsOfSpecificClass(classId)
 
-    override fun getVersionOfSpecificClass(classId: Int, versionId: Int): ClassVersion = classDAO.getVersionOfSpecificClass(classId, versionId)
+    override fun getVersionOfSpecificClass(classId: Int, versionId: Int): Optional<ClassVersion> = classDAO.getVersionOfSpecificClass(classId, versionId)
 
     override fun deleteAllExamsOfCourseInTerm(courseId: Int, termId: Int): Int = examDAO.deleteAllExamsOfCourseInTerm(courseId, termId)
 

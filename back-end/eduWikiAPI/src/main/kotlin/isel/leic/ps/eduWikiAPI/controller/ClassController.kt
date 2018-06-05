@@ -41,7 +41,7 @@ class ClassController {
     fun partialUpdateOnClass(
             @PathVariable classId: Int,
             @RequestBody input: ClassInputModel
-    ) = classService.updateClass(classId, input)
+    ) = classService.partialUpdateOnClass(classId, input)
 
     @DeleteMapping("/{classId}")
     fun deleteSpecificClass(@PathVariable classId: Int) = classService.deleteSpecificClass(classId)
@@ -109,11 +109,6 @@ class ClassController {
             @RequestBody vote: VoteInputModel
     ) = classService.voteOnStagedClass(stageId, vote)
 
-    @PatchMapping("/stage/{stageId}")
-    fun partialUpdateOnStagedClass(
-            @PathVariable stageId: Int,
-            @RequestBody input: ClassInputModel
-    ) = classService.partialUpdateOnStagedClass(stageId, input)
 
     @DeleteMapping("/stage")
     fun deleteAllStagedClasses() = classService.deleteAllStagedClasses()
@@ -151,7 +146,7 @@ class ClassController {
     fun getSpecificCourseOfClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int
-    ) = classService.getSpecificCourseOfClass(classId, classId)
+    ) = classService.getSpecificCourseOfClass(classId, courseId)
 
     @PostMapping("/{classId}/courses/{courseId}")
     fun addCourseToClass(

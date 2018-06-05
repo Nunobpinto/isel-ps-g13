@@ -3,8 +3,10 @@ package isel.leic.ps.eduWikiAPI.repository.interfaces
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Term
 import isel.leic.ps.eduWikiAPI.domain.model.Vote
+import isel.leic.ps.eduWikiAPI.domain.model.report.CourseClassReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
+import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseClassStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseProgrammeVersion
@@ -125,4 +127,37 @@ interface CourseDAO {
     fun deleteAllReportsOnCourse(courseId: Int): Int
 
     fun deleteSpecificReportOfCourseOfProgramme(programmeId: Int, courseId: Int, reportId: Int): Int
+
+    /**
+     * Courses On Class queries
+     */
+    fun getCoursesOfClass(classId: Int): List<Course>
+
+    fun getSpecificCourseOfClass(classId: Int, courseId: Int): Optional<Course>
+
+    fun voteOnCourseInClass(classId: Int, courseId: Int, valueOf: Vote): Int
+
+    fun deleteAllCoursesInClass(classId: Int): Int
+
+    fun deleteSpecificCourseInClass(classId: Int, courseId: Int): Int
+    
+    fun getAllReportsOfCourseInClass(classId: Int, courseId: Int): List<CourseClassReport>
+
+    fun getSpecificReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int): Optional<CourseClassReport>
+
+    fun voteOnReportOfCourseClass(classId: Int, courseId: Int, reportId: Int, valueOf: Vote): Int
+
+    fun deleteAllCourseReportsInClass(classId: Int, courseId: Int): Int
+
+    fun deleteSpecificCourseReportInClass(classId: Int, courseId: Int, reportId: Int): Int
+
+    fun getAllCoursesStagedInClass(classId: Int): List<CourseClassStage>
+
+    fun getSpecificStagedCourseClass(classId: Int, stageId: Int): Optional<CourseClassStage>
+
+    fun voteOnStagedCourseInClass(classId: Int, stageId: Int, vote: Vote): Int
+
+    fun deleteAllStagedCoursesInClass(classId: Int): Int
+
+    fun deleteSpecificStagedCourseInClass(classId: Int, stageId: Int): Int
 }

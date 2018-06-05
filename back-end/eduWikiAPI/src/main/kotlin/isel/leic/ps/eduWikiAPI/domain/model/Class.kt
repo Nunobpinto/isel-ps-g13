@@ -8,6 +8,6 @@ data class Class(
         val votes: Int = 0,
         val createdBy: String = "",
         val fullName: String = "",
-        val termId: String = "",
+        val termId: Int = 0,
         val timestamp: Timestamp = Timestamp(1)
 )

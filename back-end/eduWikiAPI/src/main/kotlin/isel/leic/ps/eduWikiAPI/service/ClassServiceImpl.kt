@@ -4,12 +4,10 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.ClassInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.HomeworkInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.LectureInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
+import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ClassReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseClassReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.LessonReportInputModel
-import isel.leic.ps.eduWikiAPI.domain.model.Class
-import isel.leic.ps.eduWikiAPI.domain.model.Course
-import isel.leic.ps.eduWikiAPI.domain.model.Homework
-import isel.leic.ps.eduWikiAPI.domain.model.Lecture
+import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.domain.model.report.ClassReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseClassReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.HomeworkReport
@@ -22,9 +20,14 @@ import isel.leic.ps.eduWikiAPI.domain.model.version.ClassVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.HomeworkVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.LectureVersion
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ClassDAO
+import isel.leic.ps.eduWikiAPI.repository.interfaces.CourseDAO
+import isel.leic.ps.eduWikiAPI.repository.interfaces.LectureDAO
 import isel.leic.ps.eduWikiAPI.service.interfaces.ClassService
+import org.jdbi.v3.core.Handle
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.sql.Timestamp
+import java.time.LocalDateTime
 import java.util.*
 
 @Service
@@ -33,138 +36,178 @@ class ClassServiceImpl : ClassService {
     @Autowired
     lateinit var classDAO: ClassDAO
 
-    override fun getAllClasses(): List<Class> {
+    @Autowired
+    lateinit var courseDAO: CourseDAO
 
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    @Autowired
+    lateinit var lectureDAO: LectureDAO
 
-    override fun getSpecificClass(classId: Int): Optional<Class> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    @Autowired
+    lateinit var handle: Handle
+
+    /**
+     * Class Methods
+     */
+
+    override fun getAllClasses(): List<Class> = classDAO.getAllClasses()
+
+    override fun getSpecificClass(classId: Int): Optional<Class> = classDAO.getSpecificClass(classId)
 
     override fun createClass(input: ClassInputModel): Optional<Class> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        handle.begin()
+        val klass = classDAO.createClass(Class(
+                termId = input.term,
+                fullName = input.fullName,
+                timestamp = Timestamp.valueOf(LocalDateTime.now()),
+                createdBy = input.createdBy
+        )).get()
+        classDAO.createClassVersion(ClassVersion(
+                classId = klass.id,
+                timestamp = klass.timestamp,
+                className = klass.fullName,
+                termId = klass.termId,
+                createdBy = klass.createdBy
+        ))
+        handle.commit()
+        return Optional.of(klass)
     }
 
-    override fun voteOnClass(classId: Int, vote: VoteInputModel): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun voteOnClass(classId: Int, vote: VoteInputModel): Int = classDAO.voteOnClass(classId, Vote.valueOf(vote.vote))
+
+    override fun partialUpdateOnClass(classId: Int, input: ClassInputModel): Int {
+        handle.begin()
+        val klass = classDAO.getSpecificClass(classId).get()
+        val updatedClass = Class(
+                id = classId,
+                version = klass.version.inc(),
+                createdBy = input.createdBy,
+                fullName = if(input.fullName.isEmpty()) klass.fullName else input.fullName,
+                timestamp = Timestamp.valueOf(LocalDateTime.now())
+        )
+        val res = classDAO.updateClass(updatedClass)
+        classDAO.createClassVersion(ClassVersion(
+                classId = updatedClass.id,
+                version = updatedClass.version,
+                className = updatedClass.fullName,
+                createdBy = updatedClass.createdBy,
+                timestamp = updatedClass.timestamp
+        ))
+        handle.commit()
+        return res
     }
 
-    override fun updateClass(classId: Int, input: ClassInputModel): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun deleteSpecificClass(classId: Int): Int = classDAO.deleteSpecificClass(classId)
+
+    override fun getAllReportsOfClass(classId: Int): List<ClassReport> = classDAO.getAllReportsFromClass(classId)
+
+    override fun getSpecificReportOfClass(classId: Int, reportId: Int): Optional<ClassReport> = classDAO.getSpecificReportFromClass(classId, reportId)
+
+    override fun reportClass(classId: Int, report: ClassReportInputModel): Optional<ClassReport> {
+        val rep = ClassReport(
+                classId= classId,
+                className = report.className,
+                reportedBy = report.reportedBy,
+                timestamp = Timestamp.valueOf(LocalDateTime.now())
+        )
+        return classDAO.reportClass(classId, rep)
     }
 
-    override fun deleteSpecificClass(classId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun voteOnReportClass(classId: Int, reportId: Int, vote: VoteInputModel): Int = classDAO.voteOnReportOfClass(classId, reportId, Vote.valueOf(vote.vote))
+
+    override fun updateClassFromReport(classId: Int, reportId: Int): Int {
+        handle.begin()
+        val klass = classDAO.getSpecificClass(classId).get()
+        val report = classDAO.getSpecificReportFromClass(classId, reportId).get()
+        val updatedClass = Class(
+                id = classId,
+                termId = report.termId,
+                version = klass.version.inc(),
+                timestamp = Timestamp.valueOf(LocalDateTime.now()),
+                fullName = if(report.className.isEmpty()) klass.fullName else report.className,
+                createdBy = report.reportedBy
+        )
+        val res = classDAO.updateClass(updatedClass)
+        classDAO.createClassVersion(ClassVersion(
+                classId = updatedClass.id,
+                version = updatedClass.version,
+                className = updatedClass.fullName,
+                createdBy = updatedClass.createdBy,
+                timestamp = updatedClass.timestamp
+        ))
+        classDAO.deleteSpecificReportOfClass(reportId)
+        handle.commit()
+        return res
     }
 
-    override fun getAllReportsOfClass(classId: Int): List<ClassReport> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deleteAllReportsInClass(classId: Int): Int = classDAO.deleteAllReportsInClass(classId)
 
-    override fun getSpecificReportOfClass(classId: Int, reportId: Int): Optional<ClassReport> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deleteSpecificReportInClass(classId: Int, reportId: Int): Int = classDAO.deleteSpecificReportOfClass(reportId)
 
-    override fun reportClass(classId: Int, report: Any): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getAllStagedClasses(): List<ClassStage> = classDAO.getAllStagedClasses()
 
-    override fun voteOnReportClass(classId: Int, reportId: Int, vote: VoteInputModel): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getSpecificStagedClass(stageId: Int): Optional<ClassStage> = classDAO.getSpecificStagedClass(stageId)
 
-    override fun updateClassFromReport(classId: Int, reportId: Int): Class {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun deleteAllReportsInClass(classId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun deleteSpecificReportInClass(classId: Int, reportId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getAllStagedClasses(): List<ClassStage> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getSpecificStagedClass(stageId: Int): Optional<ClassStage> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun createStagingClass(inputClass: ClassInputModel): Optional<ClassStage> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun createStagingClass(inputClass: ClassInputModel): Optional<ClassStage> = classDAO.createStagingClass(inputClass)
 
     override fun createClassFromStaged(stageId: Int): Optional<Class> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        handle.begin()
+        val classStaged = classDAO.getSpecificStagedClass(stageId).get()
+        val newClass = Class(
+                id = classStaged.classId,
+                termId = classStaged.termId,
+                timestamp = Timestamp.valueOf(LocalDateTime.now()),
+                fullName = classStaged.className,
+                createdBy = classStaged.createdBy
+        )
+        val createdClass = classDAO.createClass(newClass).get()
+        classDAO.deleteSpecificStagedClass(stageId)
+        classDAO.createClassVersion(ClassVersion(
+                classId = createdClass.id,
+                version = createdClass.version,
+                className = createdClass.fullName,
+                createdBy = createdClass.createdBy,
+                timestamp = createdClass.timestamp
+        ))
+        handle.commit()
+        return Optional.of(createdClass)
     }
 
-    override fun voteOnStagedClass(stageId: Int, vote: VoteInputModel): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun voteOnStagedClass(stageId: Int, vote: VoteInputModel): Int = classDAO.voteOnStagedClass(stageId, Vote.valueOf(vote.vote))
 
-    override fun partialUpdateOnStagedClass(stageId: Int, input: ClassInputModel): ClassStage {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deleteAllStagedClasses(): Int = classDAO.deleteAllStagedClasses()
 
-    override fun deleteAllStagedClasses(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deleteSpecificStagedClass(stageId: Int): Int = classDAO.deleteSpecificStagedClass(stageId)
 
-    override fun deleteSpecificStagedClass(stageId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getAllVersionsOfClass(classId: Int): List<ClassVersion> = classDAO.getAllVersionsOfSpecificClass(classId)
 
-    override fun getAllVersionsOfClass(classId: Int): List<ClassVersion> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getSpecificVersionOfClass(classId: Int, versionId: Int): Optional<ClassVersion> = classDAO.getVersionOfSpecificClass(classId, versionId)
 
-    override fun getSpecificVersionOfClass(classId: Int, versionId: Int): Optional<ClassVersion> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deleteAllVersionsOfClass(courseId: Int): Int = classDAO.deleteAllVersionsOfClass(courseId)
 
-    override fun deleteAllVersionsOfClass(courseId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deleteSpecificVersionOfClass(courseId: Int, versionId: Int): Int = classDAO.deleteSpecificVersionOfClass(courseId, versionId)
 
-    override fun deleteSpecificVersionOfClass(courseId: Int, versionId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    /**
+     * Course Methods
+     */
 
-    override fun getAllCoursesOfClass(classId: Int): List<Course> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getAllCoursesOfClass(classId: Int): List<Course> = courseDAO.getCoursesOfClass(classId)
 
-    override fun getSpecificCourseOfClass(classId: Int, classId1: Int): Optional<Course> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getSpecificCourseOfClass(classId: Int, courseId: Int): Optional<Course> = courseDAO.getSpecificCourseOfClass(classId, courseId)
 
     override fun addCourseToClass(classId: Int, courseId: Int): Optional<Course> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun voteOnCourseInClass(classId: Int, courseId: Int, vote: VoteInputModel): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun voteOnCourseInClass(classId: Int, courseId: Int, vote: VoteInputModel): Int = courseDAO.voteOnCourseInClass(classId, courseId, Vote.valueOf(vote.vote))
 
-    override fun deleteAllCoursesInClass(classId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deleteAllCoursesInClass(classId: Int): Int = courseDAO.deleteAllCoursesInClass(classId)
 
-    override fun deleteSpecificCourseInClass(classId: Int, courseId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deleteSpecificCourseInClass(classId: Int, courseId: Int): Int = courseDAO.deleteSpecificCourseInClass(classId, courseId)
 
-    override fun getAllReportsOfCourseInClass(classId: Int, courseId: Int): List<CourseClassReport> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getAllReportsOfCourseInClass(classId: Int, courseId: Int): List<CourseClassReport> = courseDAO.getAllReportsOfCourseInClass(classId, courseId)
 
-    override fun getSpecificReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int): Optional<CourseClassReport> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getSpecificReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int): Optional<CourseClassReport>
+        = courseDAO.getSpecificReportOfCourseInClass(classId, courseId, reportId)
 
     override fun reportCourseInClass(classId: Int, courseId: Int, courseClassReportInputModel: CourseClassReportInputModel): Optional<CourseClassReport> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -174,25 +217,17 @@ class ClassServiceImpl : ClassService {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun voteOnReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int, vote: VoteInputModel): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun voteOnReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int, vote: VoteInputModel): Int
+            = courseDAO.voteOnReportOfCourseClass(classId, courseId, reportId, Vote.valueOf(vote.vote))
 
-    override fun deleteAllCourseReportsInClass(classId: Int, courseId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deleteAllCourseReportsInClass(classId: Int, courseId: Int): Int = courseDAO.deleteAllCourseReportsInClass(classId, courseId)
 
-    override fun deleteSpecificCourseReportInClass(classId: Int, courseId: Int, reportId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deleteSpecificCourseReportInClass(classId: Int, courseId: Int, reportId: Int): Int
+            = courseDAO.deleteSpecificCourseReportInClass(classId, courseId, reportId)
 
-    override fun getAllCoursesStagedInClass(classId: Int): List<CourseClassStage> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getAllCoursesStagedInClass(classId: Int): List<CourseClassStage> = courseDAO.getAllCoursesStagedInClass(classId)
 
-    override fun getSpecificStagedCourseInClass(classId: Int, stageId: Int): Optional<CourseClassStage> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getSpecificStagedCourseInClass(classId: Int, stageId: Int): Optional<CourseClassStage> = courseDAO.getSpecificStagedCourseClass(classId, stageId)
 
     override fun createStagingCourseInClass(classId: Int, courseId: Int): Optional<CourseClassStage> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -202,25 +237,21 @@ class ClassServiceImpl : ClassService {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun voteOnStagedCourseInClass(classId: Int, stageId: Int, vote: VoteInputModel): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun voteOnStagedCourseInClass(classId: Int, stageId: Int, vote: VoteInputModel): Int
+            = courseDAO.voteOnStagedCourseInClass(classId, stageId, Vote.valueOf(vote.vote))
 
-    override fun deleteAllStagedCoursesInClass(classId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deleteAllStagedCoursesInClass(classId: Int): Int = courseDAO.deleteAllStagedCoursesInClass(classId)
 
-    override fun deleteSpecificStagedCourseInClass(classId: Int, stageId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deleteSpecificStagedCourseInClass(classId: Int, stageId: Int): Int = courseDAO.deleteSpecificStagedCourseInClass(classId, stageId)
 
-    override fun getAllLecturesFromCourseInClass(classId: Int, courseId: Int): List<Lecture> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    /**
+     * Lectures Methods
+     */
 
-    override fun getSpecificLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int): Optional<Lecture> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getAllLecturesFromCourseInClass(classId: Int, courseId: Int): List<Lecture> = lectureDAO.getAllLecturesFromCourseInClass(classId, courseId)
+
+    override fun getSpecificLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int): Optional<Lecture>
+        = lectureDAO.getSpecificLectureFromCourseInClass(classId)
 
     override fun createLectureOnCourseInClass(classId: Int, courseId: Int, lecture: LectureInputModel): Optional<Lecture> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -309,6 +340,10 @@ class ClassServiceImpl : ClassService {
     override fun deleteSpecificVersionOfLecture(classId: Int, courseId: Int, lectureId: Int, versionId: Int): Int {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+
+    /**
+     * Homeworks Methods
+     */
 
     override fun getAllHomeworksOfCourseInClass(classId: Int, courseId: Int): Int {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.

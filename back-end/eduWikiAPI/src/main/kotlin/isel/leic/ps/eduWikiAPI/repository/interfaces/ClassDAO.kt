@@ -1,9 +1,13 @@
 package isel.leic.ps.eduWikiAPI.repository.interfaces
 
+import isel.leic.ps.eduWikiAPI.domain.inputModel.ClassInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Class
+import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.domain.model.report.ClassReport
+import isel.leic.ps.eduWikiAPI.domain.model.report.CourseClassReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ClassStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.ClassVersion
+import java.util.*
 
 interface ClassDAO {
 
@@ -11,80 +15,68 @@ interface ClassDAO {
      * Main entities queries
      */
 
-    fun getClass(classId: Int) : Class
+    fun getSpecificClass(classId: Int): Optional<Class>
 
     fun getAllClasses() : List<Class>
 
-    fun getAlLClassesInTerm(termId:Int) : List<Class>
+    fun createClass(clazz: Class): Optional<Class>
 
-    fun deleteClass(classId: Int, termId: Int) : Int
+    fun deleteSpecificClass(classId: Int): Int
 
-    fun deleteAllClasses() : Int
+    fun updateClass(updatedClass: Class): Int
 
-    fun updateClass(klass: Class) : Int
-
-    fun createClass(klass: Class)
-
-    fun voteOnClass(courseId: Int, voteType: Int)
+    fun voteOnClass(classId: Int, vote: Vote): Int
 
     fun getAllClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class>
 
-    fun getClassOnSpecificTermOfCourse(courseId: Int, termId: Int, classId: Int): Class
-
+    fun getClassOnSpecificTermOfCourse(courseId: Int, termId: Int, classId: Int): Optional<Class>
 
     /**
      * Stage entities queries
      */
 
-    fun getClassStage(classId: Int) : ClassStage
+    fun getAllStagedClasses(): List<ClassStage>
 
-    fun getAllClassStages() : List<ClassStage>
+    fun getSpecificStagedClass(stageId: Int): Optional<ClassStage>
 
-    fun getAllClassStagesInTerm(termId: Int) : List<ClassStage>
+    fun createStagingClass(inputClass: ClassInputModel): Optional<ClassStage>
 
-    fun deleteClassStage(classId: Int) : Int
+    fun deleteSpecificStagedClass(stageId: Int): Int
 
-    fun deleteAllClassesStages() : Int
+    fun voteOnStagedClass(stageId: Int, vote: Vote): Int
 
-    fun deleteAllClassesInTermStages(termId: Int) : Int
+    fun deleteAllStagedClasses(): Int
 
-    fun createClassStage(classStage: ClassStage)
+    /**
+     * Report entities queries
+     */
 
-    fun voteOnClassStage(classId: Int, termId: Int, voteType: Int)
+    fun getAllReportsFromClass(classId: Int): List<ClassReport>
+
+    fun getSpecificReportFromClass(classId: Int, reportId: Int): Optional<ClassReport>
+
+    fun reportClass(classId: Int, report: ClassReport): Optional<ClassReport>
+
+    fun voteOnReportOfClass(classId: Int, reportId: Int, vote: Vote): Int
+
+    fun deleteAllReportsInClass(classId: Int): Int
+
+    fun deleteSpecificReportOfClass(reportId: Int) : Int
 
 
     /**
      * Version entities queries
      */
-
-    fun getVersionClass(versionClassId: Int, versionTermId: Int, version: Int) : ClassVersion
+    fun createClassVersion(classVersion: ClassVersion): Optional<ClassVersion>
 
     fun getAllVersionsOfSpecificClass(classId: Int): List<ClassVersion>
 
-    fun getVersionOfSpecificClass(classId: Int, versionId: Int): ClassVersion
+    fun getVersionOfSpecificClass(classId: Int, versionId: Int): Optional<ClassVersion>
 
-    fun getAllVersionCourses() : List<ClassVersion>
+    fun deleteAllVersionsOfClass(courseId: Int): Int
 
-    fun deleteVersionCourse(versionCourseId: Int, versionTermId: Int, version: Int) : Int
+    fun deleteSpecificVersionOfClass(courseId: Int, versionId: Int): Int
 
-    fun deleteAllVersionCourses() : Int
-
-    fun createVersionCourse(classVersion: ClassVersion)
-
-    /**
-     * Report entity queries
-     */
-
-    fun reportClass(classReport: ClassReport)
-
-    fun deleteReportOnClass(reportId: Int) : Int
-
-    fun deleteAllReportsOnCourse(classId: Int) : Int
-
-    fun deleteAllReports() : Int
-
-    fun getAllReportsOfClass(classId: Int): List<ClassReport>
-
-    fun getReportOfClass(classId: Int, reportId: Int): ClassReport
+    fun getSpecificReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int): Optional<CourseClassReport>
 
 }
