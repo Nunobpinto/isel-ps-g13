@@ -7,14 +7,14 @@ class WorkAssignmentReportInputModel (
         val sheet: String? = null,
         val supplement: String? = null,
         @JsonProperty("due_date")
-        val dueDate: LocalDate? = LocalDate.now(),
-        val individual: Boolean? = false,
+        val dueDate: LocalDate? = null,
+        val individual: Boolean? = null,
         @JsonProperty("late_delivery")
-        val lateDelivery: Boolean? = false,
+        val lateDelivery: Boolean? = null,
         @JsonProperty("multiple_deliveries")
-        val multipleDeliveries: Boolean? = false,
+        val multipleDeliveries: Boolean? = null,
         @JsonProperty("requires_report")
-        val requiresReport: Boolean? = false,
+        val requiresReport: Boolean? = null,
         @JsonProperty("reported_by")
         val reportedBy: String
 )

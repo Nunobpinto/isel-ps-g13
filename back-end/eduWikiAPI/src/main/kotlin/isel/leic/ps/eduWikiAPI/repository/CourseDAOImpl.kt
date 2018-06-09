@@ -7,8 +7,10 @@ import isel.leic.ps.eduWikiAPI.repository.TermDAOImpl.Companion.TERM_YEAR
 import isel.leic.ps.eduWikiAPI.repository.TermDAOImpl.Companion.TERM_TABLE
 
 import isel.leic.ps.eduWikiAPI.domain.model.*
+import isel.leic.ps.eduWikiAPI.domain.model.report.CourseClassReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
+import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseClassStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseProgrammeVersion
@@ -548,5 +550,65 @@ class CourseDAOImpl : CourseDAO {
             handle.createUpdate("delete from $COURSE_PROG_REPORT_TABLE where $COURSE_PROG_REPORT_ID = :reportId")
                     .bind("reportId", reportId)
                     .execute()
+
+    override fun getCoursesOfClass(classId: Int): List<Course> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getSpecificCourseOfClass(classId: Int, courseId: Int): Optional<Course> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun voteOnCourseInClass(classId: Int, courseId: Int, valueOf: Vote): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun deleteAllCoursesInClass(classId: Int): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun deleteSpecificCourseInClass(classId: Int, courseId: Int): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getAllReportsOfCourseInClass(classId: Int, courseId: Int): List<CourseClassReport> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getSpecificReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int): Optional<CourseClassReport> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun voteOnReportOfCourseClass(classId: Int, courseId: Int, reportId: Int, valueOf: Vote): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun deleteAllCourseReportsInClass(classId: Int, courseId: Int): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun deleteSpecificCourseReportInClass(classId: Int, courseId: Int, reportId: Int): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getAllCoursesStagedInClass(classId: Int): List<CourseClassStage> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getSpecificStagedCourseClass(classId: Int, stageId: Int): Optional<CourseClassStage> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun voteOnStagedCourseInClass(classId: Int, stageId: Int, vote: Vote): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun deleteAllStagedCoursesInClass(classId: Int): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun deleteSpecificStagedCourseInClass(classId: Int, stageId: Int): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }
 

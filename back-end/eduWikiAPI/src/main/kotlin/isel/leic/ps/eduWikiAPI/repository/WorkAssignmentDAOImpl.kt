@@ -7,15 +7,20 @@ import isel.leic.ps.eduWikiAPI.domain.model.report.WorkAssignmentReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseMiscUnitStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.WorkAssignmentVersion
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_ID
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_TYPE
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_UNIT_ID
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_UNIT_STAGE_TABLE
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_UNIT_TABLE
+import isel.leic.ps.eduWikiAPI.repository.TermDAOImpl.Companion.TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.interfaces.WorkAssignmentDAO
-import org.jdbi.v3.core.Jdbi
+import org.jdbi.v3.core.Handle
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
+import java.util.*
 
 @Repository
 class WorkAssignmentDAOImpl : WorkAssignmentDAO {
-
-    //TODO Delete With Cascade All Course_misc_unit of type Work
 
     companion object {
         //TABLE NAMES
@@ -41,203 +46,219 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
     }
 
     @Autowired
-    lateinit var dbi: Jdbi
+    lateinit var handle: Handle
 
-    override fun getSpecificWorkAssignment(courseMiscUnitId: Int): WorkAssignment = dbi.withHandle<WorkAssignment, Exception> {
-        val select = "select * from $WRK_ASS_TABLE " +
-                "where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :workItemId"
-        it.createQuery(select)
-                .bind("workItemId", courseMiscUnitId)
-                .mapTo(WorkAssignment::class.java)
-                .findOnly()
-    }
+    override fun getSpecificWorkAssignment(courseMiscUnitId: Int, courseId: Int, termId: Int) =
+            handle.createQuery(
+                    "select C.$COURSE_MISC_UNIT_ID, C.$TERM_ID, " +
+                            "W.$WRK_ASS_VERSION, W.$WRK_ASS_VOTES, W.$WRK_ASS_CREATED_BY, " +
+                            "W.$WRK_ASS_SHEET, W.$WRK_ASS_SUPPLEMENT, " +
+                            "W.$WRK_ASS_DUE_DATE, W.$WRK_ASS_INDIVIDUAL, " +
+                            "W.$WRK_ASS_LATE_DELIVERY, W.$WRK_ASS_MULTIPLE_DELIVERIES, " +
+                            "W.$WRK_ASS_REQUIRES_REPORT, W.$WRK_ASS_TIMESTAMP " +
+                            "from $WRK_ASS_TABLE as W " +
+                            "inner join $COURSE_MISC_UNIT_TABLE as C " +
+                            "on W.$COURSE_MISC_UNIT_ID = C.$COURSE_MISC_UNIT_ID " +
+                            "where C.$COURSE_ID = :courseId " +
+                            "and C.$TERM_ID = :termId " +
+                            "and W.$WRK_ASS_ID = :workItemId"
+            )
+                    .bind("workItemId", courseMiscUnitId)
+                    .bind("courseId", courseId)
+                    .bind("termId", termId)
+                    .mapTo(WorkAssignment::class.java)
+                    .findFirst()
 
-    override fun getAllWorkAssignment(): List<WorkAssignment> = dbi.withHandle<List<WorkAssignment>, Exception> {
-      val select = "select * from $WRK_ASS_TABLE"
-        it.createQuery(select)
-                .mapTo(WorkAssignment::class.java)
-                .list()
-    }
+    override fun getAllWorkAssignment() =
+            handle.createQuery("select * from $WRK_ASS_TABLE")
+                    .mapTo(WorkAssignment::class.java)
+                    .list()
 
-    override fun deleteSpecificWorkAssignment(courseMiscUnitId: Int): Int = dbi.withHandle<Int, Exception> {
-        val delete = "delete from ${CourseDAOImpl.COURSE_MISC_UNIT_TABLE} where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :id"
-        it.createUpdate(delete)
-                .bind("id",courseMiscUnitId)
-                .execute()
-    }
+    override fun deleteSpecificWorkAssignment(courseMiscUnitId: Int) =
+            handle.createUpdate("delete from $COURSE_MISC_UNIT_TABLE where $COURSE_MISC_UNIT_ID = :id")
+                    .bind("id", courseMiscUnitId)
+                    .execute()
 
-    override fun updateWorkAssignment(workAssignmentId: Int, workAssignment: WorkAssignment): Int = dbi.inTransaction<Int, Exception>{
-        val update = "update $WRK_ASS_TABLE SET " +
-                "$WRK_ASS_VERSION = :version, $WRK_ASS_CREATED_BY = :createdBy, " +
-                "$WRK_ASS_SHEET = :sheet, $WRK_ASS_SUPPLEMENT = :supplement, $WRK_ASS_DUE_DATE = :dueDate, " +
-                "$WRK_ASS_INDIVIDUAL = :individual, $WRK_ASS_LATE_DELIVERY = :lateDelivery, " +
-                "$WRK_ASS_MULTIPLE_DELIVERIES = : multipleDeliveries, " +
-                "$WRK_ASS_REQUIRES_REPORT = :requiresReport, $WRK_ASS_VOTES = :votes, $WRK_ASS_TIMESTAMP = :timestamp " +
-                "where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :workAssignmentId"
+    override fun updateWorkAssignment(workAssignmentId: Int, workAssignment: WorkAssignment) =
+            handle.createUpdate(
+                    "update $WRK_ASS_TABLE SET " +
+                            "$WRK_ASS_VERSION = :version, $WRK_ASS_CREATED_BY = :createdBy, " +
+                            "$WRK_ASS_SHEET = :sheet, $WRK_ASS_SUPPLEMENT = :supplement, $WRK_ASS_DUE_DATE = :dueDate, " +
+                            "$WRK_ASS_INDIVIDUAL = :individual, $WRK_ASS_LATE_DELIVERY = :lateDelivery, " +
+                            "$WRK_ASS_MULTIPLE_DELIVERIES = :multipleDeliveries, " +
+                            "$WRK_ASS_REQUIRES_REPORT = :requiresReport, $WRK_ASS_VOTES = :votes, $WRK_ASS_TIMESTAMP = :timestamp " +
+                            "where $COURSE_MISC_UNIT_ID = :workAssignmentId"
+            )
+                    .bind("version", workAssignment.version)
+                    .bind("createdBy", workAssignment.createdBy)
+                    .bind("sheet", workAssignment.sheet)
+                    .bind("supplement", workAssignment.supplement)
+                    .bind("dueDate", workAssignment.dueDate)
+                    .bind("individual", workAssignment.individual)
+                    .bind("lateDelivery", workAssignment.lateDelivery)
+                    .bind("multipleDeliveries", workAssignment.multipleDeliveries)
+                    .bind("requiresReport", workAssignment.requiresReport)
+                    .bind("votes", workAssignment.votes)
+                    .bind("timestamp", workAssignment.timestamp)
+                    .bind("workAssignmentId", workAssignmentId)
+                    .execute()
 
-        it.createUpdate(update)
-                .bind("version", workAssignment.version)
-                .bind("createdBy", workAssignment.createdBy)
-                .bind("sheet", workAssignment.sheet)
-                .bind("supplement", workAssignment.supplement)
-                .bind("dueDate", workAssignment.dueDate)
-                .bind("individual", workAssignment.individual)
-                .bind("lateDelivery", workAssignment.lateDelivery)
-                .bind("multipleDeliveries", workAssignment.multipleDeliveries)
-                .bind("requiresReport", workAssignment.requiresReport)
-                .bind("votes", workAssignment.votes)
-                .bind("timestamp", workAssignment.timestamp)
-                .bind("workAssignmentId", workAssignmentId)
-                .execute()
-    }
-
-    override fun voteOnWorkAssignment(courseMiscUnitId: Int, vote: Vote) : Int = dbi.withHandle<Int, Exception> {
-        val voteQuery = "select $WRK_ASS_VOTES from $WRK_ASS_TABLE where $WRK_ASS_ID = :workAssignmentId"
-        var votes = it.createQuery(voteQuery)
+    override fun voteOnWorkAssignment(courseMiscUnitId: Int, vote: Vote): Int {
+        var votes = handle.createQuery("select $WRK_ASS_VOTES from $WRK_ASS_TABLE where $WRK_ASS_ID = :workAssignmentId")
                 .bind("workAssignmentId", courseMiscUnitId)
                 .mapTo(Int::class.java).findOnly()
         votes = if (vote == Vote.Down) --votes else ++votes
-        val updateQuery = "update $WRK_ASS_TABLE set $WRK_ASS_VOTES = :votes where $WRK_ASS_ID = :workAssignmentId"
-        it.createUpdate(updateQuery)
+
+        return handle.createUpdate("update $WRK_ASS_TABLE set $WRK_ASS_VOTES = :votes where $WRK_ASS_ID = :workAssignmentId")
                 .bind("votes", votes)
                 .bind("workAssignmentId", courseMiscUnitId)
                 .execute()
     }
 
-    override fun getWorkAssignmentSpecificStageEntry(stageId: Int): WorkAssignmentStage = dbi.withHandle<WorkAssignmentStage, Exception> {
-        val select = "select * from $WRK_ASS_STAGE_TABLE" +
-                "where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :workAssignmentId"
-        it.createQuery(select)
-                .bind("workAssignmentId", stageId)
-                .mapTo(WorkAssignmentStage::class.java)
-                .findOnly()
-    }
+    override fun getWorkAssignmentSpecificStageEntry(stageId: Int) =
+            handle.createQuery(
+                    "select * from $WRK_ASS_STAGE_TABLE " +
+                            "where $COURSE_MISC_UNIT_ID = :workAssignmentId"
+            )
+                    .bind("workAssignmentId", stageId)
+                    .mapTo(WorkAssignmentStage::class.java)
+                    .findFirst()
 
-    override fun getAllWorkAssignmentStages(): List<WorkAssignmentStage> = dbi.withHandle<List<WorkAssignmentStage>, Exception> {
-        val select = "select * from $WRK_ASS_STAGE_TABLE"
-        it.createQuery(select)
-                .mapTo(WorkAssignmentStage::class.java)
-                .list()
-    }
+    override fun getAllWorkAssignmentStages() =
+            handle.createQuery("select * from $WRK_ASS_STAGE_TABLE")
+                    .mapTo(WorkAssignmentStage::class.java)
+                    .list()
 
-    override fun deleteSpecificStagedWorkAssignment(stageId: Int): Int = dbi.inTransaction<Int, Exception> {
-        val deleteFromCourseMiscUnitStageTable = "delete from ${CourseDAOImpl.COURSE_MISC_UNIT_STAGE_TABLE} " +
-                "where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :examId"
-        it.createUpdate(deleteFromCourseMiscUnitStageTable)
-                .bind("examId", stageId)
-                .execute()
-    }
+    override fun deleteSpecificStagedWorkAssignment(stageId: Int) =
+            handle.createUpdate(
+                    "delete from $COURSE_MISC_UNIT_STAGE_TABLE " +
+                            "where $COURSE_MISC_UNIT_ID = :workAssignmentId"
+            )
+                    .bind("workAssignmentId", stageId)
+                    .execute()
 
-    override fun getVersionOfSpecificWorkAssignment(versionWorkAssignmentId: Int, version: Int): WorkAssignmentVersion = dbi.withHandle<WorkAssignmentVersion, Exception> {
-        val select = "select * from $WRK_ASS_VERSION_TABLE where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :workAssignmentId and $WRK_ASS_VERSION = :version"
-        it.createQuery(select)
-                .bind("workAssignmentId", versionWorkAssignmentId)
-                .bind("version", version)
-                .mapTo(WorkAssignmentVersion::class.java)
-                .findOnly()
-    }
+    override fun getVersionOfSpecificWorkAssignment(versionWorkAssignmentId: Int, version: Int, courseId: Int, termId: Int) =
+            handle.createQuery(
+                    "select * from $WRK_ASS_VERSION_TABLE " +
+                            "where $COURSE_MISC_UNIT_ID = :workAssignmentId and " +
+                            "$WRK_ASS_VERSION = :version and " +
+                            ":workAssignmentId in (SELECT $COURSE_MISC_UNIT_ID " +
+                                "FROM $COURSE_MISC_UNIT_TABLE " +
+                                "WHERE $COURSE_ID = :courseId and $TERM_ID = :termId)"
+            )
+                    .bind("workAssignmentId", versionWorkAssignmentId)
+                    .bind("version", version)
+                    .bind("courseId", courseId)
+                    .bind("termId", termId)
+                    .mapTo(WorkAssignmentVersion::class.java)
+                    .findFirst()
 
 
-    override fun deleteVersionWorkAssignment(versionWorkAssignmentId: Int, version: Int): Int = dbi.withHandle<Int, Exception> {
-        val delete = "delete from $WRK_ASS_VERSION_TABLE where $WRK_ASS_ID = :versionWorkAssignmentId and $WRK_ASS_VERSION = :version"
-        it.createUpdate(delete)
-                .bind("versionWorkAssignmentId",versionWorkAssignmentId)
-                .bind("version",version)
-                .execute()
+    override fun deleteVersionWorkAssignment(versionWorkAssignmentId: Int, version: Int) =
+            handle.createUpdate("delete from $WRK_ASS_VERSION_TABLE where $WRK_ASS_ID = :versionWorkAssignmentId and $WRK_ASS_VERSION = :version")
+                    .bind("versionWorkAssignmentId", versionWorkAssignmentId)
+                    .bind("version", version)
+                    .execute()
 
-    }
+    override fun deleteReportOnWorkAssignment(reportId: Int) =
+            handle.createUpdate("delete from $WRK_ASS_REPORT_TABLE where $WRK_ASS_REPORT_ID = :reportId")
+                    .bind("reportId", reportId)
+                    .execute()
 
-    override fun deleteReportOnWorkAssignment(workAssignmentId: Int, reportId: Int): Int = dbi.inTransaction<Int, Exception> {
-        val delete = "delete from $WRK_ASS_REPORT_TABLE where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :workAssignmentId and $WRK_ASS_REPORT_ID = :reportId"
-        it.createUpdate(delete)
-                .bind("workAssignmentId", workAssignmentId)
-                .bind("reportId", reportId)
-                .execute()
-    }
+    override fun deleteAllReportsOnWorkAssignment(courseMiscUnitId: Int) =
+            handle.createUpdate("delete from $WRK_ASS_REPORT_TABLE where $COURSE_MISC_UNIT_ID = :workAssignmentId")
+                    .bind("workAssignmentId", courseMiscUnitId)
+                    .execute()
 
-    override fun deleteAllReportsOnWorkAssignment(courseMiscUnitId: Int): Int = dbi.withHandle<Int, Exception> {
-        val delete = "delete from $WRK_ASS_REPORT_TABLE where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :workAssignmentId"
-        it.createUpdate(delete)
-                .bind("workAssignmentId", courseMiscUnitId)
-                .execute()
-    }
+    override fun getAllWorkAssignmentsFromSpecificTermOfCourse(courseId: Int, termId: Int) =
+            handle.createQuery(
+                    "select C.$COURSE_MISC_UNIT_ID, C.$TERM_ID, " +
+                            "W.$WRK_ASS_VERSION, W.$WRK_ASS_VOTES, W.$WRK_ASS_CREATED_BY, " +
+                            "W.$WRK_ASS_SHEET, W.$WRK_ASS_SUPPLEMENT, " +
+                            "W.$WRK_ASS_DUE_DATE, W.$WRK_ASS_INDIVIDUAL, " +
+                            "W.$WRK_ASS_LATE_DELIVERY, W.$WRK_ASS_MULTIPLE_DELIVERIES, " +
+                            "W.$WRK_ASS_REQUIRES_REPORT, W.$WRK_ASS_TIMESTAMP " +
+                            "from $WRK_ASS_TABLE as W " +
+                            "inner join $COURSE_MISC_UNIT_TABLE as C " +
+                            "on W.$COURSE_MISC_UNIT_ID = C.$COURSE_MISC_UNIT_ID " +
+                            "where C.$COURSE_ID = :courseId and C.$TERM_ID = :termId"
+            )
+                    .bind("courseId", courseId)
+                    .bind("termId", termId)
+                    .mapTo(WorkAssignment::class.java)
+                    .list()
 
-    override fun getAllWorkAssignmentsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignment> = dbi.withHandle<List<WorkAssignment>, Exception> {
-        val select = "select C.${CourseDAOImpl.COURSE_MISC_UNIT_ID}," +
-                "W.$WRK_ASS_DUE_DATE, W.$WRK_ASS_INDIVIDUAL, W.$WRK_ASS_SHEET, W.$WRK_ASS_SUPPLEMENT, C.${TermDAOImpl.TERM_ID} " +
-                "from $WRK_ASS_TABLE as W " +
-                "inner join ${CourseDAOImpl.COURSE_MISC_UNIT_TABLE} as C " +
-                "on W.${CourseDAOImpl.COURSE_MISC_UNIT_ID} = C.${CourseDAOImpl.COURSE_MISC_UNIT_ID} " +
-                "where C.${CourseDAOImpl.COURSE_ID} = :courseId and C.${TermDAOImpl.TERM_ID} = :termId"
-        it.createQuery(select)
-                .bind("courseId", courseId)
-                .bind("termId", termId)
-                .mapTo(WorkAssignment::class.java)
-                .list()
-    }
+    override fun getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int) =
+            handle.createQuery(
+                    "select C.$COURSE_MISC_UNIT_ID, " +
+                            "W.$WRK_ASS_VOTES, W.$WRK_ASS_CREATED_BY, " +
+                            "W.$WRK_ASS_SHEET, W.$WRK_ASS_SUPPLEMENT, " +
+                            "W.$WRK_ASS_DUE_DATE, W.$WRK_ASS_INDIVIDUAL, " +
+                            "W.$WRK_ASS_LATE_DELIVERY, W.$WRK_ASS_MULTIPLE_DELIVERIES, " +
+                            "W.$WRK_ASS_REQUIRES_REPORT, W.$WRK_ASS_TIMESTAMP " +
+                            "from $WRK_ASS_STAGE_TABLE as W " +
+                            "inner join $COURSE_MISC_UNIT_STAGE_TABLE as C " +
+                            "on W.$COURSE_MISC_UNIT_ID = C.$COURSE_MISC_UNIT_ID " +
+                            "where C.$COURSE_ID = :courseId and C.$TERM_ID = :termId"
+            )
+                    .bind("courseId", courseId)
+                    .bind("termId", termId)
+                    .mapTo(WorkAssignmentStage::class.java)
+                    .list()
 
-    override fun getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignmentStage> = dbi.withHandle<List<WorkAssignmentStage>, Exception> {
-        val select = "select * from $WRK_ASS_STAGE_TABLE as W" +
-                "inner join ${CourseDAOImpl.COURSE_MISC_UNIT_TABLE} as C " +
-                "on W.${CourseDAOImpl.COURSE_MISC_UNIT_ID} = C.${CourseDAOImpl.COURSE_MISC_UNIT_ID}" +
-                "where C.${CourseDAOImpl.COURSE_ID} = :courseId and C.${TermDAOImpl.TERM_ID} = :termId"
-        it.createQuery(select)
-                .bind("courseId", courseId)
-                .bind("termId", termId)
-                .mapTo(WorkAssignmentStage::class.java)
-                .list()
-    }
+    override fun getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int) =
+            handle.createQuery(
+                    "select C.$COURSE_MISC_UNIT_ID, " +
+                            "W.$WRK_ASS_VOTES, W.$WRK_ASS_CREATED_BY, " +
+                            "W.$WRK_ASS_SHEET, W.$WRK_ASS_SUPPLEMENT, " +
+                            "W.$WRK_ASS_DUE_DATE, W.$WRK_ASS_INDIVIDUAL, " +
+                            "W.$WRK_ASS_LATE_DELIVERY, W.$WRK_ASS_MULTIPLE_DELIVERIES, " +
+                            "W.$WRK_ASS_REQUIRES_REPORT, W.$WRK_ASS_TIMESTAMP " +
+                            "from $WRK_ASS_STAGE_TABLE as W " +
+                            "inner join $COURSE_MISC_UNIT_STAGE_TABLE as C " +
+                            "on W.$COURSE_MISC_UNIT_ID = C.$COURSE_MISC_UNIT_ID " +
+                            "where C.$COURSE_ID = :courseId " +
+                            "and C.$TERM_ID = :termId " +
+                            "and W.$COURSE_MISC_UNIT_ID = :stageId"
+            )
+                    .bind("courseId", courseId)
+                    .bind("termId", termId)
+                    .bind("stageId", stageId)
+                    .mapTo(WorkAssignmentStage::class.java)
+                    .findFirst()
 
-    override fun getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): WorkAssignmentStage = dbi.withHandle<WorkAssignmentStage, Exception> {
-        val select = "select * from $.WRK_ASS_STAGE_TABLE as W" +
-                "inner join ${CourseDAOImpl.COURSE_MISC_UNIT_TABLE} as C " +
-                "on W.${CourseDAOImpl.COURSE_MISC_UNIT_ID} = C.${CourseDAOImpl.COURSE_MISC_UNIT_ID}" +
-                "where C.${CourseDAOImpl.COURSE_ID} = :courseId " +
-                "and C.${TermDAOImpl.TERM_ID} = :termId " +
-                "and ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :stageId"
+    override fun getAllReportsOnWorkUnitOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int) =
+            handle.createQuery(
+                    "select * from $WRK_ASS_REPORT_TABLE " +
+                            "where $COURSE_MISC_UNIT_ID = :workAssignmentId"
+            )
+                    .bind("workAssignmentId", workAssignmentId)
+                    .mapTo(WorkAssignmentReport::class.java)
+                    .list()
 
-        it.createQuery(select)
-                .bind("courseId", courseId)
-                .bind("termId", termId)
-                .bind("stageId", stageId)
-                .mapTo(WorkAssignmentStage::class.java)
-                .findOnly()
-    }
-
-    override fun getAllReportsOnWorkUnitOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): List<WorkAssignmentReport> = dbi.withHandle<List<WorkAssignmentReport>, Exception>{
-        val select = "select * from $WRK_ASS_REPORT_TABLE" +
-                "where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :workAssignmentId"
-        it.createQuery(select)
-                .bind("workAssignmentId", workAssignmentId)
-                .mapTo(WorkAssignmentReport::class.java)
-                .list()
-    }
-
-    override fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, workAssignment: WorkAssignment): Int = dbi.inTransaction<Int, Exception>{
-        val insertInCourseMiscUnit = "insert into ${CourseDAOImpl.COURSE_MISC_UNIT_TABLE}" +
-                "(${CourseDAOImpl.COURSE_MISC_TYPE}, ${CourseDAOImpl.COURSE_ID}, " +
-                "${TermDAOImpl.TERM_ID}, ${CourseDAOImpl.COURSE_TIMESTAMP})" +
-                "values(:miscType, :courseId, :termId, :timestamp)"
-
-        val courseMiscUnit = it.createUpdate(insertInCourseMiscUnit)
+    override fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, workAssignment: WorkAssignment): Optional<WorkAssignment> {
+        val courseMiscUnit = handle.createUpdate(
+                "insert into $COURSE_MISC_UNIT_TABLE " +
+                        "($COURSE_MISC_TYPE, $COURSE_ID, $TERM_ID)" +
+                        "values(:miscType::course_misc_unit_type, :courseId, :termId)"
+        )
                 .bind("miscType", "Work Assignment")
                 .bind("courseId", courseId)
                 .bind("termId", termId)
-                .bind("timestamp", workAssignment.timestamp)
                 .executeAndReturnGeneratedKeys()
                 .mapTo(CourseMiscUnit::class.java)
                 .findOnly()
 
-        val insertInWorkAssignment = "insert into $WRK_ASS_TABLE" +
-                "(${CourseDAOImpl.COURSE_MISC_UNIT_ID}, $WRK_ASS_VERSION, " +
-                "$WRK_ASS_CREATED_BY, $WRK_ASS_SHEET, $WRK_ASS_SUPPLEMENT, $WRK_ASS_DUE_DATE, " +
-                "$WRK_ASS_INDIVIDUAL, $WRK_ASS_LATE_DELIVERY, $WRK_ASS_MULTIPLE_DELIVERIES, " +
-                "$WRK_ASS_REQUIRES_REPORT, $WRK_ASS_VOTES, $WRK_ASS_TIMESTAMP)" +
-                "values(:courseMiscUnitId, :version, :createdBy, :sheet," +
-                ":supplement, :dueDate, :individual, :lateDelivery, :multipleDeliveries, :requiresReport, :votes, :timestamp)"
-        it.createUpdate(insertInWorkAssignment)
+        val res = handle.createUpdate(
+                "insert into $WRK_ASS_TABLE " +
+                        "($COURSE_MISC_UNIT_ID, " +
+                        "$WRK_ASS_CREATED_BY, $WRK_ASS_SHEET, $WRK_ASS_SUPPLEMENT, $WRK_ASS_DUE_DATE, " +
+                        "$WRK_ASS_INDIVIDUAL, $WRK_ASS_LATE_DELIVERY, $WRK_ASS_MULTIPLE_DELIVERIES, " +
+                        "$WRK_ASS_REQUIRES_REPORT, $WRK_ASS_VOTES, $WRK_ASS_TIMESTAMP) " +
+                        "values(:courseMiscUnitId, :createdBy, :sheet," +
+                        ":supplement, :dueDate, :individual, :lateDelivery, :multipleDeliveries, :requiresReport, :votes, :timestamp)"
+        )
                 .bind("courseMiscUnitId", courseMiscUnit.id)
-                .bind("version", workAssignment.version)
                 .bind("createdBy", workAssignment.createdBy)
                 .bind("sheet", workAssignment.sheet)
                 .bind("supplement", workAssignment.supplement)
@@ -248,83 +269,89 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                 .bind("requiresReport", workAssignment.requiresReport)
                 .bind("votes", workAssignment.votes)
                 .bind("timestamp", workAssignment.timestamp)
-                .execute()
+                .executeAndReturnGeneratedKeys()
+                .mapTo(WorkAssignment::class.java)
+                .findFirst()
+        return res
     }
 
-    override fun addReportToWorkAssignmentOnCourseInTerm(workAssignmentId: Int, workAssignmentReport: WorkAssignmentReport): Int = dbi.withHandle<Int, Exception> {
-        val insert = "insert into $WRK_ASS_REPORT_TABLE" +
-                "(${CourseDAOImpl.COURSE_MISC_UNIT_ID}, $WRK_ASS_SHEET, $WRK_ASS_SUPPLEMENT, " +
-                "$WRK_ASS_DUE_DATE, $WRK_ASS_INDIVIDUAL, $WRK_ASS_LATE_DELIVERY, $WRK_ASS_MULTIPLE_DELIVERIES," +
-                "$WRK_ASS_REQUIRES_REPORT, $WRK_ASS_REPORTED_BY, $WRK_ASS_VOTES, $WRK_ASS_TIMESTAMP ) " +
-                "values(:workAssignmentId, :sheet, :supplement, :dueDate, :individual, :lateDelivery," +
-                ":multipleDeliveries, :requiresReport, :reportedBy, :votes, :timestamp)"
-        it.createUpdate(insert)
-                .bind("workAssignmentId", workAssignmentId)
-                .bind("sheet", workAssignmentReport.sheet)
-                .bind("supplement", workAssignmentReport.supplement)
-                .bind("dueDate", workAssignmentReport.dueDate)
-                .bind("individual", workAssignmentReport.individual)
-                .bind("lateDelivery", workAssignmentReport.lateDelivery)
-                .bind("multipleDeliveries", workAssignmentReport.multipleDeliveries)
-                .bind("requiresReport", workAssignmentReport.requiresReport)
-                .bind("reportedBy", workAssignmentReport.reportedBy)
-                .bind("votes", workAssignmentReport.votes)
-                .bind("timestamp", workAssignmentReport.timestamp)
-                .execute()
-    }
+    override fun addReportToWorkAssignmentOnCourseInTerm(workAssignmentId: Int, workAssignmentReport: WorkAssignmentReport) =
+            handle.createUpdate(
+                    "insert into $WRK_ASS_REPORT_TABLE " +
+                            "($COURSE_MISC_UNIT_ID, $WRK_ASS_SHEET, $WRK_ASS_SUPPLEMENT, " +
+                            "$WRK_ASS_DUE_DATE, $WRK_ASS_INDIVIDUAL, $WRK_ASS_LATE_DELIVERY, $WRK_ASS_MULTIPLE_DELIVERIES, " +
+                            "$WRK_ASS_REQUIRES_REPORT, $WRK_ASS_REPORTED_BY, $WRK_ASS_VOTES, $WRK_ASS_TIMESTAMP) " +
+                            "values(:workAssignmentId, :sheet, :supplement, :dueDate, :individual, :lateDelivery, " +
+                            ":multipleDeliveries, :requiresReport, :reportedBy, :votes, :timestamp)"
+            )
+                    .bind("workAssignmentId", workAssignmentId)
+                    .bind("sheet", workAssignmentReport.sheet)
+                    .bind("supplement", workAssignmentReport.supplement)
+                    .bind("dueDate", workAssignmentReport.dueDate)
+                    .bind("individual", workAssignmentReport.individual)
+                    .bind("lateDelivery", workAssignmentReport.lateDelivery)
+                    .bind("multipleDeliveries", workAssignmentReport.multipleDeliveries)
+                    .bind("requiresReport", workAssignmentReport.requiresReport)
+                    .bind("reportedBy", workAssignmentReport.reportedBy)
+                    .bind("votes", workAssignmentReport.votes)
+                    .bind("timestamp", workAssignmentReport.timestamp)
+                    .executeAndReturnGeneratedKeys()
+                    .mapTo(WorkAssignmentReport::class.java)
+                    .findFirst()
 
-    override fun voteOnReportToWorkAssignmentOnCourseInTerm(reportId: Int, vote: Vote): Int = dbi.withHandle<Int, Exception>{
-        val voteQuery = "select $WRK_ASS_VOTES from $WRK_ASS_REPORT_TABLE where $WRK_ASS_REPORT_ID = :reportId"
-        var votes = it.createQuery(voteQuery)
+    override fun voteOnReportToWorkAssignmentOnCourseInTerm(reportId: Int, vote: Vote): Int {
+        var votes = handle.createQuery("select $WRK_ASS_VOTES from $WRK_ASS_REPORT_TABLE where $WRK_ASS_REPORT_ID = :reportId")
                 .bind("reportId", reportId)
                 .mapTo(Int::class.java).findOnly()
         votes = if (vote == Vote.Down) --votes else ++votes
-        val updateQuery = "update $WRK_ASS_REPORT_TABLE set $WRK_ASS_VOTES = :votes where $WRK_ASS_REPORT_ID = :reportId"
-        it.createUpdate(updateQuery)
+
+        return handle.createUpdate("update $WRK_ASS_REPORT_TABLE set $WRK_ASS_VOTES = :votes where $WRK_ASS_REPORT_ID = :reportId")
                 .bind("votes", votes)
                 .bind("reportId", reportId)
                 .execute()
     }
 
-    override fun getSpecificReportOfWorkAssignment(workAssignmentId: Int, reportId: Int): WorkAssignmentReport = dbi.withHandle<WorkAssignmentReport, Exception> {
-        val select = "select * from $WRK_ASS_REPORT_TABLE" +
-                "where $WRK_ASS_REPORT_ID} = :reportId and ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :workAssignmentId"
-        it.createQuery(select)
-                .bind("reportId", reportId)
-                .bind("workAssignmentId", workAssignmentId)
-                .mapTo(WorkAssignmentReport::class.java)
-                .findOnly()
-    }
+    override fun getSpecificReportOfWorkAssignment(workAssignmentId: Int, reportId: Int) =
+            handle.createQuery(
+                    "select * from $WRK_ASS_REPORT_TABLE " +
+                            "where $WRK_ASS_REPORT_ID = :reportId and $COURSE_MISC_UNIT_ID = :workAssignmentId"
+            )
+                    .bind("reportId", reportId)
+                    .bind("workAssignmentId", workAssignmentId)
+                    .mapTo(WorkAssignmentReport::class.java)
+                    .findFirst()
 
-    override fun addToWorkAssignmentVersion(workAssignment: WorkAssignment): Int = dbi.inTransaction<Int, Exception> {
-        val insert = "insert into $WRK_ASS_VERSION_TABLE " +
-                "(${CourseDAOImpl.COURSE_MISC_UNIT_ID}, $WRK_ASS_VERSION, $WRK_ASS_SHEET," +
-                "$WRK_ASS_SUPPLEMENT, $WRK_ASS_DUE_DATE, $WRK_ASS_INDIVIDUAL, $WRK_ASS_LATE_DELIVERY" +
-                "$WRK_ASS_MULTIPLE_DELIVERIES, $WRK_ASS_REQUIRES_REPORT, $WRK_ASS_CREATED_BY, $WRK_ASS_TIMESTAMP" +
-                "values (:workAssignmentId, :version, :sheet, :supplement, :dueDate, " +
-                ":individual, :lateDelivery, :multipleDeliveries, " +
-                ":requiresReport, :createdBy, :timestamp)"
-        it.createUpdate(insert)
-                .bind("workAssignmentId", workAssignment.id)
-                .bind("version", workAssignment.version)
-                .bind("sheet", workAssignment.sheet)
-                .bind("supplement", workAssignment.supplement)
-                .bind("dueDate", workAssignment.dueDate)
-                .bind("individual", workAssignment.individual)
-                .bind("lateDelivery", workAssignment.lateDelivery)
-                .bind("multipleDeliveries", workAssignment.multipleDeliveries)
-                .bind("requiresReport", workAssignment.requiresReport)
-                .bind("createdBy", workAssignment.createdBy)
-                .bind("timestamp", workAssignment.timestamp)
-                .execute()
-    }
+    override fun createWorkAssignmentVersion(workAssignmentVersion: WorkAssignmentVersion) =
+            handle.createUpdate(
+                    "insert into $WRK_ASS_VERSION_TABLE " +
+                            "($COURSE_MISC_UNIT_ID, $WRK_ASS_VERSION, $WRK_ASS_SHEET, " +
+                            "$WRK_ASS_SUPPLEMENT, $WRK_ASS_DUE_DATE, $WRK_ASS_INDIVIDUAL, $WRK_ASS_LATE_DELIVERY, " +
+                            "$WRK_ASS_MULTIPLE_DELIVERIES, $WRK_ASS_REQUIRES_REPORT, $WRK_ASS_CREATED_BY, $WRK_ASS_TIMESTAMP) " +
+                            "values (:workAssignmentId, :version, :sheet, :supplement, :dueDate, " +
+                            ":individual, :lateDelivery, :multipleDeliveries, " +
+                            ":requiresReport, :createdBy, :timestamp)"
+            )
+                    .bind("workAssignmentId", workAssignmentVersion.courseMiscUnitId)
+                    .bind("version", workAssignmentVersion.version)
+                    .bind("sheet", workAssignmentVersion.sheet)
+                    .bind("supplement", workAssignmentVersion.supplement)
+                    .bind("dueDate", workAssignmentVersion.dueDate)
+                    .bind("individual", workAssignmentVersion.individual)
+                    .bind("lateDelivery", workAssignmentVersion.lateDelivery)
+                    .bind("multipleDeliveries", workAssignmentVersion.multipleDeliveries)
+                    .bind("requiresReport", workAssignmentVersion.requiresReport)
+                    .bind("createdBy", workAssignmentVersion.createdBy)
+                    .bind("timestamp", workAssignmentVersion.timestamp)
+                    .executeAndReturnGeneratedKeys()
+                    .mapTo(WorkAssignmentVersion::class.java)
+                    .findFirst()
 
-    override fun createStagingWorkAssingment(courseId: Int, termId: Int, stage: WorkAssignmentStage): Int = dbi.inTransaction<Int, Exception>{
-        val insertInCourseMiscUnitStage = "insert into ${CourseDAOImpl.COURSE_MISC_UNIT_STAGE_TABLE} " +
-                "(${CourseDAOImpl.COURSE_ID}, ${TermDAOImpl.TERM_ID}, ${CourseDAOImpl.COURSE_MISC_TYPE}" +
-                "values(:courseId, :termId, :miscType)"
-
-        val courseMiscUnitStage = it.createUpdate(insertInCourseMiscUnitStage)
+    override fun createStagingWorkAssingment(courseId: Int, termId: Int, stage: WorkAssignmentStage): Optional<WorkAssignmentStage> {
+        val courseMiscUnitStage = handle.createUpdate(
+                "insert into $COURSE_MISC_UNIT_STAGE_TABLE " +
+                        "($COURSE_ID, $TERM_ID, $COURSE_MISC_TYPE) " +
+                        "values(:courseId, :termId, :miscType::course_misc_unit_type)"
+        )
                 .bind("courseId", courseId)
                 .bind("termId", termId)
                 .bind("miscType", "Work Assignment")
@@ -332,13 +359,14 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                 .mapTo(CourseMiscUnitStage::class.java)
                 .findOnly()
 
-        val insertInWorkAssignmentStage = "insert into $WRK_ASS_STAGE_TABLE" +
-                "(${CourseDAOImpl.COURSE_MISC_UNIT_ID}, $WRK_ASS_SHEET, $WRK_ASS_SUPPLEMENT, $WRK_ASS_DUE_DATE," +
-                "$WRK_ASS_INDIVIDUAL, $WRK_ASS_LATE_DELIVERY, $WRK_ASS_MULTIPLE_DELIVERIES, $WRK_ASS_REQUIRES_REPORT, " +
-                "$WRK_ASS_CREATED_BY, $WRK_ASS_VOTES, $WRK_ASS_TIMESTAMP" +
-                "values(:courseMiscUnitId, :sheet, :supplement, :dueDate, :individual, :lateDelivery," +
-                ":multipleDeliveries, :requiresReport, :createdBy, :votes, :timestamp)"
-        it.createUpdate(insertInWorkAssignmentStage)
+        val workAssignmentStage = handle.createUpdate(
+                "insert into $WRK_ASS_STAGE_TABLE " +
+                        "($COURSE_MISC_UNIT_ID, $WRK_ASS_SHEET, $WRK_ASS_SUPPLEMENT, $WRK_ASS_DUE_DATE, " +
+                        "$WRK_ASS_INDIVIDUAL, $WRK_ASS_LATE_DELIVERY, $WRK_ASS_MULTIPLE_DELIVERIES, $WRK_ASS_REQUIRES_REPORT, " +
+                        "$WRK_ASS_CREATED_BY, $WRK_ASS_VOTES, $WRK_ASS_TIMESTAMP) " +
+                        "values(:courseMiscUnitId, :sheet, :supplement, :dueDate, :individual, :lateDelivery, " +
+                        ":multipleDeliveries, :requiresReport, :createdBy, :votes, :timestamp)"
+        )
                 .bind("courseMiscUnitId", courseMiscUnitStage.id)
                 .bind("sheet", stage.sheet)
                 .bind("supplement", stage.supplement)
@@ -350,51 +378,58 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                 .bind("createdBy", stage.createdBy)
                 .bind("votes", stage.votes)
                 .bind("timestamp", stage.timestamp)
-                .execute()
+                .executeAndReturnGeneratedKeys()
+                .mapTo(WorkAssignmentStage::class.java)
+                .findFirst()
+        return workAssignmentStage
     }
 
-    override fun voteOnStagedWorkAssignment(stageId: Int, vote: Vote): Int = dbi.inTransaction<Int, Exception> {
-        val voteQuery = "select $WRK_ASS_VOTES from $WRK_ASS_STAGE_TABLE where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :workAssignmentId"
-        var votes = it.createQuery(voteQuery)
+    override fun voteOnStagedWorkAssignment(stageId: Int, vote: Vote): Int {
+        var votes = handle.createQuery("select $WRK_ASS_VOTES from $WRK_ASS_STAGE_TABLE where $COURSE_MISC_UNIT_ID = :workAssignmentId")
                 .bind("workAssignmentId", stageId)
                 .mapTo(Int::class.java).findOnly()
         votes = if (vote == Vote.Down) --votes else ++votes
-        val updateQuery = "update $WRK_ASS_STAGE_TABLE set $WRK_ASS_VOTES = :votes where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :workAssignmentId"
-        it.createUpdate(updateQuery)
+
+        return handle.createUpdate("update $WRK_ASS_STAGE_TABLE set $WRK_ASS_VOTES = :votes where $COURSE_MISC_UNIT_ID = :workAssignmentId")
                 .bind("votes", votes)
                 .bind("workAssignmentId", stageId)
                 .execute()
     }
 
-    override fun deleteAllWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int = dbi.withHandle<Int, Exception> {
-        val delete = "delete from ${CourseDAOImpl.COURSE_MISC_UNIT_TABLE} where ${CourseDAOImpl.COURSE_ID} = :courseId and ${TermDAOImpl.TERM_ID} = :termId and ${CourseDAOImpl.COURSE_MISC_TYPE} = Work Assignment"
-        it.createUpdate(delete)
-                .bind("courseId",courseId)
-                .bind("termId",termId)
-                .execute()
-    }
+    override fun deleteAllWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int) =
+            handle.createUpdate(
+                    "delete from $COURSE_MISC_UNIT_TABLE " +
+                            "where $COURSE_ID = :courseId " +
+                            "and $TERM_ID = :termId " +
+                            "and $COURSE_MISC_TYPE = Work Assignment"
+            )
+                    .bind("courseId", courseId)
+                    .bind("termId", termId)
+                    .execute()
 
-    override fun deleteAllStagedWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int = dbi.withHandle<Int, Exception> {
-        val delete = "delete from ${CourseDAOImpl.COURSE_MISC_UNIT_STAGE_TABLE} where ${CourseDAOImpl.COURSE_ID} = :courseId and ${TermDAOImpl.TERM_ID} = :termId and ${CourseDAOImpl.COURSE_MISC_TYPE}  = Work Assignment"
-        it.createUpdate(delete)
-                .bind("courseId",courseId)
-                .bind("termId",termId)
-                .execute()
-    }
+    override fun deleteAllStagedWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int) =
+            handle.createUpdate(
+                    "delete from $COURSE_MISC_UNIT_STAGE_TABLE " +
+                            "where $COURSE_ID = :courseId " +
+                            "and $TERM_ID = :termId " +
+                            "and $COURSE_MISC_TYPE  = Work Assignment"
+            )
+                    .bind("courseId", courseId)
+                    .bind("termId", termId)
+                    .execute()
 
-    override fun deleteAllVersionOfWorkAssignments(versionWorkAssignmentId: Int): Int = dbi.withHandle<Int, Exception> {
-        val delete = "delete from $WRK_ASS_VERSION_TABLE where $WRK_ASS_ID = :versionWorkAssignmentId"
-        it.createUpdate(delete)
-                .bind("versionWorkAssignmentId",versionWorkAssignmentId)
-                .execute()
-    }
+    override fun deleteAllVersionOfWorkAssignments(versionWorkAssignmentId: Int) =
+            handle.createUpdate(
+                    "delete from $WRK_ASS_VERSION_TABLE where $WRK_ASS_ID = :versionWorkAssignmentId"
+            )
+                    .bind("versionWorkAssignmentId", versionWorkAssignmentId)
+                    .execute()
 
-    override fun getAllVersionsOfSpecificWorkAssignment(workAssignmentId: Int): List<WorkAssignmentVersion> = dbi.withHandle<List<WorkAssignmentVersion>, Exception> {
-        val select = "select * from $WRK_ASS_VERSION_TABLE where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :workAssignmentId"
-        it.createQuery(select)
-                .bind("workAssignmentId", workAssignmentId)
-                .mapTo(WorkAssignmentVersion::class.java)
-                .list()
-    }
-
+    override fun getAllVersionsOfSpecificWorkAssignment(workAssignmentId: Int) =
+            handle.createQuery(
+                    "select * from $WRK_ASS_VERSION_TABLE where $COURSE_MISC_UNIT_ID = :workAssignmentId"
+            )
+                    .bind("workAssignmentId", workAssignmentId)
+                    .mapTo(WorkAssignmentVersion::class.java)
+                    .list()
 }

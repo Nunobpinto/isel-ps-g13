@@ -40,7 +40,7 @@ interface CourseService {
 
     fun getAllWorkAssignmentsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignment>
 
-    fun getSpecificWorkAssignmentFromSpecificTermOfCourse(workAssignmentId: Int): WorkAssignment
+    fun getSpecificWorkAssignmentFromSpecificTermOfCourse(workAssignmentId: Int, courseId: Int, termId: Int): Optional<WorkAssignment>
 
     fun getAllClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class>
 
@@ -54,9 +54,9 @@ interface CourseService {
 
     fun createExamFromStaged(courseId: Int, termId: Int, stageId: Int): Optional<Exam>
 
-    fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): Int
+    fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): Optional<WorkAssignment>
 
-    fun createWorkAssignmentFromStaged(courseId: Int, termId: Int, stageId: Int): Int
+    fun createWorkAssignmentFromStaged(courseId: Int, termId: Int, stageId: Int): Optional<WorkAssignment>
 
     fun voteOnCourse(courseId: Int, inputVote: VoteInputModel): Int
 
@@ -92,13 +92,13 @@ interface CourseService {
 
     fun getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignmentStage>
 
-    fun getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): WorkAssignmentStage
+    fun getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): Optional<WorkAssignmentStage>
 
     fun createStagingCourse(inputCourse: CourseInputModel): Optional<CourseStage>
 
     fun createStagingExam(courseId: Int, termId: Int, inputExam: ExamInputModel): Optional<ExamStage>
 
-    fun createStagingWorkAssignment(courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): Int
+    fun createStagingWorkAssignment(courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): Optional<WorkAssignmentStage>
 
     fun voteOnStagedCourse(stageId: Int, inputVote: VoteInputModel): Int
 
@@ -132,7 +132,7 @@ interface CourseService {
 
     fun getAllVersionsOfSpecificWorkAssignment(workAssignmentId: Int): List<WorkAssignmentVersion>
 
-    fun getVersionOfSpecificWorkAssignment(workAssignmentId: Int, versionId: Int): WorkAssignmentVersion
+    fun getVersionOfSpecificWorkAssignment(workAssignmentId: Int, versionId: Int, courseId: Int, termId: Int): Optional<WorkAssignmentVersion>
 
     fun getAllVersionsOfSpecificClass(classId: Int): List<ClassVersion>
 
@@ -164,7 +164,7 @@ interface CourseService {
 
     fun getAllReportsOnWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): List<WorkAssignmentReport>
 
-    fun getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(workAssignmentId: Int, reportId: Int): WorkAssignmentReport
+    fun getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(workAssignmentId: Int, reportId: Int): Optional<WorkAssignmentReport>
 
     fun reportCourse(courseId: Int, inputCourseReport: CourseReportInputModel): Int
 
@@ -178,11 +178,11 @@ interface CourseService {
 
     fun updateReportedExam(examId: Int, reportId: Int, courseId: Int, termId: Int): Int
 
-    fun updateReportedWorkAssignment(workAssignmentId: Int, reportId: Int): Int
+    fun updateWorkAssignmentBasedOnReport(workAssignmentId: Int, reportId: Int, courseId: Int, termId: Int): Int
 
     fun addReportToExamOnCourseInTerm(examId: Int, inputExamReport: ExamReportInputModel): Optional<ExamReport>
 
-    fun addReportToWorkAssignmentOnCourseInTerm(workAssignmentId: Int, inputWorkAssignmentReport: WorkAssignmentReportInputModel): Int
+    fun addReportToWorkAssignmentOnCourseInTerm(workAssignmentId: Int, inputWorkAssignmentReport: WorkAssignmentReportInputModel): Optional<WorkAssignmentReport>
 
     fun deleteAllReportsOnCourse(courseId: Int): Int
 

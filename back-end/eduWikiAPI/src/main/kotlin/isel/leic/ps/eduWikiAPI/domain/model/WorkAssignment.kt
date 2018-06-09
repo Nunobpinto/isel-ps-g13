@@ -1,7 +1,7 @@
 package isel.leic.ps.eduWikiAPI.domain.model;
 
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_UNIT_ID
-import isel.leic.ps.eduWikiAPI.repository.TermDAOImpl
+import isel.leic.ps.eduWikiAPI.repository.TermDAOImpl.Companion.TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WRK_ASS_TIMESTAMP
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WRK_ASS_CREATED_BY
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WRK_ASS_DUE_DATE
@@ -20,7 +20,7 @@ import java.time.LocalDate
 data class WorkAssignment (
         @ColumnName(COURSE_MISC_UNIT_ID)
         val id: Int = 0,
-        @ColumnName(TermDAOImpl.TERM_ID)
+        @ColumnName(TERM_ID)
         val termId: Int = 0,
         @ColumnName(WRK_ASS_VERSION)
         val version: Int = 0,
@@ -29,19 +29,19 @@ data class WorkAssignment (
         @ColumnName(WRK_ASS_CREATED_BY)
         val createdBy: String = "",
         @ColumnName(WRK_ASS_SHEET)
-        val sheet: String? = null, //TODO
+        val sheet:  String = "", //TODO
         @ColumnName(WRK_ASS_SUPPLEMENT)
-        val supplement: String? = null, //TODO
+        val supplement:  String = "", //TODO
         @ColumnName(WRK_ASS_DUE_DATE)
-        val dueDate: LocalDate? = LocalDate.now(),
+        val dueDate: LocalDate = LocalDate.now(),
         @ColumnName(WRK_ASS_INDIVIDUAL)
-        val individual: Boolean? = false,
+        val individual: Boolean = false,
         @ColumnName(WRK_ASS_LATE_DELIVERY)
-        val lateDelivery: Boolean? = false,
+        val lateDelivery: Boolean = false,
         @ColumnName(WRK_ASS_MULTIPLE_DELIVERIES)
-        val multipleDeliveries: Boolean? = false,
+        val multipleDeliveries: Boolean = false,
         @ColumnName(WRK_ASS_REQUIRES_REPORT)
-        val requiresReport: Boolean? = false,
+        val requiresReport: Boolean = false,
         @ColumnName(WRK_ASS_TIMESTAMP)
         val timestamp: Timestamp = Timestamp(1)
 )

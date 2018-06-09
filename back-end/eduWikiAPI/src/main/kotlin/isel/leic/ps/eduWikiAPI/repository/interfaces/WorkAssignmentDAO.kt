@@ -1,11 +1,11 @@
 package isel.leic.ps.eduWikiAPI.repository.interfaces
 
-import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.domain.model.WorkAssignment
 import isel.leic.ps.eduWikiAPI.domain.model.report.WorkAssignmentReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.WorkAssignmentVersion
+import java.util.*
 
 interface WorkAssignmentDAO {
 
@@ -13,7 +13,7 @@ interface WorkAssignmentDAO {
      * Main entities queries
      */
 
-    fun getSpecificWorkAssignment(courseMiscUnitId: Int) : WorkAssignment
+    fun getSpecificWorkAssignment(courseMiscUnitId: Int, courseId: Int, termId: Int) : Optional<WorkAssignment>
 
     fun getAllWorkAssignment() : List<WorkAssignment>
 
@@ -23,7 +23,7 @@ interface WorkAssignmentDAO {
 
     fun updateWorkAssignment(workAssignmentId: Int, workAssignment: WorkAssignment) : Int
 
-    fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, workAssignment: WorkAssignment) : Int
+    fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, workAssignment: WorkAssignment) : Optional<WorkAssignment>
 
     fun voteOnWorkAssignment(courseMiscUnitId: Int, vote: Vote) : Int
 
@@ -33,7 +33,7 @@ interface WorkAssignmentDAO {
      * Stage entities queries
      */
 
-    fun getWorkAssignmentSpecificStageEntry(stageId: Int) : WorkAssignmentStage
+    fun getWorkAssignmentSpecificStageEntry(stageId: Int) : Optional<WorkAssignmentStage>
 
     fun getAllWorkAssignmentStages() : List<WorkAssignmentStage>
 
@@ -43,9 +43,9 @@ interface WorkAssignmentDAO {
 
     fun getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignmentStage>
 
-    fun getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): WorkAssignmentStage
+    fun getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): Optional<WorkAssignmentStage>
 
-    fun createStagingWorkAssingment(courseId: Int, termId: Int, stage: WorkAssignmentStage): Int
+    fun createStagingWorkAssingment(courseId: Int, termId: Int, stage: WorkAssignmentStage): Optional<WorkAssignmentStage>
 
     fun voteOnStagedWorkAssignment(stageId: Int, vote: Vote): Int
 
@@ -55,28 +55,28 @@ interface WorkAssignmentDAO {
 
     fun getAllVersionsOfSpecificWorkAssignment(workAssignmentId: Int): List<WorkAssignmentVersion>
 
-    fun getVersionOfSpecificWorkAssignment(versionWorkAssignmentId: Int, version: Int) : WorkAssignmentVersion
+    fun getVersionOfSpecificWorkAssignment(versionWorkAssignmentId: Int, version: Int, courseId: Int, termId: Int) : Optional<WorkAssignmentVersion>
 
     fun deleteVersionWorkAssignment(versionWorkAssignmentId: Int, version: Int) : Int
 
     fun deleteAllVersionOfWorkAssignments(versionWorkAssignmentId: Int) : Int
 
-    fun addToWorkAssignmentVersion(workAssignment: WorkAssignment) : Int
+    fun createWorkAssignmentVersion(workAssignmentVersion: WorkAssignmentVersion) : Optional<WorkAssignmentVersion>
 
     /**
      * Report entity queries
      */
 
-    fun deleteReportOnWorkAssignment(workAssignmentId: Int, reportId: Int) : Int
+    fun deleteReportOnWorkAssignment(reportId: Int) : Int
 
     fun deleteAllReportsOnWorkAssignment(courseMiscUnitId : Int) : Int
 
     fun getAllReportsOnWorkUnitOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): List<WorkAssignmentReport>
 
-    fun addReportToWorkAssignmentOnCourseInTerm(workAssignmentId: Int, workAssignmentReport: WorkAssignmentReport): Int
+    fun addReportToWorkAssignmentOnCourseInTerm(workAssignmentId: Int, workAssignmentReport: WorkAssignmentReport): Optional<WorkAssignmentReport>
 
     fun voteOnReportToWorkAssignmentOnCourseInTerm(reportId: Int, vote: Vote): Int
 
-    fun getSpecificReportOfWorkAssignment(workAssignmentId: Int, reportId: Int): WorkAssignmentReport
+    fun getSpecificReportOfWorkAssignment(workAssignmentId: Int, reportId: Int): Optional<WorkAssignmentReport>
 
 }

@@ -1,17 +1,10 @@
 package isel.leic.ps.eduWikiAPI
 
 
-import isel.leic.ps.eduWikiAPI.domain.model.Exam
-import isel.leic.ps.eduWikiAPI.domain.model.Organization
 import isel.leic.ps.eduWikiAPI.domain.model.WorkAssignment
-import isel.leic.ps.eduWikiAPI.domain.model.report.OrganizationReport
-import isel.leic.ps.eduWikiAPI.repository.interfaces.ExamDAO
-import isel.leic.ps.eduWikiAPI.repository.interfaces.OrganizationDAO
 import isel.leic.ps.eduWikiAPI.repository.interfaces.WorkAssignmentDAO
 import junit.framework.TestCase.*
-import org.junit.After
 import org.junit.Test
-import org.junit.internal.runners.statements.Fail
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -40,7 +33,7 @@ class WorkAssignmentTests {
 
     @Test
     fun testGetWorkAssignment() {
-        val wrs = workAssignmentDAO.getSpecificWorkAssignment(1)
+        val wrs = workAssignmentDAO.getSpecificWorkAssignment(1,, )
         assertEquals("Apoio", wrs.supplement)
         assertEquals("Exemplo-PI", wrs.sheet)
         assertEquals(false, wrs.individual)

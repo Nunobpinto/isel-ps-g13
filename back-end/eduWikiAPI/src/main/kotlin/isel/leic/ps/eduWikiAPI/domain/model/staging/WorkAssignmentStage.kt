@@ -23,19 +23,19 @@ data class WorkAssignmentStage (
         @ColumnName(WRK_ASS_CREATED_BY)
         val createdBy: String = "",
         @ColumnName(WRK_ASS_SHEET)
-        val sheet: String? = "", //TODO
+        val sheet: String = "", //TODO
         @ColumnName(WRK_ASS_SUPPLEMENT)
-        val supplement: String? = "", //TODO
+        val supplement: String = "", //TODO
         @ColumnName(WRK_ASS_DUE_DATE)
-        val dueDate: LocalDate? = LocalDate.now(),
+        val dueDate: LocalDate = LocalDate.now(),
         @ColumnName(WRK_ASS_INDIVIDUAL)
-        val individual: Boolean? = false,
+        val individual: Boolean = false,
         @ColumnName(WRK_ASS_LATE_DELIVERY)
-        val lateDelivery: Boolean? = false,
+        val lateDelivery: Boolean = false,
         @ColumnName(WRK_ASS_MULTIPLE_DELIVERIES)
-        val multipleDeliveries: Boolean? = false,
+        val multipleDeliveries: Boolean = false,
         @ColumnName(WRK_ASS_REQUIRES_REPORT)
-        val requiresReport: Boolean? = false,
+        val requiresReport: Boolean = false,
         @ColumnName(WRK_ASS_TIMESTAMP)
         val timestamp: Timestamp = Timestamp(0)
 )
