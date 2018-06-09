@@ -266,8 +266,8 @@ class ExamDAOImpl : ExamDAO {
 
     override fun getSpecificExamFromSpecificTermOfCourse(courseId: Int, termId: Int, examId: Int) =
             handle.createQuery(
-                    "select C.$TERM_ID, C.$COURSE_MISC_UNIT_ID, C.$EXAM_TIMESTAMP, $EXAM_LOCATION, $EXAM_VERSION, $EXAM_DUE_DATE, $EXAM_PHASE, " +
-                            "$EXAM_SHEET, $EXAM_TYPE, $EXAM_VOTES, $EXAM_CREATED_BY " +
+                    "select C.$TERM_ID, C.$COURSE_MISC_UNIT_ID, E.$EXAM_TIMESTAMP, E.$EXAM_LOCATION, E.$EXAM_VERSION, E.$EXAM_DUE_DATE, E.$EXAM_PHASE, " +
+                            "E.$EXAM_SHEET, E.$EXAM_TYPE, E.$EXAM_VOTES, E.$EXAM_CREATED_BY " +
                             "from $EXAM_TABLE as E " +
                             "inner join $COURSE_MISC_UNIT_TABLE as C " +
                             "on E.$COURSE_MISC_UNIT_ID = C.$COURSE_MISC_UNIT_ID " +

@@ -1,13 +1,14 @@
 package isel.leic.ps.eduWikiAPI.repository.interfaces
 
 import isel.leic.ps.eduWikiAPI.domain.model.Term
+import java.util.*
 
 interface TermDAO {
     /**
      * Main entities queries
      */
 
-    fun getTerm(termId: Int) : Term
+    fun getTerm(termId: Int) : Optional<Term>?
 
     fun getAllTerms() : List<Term>
 
@@ -15,5 +16,5 @@ interface TermDAO {
 
     fun deleteAllTerm() : Int
 
-    fun createTerm(term: Term)
+    fun createTerm(term: Term): Optional<Term>?
 }

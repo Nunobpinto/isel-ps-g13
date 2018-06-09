@@ -2,6 +2,7 @@ package isel.leic.ps.eduWikiAPI.repository
 
 import isel.leic.ps.eduWikiAPI.domain.model.Term
 import isel.leic.ps.eduWikiAPI.repository.interfaces.TermDAO
+import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.Jdbi
 
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,25 +22,24 @@ class TermDAOImpl : TermDAO {
     }
 
     @Autowired
-    lateinit var dbi: Jdbi
+    lateinit var handle: Handle
 
-    override fun getTerm(termId: Int): Term= dbi.withHandle<Term, Exception> {
-        it.createQuery("").mapTo(Term::class.java).findOnly()
-    }
+    override fun getTerm(termId: Int) =
+        handle.createQuery("").mapTo(Term::class.java).findFirst()
 
-    override fun getAllTerms(): List<Term> = dbi.withHandle<List<Term>, Exception> {
-        it.createQuery("").mapTo(Term::class.java).list()
-    }
+    override fun getAllTerms() =
+        handle.createQuery("").mapTo(Term::class.java).list()
 
-    override fun deleteTerm(termId: Int): Int = dbi.withHandle<Int, Exception> {
-        it.execute("")
-    }
+    override fun deleteTerm(termId: Int) =
+        handle.createUpdate("").execute()
 
-    override fun deleteAllTerm(): Int = dbi.withHandle<Int, Exception> {
-        it.execute("")
-    }
+    override fun deleteAllTerm() =
+        handle.createUpdate("").execute()
 
-    override fun createTerm(term: Term) = dbi.useHandle<Exception> {
-        it.execute("")
-    }
+    override fun createTerm(term: Term) =
+        handle.createUpdate("")
+                .executeAndReturnGeneratedKeys()
+                .mapTo(Term::class.java)
+                .findFirst()
+
 }
