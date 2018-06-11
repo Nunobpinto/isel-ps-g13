@@ -1,24 +1,32 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
 import {Link} from 'react-router-dom'
-import HttpGet from './http-get'
-import HttpGetSwitch from './http-get-switch'
+import Navbar from './Navbar'
+import { Button, Form, Input, InputNumber } from 'antd'
+const FormItem = Form.Item;
 
 export default class extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      programmes: [],
+      progError: undefined,
       full_name: '',
       short_name: '',
       academic_degree: '',
       total_credits: 0,
       duration: 0,
       createdBy: '',
-      redirect: false
+      redirect: false,
+      stagedError: undefined,
+      staged: [],
+      createProgrammeFlag: false
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.createProgrammeForm = this.createProgrammeForm.bind(this)
+    this.createStagedProgramme = this.createStagedProgramme.bind(this)
+    this.showElements = this.showElements.bind(this)
   }
 
   handleChange (ev) {
@@ -29,6 +37,132 @@ export default class extends React.Component {
 
   handleSubmit (ev) {
     ev.preventDefault()
+    this.setState({
+      full_name: this.state.full_name,
+      short_name: this.state.short_name,
+      academic_degree: this.state.academic_degree,
+      total_credits: this.state.total_credits,
+      duration: this.state.duration,
+      created_by: this.state.createdBy,
+      organization_id: 1,
+      createProgrammeFlag: true
+    })
+  }
+
+  showElements (id) {
+    const element = document.getElementById(id)
+    element.className='show_staged_resources'
+  }
+
+  render () {
+    return (
+      <div>
+        <Navbar />
+        {this.state.error ? <p>
+              Error getting all the programmes (Maybe there aren´t any programms)
+        </p>
+          : <div>
+            <h1>All Programmes in ISEL</h1>
+            <ul>
+              {this.state.programmes.map(item =>
+                <li key={item.id}>
+                  <Link to={{pathname: `/programmes/${item.id}`}}>
+                    {item.fullName} ({item.shortName}) - Created By {item.createdBy}
+                  </Link>
+                </li>
+              )}
+            </ul>
+          </div>
+        }
+         <Button onClick={() => {this.showElements('stagedProgrammes')}}>Create Programme</Button>
+            <div id='stagedProgrammes' class='hide_staged_resources'>
+              <h1>All staged programmes</h1>
+              <ul id='staged-list'>
+                {this.state.staged.map(item =>
+                  <li key={item.id}>
+                    {item.fullName} ({item.shortName}) - Created By {item.createdBy}
+                  </li>
+                )}
+              </ul>
+              <Button onClick={() => {this.showElements('formToCreateProgramme')}}>Still Want to Create ?</Button>
+            </div>
+            {this.createProgrammeForm()}
+      </div>
+    )
+  }
+
+  createProgrammeForm = () =>(
+      <div id='formToCreateProgramme' class='hide_staged_resources'>
+        <Form onSubmit={this.handleSubmit}>
+          Full name: <br />
+          <Input name='full_name' onChange={this.handleChange} />
+          <br />
+          Short name: <br />
+          <Input name='short_name' onChange={this.handleChange} />
+          <br />
+          Academic Degree: <br />
+          <Input name='academic_degree' onChange={this.handleChange} />
+          <br />
+          Total Credits: <br />
+          <input type='number' name='total_credits' onChange={this.handleChange} />
+          <br />
+          Duration: <br />
+          <input type='number' name='duration' onChange={this.handleChange} />
+          <br />
+          Created By: <br />
+          <Input name='created_by' onChange={this.handleChange} />
+          <br />
+          <Button type='submit' value='Submit'>Create</Button>
+        </Form>
+      </div>
+    )
+
+  componentDidMount () {
+    const uri = 'http://localhost:8080/programmes/'
+    const header = {
+      headers: { 'Access-Control-Allow-Origin': '*' }
+    }
+    fetch(uri, header)
+      .then(resp => {
+        if (resp.status >= 400) {
+          throw new Error('Unable to access content')
+        }
+        const ct = resp.headers.get('content-type') || ''
+        if (ct === 'application/json' || ct.startsWith('application/json;')) {
+          return resp.json()
+        }
+        throw new Error(`unexpected content type ${ct}`)
+      })
+      .then(programmes => {
+        const stagedUri = 'http://localhost:8080/programmes/stage'
+        fetch(stagedUri, header)
+          .then(response => {
+            if (response.status >= 400) {
+              throw new Error('Unable to access content')
+            }
+            const ct = response.headers.get('content-type') || ''
+            if (ct === 'application/json' || ct.startsWith('application/json;')) {
+              return response.json()
+            }
+            throw new Error(`unexpected content type ${ct}`)
+          })
+          .then(stagedProgrammes => this.setState({
+            programmes: programmes,
+            staged: stagedProgrammes
+          }))
+          .catch(stagedError => this.setState({
+            programmes: programmes,
+            stagedError: stagedError
+          }))
+      })
+      .catch(error => {
+        this.setState({
+          error: error
+        })
+      })
+  }
+
+  createStagedProgramme () {
     const data = {
       full_name: this.state.full_name,
       short_name: this.state.short_name,
@@ -46,82 +180,26 @@ export default class extends React.Component {
       },
       body: JSON.stringify(data)
     }
-    const url = 'http://localhost:8080/programmes'
+    const url = 'http://localhost:8080/programmes/stage'
     fetch(url, body)
       .then(resp => {
         if (resp.status >= 400) {
           throw new Error('Unable to access content')
         }
-        this.props.history.push(`/programmes`)
+        const list = document.getElementById('staged-list')
+        const newElement = document.createElement('li')
+        newElement.innerHTML = `${data.full_name} (${data.short_name}) - Created By ${data.created_by}`
+        list.appendChild(newElement)
+        this.setState({createProgrammeFlag: false})
       })
       .catch(error => {
-        this.setState({
-          loading: false,
-          error: error,
-          json: undefined,
-          response: undefined
-        })
-        this.promise = undefined
+        this.setState({progError: error, createProgrammeFlag: false})
       })
   }
 
-  render () {
-    return (
-      <div>
-        <HttpGet
-          url={'http://localhost:8080/programmes'}
-          headers={{headers: { 'Access-Control-Allow-Origin': '*' }}}
-          render={(result) => (
-            <div>
-              <HttpGetSwitch
-                result={result}
-                onJson={json =>
-                  (
-                    <div>
-                      <ul>
-                        {json.map(item => <li key={item.id}>
-                          <Link to={{pathname: `/programmes/${item.id}`}}>
-                            {`${item.shortName} Created By ${item.createdBy}`}
-                          </Link>
-                        </li>)}
-                      </ul>
-                      <form onSubmit={this.handleSubmit}>
-                        <input placeholder='Full Name' type='text' name='full_name' value={this.state.full_name} onChange={this.handleChange} />
-                        <input placeholder='Short Name' type='text' name='short_name' value={this.state.short_name} onChange={this.handleChange} />
-                        <input placeholder='Academic Degree' type='text' name='academic_degree' value={this.state.academic_degree} onChange={this.handleChange} />
-                        <input placeholder='Total Credits' type='number' name='total_credits' value={this.state.total_credits} onChange={this.handleChange} />
-                        <input placeholder='Duration' type='number' name='duration' value={this.state.duration} onChange={this.handleChange} />
-                        <input placeholder='Created By' type='text' name='createdBy' value={this.state.createdBy} onChange={this.handleChange} />
-                        <input type='submit' value='Submit' />
-                      </form>
-                    </div>
-                  )
-                }
-                onError={_ => (
-                  <div>
-                    <h1>Create Programme</h1>
-                    {this.createProgrammeForm()}
-                  </div>
-                )
-                }
-              />
-            </div>
-          )}
-        />
-      </div>
-    )
-  }
-
-  createProgrammeForm () {
-    return (
-      <form onSubmit={this.handleSubmit}>
-        <input placeholder='insert Full Name' type='text' value={this.state.full_name} onChange={this.handleChange} />
-        <input placeholder='insert Short Name' type='text' value={this.state.short_name} onChange={this.handleChange} />
-        <input placeholder='insert Academic Degrees' type='text' value={this.state.academic_degree} onChange={this.handleChange} />
-        <input placeholder='insert Total Credits' type='number' value={this.state.total_credits} onChange={this.handleChange} />
-        <input placeholder='insert Duration' type='number' value={this.state.duration} onChange={this.handleChange} />
-        <input type='submit' value='Submit' />
-      </form>
-    )
+  componentDidUpdate () {
+    if (this.state.createProgrammeFlag) {
+      this.createStagedProgramme()
+    }
   }
 }

@@ -1,5 +1,8 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
+import {Link} from 'react-router-dom'
+import Navbar from './Navbar'
+import {Button, Input} from 'antd'
 
 export default class extends React.Component {
   constructor (props) {
@@ -13,6 +16,7 @@ export default class extends React.Component {
   render () {
     return (
       <div>
+        <Navbar />
         {this.state.error ? <p>
               Error getting all the courses please try again !!!
         </p>
@@ -21,7 +25,7 @@ export default class extends React.Component {
             <ul>
               {this.state.courses.map(item =>
                 <li key={item.id}>
-                  {item.fullName} - Created By {item.createdBy}
+                  <Link to={{pathname: `/courses/${item.id}`}}>{item.fullName} - Created By {item.createdBy}</Link>
                 </li>
               )}
             </ul>

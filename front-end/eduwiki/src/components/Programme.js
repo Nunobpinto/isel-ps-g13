@@ -1,6 +1,7 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
 import {Link} from 'react-router-dom'
+import Navbar from './Navbar'
 
 export default class extends React.Component {
   constructor (props) {
@@ -24,25 +25,28 @@ export default class extends React.Component {
   render () {
     return (
       <div>
+        <Navbar />
+        <h1>{this.state.full_name} - {this.state.short_name} <small>({this.state.timestamp})</small> </h1>
+        <button>About</button>
         <div>
-          <h1>{this.state.full_name} - {this.state.short_name} <small>({this.state.timestamp})</small> </h1>
-          <button>About</button>
-          <div>
-            <p>Academic Degree : {this.state.academic_degree}</p>
-            <p>Total Credits : {this.state.total_credits}</p>
-            <p>Duration : {this.state.duration}</p>
-            <p>Created By : {this.state.createdBy}</p>
-            <p>Votes : {this.state.votes}</p>
-          </div>
-          <button>Courses</button>
-          <div>
-            <ul>
-              {this.state.courses.map(item => <li key={item.id}>
-                <p>{item.fullName} - {item.createdBy}</p>
-              </li>
-              )}
-            </ul>
-          </div>
+          <p>Academic Degree : {this.state.academic_degree}</p>
+          <p>Total Credits : {this.state.total_credits}</p>
+          <p>Duration : {this.state.duration}</p>
+          <p>Created By : {this.state.createdBy}</p>
+          <p>Votes : {this.state.votes}</p>
+        </div>
+        <button>Courses</button>
+        <div>
+          <ul>
+            {this.state.courses.map(item => <li key={item.id}>
+              <p>{item.fullName} - ({item.shortName}) - <small>{item.createdBy}</small> </p>
+              {item.optional === false ? <p>Mandatory</p> : <p>Optional</p>}
+              <p>Credits : {item.credits}</p>
+              <p>Lectured in term {item.lecturedTerm} </p>
+              <Link to={{pathname: `/courses/${item.id}`}}>See it's page</Link>
+            </li>
+            )}
+          </ul>
         </div>
       </div>
     )

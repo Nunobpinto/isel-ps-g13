@@ -1,6 +1,7 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
 import {Link} from 'react-router-dom'
+import Navbar from './Navbar'
 
 export default class extends React.Component {
   constructor (props) {
@@ -13,6 +14,7 @@ export default class extends React.Component {
       timestamp: '',
       terms: [],
       exams: [],
+      classes: [],
       workAssignments: [],
       voteType: undefined,
       examFlag: false,
@@ -46,6 +48,7 @@ export default class extends React.Component {
   render () {
     return (
       <div>
+        <Navbar />
         {this.state.courseError
           ? <p> Error getting this course, please try again !!! </p>
           : <div>
