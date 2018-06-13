@@ -19,6 +19,5 @@ export default () => (
         <Route exact path='/courses/:id' render={props => <Course {...props} />} />
       </Switch>
     </BrowserRouter>
-    <p>This is a work in progress EduWiki version</p>
   </div>
 )

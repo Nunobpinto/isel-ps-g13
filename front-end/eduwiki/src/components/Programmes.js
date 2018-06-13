@@ -59,39 +59,45 @@ export default class extends React.Component {
       <div>
         <Navbar />
         <div class='container'>
-          {this.state.error ? <p>
-                Error getting all the programmes (Maybe there aren´t any programms)
-          </p>
+          <div class='left-div'>
+            {this.state.error ? <p>
+                  Error getting all the programmes (Maybe there aren´t any programms)
+            </p>
             : <div>
-              <h1>All Programmes in ISEL</h1>
-              <List 
-                bordered
-                dataSource={this.state.programmes}
-                renderItem={ item => (
-                  <List.Item>
-                    <Link to={{pathname: `/programmes/${item.id}`}}>
-                      {item.fullName} ({item.shortName}) - Created By {item.createdBy}
-                    </Link>
-                  </List.Item>                    
-                  )
-                }
-              />
-            </div>
-          }
-          <Button type='primary' onClick={() => {this.showElements('stagedProgrammes')}}>Create Programme</Button>
-              <div id='stagedProgrammes' class='hide_staged_resources'>
-                <h1>All staged programmes</h1>
-                <ul id='staged-list'>
-                  {this.state.staged.map(item =>
-                    <li key={item.id}>
-                      {item.fullName} ({item.shortName}) - Created By {item.createdBy}
-                    </li>
-                  )}
-                </ul>
-                <Button type='primary' onClick={() => {this.showElements('formToCreateProgramme')}}>Still Want to Create ?</Button>
+                <h1>All Programmes in ISEL</h1>
+                <List 
+                  bordered
+                  dataSource={this.state.programmes}
+                  id='list'
+                  renderItem={ item => (
+                    <List.Item>
+                      <Link to={{pathname: `/programmes/${item.id}`}}>
+                        {item.fullName} ({item.shortName}) - Created By {item.createdBy}
+                      </Link>
+                    </List.Item>                    
+                    )
+                  }
+                />
               </div>
-              {this.createProgrammeForm()}
-        </div>
+            }
+          <Button icon='plus' id='create_btn' type='primary' onClick={() => {this.showElements('stagedProgrammes')}}>Create Programme</Button>
+          </div>
+          <div class='right-div'>
+            <div id='stagedProgrammes' class='hide_staged_resources'>
+              <div class="vl" />
+              <h1>All staged programmes</h1>
+              <ul id='staged-list'>
+                {this.state.staged.map(item =>
+                  <li key={item.id}>
+                    {item.fullName} ({item.shortName}) - Created By {item.createdBy}
+                  </li>
+                )}
+              </ul>
+              <Button type='primary' onClick={() => {this.showElements('formToCreateProgramme')}}>Still Want to Create ?</Button>
+            </div>
+            {this.createProgrammeForm()}
+          </div>
+      </div>
       </div>
     )
   }
