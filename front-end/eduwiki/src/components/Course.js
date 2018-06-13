@@ -2,7 +2,7 @@ import React from 'react'
 import fetch from 'isomorphic-fetch'
 import {Link} from 'react-router-dom'
 import Navbar from './Navbar'
-import {Button, Card, Col, Row} from 'antd'
+import {Button, Card, Col, Row, Tooltip} from 'antd'
 
 export default class extends React.Component {
   constructor (props) {
@@ -25,8 +25,11 @@ export default class extends React.Component {
       termError: undefined,
       examError: undefined,
       workAssignmentError: undefined,
-      vote: undefined
+      voteUp: false,
+      voteDown: false
     }
+    this.voteUp = this.voteUp.bind(this)
+    this.voteDown = this.voteDown.bind(this)
     this.getExams = this.getExams.bind(this)
     this.getWorkAssignments = this.getWorkAssignments.bind(this)
     this.fetchExams = this.fetchExams.bind(this)
@@ -57,9 +60,15 @@ export default class extends React.Component {
             <h1>{this.state.full_name} - {this.state.short_name} <small>({this.state.timestamp})</small> </h1>
             <div>
               <p>Created By : {this.state.createdBy}</p>
-              <p>Votes : {this.state.votes} </p>
-              <Button icon='like' onClick={this.voteOnCourse} />
-              <Button icon='dislike' onClick={this.dislikeOnCourse} />
+              <p>
+                Votes : {this.state.votes}
+                <Tooltip placement='bottom' title={`Vote Up on ${this.state.short_name}`}>
+                  <Button id='like_btn' shape='circle' icon='like' onClick={() => this.setState({voteUp: true})} />
+                </Tooltip>
+                <Tooltip placement='bottom' title={`Vote Down on ${this.state.short_name}`}>
+                  <Button id='dislike_btn' shape='circle' icon='dislike' onClick={() => this.setState({voteDown: true})} />
+                </Tooltip>
+              </p>
               {this.state.termError
                 ? <p>this.state.termError </p>
                 : <ul>
@@ -112,6 +121,60 @@ export default class extends React.Component {
         }
       </div>
     )
+  }
+
+  voteUp () {
+    const voteInput = {
+      vote: 'Up',
+      created_by: 'ze'
+    }
+    const id = this.props.match.params.id
+    const uri = 'http://localhost:8080/courses/' + id + '/vote'
+    const body = {
+      method: 'POST',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(voteInput)
+    }
+    fetch(uri, body)
+      .then(resp => {
+        if (resp.status >= 400) {
+          throw new Error('Unable to access content')
+        }
+        this.setState(prevState => ({
+          voteUp: false,
+          votes: prevState.votes + 1
+        }))
+      })
+  }
+
+  voteDown () {
+    const voteInput = {
+      vote: 'Down',
+      created_by: 'ze'
+    }
+    const id = this.props.match.params.id
+    const uri = 'http://localhost:8080/courses/' + id + '/vote'
+    const body = {
+      method: 'POST',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(voteInput)
+    }
+    fetch(uri, body)
+      .then(resp => {
+        if (resp.status >= 400) {
+          throw new Error('Unable to access content')
+        }
+        this.setState(prevState => ({
+          voteDown: false,
+          votes: prevState.votes - 1
+        }))
+      })
   }
 
   componentDidMount () {
@@ -171,6 +234,10 @@ export default class extends React.Component {
     } else if (this.state.workAssignmentFlag) {
       const courseId = this.props.match.params.id
       this.fetchWorkAssignments(courseId, this.state.termId)
+    } else if (this.state.voteUp) {
+      this.voteUp()
+    } else if (this.state.voteDown) {
+      this.voteDown()
     }
   }
 

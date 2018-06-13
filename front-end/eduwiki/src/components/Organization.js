@@ -1,7 +1,7 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
 import Navbar from './Navbar'
-import {Row, Col, Card} from 'antd'
+import {Row, Col, Card, Button, Tooltip} from 'antd'
 
 export default class extends React.Component {
   constructor (props) {
@@ -14,8 +14,12 @@ export default class extends React.Component {
       address: '',
       contact: '',
       createdBy: '',
+      voteUp: false,
+      voteDown: false,
       redirect: false
     }
+    this.voteUp = this.voteUp.bind(this)
+    this.voteDown = this.voteDown.bind(this)
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
   }
@@ -31,6 +35,60 @@ export default class extends React.Component {
     this.setState({redirect: true})
   }
 
+  voteUp () {
+    const voteInput = {
+      vote: 'Up',
+      created_by: 'ze'
+    }
+    const id = this.state.organization.id
+    const uri = 'http://localhost:8080/organizations/' + id + '/vote'
+    const body = {
+      method: 'POST',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(voteInput)
+    }
+    fetch(uri, body)
+      .then(resp => {
+        if (resp.status >= 400) {
+          throw new Error('Unable to access content')
+        }
+        this.setState(prevState => ({
+          voteUp: false,
+          votes: prevState.votes + 1
+        }))
+      })
+  }
+
+  voteDown () {
+    const voteInput = {
+      vote: 'Down',
+      created_by: 'ze'
+    }
+    const id = this.state.organization.id
+    const uri = 'http://localhost:8080/organizations/' + id + '/vote'
+    const body = {
+      method: 'POST',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(voteInput)
+    }
+    fetch(uri, body)
+      .then(resp => {
+        if (resp.status >= 400) {
+          throw new Error('Unable to access content')
+        }
+        this.setState(prevState => ({
+          voteDown: false,
+          votes: prevState.votes - 1
+        }))
+      })
+  }
+
   render () {
     return (
       <div>
@@ -41,7 +99,15 @@ export default class extends React.Component {
           {this.state.organization
             ? <div style={{ padding: '20px' }}>
               <h1> {this.state.organization.fullName} - ({this.state.organization.shortName}) </h1>
-              <p>Votes: {this.state.organization.votes}</p>
+              <p>
+                Votes : {this.state.votes}
+                <Tooltip placement='bottom' title={`Vote Up on ${this.state.organization.shortName}`}>
+                  <Button id='like_btn' shape='circle' icon='like' onClick={() => this.setState({voteUp: true})} />
+                </Tooltip>
+                <Tooltip placement='bottom' title={`Vote Down on ${this.state.organization.shortName}`}>
+                  <Button id='dislike_btn' shape='circle' icon='dislike' onClick={() => this.setState({voteDown: true})} />
+                </Tooltip>
+              </p>
               <p>Created By: {this.state.organization.createdBy}</p>
               <Row gutter={16}>
                 <Col span={5}>
@@ -90,7 +156,10 @@ export default class extends React.Component {
         }
         throw new Error(`unexpected content type ${ct}`)
       })
-      .then(json => this.setState({organization: json[0]}))
+      .then(json => this.setState({
+        organization: json[0],
+        votes: json[0].votes
+      }))
       .catch(err => this.setState({err: err}))
   }
 
@@ -125,6 +194,10 @@ export default class extends React.Component {
             error: error
           })
         })
+    } else if (this.state.voteUp) {
+      this.voteUp()
+    } else if (this.state.voteDown) {
+      this.voteDown()
     }
   }
 }

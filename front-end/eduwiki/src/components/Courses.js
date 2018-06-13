@@ -9,7 +9,9 @@ export default class extends React.Component {
     super(props)
     this.state = {
       courses: [],
-      error: undefined
+      error: undefined,
+      voteUp: false,
+      voteDown: false
     }
   }
 

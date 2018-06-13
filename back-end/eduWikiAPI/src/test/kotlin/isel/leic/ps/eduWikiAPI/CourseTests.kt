@@ -49,7 +49,7 @@ class CourseTests {
 
     @Test
     fun testGetCourseOfProgramme() {
-        val course = courseDAO.getSpecificCourseOfProgramme(1, 1)
+        val course = courseDAO.getSpecificCourseOfProgramme(1, 1).get()
         assertEquals(6, course.credits)
         assertEquals(false, course.optional)
     }
@@ -88,7 +88,7 @@ class CourseTests {
     @Test
     fun testReportCourseOnProgramme() {
         val report = CourseProgrammeReport(
-                id = 1,
+                courseId = 1,
                 programmeId = 1,
                 reportedBy = "joao",
                 lecturedTerm = "todos"
@@ -115,7 +115,7 @@ class CourseTests {
     @Test
     fun testVoteOnCourseInProgramme(){
         courseDAO.voteOnCourseOfProgramme(1,Vote.Up,1)
-        val course = courseDAO.getSpecificCourseOfProgramme(1,1)
+        val course = courseDAO.getSpecificCourseOfProgramme(1,1).get()
         assertEquals(1,course.votes)
     }
 }
