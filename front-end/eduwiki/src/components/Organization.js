@@ -1,6 +1,6 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
-import Navbar from './Navbar'
+import Layout from './Layout'
 import {Row, Col, Card, Button, Tooltip} from 'antd'
 
 export default class extends React.Component {
@@ -91,11 +91,8 @@ export default class extends React.Component {
 
   render () {
     return (
-      <div>
-        <div>
-          <Navbar />
-        </div>
-        <div>
+      <Layout
+        component={<div>
           {this.state.organization
             ? <div style={{ padding: '20px' }}>
               <h1> {this.state.organization.fullName} - ({this.state.organization.shortName}) </h1>
@@ -134,7 +131,8 @@ export default class extends React.Component {
             </div>
           }
         </div>
-      </div>
+        }
+      />
     )
   }
 
