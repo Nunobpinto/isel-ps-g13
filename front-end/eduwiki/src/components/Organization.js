@@ -1,6 +1,7 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
 import Navbar from './Navbar'
+import {Row, Col, Card} from 'antd'
 
 export default class extends React.Component {
   constructor (props) {
@@ -38,12 +39,22 @@ export default class extends React.Component {
         </div>
         <div>
           {this.state.organization
-            ? <div>
-              <h1> {this.state.organization[0].fullName} - ({this.state.organization[0].shortName}) </h1>
-              <p><strong>Address</strong> : {this.state.organization[0].address}</p>
-              <p><strong>Contact</strong> :{this.state.organization[0].contact}</p>
-              <p><strong>Created By</strong> : {this.state.organization[0].createdBy}</p>
-              <p><strong>Votes</strong> : {this.state.organization[0].votes}</p>
+            ? <div style={{ padding: '20px' }}>
+              <h1> {this.state.organization.fullName} - ({this.state.organization.shortName}) </h1>
+              <p>Votes: {this.state.organization.votes}</p>
+              <p>Created By: {this.state.organization.createdBy}</p>
+              <Row gutter={16}>
+                <Col span={5}>
+                  <Card title='Address'>
+                    {this.state.organization.address}
+                  </Card>
+                </Col>
+                <Col span={5}>
+                  <Card title='Contact'>
+                    {this.state.organization.contact}
+                  </Card>
+                </Col>
+              </Row>
             </div>
             : <div>
               <form onSubmit={this.handleSubmit}>
@@ -79,7 +90,7 @@ export default class extends React.Component {
         }
         throw new Error(`unexpected content type ${ct}`)
       })
-      .then(json => this.setState({organization: json}))
+      .then(json => this.setState({organization: json[0]}))
       .catch(err => this.setState({err: err}))
   }
 

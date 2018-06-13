@@ -2,6 +2,7 @@ import React from 'react'
 import fetch from 'isomorphic-fetch'
 import {Link} from 'react-router-dom'
 import Navbar from './Navbar'
+import {Button, Card, Col, Row} from 'antd'
 
 export default class extends React.Component {
   constructor (props) {
@@ -23,7 +24,8 @@ export default class extends React.Component {
       courseError: undefined,
       termError: undefined,
       examError: undefined,
-      workAssignmentError: undefined
+      workAssignmentError: undefined,
+      vote: undefined
     }
     this.getExams = this.getExams.bind(this)
     this.getWorkAssignments = this.getWorkAssignments.bind(this)
@@ -55,7 +57,9 @@ export default class extends React.Component {
             <h1>{this.state.full_name} - {this.state.short_name} <small>({this.state.timestamp})</small> </h1>
             <div>
               <p>Created By : {this.state.createdBy}</p>
-              <p>Votes : {this.state.votes}</p>
+              <p>Votes : {this.state.votes} </p>
+              <Button icon='like' onClick={this.voteOnCourse} />
+              <Button icon='dislike' onClick={this.dislikeOnCourse} />
               {this.state.termError
                 ? <p>this.state.termError </p>
                 : <ul>
@@ -68,9 +72,16 @@ export default class extends React.Component {
                       {this.state.exams.map(exam => {
                         if (exam.termId === item.id) {
                           return (
-                            <li key={exam.id}>
-                              {exam.sheet}
-                            </li>
+                            <div style={{ padding: '30px' }}>
+                              <Row gutter={16}>
+                                <Col span={8} key={exam.id}>
+                                  <Card title={`${exam.type} - ${exam.phase} - ${exam.dueDate}`}>
+                                    {exam.sheet}
+                                  </Card>
+                                </Col>
+                              </Row>
+                            </div>
+
                           )
                         }
                       }
@@ -79,9 +90,15 @@ export default class extends React.Component {
                       {this.state.workAssignments.map(wrs => {
                         if (wrs.termId === item.id) {
                           return (
-                            <li key={wrs.id}>
-                              {wrs.sheet}
-                            </li>
+                            <div style={{ padding: '30px' }}>
+                              <Row gutter={16}>
+                                <Col span={8} key={wrs.id}>
+                                  <Card title={`${wrs.type} - ${wrs.individual} - ${wrs.lateDelivery}`}>
+                                    {wrs.sheet}
+                                  </Card>
+                                </Col>
+                              </Row>
+                            </div>
                           )
                         }
                       }

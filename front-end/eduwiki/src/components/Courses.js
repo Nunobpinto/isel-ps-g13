@@ -2,7 +2,7 @@ import React from 'react'
 import fetch from 'isomorphic-fetch'
 import {Link} from 'react-router-dom'
 import Navbar from './Navbar'
-import {Button, Input} from 'antd'
+import {Button, Input, Form, List} from 'antd'
 
 export default class extends React.Component {
   constructor (props) {
@@ -22,13 +22,18 @@ export default class extends React.Component {
         </p>
           : <div>
             <h1>All courses in ISEL</h1>
-            <ul>
-              {this.state.courses.map(item =>
-                <li key={item.id}>
-                  <Link to={{pathname: `/courses/${item.id}`}}>{item.fullName} - Created By {item.createdBy}</Link>
-                </li>
-              )}
-            </ul>
+            <List
+              bordered
+              dataSource={this.state.courses}
+              renderItem={item => (
+                <List.Item>
+                  <Link to={{pathname: `/courses/${item.id}`}}>
+                    {item.fullName} ({item.shortName}) - Created By {item.createdBy}
+                  </Link>
+                </List.Item>
+              )
+              }
+            />
           </div>
         }
       </div>

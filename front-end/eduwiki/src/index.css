@@ -4,6 +4,10 @@ body {
   font-family: sans-serif;
 }
 
+.container {
+  margin: 1rem;
+}
+
 #navbar {
   background-color: #07D1E3
 }

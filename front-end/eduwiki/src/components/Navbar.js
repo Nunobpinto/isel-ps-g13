@@ -10,7 +10,7 @@ export default (props) => {
       style={{ lineHeight: '64px' }}
     >
       <Menu.Item key='home'>
-        <img src='logo.png' width='10%' />
+        <img src='/logo.png' width='10%' />
       </Menu.Item>
     </Menu>
   )

@@ -2,7 +2,7 @@ import React from 'react'
 import fetch from 'isomorphic-fetch'
 import {Link} from 'react-router-dom'
 import Navbar from './Navbar'
-import { Button, Form, Input, InputNumber } from 'antd'
+import { Button, Form, Input, List } from 'antd'
 const FormItem = Form.Item;
 
 export default class extends React.Component {
@@ -58,35 +58,40 @@ export default class extends React.Component {
     return (
       <div>
         <Navbar />
-        {this.state.error ? <p>
-              Error getting all the programmes (Maybe there aren´t any programms)
-        </p>
-          : <div>
-            <h1>All Programmes in ISEL</h1>
-            <ul>
-              {this.state.programmes.map(item =>
-                <li key={item.id}>
-                  <Link to={{pathname: `/programmes/${item.id}`}}>
-                    {item.fullName} ({item.shortName}) - Created By {item.createdBy}
-                  </Link>
-                </li>
-              )}
-            </ul>
-          </div>
-        }
-         <Button onClick={() => {this.showElements('stagedProgrammes')}}>Create Programme</Button>
-            <div id='stagedProgrammes' class='hide_staged_resources'>
-              <h1>All staged programmes</h1>
-              <ul id='staged-list'>
-                {this.state.staged.map(item =>
-                  <li key={item.id}>
-                    {item.fullName} ({item.shortName}) - Created By {item.createdBy}
-                  </li>
-                )}
-              </ul>
-              <Button onClick={() => {this.showElements('formToCreateProgramme')}}>Still Want to Create ?</Button>
+        <div class='container'>
+          {this.state.error ? <p>
+                Error getting all the programmes (Maybe there aren´t any programms)
+          </p>
+            : <div>
+              <h1>All Programmes in ISEL</h1>
+              <List 
+                bordered
+                dataSource={this.state.programmes}
+                renderItem={ item => (
+                  <List.Item>
+                    <Link to={{pathname: `/programmes/${item.id}`}}>
+                      {item.fullName} ({item.shortName}) - Created By {item.createdBy}
+                    </Link>
+                  </List.Item>                    
+                  )
+                }
+              />
             </div>
-            {this.createProgrammeForm()}
+          }
+          <Button type='primary' onClick={() => {this.showElements('stagedProgrammes')}}>Create Programme</Button>
+              <div id='stagedProgrammes' class='hide_staged_resources'>
+                <h1>All staged programmes</h1>
+                <ul id='staged-list'>
+                  {this.state.staged.map(item =>
+                    <li key={item.id}>
+                      {item.fullName} ({item.shortName}) - Created By {item.createdBy}
+                    </li>
+                  )}
+                </ul>
+                <Button type='primary' onClick={() => {this.showElements('formToCreateProgramme')}}>Still Want to Create ?</Button>
+              </div>
+              {this.createProgrammeForm()}
+        </div>
       </div>
     )
   }
@@ -112,7 +117,7 @@ export default class extends React.Component {
           Created By: <br />
           <Input name='created_by' onChange={this.handleChange} />
           <br />
-          <Button type='submit' value='Submit'>Create</Button>
+          <Button type='primary' type='submit' value='Submit'>Create</Button>
         </Form>
       </div>
     )

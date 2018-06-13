@@ -2,6 +2,7 @@ import React from 'react'
 import fetch from 'isomorphic-fetch'
 import {Link} from 'react-router-dom'
 import Navbar from './Navbar'
+import {Row, Col, Card} from 'antd'
 
 export default class extends React.Component {
   constructor (props) {
@@ -27,26 +28,40 @@ export default class extends React.Component {
       <div>
         <Navbar />
         <h1>{this.state.full_name} - {this.state.short_name} <small>({this.state.timestamp})</small> </h1>
-        <button>About</button>
-        <div>
-          <p>Academic Degree : {this.state.academic_degree}</p>
-          <p>Total Credits : {this.state.total_credits}</p>
-          <p>Duration : {this.state.duration}</p>
-          <p>Created By : {this.state.createdBy}</p>
-          <p>Votes : {this.state.votes}</p>
+        <div style={{ padding: '20px' }}>
+          <Row gutter={16}>
+            <Col span={5}>
+              <Card title='Academic Degree'>
+                {this.state.academic_degree}
+              </Card>
+            </Col>
+            <Col span={5}>
+              <Card title='Total Credits'>
+                {this.state.total_credits}
+              </Card>
+            </Col>
+            <Col span={5}>
+              <Card title='Duration'>
+                {this.state.duration}
+              </Card>
+            </Col>
+          </Row>
         </div>
-        <button>Courses</button>
-        <div>
-          <ul>
-            {this.state.courses.map(item => <li key={item.id}>
-              <p>{item.fullName} - ({item.shortName}) - <small>{item.createdBy}</small> </p>
-              {item.optional === false ? <p>Mandatory</p> : <p>Optional</p>}
-              <p>Credits : {item.credits}</p>
-              <p>Lectured in term {item.lecturedTerm} </p>
-              <Link to={{pathname: `/courses/${item.id}`}}>See it's page</Link>
-            </li>
+        <h1>Courses</h1>
+        <div style={{ padding: '30px' }}>
+          <Row gutter={16}>
+            {this.state.courses.map(item =>
+              <Col span={8} key={item.id}>
+                <Card title={item.shortName}>
+                  <p>{item.fullName} - <small>{item.createdBy}</small> </p>
+                  {item.optional === false ? <p>Mandatory</p> : <p>Optional</p>}
+                  <p>Credits : {item.credits}</p>
+                  <p>Lectured in term {item.lecturedTerm} </p>
+                  <Link to={{pathname: `/courses/${item.id}`}}>See it's page</Link>
+                </Card>
+              </Col>
             )}
-          </ul>
+          </Row>
         </div>
       </div>
     )
