@@ -37,10 +37,16 @@ export default class extends React.Component {
   }
 
   getExams (termId) {
-    this.setState({
-      examFlag: true,
-      termId: termId
-    })
+    var div = document.getElementById(`exms_term_${termId}`)
+    if (div.style.display === 'none') {
+      div.style.display = 'block'
+    } else {
+      div.style.display = 'none'
+      this.setState({
+        examFlag: true,
+        termId: termId
+      })
+    }
   }
 
   getWorkAssignments (termId) {
@@ -78,40 +84,43 @@ export default class extends React.Component {
                         {item.shortName}
                       </li>
                       <button id={`exam_button_term${item.id}`} key={item.id} onClick={() => this.getExams(item.id)}>Exams</button>
-                      {this.state.exams.map(exam => {
-                        if (exam.termId === item.id) {
-                          return (
-                            <div style={{ padding: '30px' }}>
-                              <Row gutter={16}>
-                                <Col span={8} key={exam.id}>
-                                  <Card title={`${exam.type} - ${exam.phase} - ${exam.dueDate}`}>
-                                    {exam.sheet}
-                                  </Card>
-                                </Col>
-                              </Row>
-                            </div>
+                      <div id={`exms_term_${item.id}`}>
+                        {this.state.exams.map(exam => {
+                          if (exam.termId === item.id) {
+                            return (
+                              <div style={{ padding: '30px' }}>
+                                <Row gutter={16}>
+                                  <Col span={8} key={exam.id}>
+                                    <Card title={`${exam.type} - ${exam.phase} - ${exam.dueDate}`}>
+                                      {exam.sheet}
+                                    </Card>
+                                  </Col>
+                                </Row>
+                              </div>
 
-                          )
+                            )
+                          }
                         }
-                      }
-                      )}
+                        )}
+                      </div>
                       <button id={`wrs_button_term${item.id}`} key={item.id} onClick={() => this.getWorkAssignments(item.id)}>WorkAssignments</button>
-                      {this.state.workAssignments.map(wrs => {
-                        if (wrs.termId === item.id) {
-                          return (
-                            <div style={{ padding: '30px' }}>
-                              <Row gutter={16}>
-                                <Col span={8} key={wrs.id}>
-                                  <Card title={`${wrs.type} - ${wrs.individual} - ${wrs.lateDelivery}`}>
-                                    {wrs.sheet}
-                                  </Card>
-                                </Col>
-                              </Row>
-                            </div>
-                          )
-                        }
-                      }
-                      )}
+                      <div id={`wrs_term_${item.id}`}>
+                        {this.state.workAssignments.map(wrs => {
+                          if (wrs.termId === item.id) {
+                            return (
+                              <div style={{ padding: '30px' }}>
+                                <Row gutter={16}>
+                                  <Col span={8} key={wrs.id}>
+                                    <Card title={`${wrs.type} - ${wrs.individual} - ${wrs.lateDelivery}`}>
+                                      {wrs.sheet}
+                                    </Card>
+                                  </Col>
+                                </Row>
+                              </div>
+                            )
+                          }
+                        })}
+                      </div>
                     </div>
                   )}
                 </ul>
