@@ -1,12 +1,14 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import Navbar from './Navbar'
-import { Button, Form, Input, List } from 'antd'
+import IconText from './IconText'
+import Layout from './Layout'
+import { Button, Form, Input, List, Icon } from 'antd'
 const FormItem = Form.Item;
 
 export default class extends React.Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       programmes: [],
@@ -29,13 +31,13 @@ export default class extends React.Component {
     this.showElements = this.showElements.bind(this)
   }
 
-  handleChange (ev) {
+  handleChange(ev) {
     this.setState({
       [ev.target.name]: ev.target.value
     })
   }
 
-  handleSubmit (ev) {
+  handleSubmit(ev) {
     ev.preventDefault()
     this.setState({
       full_name: this.state.full_name,
@@ -49,86 +51,89 @@ export default class extends React.Component {
     })
   }
 
-  showElements (id) {
+  showElements(id) {
     const element = document.getElementById(id)
-    element.className='show_staged_resources'
+    element.className = 'show_staged_resources'
   }
 
-  render () {
+  render() {
     return (
-      <div>
-        <Navbar />
-        <div class='container'>
-          <div class='left-div'>
-            {this.state.error ? <p>
-                  Error getting all the programmes (Maybe there aren´t any programms)
-            </p>
-            : <div>
-                <h1>All Programmes in ISEL</h1>
-                <List 
-                  bordered
-                  dataSource={this.state.programmes}
-                  id='list'
-                  renderItem={ item => (
-                    <List.Item>
-                      <Link to={{pathname: `/programmes/${item.id}`}}>
-                        {item.fullName} ({item.shortName}) - Created By {item.createdBy}
-                      </Link>
-                    </List.Item>                    
-                    )
-                  }
-                />
-              </div>
-            }
-          <Button icon='plus' id='create_btn' type='primary' onClick={() => {this.showElements('stagedProgrammes')}}>Create Programme</Button>
-          </div>
-          <div class='right-div'>
-            <div id='stagedProgrammes' class='hide_staged_resources'>
-              <div class="vl" />
-              <h1>All staged programmes</h1>
-              <ul id='staged-list'>
-                {this.state.staged.map(item =>
-                  <li key={item.id}>
-                    {item.fullName} ({item.shortName}) - Created By {item.createdBy}
-                  </li>
-                )}
-              </ul>
-              <Button type='primary' onClick={() => {this.showElements('formToCreateProgramme')}}>Still Want to Create ?</Button>
+      <Layout
+        component={
+          <div class='container'>
+            <div class='left-div'>
+              {this.state.error ?
+                <p> Error getting all the programmes (Maybe there aren´t any programms) </p> :
+                <div>
+                  <h1>All Programmes in ISEL</h1>
+                  <List
+                    itemLayout="vertical"
+                    size="large"
+                    bordered
+                    dataSource={this.state.programmes}
+                    id="list"
+                    renderItem={item => (
+                      <List.Item
+                        actions={[<IconText type="like-o" text={item.votes} />]}
+                      >
+                        <List.Item.Meta
+                          title={<Link to={{ pathname: `/programmes/${item.id}` }}> {item.fullName} ({item.shortName})</Link>}
+                          description={`Created by ${item.createdBy}`}
+                        />
+                      </List.Item>
+                    )}
+                  />
+                </div>
+              }
+              <Button icon='plus' id='create_btn' type='primary' onClick={() => { this.showElements('stagedProgrammes') }}>Create Programme</Button>
             </div>
-            {this.createProgrammeForm()}
+            <div class='right-div'>
+              <div id='stagedProgrammes' class='hide_staged_resources'>
+                <h1>All staged programmes</h1>
+                <ul id='staged-list'>
+                  {this.state.staged.map(item =>
+                    <li key={item.id}>
+                      {item.fullName} ({item.shortName}) - Created By {item.createdBy}
+                    </li>
+                  )}
+                </ul>
+                <Button type='primary' onClick={() => { this.showElements('formToCreateProgramme') }}>Still want to create?</Button>
+              </div>
+              {this.createProgrammeForm()}
+            </div>
           </div>
-      </div>
-      </div>
+        }
+      />
     )
   }
 
-  createProgrammeForm = () =>(
-      <div id='formToCreateProgramme' class='hide_staged_resources'>
-        <Form onSubmit={this.handleSubmit}>
-          Full name: <br />
-          <Input name='full_name' onChange={this.handleChange} />
-          <br />
-          Short name: <br />
-          <Input name='short_name' onChange={this.handleChange} />
-          <br />
-          Academic Degree: <br />
-          <Input name='academic_degree' onChange={this.handleChange} />
-          <br />
-          Total Credits: <br />
-          <input type='number' name='total_credits' onChange={this.handleChange} />
-          <br />
-          Duration: <br />
-          <input type='number' name='duration' onChange={this.handleChange} />
-          <br />
-          Created By: <br />
-          <Input name='created_by' onChange={this.handleChange} />
-          <br />
-          <Button type='primary' type='submit' value='Submit'>Create</Button>
-        </Form>
-      </div>
-    )
+  createProgrammeForm = () => (
+    <div id='formToCreateProgramme' class='hide_staged_resources'>
+      <Form onSubmit={this.handleSubmit}>
+        Full name: <br />
+        <Input name='full_name' onChange={this.handleChange} />
+        <br />
+        Short name: <br />
+        <Input name='short_name' onChange={this.handleChange} />
+        <br />
+        Academic Degree: <br />
+        <Input name='academic_degree' onChange={this.handleChange} />
+        <br />
+        Total Credits: <br />
+        <input type='number' name='total_credits' onChange={this.handleChange} />
+        <br />
+        Duration: <br />
+        <input type='number' name='duration' onChange={this.handleChange} />
+        <br />
+        Created By: <br />
+        <Input name='created_by' onChange={this.handleChange} />
+        <br />
+        <Button type='primary' type='submit' value='Submit'>Create</Button>
+      </Form>
+    </div>
+  )
 
-  componentDidMount () {
+  componentDidMount() {
     const uri = 'http://localhost:8080/programmes/'
     const header = {
       headers: { 'Access-Control-Allow-Origin': '*' }
@@ -173,7 +178,7 @@ export default class extends React.Component {
       })
   }
 
-  createStagedProgramme () {
+  createStagedProgramme() {
     const data = {
       full_name: this.state.full_name,
       short_name: this.state.short_name,
@@ -201,14 +206,14 @@ export default class extends React.Component {
         const newElement = document.createElement('li')
         newElement.innerHTML = `${data.full_name} (${data.short_name}) - Created By ${data.created_by}`
         list.appendChild(newElement)
-        this.setState({createProgrammeFlag: false})
+        this.setState({ createProgrammeFlag: false })
       })
       .catch(error => {
-        this.setState({progError: error, createProgrammeFlag: false})
+        this.setState({ progError: error, createProgrammeFlag: false })
       })
   }
 
-  componentDidUpdate () {
+  componentDidUpdate() {
     if (this.state.createProgrammeFlag) {
       this.createStagedProgramme()
     }

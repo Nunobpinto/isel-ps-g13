@@ -1,8 +1,8 @@
 package isel.leic.ps.eduWikiAPI.repository.interfaces
 
-import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Programme
+import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.domain.model.report.ProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.ProgrammeVersion
@@ -24,7 +24,7 @@ interface ProgrammeDAO {
 
     fun createProgramme(programme: Programme) : Int
 
-    fun voteOnProgramme(programmeId: Int, inputVote: VoteInputModel)
+    fun voteOnProgramme(programmeId: Int, vote: Vote)
 
     fun updateCourseProgramme(programmeId: Int, courseId: Int, updatedCourseProgramme: Course)
     /**
@@ -39,7 +39,7 @@ interface ProgrammeDAO {
 
     fun createStagingProgramme(programmeStage: ProgrammeStage) : Int
 
-    fun voteOnStagedProgramme(programmeStageId: Int, inputVote: VoteInputModel)
+    fun voteOnStagedProgramme(programmeStageId: Int, vote: Vote)
 
     fun updateStagedProgramme(programmeId: Int, programme: ProgrammeStage)
 
@@ -73,7 +73,7 @@ interface ProgrammeDAO {
 
     fun deleteAllReportsOnProgramme(programmeId : Int)
 
-    fun voteOnReportedProgramme(reportId: Int, inputVote: VoteInputModel)
+    fun voteOnReportedProgramme(reportId: Int, vote: Vote)
 
 
 

@@ -1,6 +1,5 @@
 package isel.leic.ps.eduWikiAPI.repository
 
-import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Programme
 import isel.leic.ps.eduWikiAPI.domain.model.Vote
@@ -112,12 +111,12 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .findOnly()
     }
 
-    override fun voteOnProgramme(programmeId: Int, inputVote: VoteInputModel) = dbi.useTransaction<Exception> {
+    override fun voteOnProgramme(programmeId: Int, vote: Vote) = dbi.useTransaction<Exception> {
         val voteQuery = "select $PROG_VOTES from $PROG_TABLE where $PROG_ID = :programmeId"
         var votes = it.createQuery(voteQuery)
                 .bind("programmeId", programmeId)
                 .mapTo(Int::class.java).findOnly()
-        votes = if (inputVote.vote.equals(Vote.Down)) --votes else ++votes
+        votes = if (vote == Vote.Down) --votes else ++votes
         val updateQuery = "update $PROG_TABLE set $PROG_VOTES = :votes where $PROG_ID = :programmeId"
         it.createUpdate(updateQuery)
                 .bind("votes", votes)
@@ -157,12 +156,12 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .execute()
     }
 
-    override fun voteOnStagedProgramme(programmeStageId: Int, inputVote: VoteInputModel) = dbi.useTransaction<Exception> {
+    override fun voteOnStagedProgramme(programmeStageId: Int, vote: Vote) = dbi.useTransaction<Exception> {
         val voteQuery = "select $PROG_VOTES from $PROG_STAGE_TABLE where $PROG_ID = :programmeId"
         var votes = it.createQuery(voteQuery)
                 .bind("programmeId", programmeStageId)
                 .mapTo(Int::class.java).findOnly()
-        votes = if (inputVote.vote.equals(Vote.Down)) --votes else ++votes
+        votes = if (vote.equals(Vote.Down)) --votes else ++votes
         val updateQuery = "update $PROG_STAGE_TABLE set $PROG_VOTES = :votes where $PROG_ID = :programmeId"
         it.createUpdate(updateQuery)
                 .bind("votes", votes)
@@ -226,35 +225,6 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .execute()
     }
 
-    /* //TODO mandar fora
-        override fun createVersionProgramme(programmeVersion: ProgrammeVersion) = dbi.useHandle<Exception> {
-            it.execute(dsl
-                    .insertInto(
-                            table(PROG_VERSION_TABLE),
-                            field(PROG_ID),
-                            field(PROG_VERSION),
-                            field(PROG_FULL_NAME),
-                            field(PROG_SHORT_NAME),
-                            field(PROG_ACADEMIC_DEGREE),
-                            field(PROG_TOTAL_CREDITS),
-                            field(PROG_DURATION),
-                            field(PROG_TIMESTAMP),
-                            field(PROG_CREATED_BY)
-                    )
-                    .values(
-                            programmeVersion.programmeId,
-                            programmeVersion.version,
-                            programmeVersion.fullName,
-                            programmeVersion.shortName,
-                            programmeVersion.academicDegree,
-                            programmeVersion.totalCredits,
-                            programmeVersion.duration,
-                            programmeVersion.timestamp,
-                            programmeVersion.createdBy
-                    ).sql
-            )
-        }
-    */
     override fun reportProgramme(programmeId: Int, programmeReport: ProgrammeReport) = dbi.withHandle<Int, Exception> {
         val insert = "insert into $PROG_REPORT_TABLE " +
                 "($PROG_ID, $PROG_FULL_NAME, " +
@@ -304,12 +274,12 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .execute()
     }
 
-    override fun voteOnReportedProgramme(reportId: Int, inputVote: VoteInputModel) = dbi.useTransaction<Exception> {
+    override fun voteOnReportedProgramme(reportId: Int, vote: Vote) = dbi.useTransaction<Exception> {
         val voteQuery = "select $PROG_VOTES from $PROG_REPORT_TABLE where $PROG_REPORT_ID = :reportId"
         var votes = it.createQuery(voteQuery)
                 .bind("reportId", reportId)
                 .mapTo(Int::class.java).findOnly()
-        votes = if (inputVote.vote.equals(Vote.Down)) --votes else ++votes
+        votes = if (vote == Vote.Down) --votes else ++votes
         val updateQuery = "update $PROG_REPORT_TABLE set $PROG_VOTES = :votes where $PROG_REPORT_ID = :reportId"
         it.createUpdate(updateQuery)
                 .bind("votes", votes)

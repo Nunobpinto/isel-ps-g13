@@ -3,17 +3,17 @@ import { Menu, Layout } from 'antd'
 const { Header, Content, Footer } = Layout
 
 export default (props) => (
-  <Layout className='layout'>
+  <Layout>
     <Header id='navbar'>
       <div className='logo'>
-        <img src='/logo.png' width='10%' />
+        <img src='/logo.png' width='7%' />
       </div>
       <Menu
         theme='light'
         mode='horizontal'
       />
     </Header>
-    <Content>
+    <Content className='layout'>
       <div style={{ background: '#fff', padding: 24, minHeight: 280 }}>
         {props.component}
       </div>

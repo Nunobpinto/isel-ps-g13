@@ -4,10 +4,6 @@ body {
   font-family: sans-serif;
 }
 
-.container {
-  margin: 1rem;
-}
-
 #navbar {
   background-color: #07D1E3
 }
@@ -64,40 +60,20 @@ body {
   color: red;
 }
 
-#list {
-  width: 30%
-}
-
-.left-div {
-  float: left;
-  width: 100%;
-  height: 20px;
-  margin-right: 8px;
- 
-}
-.right-div {
-  position: absolute;
-  top: 5rem;
-  right: 100px;
-}
-
 #create_btn {
   margin-top: 50px;
-}
-
-.vl {
-  border-left: 1px solid black;
-  position: absolute;
-  right: 600px;
-  height: 500px;
 }
 
 #components-layout-demo-top .logo {
   width: 120px;
   height: 31px;
-  background: rgba(255,255,255,.2);  
+  background: rgba(255, 255, 255, 0.164);  
   margin: 16px 24px 16px 0;
   float: left;
+}
+
+.layout {
+  background-color: white;
 }
 
 .footer {
@@ -106,4 +82,26 @@ body {
   width:100%;
 }
 
+.container {
+  margin: 5rem;
+}
 
+.left-div {
+  float: left;
+  width: 40%;
+}
+.right-div {
+  float: right;
+  width: 40%;
+}
+
+.left-div:after {
+  content: "";
+  background-color: black;
+  position: absolute;
+  width: 3px;
+  height: 75%;
+  top: 100px;
+  left: 50%;
+  display: block;
+}

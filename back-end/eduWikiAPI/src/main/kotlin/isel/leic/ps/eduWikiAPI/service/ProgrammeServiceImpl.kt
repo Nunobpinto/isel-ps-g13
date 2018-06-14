@@ -11,7 +11,6 @@ import isel.leic.ps.eduWikiAPI.domain.model.report.ProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseProgrammeVersion
-import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.ProgrammeVersion
 import isel.leic.ps.eduWikiAPI.repository.interfaces.CourseDAO
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ProgrammeDAO
@@ -91,7 +90,7 @@ class ProgrammeServiceImpl : ProgrammeService {
 
     override fun getStagedProgrammes(): List<ProgrammeStage> = programmeDAO.getAllProgrammeStages()
 
-    override fun voteOnStagedProgramme(stageId: Int, inputVote: VoteInputModel) = programmeDAO.voteOnStagedProgramme(stageId, inputVote)
+    override fun voteOnStagedProgramme(stageId: Int, inputVote: VoteInputModel) = programmeDAO.voteOnStagedProgramme(stageId, Vote.valueOf(inputVote.vote))
 
     override fun getAllReportsOfProgramme(programmeId: Int): List<ProgrammeReport> = programmeDAO.getAllReportsOfProgramme(programmeId)
 
@@ -112,7 +111,7 @@ class ProgrammeServiceImpl : ProgrammeService {
         return courseDAO.addCourseProgrammeToVersion(course)
     }
 
-    override fun voteOnProgramme(programmeId: Int, inputVote: VoteInputModel) = programmeDAO.voteOnProgramme(programmeId, inputVote)
+    override fun voteOnProgramme(programmeId: Int, inputVote: VoteInputModel) = programmeDAO.voteOnProgramme(programmeId, Vote.valueOf(inputVote.vote))
 
     override fun reportProgramme(programmeId: Int, inputProgrammeReport: ProgrammeReportInputModel) {
         val programmeReport = ProgrammeReport(
@@ -140,7 +139,7 @@ class ProgrammeServiceImpl : ProgrammeService {
         return courseDAO.reportCourseOnProgramme(programmeId, courseId, courseProgrammeReport)
     }
 
-    override fun voteOnReportedProgramme(reportId: Int, inputVote: VoteInputModel) = programmeDAO.voteOnReportedProgramme(reportId, inputVote)
+    override fun voteOnReportedProgramme(reportId: Int, inputVote: VoteInputModel) = programmeDAO.voteOnReportedProgramme(reportId, Vote.valueOf(inputVote.vote))
 
     override fun updateReportedProgramme(programmeId: Int, reportId: Int) {
         val programme = programmeDAO.getSpecificProgramme(programmeId)
