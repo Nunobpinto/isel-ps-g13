@@ -6,7 +6,7 @@ const { Meta } = Card
 export default (props) => {
   return (
     <div id='holder'>
-      <img id='home-logo' src='logo.png' />
+      <img id='home-logo' src='logo_color.png' />
       <div style={{ padding: '30px' }}>
         <Row>
           <Col span={5}>
