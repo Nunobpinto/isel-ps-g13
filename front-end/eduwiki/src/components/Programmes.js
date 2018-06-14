@@ -3,7 +3,7 @@ import fetch from 'isomorphic-fetch'
 import { Link } from 'react-router-dom'
 import IconText from './IconText'
 import Layout from './Layout'
-import { Button, Form, Input, List, Icon } from 'antd'
+import { Button, Form, Input, List, Icon, Card  } from 'antd'
 const FormItem = Form.Item;
 
 export default class extends React.Component {
@@ -88,13 +88,15 @@ export default class extends React.Component {
             <div class='right-div'>
               <div id='stagedProgrammes' class='hide_staged_resources'>
                 <h1>All staged programmes</h1>
-                <ul id='staged-list'>
-                  {this.state.staged.map(item =>
-                    <li key={item.id}>
-                      {item.fullName} ({item.shortName}) - Created By {item.createdBy}
-                    </li>
-                  )}
-                </ul>
+                  <List id='staged-list'
+                    grid={{ gutter: 14, column: 4 }}
+                    dataSource={this.state.staged}
+                    renderItem={item => (
+                      <List.Item>
+                        <Card title={item.fullName}>Card content</Card>
+                      </List.Item>
+                    )}
+                  />
                 <Button type='primary' onClick={() => { this.showElements('formToCreateProgramme') }}>Still want to create?</Button>
               </div>
               {this.createProgrammeForm()}
@@ -107,7 +109,7 @@ export default class extends React.Component {
 
   createProgrammeForm = () => (
     <div id='formToCreateProgramme' class='hide_staged_resources'>
-      <Form onSubmit={this.handleSubmit}>
+      <Form>
         Full name: <br />
         <Input name='full_name' onChange={this.handleChange} />
         <br />
@@ -126,7 +128,7 @@ export default class extends React.Component {
         Created By: <br />
         <Input name='created_by' onChange={this.handleChange} />
         <br />
-        <Button type='primary' type='submit' value='Submit'>Create</Button>
+        <Button type='primary' type='submit' onClick={this.handleSubmit}>Create</Button>
       </Form>
     </div>
   )
@@ -200,11 +202,19 @@ export default class extends React.Component {
         if (resp.status >= 400) {
           throw new Error('Unable to access content')
         }
-        const list = document.getElementById('staged-list')
-        const newElement = document.createElement('li')
-        newElement.innerHTML = `${data.full_name} (${data.short_name}) - Created By ${data.created_by}`
-        list.appendChild(newElement)
-        this.setState({ createProgrammeFlag: false })
+        const newItem = {
+          fullName: data.full_name,
+          shortName: data.short_name,
+          academicDegree: data.academic_degree,
+          totalCredits: data.total_credits,
+          duration: data.duration,
+          createdBy: data.createdBy,
+          organizationId: 1
+        }
+        this.setState( prevState => ({
+          staged: [ ...prevState.staged, newItem],
+          createProgrammeFlag: false
+        }))
       })
       .catch(error => {
         this.setState({ progError: error, createProgrammeFlag: false })
