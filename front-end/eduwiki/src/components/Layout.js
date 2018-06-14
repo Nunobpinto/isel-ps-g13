@@ -4,7 +4,7 @@ const { Header, Content, Footer } = Layout
 
 export default (props) => (
   <Layout>
-    <Header id='navbar'>
+    <Header style={{position: 'fixed', zIndex: 1, width: '100%'}} id='navbar'>
       <div className='logo'>
         <img src='/logo.png' width='7%' />
       </div>

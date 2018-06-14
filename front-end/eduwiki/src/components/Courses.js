@@ -7,7 +7,7 @@ import Layout from './Layout'
 import { Button, Input, Form, List, Icon, Card } from 'antd'
 
 export default class extends React.Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       courses: [],
@@ -23,29 +23,29 @@ export default class extends React.Component {
     this.createStagedCourse = this.createStagedCourse.bind(this)
   }
 
-  showElements (id) {
+  showElements(id) {
     const element = document.getElementById(id)
     element.className = 'show_staged_resources'
   }
 
-  handleChange (ev) {
+  handleChange(ev) {
     this.setState({
       [ev.target.name]: ev.target.value
     })
   }
 
-  handleSubmit (ev) {
+  handleSubmit(ev) {
     ev.preventDefault()
     this.setState({
       full_name: this.state.full_name,
       short_name: this.state.short_name,
-      created_by: this.state.createdBy,
+      created_by: this.state.created_by,
       organization_id: 1,
       createStagedFlag: true
     })
   }
 
-  render () {
+  render() {
     return (
       <Layout
         component={
@@ -79,17 +79,13 @@ export default class extends React.Component {
               <div id='stagedCourses' class='hide_staged_resources'>
                 <h1>All staged Courses</h1>
                 <List id='staged-list'
-                  grid={{ gutter: 14, column: 4 }}
+                  grid={{ gutter: 50, column: 2 }}
                   dataSource={this.state.staged}
                   renderItem={item => (
                     <List.Item>
                       <Card title={item.fullName}>
-                        <p>
-                          Short Name : {item.shortName}
-                        </p>
-                        <p>
-                          Created By : {item.createdBy}
-                        </p>
+                        <p>Short Name : {item.shortName}</p>
+                        <p>Created By : {item.createdBy}</p>
                       </Card>
                     </List.Item>
                   )}
@@ -104,7 +100,7 @@ export default class extends React.Component {
     )
   }
 
-  createCourseForm () {
+  createCourseForm() {
     return (
       <div id='formToCreateCourse' class='hide_staged_resources'>
         <Form>
@@ -123,7 +119,7 @@ export default class extends React.Component {
     )
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const uri = 'http://localhost:8080/courses/'
     const header = {
       headers: { 'Access-Control-Allow-Origin': '*' }
@@ -168,11 +164,11 @@ export default class extends React.Component {
       })
   }
 
-  createStagedCourse () {
+  createStagedCourse() {
     const data = {
       full_name: this.state.full_name,
       short_name: this.state.short_name,
-      created_by: this.state.createdBy,
+      created_by: this.state.created_by,
       organization_id: 1
     }
     const body = {
@@ -192,11 +188,11 @@ export default class extends React.Component {
         const newItem = {
           fullName: data.full_name,
           shortName: data.short_name,
-          createdBy: data.createdBy,
+          createdBy: data.created_by,
           organizationId: 1
         }
         this.setState(prevState => ({
-          staged: [ ...prevState.staged, newItem ],
+          staged: [...prevState.staged, newItem],
           createStagedFlag: false
         }))
       })
@@ -205,7 +201,7 @@ export default class extends React.Component {
       })
   }
 
-  componentDidUpdate () {
+  componentDidUpdate() {
     if (this.state.createStagedFlag) {
       this.createStagedCourse()
     }
