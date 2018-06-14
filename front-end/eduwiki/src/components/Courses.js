@@ -28,8 +28,8 @@ export default class extends React.Component {
                 <div>
                   <h1>All courses in ISEL</h1>
                   <List
-                    itemLayout="vertical"
-                    size="large"
+                    itemLayout='vertical'
+                    size='large'
                     bordered
                     dataSource={this.state.courses}
                     renderItem={item => (

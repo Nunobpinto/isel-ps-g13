@@ -1,7 +1,6 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
 import { Link } from 'react-router-dom'
-import Navbar from './Navbar'
 import IconText from './IconText'
 import Layout from './Layout'
 import { Button, Form, Input, List, Icon } from 'antd'
@@ -67,11 +66,10 @@ export default class extends React.Component {
                 <div>
                   <h1>All Programmes in ISEL</h1>
                   <List
-                    itemLayout="vertical"
-                    size="large"
+                    itemLayout='vertical'
+                    size='large'
                     bordered
                     dataSource={this.state.programmes}
-                    id="list"
                     renderItem={item => (
                       <List.Item
                         actions={[<IconText type="like-o" text={item.votes} />]}
