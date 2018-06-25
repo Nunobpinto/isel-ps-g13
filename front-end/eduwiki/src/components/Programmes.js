@@ -3,7 +3,7 @@ import fetch from 'isomorphic-fetch'
 import { Link } from 'react-router-dom'
 import IconText from './IconText'
 import Layout from './Layout'
-import { Button, Form, Input, List, Icon, Card  } from 'antd'
+import { Button, Form, Input, List, Icon, Card, Menu, Dropdown } from 'antd'
 const FormItem = Form.Item;
 
 export default class extends React.Component {
@@ -124,15 +124,20 @@ export default class extends React.Component {
                     onChange={this.handleChange}
                     onPressEnter={this.filterStagedByName}
                   />
-                  <List id='staged-list'
-                    grid={{ gutter: 14, column: 4 }}
-                    dataSource={this.state.staged}
-                    renderItem={item => (
-                      <List.Item>
-                        <Card title={item.fullName}>Card content</Card>
-                      </List.Item>
-                    )}
-                  />
+                <List id='staged-list'
+                  grid={{ gutter: 50, column: 2 }}
+                  dataSource={this.state.staged}
+                  renderItem={item => (
+                    <List.Item>
+                      <Card title={`${item.fullName} (${item.shortName})`}>
+                        <p>Academic degree: {item.academicDegree}</p>
+                        <p>Total Credits: {item.totalCredits}</p>
+                        <p>Duration: {item.duration}</p>
+                        <p>Created by: {item.createdBy}</p>
+                      </Card>
+                    </List.Item>
+                  )}
+                />
                 <Button type='primary' onClick={() => { this.showElements('formToCreateProgramme') }}>Still want to create?</Button>
               </div>
               {this.createProgrammeForm()}
@@ -221,7 +226,7 @@ export default class extends React.Component {
       academic_degree: this.state.academic_degree,
       total_credits: this.state.total_credits,
       duration: this.state.duration,
-      created_by: this.state.createdBy,
+      created_by: this.state.created_by,
       organization_id: 1
     }
     const body = {
@@ -244,11 +249,11 @@ export default class extends React.Component {
           academicDegree: data.academic_degree,
           totalCredits: data.total_credits,
           duration: data.duration,
-          createdBy: data.createdBy,
+          createdBy: data.created_by,
           organizationId: 1
         }
-        this.setState( prevState => ({
-          staged: [ ...prevState.staged, newItem],
+        this.setState(prevState => ({
+          staged: [...prevState.staged, newItem],
           createProgrammeFlag: false
         }))
       })

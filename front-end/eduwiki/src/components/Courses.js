@@ -56,12 +56,12 @@ export default class extends React.Component {
     })
   }
 
-  handleSubmit (ev) {
+  handleSubmit(ev) {
     ev.preventDefault()
     this.setState({
       full_name: this.state.full_name,
       short_name: this.state.short_name,
-      created_by: this.state.createdBy,
+      created_by: this.state.created_by,
       organization_id: 1,
       createStagedFlag: true
     })
@@ -115,17 +115,13 @@ export default class extends React.Component {
                   onPressEnter={this.filterStagedByName}
                 />
                 <List id='staged-list'
-                  grid={{ gutter: 14, column: 4 }}
+                  grid={{ gutter: 50, column: 2 }}
                   dataSource={this.state.staged}
                   renderItem={item => (
                     <List.Item>
                       <Card title={item.fullName}>
-                        <p>
-                          Short Name : {item.shortName}
-                        </p>
-                        <p>
-                          Created By : {item.createdBy}
-                        </p>
+                        <p>Short Name : {item.shortName}</p>
+                        <p>Created By : {item.createdBy}</p>
                       </Card>
                     </List.Item>
                   )}
@@ -208,7 +204,7 @@ export default class extends React.Component {
     const data = {
       full_name: this.state.full_name,
       short_name: this.state.short_name,
-      created_by: this.state.createdBy,
+      created_by: this.state.created_by,
       organization_id: 1
     }
     const body = {
@@ -228,11 +224,11 @@ export default class extends React.Component {
         const newItem = {
           fullName: data.full_name,
           shortName: data.short_name,
-          createdBy: data.createdBy,
+          createdBy: data.created_by,
           organizationId: 1
         }
         this.setState(prevState => ({
-          staged: [ ...prevState.staged, newItem ],
+          staged: [...prevState.staged, newItem],
           createStagedFlag: false
         }))
       })
