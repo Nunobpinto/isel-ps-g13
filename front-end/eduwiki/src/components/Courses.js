@@ -14,18 +14,40 @@ export default class extends React.Component {
       error: undefined,
       voteUp: false,
       voteDown: false,
-      staged: undefined
+      staged: [],
+      nameFilter: '',
+      stagedNameFilter: ''
     }
     this.showElements = this.showElements.bind(this)
     this.createCourseForm = this.createCourseForm.bind(this)
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.createStagedCourse = this.createStagedCourse.bind(this)
+    this.filterCoursesByName = this.filterCoursesByName.bind(this)
+    this.filterStagedByName = this.filterStagedByName.bind(this)
   }
 
   showElements (id) {
     const element = document.getElementById(id)
     element.className = 'show_staged_resources'
+  }
+
+  filterCoursesByName () {
+    const name = this.state.nameFilter
+    this.setState(prevState => {
+      let array = prevState.courses
+      array = array.filter(course => course.shortName === name)
+      return ({courses: array})
+    })
+  }
+
+  filterStagedByName () {
+    const name = this.state.stagedNameFilter
+    this.setState(prevState => {
+      let array = prevState.staged
+      array = array.filter(staged => staged.shortName === name)
+      return ({staged: array})
+    })
   }
 
   handleChange (ev) {
@@ -55,6 +77,13 @@ export default class extends React.Component {
                 ? <p> Error getting all the courses please try again !!! </p>
                 : <div>
                   <h1>All courses in ISEL</h1>
+                  <p> Filter By Name </p>
+                  <Input
+                    name='nameFilter'
+                    placeholder='Search name'
+                    onChange={this.handleChange}
+                    onPressEnter={this.filterCoursesByName}
+                  />
                   <List
                     itemLayout='vertical'
                     size='large'
@@ -78,6 +107,13 @@ export default class extends React.Component {
             <div class='right-div'>
               <div id='stagedCourses' class='hide_staged_resources'>
                 <h1>All staged Courses</h1>
+                <p> Filter By Name : </p>
+                <Input
+                  name='stagedNameFilter'
+                  placeholder='Search name'
+                  onChange={this.handleChange}
+                  onPressEnter={this.filterStagedByName}
+                />
                 <List id='staged-list'
                   grid={{ gutter: 14, column: 4 }}
                   dataSource={this.state.staged}

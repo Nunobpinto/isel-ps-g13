@@ -21,13 +21,35 @@ export default class extends React.Component {
       redirect: false,
       stagedError: undefined,
       staged: [],
+      stagedNameFilter: '',
+      nameFilter:'',
       createProgrammeFlag: false
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.createProgrammeForm = this.createProgrammeForm.bind(this)
     this.createStagedProgramme = this.createStagedProgramme.bind(this)
+    this.filterStagedByName = this.filterStagedByName.bind(this)
+    this.filterProgrammesByName = this.filterProgrammesByName.bind(this)
     this.showElements = this.showElements.bind(this)
+  }
+
+  filterProgrammesByName () {
+    const name = this.state.nameFilter
+    this.setState (prevState => {
+      let array = prevState.programmes
+      array = array.filter(programme => programme.shortName === name)
+      return ({programmes: array})
+    })
+  }
+
+  filterStagedByName () {
+    const name = this.state.stagedNameFilter
+    this.setState (prevState => {
+      let array = prevState.staged
+      array = array.filter(programme => programme.shortName === name)
+      return ({staged: array})
+    })
   }
 
   handleChange(ev) {
@@ -65,6 +87,13 @@ export default class extends React.Component {
                 <p> Error getting all the programmes (Maybe there aren´t any programms) </p> :
                 <div>
                   <h1>All Programmes in ISEL</h1>
+                  <p> Filter By Name </p>
+                  <Input
+                    name='nameFilter'
+                    placeholder='Search name'
+                    onChange={this.handleChange}
+                    onPressEnter={this.filterProgrammesByName}
+                  />
                   <List
                     itemLayout='vertical'
                     size='large'
@@ -88,6 +117,13 @@ export default class extends React.Component {
             <div class='right-div'>
               <div id='stagedProgrammes' class='hide_staged_resources'>
                 <h1>All staged programmes</h1>
+                  <p> Filter By Name : </p>
+                  <Input
+                    name='stagedNameFilter'
+                    placeholder="Search name"
+                    onChange={this.handleChange}
+                    onPressEnter={this.filterStagedByName}
+                  />
                   <List id='staged-list'
                     grid={{ gutter: 14, column: 4 }}
                     dataSource={this.state.staged}
