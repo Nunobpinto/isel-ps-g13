@@ -11,6 +11,7 @@ export default class extends React.Component {
     super(props)
     this.state = {
       programmes: [],
+      viewProgrammes: [],
       progError: undefined,
       full_name: '',
       short_name: '',
@@ -21,6 +22,7 @@ export default class extends React.Component {
       redirect: false,
       stagedError: undefined,
       staged: [],
+      viewStaged: [],
       stagedNameFilter: '',
       nameFilter:'',
       createProgrammeFlag: false
@@ -38,8 +40,8 @@ export default class extends React.Component {
     const name = this.state.nameFilter
     this.setState (prevState => {
       let array = prevState.programmes
-      array = array.filter(programme => programme.shortName === name)
-      return ({programmes: array})
+      array = array.filter(programme => programme.shortName.includes(name))
+      return ({viewProgrammes: array})
     })
   }
 
@@ -47,8 +49,8 @@ export default class extends React.Component {
     const name = this.state.stagedNameFilter
     this.setState (prevState => {
       let array = prevState.staged
-      array = array.filter(programme => programme.shortName === name)
-      return ({staged: array})
+      array = array.filter(programme => programme.shortName.includes(name))
+      return ({viewStaged: array})
     })
   }
 
@@ -98,7 +100,7 @@ export default class extends React.Component {
                     itemLayout='vertical'
                     size='large'
                     bordered
-                    dataSource={this.state.programmes}
+                    dataSource={this.state.viewProgrammes}
                     renderItem={item => (
                       <List.Item
                         actions={[<IconText type="like-o" text={item.votes} />]}
@@ -126,7 +128,7 @@ export default class extends React.Component {
                   />
                 <List id='staged-list'
                   grid={{ gutter: 50, column: 2 }}
-                  dataSource={this.state.staged}
+                  dataSource={this.state.viewStaged}
                   renderItem={item => (
                     <List.Item>
                       <Card title={`${item.fullName} (${item.shortName})`}>
@@ -205,10 +207,13 @@ export default class extends React.Component {
           })
           .then(stagedProgrammes => this.setState({
             programmes: programmes,
-            staged: stagedProgrammes
+            viewProgrammes: programmes,
+            staged: stagedProgrammes,
+            viewStaged: stagedProgrammes
           }))
           .catch(stagedError => this.setState({
             programmes: programmes,
+            viewProgrammes: programmes,
             stagedError: stagedError
           }))
       })
@@ -254,6 +259,7 @@ export default class extends React.Component {
         }
         this.setState(prevState => ({
           staged: [...prevState.staged, newItem],
+          viewStaged: [...prevState.staged, newItem],
           createProgrammeFlag: false
         }))
       })

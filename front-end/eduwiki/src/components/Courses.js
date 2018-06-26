@@ -11,10 +11,12 @@ export default class extends React.Component {
     super(props)
     this.state = {
       courses: [],
+      viewCourses: [],
       error: undefined,
       voteUp: false,
       voteDown: false,
       staged: [],
+      viewStaged: [],
       nameFilter: '',
       stagedNameFilter: ''
     }
@@ -36,8 +38,8 @@ export default class extends React.Component {
     const name = this.state.nameFilter
     this.setState(prevState => {
       let array = prevState.courses
-      array = array.filter(course => course.shortName === name)
-      return ({courses: array})
+      array = array.filter(course => course.shortName.includes(name))
+      return ({viewCourses: array})
     })
   }
 
@@ -45,8 +47,8 @@ export default class extends React.Component {
     const name = this.state.stagedNameFilter
     this.setState(prevState => {
       let array = prevState.staged
-      array = array.filter(staged => staged.shortName === name)
-      return ({staged: array})
+      array = array.filter(staged => staged.shortName.includes(name))
+      return ({viewStaged: array})
     })
   }
 
@@ -56,7 +58,7 @@ export default class extends React.Component {
     })
   }
 
-  handleSubmit(ev) {
+  handleSubmit (ev) {
     ev.preventDefault()
     this.setState({
       full_name: this.state.full_name,
@@ -88,7 +90,7 @@ export default class extends React.Component {
                     itemLayout='vertical'
                     size='large'
                     bordered
-                    dataSource={this.state.courses}
+                    dataSource={this.state.viewCourses}
                     renderItem={item => (
                       <List.Item
                         actions={[<IconText type='like-o' text={item.votes} />]}
@@ -116,7 +118,7 @@ export default class extends React.Component {
                 />
                 <List id='staged-list'
                   grid={{ gutter: 50, column: 2 }}
-                  dataSource={this.state.staged}
+                  dataSource={this.state.viewStaged}
                   renderItem={item => (
                     <List.Item>
                       <Card title={item.fullName}>
@@ -186,10 +188,13 @@ export default class extends React.Component {
           })
           .then(stagedCourses => this.setState({
             courses: courses,
-            staged: stagedCourses
+            viewCourses: courses,
+            staged: stagedCourses,
+            viewStaged: stagedCourses
           }))
           .catch(stagedError => this.setState({
             courses: courses,
+            viewCourses: courses,
             stagedError: stagedError
           }))
       })
@@ -229,6 +234,7 @@ export default class extends React.Component {
         }
         this.setState(prevState => ({
           staged: [...prevState.staged, newItem],
+          viewStaged: [...prevState.staged, newItem],
           createStagedFlag: false
         }))
       })
