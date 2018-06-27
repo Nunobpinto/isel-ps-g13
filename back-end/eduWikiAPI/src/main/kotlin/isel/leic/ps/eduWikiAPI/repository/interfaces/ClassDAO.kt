@@ -15,11 +15,11 @@ interface ClassDAO {
      * Main entities queries
      */
 
-    fun getSpecificClass(classId: Int): Optional<Class>
-
     fun getAllClasses() : List<Class>
 
-    fun createClass(clazz: Class): Optional<Class>
+    fun getSpecificClass(classId: Int): Optional<Class>
+
+    fun createClass(klass: Class): Optional<Class>
 
     fun deleteSpecificClass(classId: Int): Int
 

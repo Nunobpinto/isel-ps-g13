@@ -29,7 +29,7 @@ class ClassController {
     fun getSpecificClass(@PathVariable classId: Int) = classService.getSpecificClass(classId)
 
     @PostMapping
-    fun createCourse(@RequestBody input: ClassInputModel) = classService.createClass(input)
+    fun createClass(@RequestBody input: ClassInputModel) = classService.createClass(input)
 
     @PostMapping("/{classId}/vote")
     fun voteOnClass(
