@@ -134,20 +134,20 @@ class ClassServiceImpl : ClassService {
                 createdBy = updatedClass.createdBy,
                 timestamp = updatedClass.timestamp
         ))
-        classDAO.deleteSpecificReportOfClass(reportId)
+        classDAO.deleteSpecificReportInClass(classId, reportId)
         handle.commit()
         return res
     }
 
     override fun deleteAllReportsInClass(classId: Int): Int = classDAO.deleteAllReportsInClass(classId)
 
-    override fun deleteSpecificReportInClass(classId: Int, reportId: Int): Int = classDAO.deleteSpecificReportOfClass(reportId)
+    override fun deleteSpecificReportInClass(classId: Int, reportId: Int): Int = classDAO.deleteSpecificReportInClass(classId, reportId)
 
     override fun getAllStagedClasses(): List<ClassStage> = classDAO.getAllStagedClasses()
 
     override fun getSpecificStagedClass(stageId: Int): Optional<ClassStage> = classDAO.getSpecificStagedClass(stageId)
 
-    override fun createStagingClass(inputClass: ClassInputModel): Optional<ClassStage> = classDAO.createStagingClass(inputClass)
+    override fun createStagingClass(classStage: ClassStage): Optional<ClassStage> = classDAO.createStagedClass(classStage)
 
     override fun createClassFromStaged(stageId: Int): Optional<Class> {
         handle.begin()
@@ -190,7 +190,7 @@ class ClassServiceImpl : ClassService {
      * Course Methods
      */
 
-    override fun getAllCoursesOfClass(classId: Int): List<Course> = courseDAO.getCoursesOfClass(classId)
+    override fun getAllCoursesOfClass(classId: Int): List<Course> = courseDAO.getAllCoursesOfClass(classId)
 
     override fun getSpecificCourseOfClass(classId: Int, courseId: Int): Optional<Course> = courseDAO.getSpecificCourseOfClass(classId, courseId)
 

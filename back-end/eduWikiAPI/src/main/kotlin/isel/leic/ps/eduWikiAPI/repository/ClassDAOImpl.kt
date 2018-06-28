@@ -1,6 +1,5 @@
 package isel.leic.ps.eduWikiAPI.repository
 
-import isel.leic.ps.eduWikiAPI.domain.inputModel.ClassInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Class
 import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.domain.model.report.ClassReport
@@ -9,7 +8,6 @@ import isel.leic.ps.eduWikiAPI.domain.model.staging.ClassStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.ClassVersion
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ClassDAO
 import org.jdbi.v3.core.Handle
-import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 import java.util.*
@@ -32,6 +30,8 @@ class ClassDAOImpl : ClassDAO {
         const val CLASS_CREATED_BY = "created_by"
         const val CLASS_TIMESTAMP = "timestamp"
         const val CLASS_VOTES = "votes"
+        const val CLASS_REPORT_ID = "reportId"
+        const val CLASS_REPORTED_BY = "reported_by"
         const val CLASS_STAGE_ID = "course_stage_id"
         // COURSE_CLASS_FIELDS
         const val CRS_CLASS_CLASS_ID = "class_id"
@@ -115,29 +115,55 @@ class ClassDAOImpl : ClassDAO {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getAllStagedClasses(): List<ClassStage> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getAllStagedClasses(): List<ClassStage> =
+            handle.createQuery(
+                    "select * from $CLASS_STAGE_TABLE"
+            )
+                    .mapTo(ClassStage::class.java)
+                    .list()
 
-    override fun getSpecificStagedClass(stageId: Int): Optional<ClassStage> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getSpecificStagedClass(stageId: Int): Optional<ClassStage> =
+            handle.createQuery(
+                    "select * from $CLASS_STAGE_TABLE where $CLASS_STAGE_ID = :stageId"
+            )
+                    .bind("stageId", stageId)
+                    .mapTo(ClassStage::class.java)
+                    .findFirst()
 
-    override fun createStagingClass(inputClass: ClassInputModel): Optional<ClassStage> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun createStagedClass(classStage: ClassStage): Optional<ClassStage> =
+            handle.createUpdate(
+                    "insert into $CLASS_STAGE_TABLE " +
+                            "($CLASS_TERM_ID, $CLASS_NAME, $CLASS_CREATED_BY, " +
+                            "$CLASS_VOTES, $CLASS_TIMESTAMP) " +
+                            "values(:termId, :className, :createdBy, :votes, :timestamp)"
+            )
+                    .bind("termId", classStage.termId)
+                    .bind("className", classStage.className)
+                    .bind("createdBy", classStage.createdBy)
+                    .bind("votes", classStage.votes)
+                    .bind("timestamp", classStage.timestamp)
+                    .executeAndReturnGeneratedKeys()
+                    .mapTo(ClassStage::class.java)
+                    .findFirst()
 
-    override fun deleteSpecificStagedClass(stageId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deleteSpecificStagedClass(stageId: Int): Int =
+            handle.createUpdate("delete from $CLASS_STAGE_TABLE where $CLASS_STAGE_ID = :stageId")
+                    .bind("stageId", stageId)
+                    .execute()
 
     override fun voteOnStagedClass(stageId: Int, vote: Vote): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        var votes = handle.createQuery("select $CLASS_VOTES from $CLASS_STAGE_TABLE where $CLASS_STAGE_ID = :stageId")
+                .bind("stageId", stageId)
+                .mapTo(Int::class.java).findOnly()
+        votes = if (vote == Vote.Down) --votes else ++votes
+        return handle.createUpdate("update $CLASS_STAGE_TABLE set $CLASS_VOTES = :votes where $CLASS_STAGE_ID = :stageId")
+                .bind("votes", votes)
+                .bind("stageId", stageId)
+                .execute()
     }
 
-    override fun deleteAllStagedClasses(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deleteAllStagedClasses(): Int =
+            handle.createUpdate("delete from $CLASS_STAGE_TABLE").execute()
 
     override fun getAllReportsFromClass(classId: Int): List<ClassReport> =
             handle.createQuery("select * from $CLASS_REPORT_TABLE where $CLASS_ID = :classId")
@@ -145,25 +171,60 @@ class ClassDAOImpl : ClassDAO {
                     .mapTo(ClassReport::class.java)
                     .list()
 
-    override fun getSpecificReportFromClass(classId: Int, reportId: Int): Optional<ClassReport> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getSpecificReportFromClass(classId: Int, reportId: Int): Optional<ClassReport> =
+            handle.createQuery(
+                    "select * from $CLASS_REPORT_TABLE " +
+                            "where $CLASS_ID = :classId and $CLASS_REPORT_ID = :reportId"
+            )
+                    .bind("classId", classId)
+                    .bind("reportId", reportId)
+                    .mapTo(ClassReport::class.java)
+                    .findFirst()
 
-    override fun reportClass(classId: Int, report: ClassReport): Optional<ClassReport> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun reportClass(classId: Int, report: ClassReport): Optional<ClassReport> =
+            handle.createUpdate(
+                    "insert into $CLASS_REPORT_TABLE " +
+                            "($CLASS_REPORT_ID, $CLASS_ID, $CLASS_TERM_ID," +
+                            "$CLASS_NAME, $CLASS_REPORTED_BY, $CLASS_VOTES, $CLASS_TIMESTAMP) " +
+                            "values(:reportId, :classId, :termId, :className, :reportedBy, :votes, :timestamp)"
+            )
+                    .bind("reportId", report.reportId)
+                    .bind("classId", classId)
+                    .bind("termId", report.termId)
+                    .bind("className", report.className)
+                    .bind("reportedBy", report.reportedBy)
+                    .bind("votes", report.votes)
+                    .bind("timestamp", report.timestamp)
+                    .executeAndReturnGeneratedKeys()
+                    .mapTo(ClassReport::class.java)
+                    .findFirst()
 
     override fun voteOnReportOfClass(classId: Int, reportId: Int, vote: Vote): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        var votes = handle.createQuery("select $CLASS_VOTES from $CLASS_REPORT_TABLE where " +
+                "$CLASS_REPORT_ID = :reportId and $CLASS_ID = :classId")
+                .bind("reportId", reportId)
+                .bind("classId", classId)
+                .mapTo(Int::class.java).findOnly()
+        votes = if (vote == Vote.Down) --votes else ++votes
+        return handle.createUpdate("update $CLASS_REPORT_TABLE set $CLASS_VOTES = :votes where " +
+                "$CLASS_REPORT_ID = :reportId and $CLASS_ID = :classId")
+                .bind("votes", votes)
+                .bind("reportId", reportId)
+                .bind("classId", classId)
+                .execute()
     }
 
-    override fun deleteAllReportsInClass(classId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deleteAllReportsInClass(classId: Int): Int =
+            handle.createUpdate("delete from $CLASS_REPORT_TABLE where $CLASS_ID = :classId")
+                    .bind("classId", classId)
+                    .execute()
 
-    override fun deleteSpecificReportOfClass(reportId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deleteSpecificReportInClass(classId: Int, reportId: Int): Int =
+            handle.createUpdate("delete from $CLASS_REPORT_TABLE where " +
+                    "$CLASS_REPORT_ID = :reportId and $CLASS_ID = :classId")
+                    .bind("reportId", reportId)
+                    .bind("classId", classId)
+                    .execute()
 
     override fun createClassVersion(classVersion: ClassVersion): Optional<ClassVersion> =
             handle.createUpdate("insert into $CLASS_VERSION_TABLE (" +
@@ -181,21 +242,31 @@ class ClassDAOImpl : ClassDAO {
                     .mapTo(ClassVersion::class.java)
                     .findFirst()
 
-    override fun getAllVersionsOfSpecificClass(classId: Int): List<ClassVersion> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getAllVersionsOfSpecificClass(classId: Int): List<ClassVersion> =
+            handle.createQuery(
+                    "select * from $CLASS_VERSION_TABLE where $CLASS_ID = :classId"
+            )
+                    .bind("classId", classId)
+                    .mapTo(ClassVersion::class.java)
+                    .list()
 
-    override fun getVersionOfSpecificClass(classId: Int, versionId: Int): Optional<ClassVersion> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getVersionOfSpecificClass(classId: Int, versionId: Int): Optional<ClassVersion> =
+            handle.createQuery("select * from $CLASS_VERSION_TABLE where $CLASS_ID = :classId and $CLASS_VERSION = :versionId")
+                    .bind("classId", classId)
+                    .bind("versionId", versionId)
+                    .mapTo(ClassVersion::class.java)
+                    .findFirst()
 
-    override fun deleteAllVersionsOfClass(courseId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deleteAllVersionsOfClass(classId: Int): Int =
+            handle.createUpdate("delete from $CLASS_VERSION_TABLE where $CLASS_ID = :classId")
+                    .bind("classId", classId)
+                    .execute()
 
-    override fun deleteSpecificVersionOfClass(courseId: Int, versionId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deleteSpecificVersionOfClass(classId: Int, versionId: Int): Int =
+            handle.createUpdate("delete from $CLASS_VERSION_TABLE where $CLASS_ID = :classId and $CLASS_VERSION = :versionId")
+                    .bind("classId", classId)
+                    .bind("versionId", versionId)
+                    .execute()
 
     override fun getSpecificReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int): Optional<CourseClassReport> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.

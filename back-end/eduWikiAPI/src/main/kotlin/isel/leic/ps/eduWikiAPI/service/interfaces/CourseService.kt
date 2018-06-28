@@ -166,7 +166,7 @@ interface CourseService {
 
     fun getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(workAssignmentId: Int, reportId: Int): Optional<WorkAssignmentReport>
 
-    fun reportCourse(courseId: Int, inputCourseReport: CourseReportInputModel): Int
+    fun reportCourse(courseId: Int, inputCourseReport: CourseReportInputModel): Optional<CourseReport>
 
     fun voteOnReportOfCourse(reportId: Int, inputVote: VoteInputModel): Int
 

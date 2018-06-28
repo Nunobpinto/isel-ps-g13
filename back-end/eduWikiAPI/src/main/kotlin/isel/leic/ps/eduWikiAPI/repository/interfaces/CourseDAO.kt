@@ -118,7 +118,7 @@ interface CourseDAO {
 
     fun reportCourseOnProgramme(programmeId: Int, courseId: Int, courseProgrammeReport: CourseProgrammeReport): Optional<CourseProgrammeReport>
 
-    fun reportCourse(courseId: Int, courseReport: CourseReport): Int
+    fun reportCourse(courseId: Int, courseReport: CourseReport): Optional<CourseReport>
 
     fun deleteReportOnCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int
 
@@ -131,7 +131,7 @@ interface CourseDAO {
     /**
      * Courses On Class queries
      */
-    fun getCoursesOfClass(classId: Int): List<Course>
+    fun getAllCoursesOfClass(classId: Int): List<Course>
 
     fun getSpecificCourseOfClass(classId: Int, courseId: Int): Optional<Course>
 

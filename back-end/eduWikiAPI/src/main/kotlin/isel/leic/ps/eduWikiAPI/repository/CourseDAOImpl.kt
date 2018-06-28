@@ -149,7 +149,6 @@ class CourseDAOImpl : CourseDAO {
     override fun deleteAllStagedCourses() =
             handle.createUpdate("delete from $COURSE_STAGE_TABLE").execute()
 
-
     override fun createStagedCourse(courseStage: CourseStage) =
             handle.createUpdate(
                     "insert into $COURSE_STAGE_TABLE " +
@@ -184,7 +183,6 @@ class CourseDAOImpl : CourseDAO {
                     .bind("version", version)
                     .execute()
 
-
     override fun reportCourse(courseId: Int, courseReport: CourseReport) =
             handle.createUpdate(
                     "insert into $COURSE_REPORT_TABLE " +
@@ -198,7 +196,9 @@ class CourseDAOImpl : CourseDAO {
                     .bind("reportedBy", courseReport.reportedBy)
                     .bind("votes", courseReport.votes)
                     .bind("timestamp", courseReport.timestamp)
-                    .execute()
+                    .executeAndReturnGeneratedKeys()
+                    .mapTo(CourseReport::class.java)
+                    .findFirst()
 
     override fun deleteReportOnCourse(reportId: Int) =
             handle.createUpdate("delete from $COURSE_REPORT_TABLE where $COURSE_REPORT_ID = :id")
@@ -206,7 +206,9 @@ class CourseDAOImpl : CourseDAO {
                     .execute()
 
     override fun deleteAllReportsOnCourse(courseId: Int) =
-            handle.createUpdate("delete from $COURSE_REPORT_TABLE").execute()
+            handle.createUpdate("delete from $COURSE_REPORT_TABLE where $COURSE_ID = :courseId")
+                    .bind("courseId", courseId)
+                    .execute()
 
     override fun getAllReportsOnCourse(courseId: Int) =
             handle.createQuery("select * from $COURSE_REPORT_TABLE where $COURSE_ID = :courseId")
@@ -551,7 +553,7 @@ class CourseDAOImpl : CourseDAO {
                     .bind("reportId", reportId)
                     .execute()
 
-    override fun getCoursesOfClass(classId: Int): List<Course> {
+    override fun getAllCoursesOfClass(classId: Int): List<Course> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
