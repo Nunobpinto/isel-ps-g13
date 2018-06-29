@@ -6,13 +6,13 @@ const { Meta } = Card
 export default (props) => {
   return (
     <div id='holder'>
-      <img id='home-logo' src='logo_color.png' />
+      <img alt='EduWiki Logo' id='home-logo' src='logo_color.png' />
       <div style={{ padding: '30px' }}>
         <Row>
           <Col span={5}>
             <Card
               style={{ width: 240 }}
-              cover={<img src='http://www.lourdes.edu/wp-content/uploads/2015/12/EnglishStudies-913x513.jpg' />}
+              cover={<img alt='Academic Resources' src='http://www.lourdes.edu/wp-content/uploads/2015/12/EnglishStudies-913x513.jpg' />}
             >
               <Meta
                 title='Manage Academic Resources'
@@ -23,7 +23,7 @@ export default (props) => {
           <Col span={5}>
             <Card
               style={{ width: 240 }}
-              cover={<img src='http://stagtv.co.uk/wp-content/uploads/2017/07/group-of-users-silhouette_318-49953.jpg' />}
+              cover={<img alt='Community Driven' src='http://stagtv.co.uk/wp-content/uploads/2017/07/group-of-users-silhouette_318-49953.jpg' />}
             >
               <Meta
                 title='Community Driven'
@@ -34,7 +34,7 @@ export default (props) => {
           <Col span={5}>
             <Card
               style={{ width: 240 }}
-              cover={<img src='https://cdn0.iconfinder.com/data/icons/education-vol-02-2/32/report-student-grade-wrong-paper-exam-result-512.png' />}
+              cover={<img alt='Report' src='https://cdn0.iconfinder.com/data/icons/education-vol-02-2/32/report-student-grade-wrong-paper-exam-result-512.png' />}
             >
               <Meta
                 title='Report Information'
@@ -45,7 +45,7 @@ export default (props) => {
           <Col span={5}>
             <Card
               style={{ width: 240 }}
-              cover={<img src='https://fthmb.tqn.com/X7zpxW-USzMwCySRa3JZhbO3vVM=/768x0/filters:no_upscale():max_bytes(150000):strip_icc()/768px-Email_Shiny_Icon.svg-57fd8b3a3df78c690f82ca98.png' />}
+              cover={<img alt='Academic Email' src='https://fthmb.tqn.com/X7zpxW-USzMwCySRa3JZhbO3vVM=/768x0/filters:no_upscale():max_bytes(150000):strip_icc()/768px-Email_Shiny_Icon.svg-57fd8b3a3df78c690f82ca98.png' />}
             >
               <Meta
                 title='Use academic Email'

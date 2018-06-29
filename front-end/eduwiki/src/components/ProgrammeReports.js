@@ -1,6 +1,6 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
-import { List, Button, Tooltip } from 'antd'
+import { List } from 'antd'
 import IconText from './IconText'
 
 export default class extends React.Component {

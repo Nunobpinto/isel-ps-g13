@@ -1,10 +1,9 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
 import { Link } from 'react-router-dom'
-import Navbar from './Navbar'
 import IconText from './IconText'
 import Layout from './Layout'
-import { Button, Input, Form, List, Icon, Card } from 'antd'
+import { Button, Input, Form, List, Card } from 'antd'
 
 export default class extends React.Component {
   constructor (props) {

@@ -3,11 +3,10 @@ import fetch from 'isomorphic-fetch'
 import { Link } from 'react-router-dom'
 import IconText from './IconText'
 import Layout from './Layout'
-import { Button, Form, Input, List, Icon, Card, Menu, Dropdown } from 'antd'
-const FormItem = Form.Item;
+import { Button, Form, Input, List, Card } from 'antd'
 
 export default class extends React.Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       programmes: [],
@@ -24,11 +23,15 @@ export default class extends React.Component {
       staged: [],
       viewStaged: [],
       stagedNameFilter: '',
-      nameFilter:'',
+      nameFilter: '',
       createProgrammeFlag: false
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.voteUp = this.voteUp.bind(this)
+    this.voteDown = this.voteDown.bind(this)
+    this.voteUpStaged = this.voteUpStaged.bind(this)
+    this.voteDownStaged = this.voteDownStaged.bind(this)
     this.createProgrammeForm = this.createProgrammeForm.bind(this)
     this.createStagedProgramme = this.createStagedProgramme.bind(this)
     this.filterStagedByName = this.filterStagedByName.bind(this)
@@ -38,7 +41,7 @@ export default class extends React.Component {
 
   filterProgrammesByName () {
     const name = this.state.nameFilter
-    this.setState (prevState => {
+    this.setState(prevState => {
       let array = prevState.programmes
       array = array.filter(programme => programme.shortName.includes(name))
       return ({viewProgrammes: array})
@@ -47,20 +50,20 @@ export default class extends React.Component {
 
   filterStagedByName () {
     const name = this.state.stagedNameFilter
-    this.setState (prevState => {
+    this.setState(prevState => {
       let array = prevState.staged
       array = array.filter(programme => programme.shortName.includes(name))
       return ({viewStaged: array})
     })
   }
 
-  handleChange(ev) {
+  handleChange (ev) {
     this.setState({
       [ev.target.name]: ev.target.value
     })
   }
 
-  handleSubmit(ev) {
+  handleSubmit (ev) {
     ev.preventDefault()
     this.setState({
       full_name: this.state.full_name,
@@ -74,19 +77,19 @@ export default class extends React.Component {
     })
   }
 
-  showElements(id) {
+  showElements (id) {
     const element = document.getElementById(id)
     element.className = 'show_staged_resources'
   }
 
-  render() {
+  render () {
     return (
       <Layout>
         <div class='container'>
           <div class='left-div'>
-            {this.state.error ?
-              <p> Error getting all the programmes (Maybe there aren´t any programms) </p> :
-              <div>
+            {this.state.error
+              ? <p> Error getting all the programmes (Maybe there aren´t any programms) </p>
+              : <div>
                 <h1>All Programmes in ISEL</h1>
                 <p> Filter By Name </p>
                 <Input
@@ -102,7 +105,27 @@ export default class extends React.Component {
                   dataSource={this.state.viewProgrammes}
                   renderItem={item => (
                     <List.Item
-                      actions={[<IconText type="like-o" text={item.votes} />]}
+                      actions={[
+                        <IconText
+                          type='like-o'
+                          id='like_btn'
+                          onClick={() =>
+                            this.setState({
+                              voteUp: true,
+                              progID: item.id
+                            })}
+                          text={item.votes}
+                        />,
+                        <IconText
+                          type='dislike-o'
+                          id='dislike_btn'
+                          onClick={() =>
+                            this.setState({
+                              voteDown: true,
+                              progID: item.id
+                            })}
+                        />
+                      ]}
                     >
                       <List.Item.Meta
                         title={<Link to={{ pathname: `/programmes/${item.id}` }}> {item.fullName} ({item.shortName})</Link>}
@@ -118,13 +141,13 @@ export default class extends React.Component {
           <div class='right-div'>
             <div id='stagedProgrammes' class='hide_staged_resources'>
               <h1>All staged programmes</h1>
-                <p> Filter By Name : </p>
-                <Input
-                  name='stagedNameFilter'
-                  placeholder="Search name"
-                  onChange={this.handleChange}
-                  onPressEnter={this.filterStagedByName}
-                />
+              <p> Filter By Name : </p>
+              <Input
+                name='stagedNameFilter'
+                placeholder='Search name'
+                onChange={this.handleChange}
+                onPressEnter={this.filterStagedByName}
+              />
               <List id='staged-list'
                 grid={{ gutter: 50, column: 2 }}
                 dataSource={this.state.viewStaged}
@@ -135,6 +158,25 @@ export default class extends React.Component {
                       <p>Total Credits: {item.totalCredits}</p>
                       <p>Duration: {item.duration}</p>
                       <p>Created by: {item.createdBy}</p>
+                      <IconText
+                        type='like-o'
+                        id='like_btn'
+                        onClick={() =>
+                          this.setState({
+                            voteUpStaged: true,
+                            stageID: item.programmeId
+                          })}
+                        text={item.votes}
+                      />
+                      <IconText
+                        type='dislike-o'
+                        id='dislike_btn'
+                        onClick={() =>
+                          this.setState({
+                            voteDownStaged: true,
+                            stageID: item.programmeId
+                          })}
+                      />
                     </Card>
                   </List.Item>
                 )}
@@ -148,33 +190,35 @@ export default class extends React.Component {
     )
   }
 
-  createProgrammeForm = () => (
-    <div id='formToCreateProgramme' class='hide_staged_resources'>
-      <Form>
-        Full name: <br />
-        <Input name='full_name' onChange={this.handleChange} />
-        <br />
-        Short name: <br />
-        <Input name='short_name' onChange={this.handleChange} />
-        <br />
-        Academic Degree: <br />
-        <Input name='academic_degree' onChange={this.handleChange} />
-        <br />
-        Total Credits: <br />
-        <input type='number' name='total_credits' onChange={this.handleChange} />
-        <br />
-        Duration: <br />
-        <input type='number' name='duration' onChange={this.handleChange} />
-        <br />
-        Created By: <br />
-        <Input name='created_by' onChange={this.handleChange} />
-        <br />
-        <Button type='primary' type='submit' onClick={this.handleSubmit}>Create</Button>
-      </Form>
-    </div>
-  )
+  createProgrammeForm () {
+    return (
+      <div id='formToCreateProgramme' class='hide_staged_resources'>
+        <Form>
+          Full name: <br />
+          <Input name='full_name' onChange={this.handleChange} />
+          <br />
+          Short name: <br />
+          <Input name='short_name' onChange={this.handleChange} />
+          <br />
+          Academic Degree: <br />
+          <Input name='academic_degree' onChange={this.handleChange} />
+          <br />
+          Total Credits: <br />
+          <input type='number' name='total_credits' onChange={this.handleChange} />
+          <br />
+          Duration: <br />
+          <input type='number' name='duration' onChange={this.handleChange} />
+          <br />
+          Created By: <br />
+          <Input name='created_by' onChange={this.handleChange} />
+          <br />
+          <Button type='primary' onClick={this.handleSubmit}>Create</Button>
+        </Form>
+      </div>
+    )
+  }
 
-  componentDidMount() {
+  componentDidMount () {
     const uri = 'http://localhost:8080/programmes/'
     const header = {
       headers: { 'Access-Control-Allow-Origin': '*' }
@@ -222,7 +266,7 @@ export default class extends React.Component {
       })
   }
 
-  createStagedProgramme() {
+  createStagedProgramme () {
     const data = {
       full_name: this.state.full_name,
       short_name: this.state.short_name,
@@ -266,9 +310,145 @@ export default class extends React.Component {
       })
   }
 
-  componentDidUpdate() {
+  voteUp () {
+    const voteInput = {
+      vote: 'Up',
+      created_by: 'ze'
+    }
+    const progID = this.state.progID
+    const url = `http://localhost:8080/programmes/${progID}/vote`
+    const body = {
+      method: 'POST',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(voteInput)
+    }
+    fetch(url, body)
+      .then(resp => {
+        if (resp.status >= 400) {
+          throw new Error('Unable to access content')
+        }
+        this.setState(prevState => {
+          let newArray = [...prevState.programmes]
+          const index = newArray.findIndex(programme => programme.id === progID)
+          newArray[index].votes = prevState.programmes[index].votes + 1
+          return ({
+            programmes: newArray,
+            voteUp: false
+          })
+        })
+      })
+  }
+
+  voteDown () {
+    const voteInput = {
+      vote: 'Down',
+      created_by: 'ze'
+    }
+    const progID = this.state.progID
+    const url = `http://localhost:8080/programmes/${progID}/vote`
+    const body = {
+      method: 'POST',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(voteInput)
+    }
+    fetch(url, body)
+      .then(resp => {
+        if (resp.status >= 400) {
+          throw new Error('Unable to access content')
+        }
+        this.setState(prevState => {
+          let newArray = [...prevState.programmes]
+          const index = newArray.findIndex(programme => programme.id === progID)
+          newArray[index].votes = prevState.programmes[index].votes - 1
+          return ({
+            programmes: newArray,
+            voteDown: false
+          })
+        })
+      })
+  }
+
+  voteUpStaged () {
+    const voteInput = {
+      vote: 'Up',
+      created_by: 'ze'
+    }
+    const stageID = this.state.stageID
+    const url = `http://localhost:8080/programmes/stage/${stageID}/vote`
+    const body = {
+      method: 'POST',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(voteInput)
+    }
+    fetch(url, body)
+      .then(resp => {
+        if (resp.status >= 400) {
+          throw new Error('Unable to access content')
+        }
+        this.setState(prevState => {
+          let newArray = [...prevState.staged]
+          const index = newArray.findIndex(programme => programme.programmeId === stageID)
+          newArray[index].votes = prevState.staged[index].votes + 1
+          return ({
+            staged: newArray,
+            voteUpStaged: false
+          })
+        })
+      })
+  }
+
+  voteDownStaged () {
+    const voteInput = {
+      vote: 'Down',
+      created_by: 'ze'
+    }
+    const stageID = this.state.stageID
+    const url = `http://localhost:8080/programmes/stage/${stageID}/vote`
+    const body = {
+      method: 'POST',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(voteInput)
+    }
+    fetch(url, body)
+      .then(resp => {
+        if (resp.status >= 400) {
+          throw new Error('Unable to access content')
+        }
+        this.setState(prevState => {
+          let newArray = [...prevState.staged]
+          const index = newArray.findIndex(programme => programme.programmeId === stageID)
+          newArray[index].votes = prevState.staged[index].votes - 1
+          return ({
+            staged: newArray,
+            voteDownStaged: false
+          })
+        })
+      })
+  }
+
+  componentDidUpdate () {
     if (this.state.createProgrammeFlag) {
       this.createStagedProgramme()
+    } else if (this.state.voteDown) {
+      this.voteDown()
+    } else if (this.state.voteUp) {
+      this.voteUp()
+    } else if (this.state.voteDownStaged) {
+      this.voteDownStaged()
+    } else if (this.state.voteUpStaged) {
+      this.voteUpStaged()
     }
   }
 }

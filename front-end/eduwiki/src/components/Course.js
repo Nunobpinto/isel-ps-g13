@@ -1,7 +1,7 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
 import {Link} from 'react-router-dom'
-import Navbar from './Navbar'
+import Layout from './Layout'
 import {Button, Card, Col, Row, Tooltip} from 'antd'
 
 export default class extends React.Component {
@@ -59,75 +59,77 @@ export default class extends React.Component {
   render () {
     return (
       <div>
-        <Navbar />
-        {this.state.courseError
-          ? <p> Error getting this course, please try again !!! </p>
-          : <div>
-            <h1>{this.state.full_name} - {this.state.short_name} <small>({this.state.timestamp})</small> </h1>
-            <div>
-              <p>Created By : {this.state.createdBy}</p>
-              <p>
-                Votes : {this.state.votes}
-                <Tooltip placement='bottom' title={`Vote Up on ${this.state.short_name}`}>
-                  <Button id='like_btn' shape='circle' icon='like' onClick={() => this.setState({voteUp: true})} />
-                </Tooltip>
-                <Tooltip placement='bottom' title={`Vote Down on ${this.state.short_name}`}>
-                  <Button id='dislike_btn' shape='circle' icon='dislike' onClick={() => this.setState({voteDown: true})} />
-                </Tooltip>
-              </p>
-              {this.state.termError
-                ? <p>this.state.termError </p>
-                : <ul>
-                  {this.state.terms.map(item =>
-                    <div>
-                      <li key={item.id}>
-                        {item.shortName}
-                      </li>
-                      <button id={`exam_button_term${item.id}`} key={item.id} onClick={() => this.getExams(item.id)}>Exams</button>
-                      <div id={`exms_term_${item.id}`}>
-                        {this.state.exams.map(exam => {
-                          if (exam.termId === item.id) {
-                            return (
-                              <div style={{ padding: '30px' }}>
-                                <Row gutter={16}>
-                                  <Col span={8} key={exam.id}>
-                                    <Card title={`${exam.type} - ${exam.phase} - ${exam.dueDate}`}>
-                                      {exam.sheet}
-                                    </Card>
-                                  </Col>
-                                </Row>
-                              </div>
-
-                            )
+        <Layout>
+          {this.state.courseError
+            ? <p> Error getting this course, please try again !!! </p>
+            : <div>
+              <h1>{this.state.full_name} - {this.state.short_name} <small>({this.state.timestamp})</small> </h1>
+              <div>
+                <p>Created By : {this.state.createdBy}</p>
+                <p>
+                  Votes : {this.state.votes}
+                  <Tooltip placement='bottom' title={`Vote Up on ${this.state.short_name}`}>
+                    <Button id='like_btn' shape='circle' icon='like' onClick={() => this.setState({voteUp: true})} />
+                  </Tooltip>
+                  <Tooltip placement='bottom' title={`Vote Down on ${this.state.short_name}`}>
+                    <Button id='dislike_btn' shape='circle' icon='dislike' onClick={() => this.setState({voteDown: true})} />
+                  </Tooltip>
+                </p>
+                {this.state.termError
+                  ? <p>this.state.termError </p>
+                  : <ul>
+                    {this.state.terms.map(item =>
+                      <div>
+                        <li key={item.id}>
+                          {item.shortName}
+                        </li>
+                        <button id={`exam_button_term${item.id}`} key={item.id} onClick={() => this.getExams(item.id)}>Exams</button>
+                        <div id={`exms_term_${item.id}`}>
+                          {this.state.exams.map(exam => {
+                            if (exam.termId === item.id) {
+                              return (
+                                <div style={{ padding: '30px' }}>
+                                  <Row gutter={16}>
+                                    <Col span={8} key={exam.id}>
+                                      <Card title={`${exam.type} - ${exam.phase} - ${exam.dueDate}`}>
+                                        {exam.sheet}
+                                      </Card>
+                                    </Col>
+                                  </Row>
+                                </div>
+                              )
+                            }
+                            return undefined
                           }
-                        }
-                        )}
+                          )}
+                        </div>
+                        <button id={`wrs_button_term${item.id}`} key={item.id} onClick={() => this.getWorkAssignments(item.id)}>WorkAssignments</button>
+                        <div id={`wrs_term_${item.id}`}>
+                          {this.state.workAssignments.map(wrs => {
+                            if (wrs.termId === item.id) {
+                              return (
+                                <div style={{ padding: '30px' }}>
+                                  <Row gutter={16}>
+                                    <Col span={8} key={wrs.id}>
+                                      <Card title={`${wrs.type} - ${wrs.individual} - ${wrs.lateDelivery}`}>
+                                        {wrs.sheet}
+                                      </Card>
+                                    </Col>
+                                  </Row>
+                                </div>
+                              )
+                            }
+                            return undefined
+                          })}
+                        </div>
                       </div>
-                      <button id={`wrs_button_term${item.id}`} key={item.id} onClick={() => this.getWorkAssignments(item.id)}>WorkAssignments</button>
-                      <div id={`wrs_term_${item.id}`}>
-                        {this.state.workAssignments.map(wrs => {
-                          if (wrs.termId === item.id) {
-                            return (
-                              <div style={{ padding: '30px' }}>
-                                <Row gutter={16}>
-                                  <Col span={8} key={wrs.id}>
-                                    <Card title={`${wrs.type} - ${wrs.individual} - ${wrs.lateDelivery}`}>
-                                      {wrs.sheet}
-                                    </Card>
-                                  </Col>
-                                </Row>
-                              </div>
-                            )
-                          }
-                        })}
-                      </div>
-                    </div>
-                  )}
-                </ul>
-              }
+                    )}
+                  </ul>
+                }
+              </div>
             </div>
-          </div>
-        }
+          }
+        </Layout>
       </div>
     )
   }

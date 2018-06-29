@@ -100,7 +100,7 @@ class OrganizationServiceImpl : OrganizationService {
                 shortName = input.shortName,
                 address = input.address,
                 contact = input.contact,
-                reportedBy = input.createdBy,
+                reportedBy = input.reportedBy,
                 organization_id = organizationId,
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )

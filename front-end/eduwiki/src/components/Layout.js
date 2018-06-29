@@ -6,7 +6,7 @@ export default (props) => (
   <Layout>
     <Header style={{position: 'fixed', zIndex: 1, width: '100%'}} id='navbar'>
       <div className='logo'>
-        <img src='/logo.png' width='7%' />
+        <img src='/logo.png' width='7%' alt='EduWiki Logo' />
       </div>
       <Menu
         theme='light'

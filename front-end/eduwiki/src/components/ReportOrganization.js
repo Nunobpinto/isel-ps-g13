@@ -11,7 +11,8 @@ export default class extends React.Component {
       address: undefined,
       contact: undefined,
       reported_by: undefined,
-      organizationId: props.id
+      organizationId: props.id,
+      history: props.history
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
@@ -45,10 +46,10 @@ export default class extends React.Component {
           <Input name='short_name' onChange={this.handleChange} />
           <br />
         Address: <br />
-          <Input name='academic_degree' onChange={this.handleChange} />
+          <Input name='address' onChange={this.handleChange} />
           <br />
         Contact: <br />
-          <Input name='total_credits' onChange={this.handleChange} />
+          <Input name='contact' onChange={this.handleChange} />
           <br />
         Reported By: <br />
           <Input name='reported_by' onChange={this.handleChange} />
@@ -80,7 +81,7 @@ export default class extends React.Component {
       fetch(url, options)
         .then(resp => {
           if (resp.status < 400) {
-            this.props.history.push('/programmes/' + this.props.id)
+            this.state.history.push('/programmes/' + this.props.id)
           }
         })
     }
