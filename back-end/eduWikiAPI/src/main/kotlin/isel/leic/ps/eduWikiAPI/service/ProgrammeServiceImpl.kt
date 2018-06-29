@@ -152,8 +152,8 @@ class ProgrammeServiceImpl : ProgrammeService {
                 fullName = report.programmeFullName ?: programme.fullName,
                 shortName = report.programmeShortName ?: programme.shortName,
                 academicDegree = report.programmeAcademicDegree ?: programme.academicDegree,
-                totalCredits = if (report.programmeTotalCredits != 0) report.programmeTotalCredits!! else programme.totalCredits,
-                duration = if (report.programmeDuration != 0) report.programmeDuration!! else programme.duration,
+                totalCredits = report.programmeTotalCredits ?: programme.totalCredits,
+                duration = report.programmeDuration ?: programme.duration,
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
         programmeDAO.updateProgramme(programmeId, updatedProgramme)

@@ -1,9 +1,9 @@
 import React from 'react'
-import { Icon } from 'antd'
+import { Button } from 'antd'
 
-export default ({type, text}) => (
+export default ({type, text, onClick, id}) => (
   <span>
-    <Icon type={type} style={{ marginRight: 8 }} />
+    <Button id={id} icon={type} shape='circle-outline' onClick={onClick} style={{ marginRight: 8 }} />
     {text}
   </span>
 )

@@ -60,6 +60,18 @@ body {
   color: red;
 }
 
+#report_btn {
+  margin-left: 5px;
+}
+
+#report_btn:hover {
+  color: orange;
+}
+
+#show_reports_btn {
+  margin-left: 5px;
+}
+
 #create_btn {
   margin-top: 50px;
 }

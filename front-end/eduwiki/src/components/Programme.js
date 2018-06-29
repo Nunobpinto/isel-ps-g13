@@ -1,8 +1,10 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
 import {Link} from 'react-router-dom'
-import Navbar from './Navbar'
-import {Row, Col, Card, Button, Tooltip} from 'antd'
+import Layout from './Layout'
+import ReportProgramme from './ReportProgramme'
+import ProgrammeReports from './ProgrammeReports'
+import {Row, Col, Card, Button, Tooltip, Popover} from 'antd'
 
 export default class extends React.Component {
   constructor (props) {
@@ -28,8 +30,7 @@ export default class extends React.Component {
 
   render () {
     return (
-      <div>
-        <Navbar />
+      <Layout>
         <h1>{this.state.full_name} - {this.state.short_name} <small>({this.state.timestamp})</small> </h1>
         <p>
           Votes : {this.state.votes}
@@ -39,6 +40,17 @@ export default class extends React.Component {
           <Tooltip placement='bottom' title={`Vote Down on ${this.state.short_name}`}>
             <Button id='dislike_btn' shape='circle' icon='dislike' onClick={() => this.setState({voteDown: true})} />
           </Tooltip>
+          <Popover content={<ReportProgramme id={this.props.match.params.id} />} trigger='click'>
+            <Tooltip placement='bottom' title='Report this Programme'>
+              <Button id='report_btn' shape='circle' icon='warning' />
+            </Tooltip>
+          </Popover>
+          <Popover placement='bottomLeft' content={<ProgrammeReports id={this.props.match.params.id} />} trigger='click'>
+            <Button type='primary' id='show_reports_btn'>
+              Show all Reports On This Programme
+            </Button>
+          </Popover>
+
         </p>
         <div style={{ padding: '20px' }}>
           <Row gutter={16}>
@@ -75,7 +87,7 @@ export default class extends React.Component {
             )}
           </Row>
         </div>
-      </div>
+      </Layout>
     )
   }
 

@@ -6,7 +6,7 @@ export default (props) => (
   <Layout>
     <Header style={{position: 'fixed', zIndex: 1, width: '100%'}} id='navbar'>
       <div className='logo'>
-        <img src='/logo.png' width='7%' />
+        <img src='/logo.png' width='7%' alt='EduWiki Logo' />
       </div>
       <Menu
         theme='light'
@@ -14,8 +14,8 @@ export default (props) => (
       />
     </Header>
     <Content className='layout'>
-      <div style={{ background: '#fff', padding: 24, minHeight: 280 }}>
-        {props.component}
+      <div style={{ background: '#fff', padding: 57, minHeight: 280 }}>
+        {props.children}
       </div>
     </Content>
     <Footer className='footer' style={{ textAlign: 'center' }}>
