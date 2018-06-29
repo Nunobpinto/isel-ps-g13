@@ -1,7 +1,9 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
 import Layout from './Layout'
-import {Row, Col, Card, Button, Tooltip} from 'antd'
+import OrganizationReports from './OrganizationReports'
+import ReportOrganization from './ReportOrganization'
+import {Row, Col, Card, Button, Tooltip, Popover} from 'antd'
 
 export default class extends React.Component {
   constructor (props) {
@@ -91,8 +93,8 @@ export default class extends React.Component {
 
   render () {
     return (
-      <Layout
-        component={<div>
+      <Layout>
+        <div>
           {this.state.organization
             ? <div style={{ padding: '20px' }}>
               <h1> {this.state.organization.fullName} - ({this.state.organization.shortName}) </h1>
@@ -104,6 +106,16 @@ export default class extends React.Component {
                 <Tooltip placement='bottom' title={`Vote Down on ${this.state.organization.shortName}`}>
                   <Button id='dislike_btn' shape='circle' icon='dislike' onClick={() => this.setState({voteDown: true})} />
                 </Tooltip>
+                <Popover content={<ReportOrganization id={this.state.organization.id} />} trigger='click'>
+                  <Tooltip placement='bottom' title='Report this Organization'>
+                    <Button id='report_btn' shape='circle' icon='warning' />
+                  </Tooltip>
+                </Popover>
+                <Popover placement='bottomLeft' content={<OrganizationReports id={this.state.organization.id} />} trigger='click'>
+                  <Button type='primary' id='show_reports_btn'>
+                    Show all Reports On This Organization
+                  </Button>
+                </Popover>
               </p>
               <p>Created By: {this.state.organization.createdBy}</p>
               <Row gutter={16}>
@@ -131,8 +143,7 @@ export default class extends React.Component {
             </div>
           }
         </div>
-        }
-      />
+      </Layout>
     )
   }
 

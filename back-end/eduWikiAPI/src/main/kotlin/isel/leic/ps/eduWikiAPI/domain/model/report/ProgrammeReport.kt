@@ -4,6 +4,7 @@ import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROG_ACADEM
 import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROG_DURATION
 import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROG_FULL_NAME
 import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROG_ID
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROG_REPORTED_BY
 import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROG_REPORT_ID
 import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROG_SHORT_NAME
 import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROG_TIMESTAMP
@@ -27,7 +28,7 @@ data class ProgrammeReport(
         val programmeTotalCredits: Int? = 0,
         @ColumnName(PROG_DURATION)
         val programmeDuration: Int? = 0,
-        @ColumnName(PROG_REPORT_ID)
+        @ColumnName(PROG_REPORTED_BY)
         val reportedBy: String = "",
         @ColumnName(PROG_VOTES)
         val votes: Int = 0,

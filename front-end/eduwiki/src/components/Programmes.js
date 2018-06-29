@@ -81,72 +81,70 @@ export default class extends React.Component {
 
   render() {
     return (
-      <Layout
-        component={
-          <div class='container'>
-            <div class='left-div'>
-              {this.state.error ?
-                <p> Error getting all the programmes (Maybe there aren´t any programms) </p> :
-                <div>
-                  <h1>All Programmes in ISEL</h1>
-                  <p> Filter By Name </p>
-                  <Input
-                    name='nameFilter'
-                    placeholder='Search name'
-                    onChange={this.handleChange}
-                    onPressEnter={this.filterProgrammesByName}
-                  />
-                  <List
-                    itemLayout='vertical'
-                    size='large'
-                    bordered
-                    dataSource={this.state.viewProgrammes}
-                    renderItem={item => (
-                      <List.Item
-                        actions={[<IconText type="like-o" text={item.votes} />]}
-                      >
-                        <List.Item.Meta
-                          title={<Link to={{ pathname: `/programmes/${item.id}` }}> {item.fullName} ({item.shortName})</Link>}
-                          description={`Created by ${item.createdBy}`}
-                        />
-                      </List.Item>
-                    )}
-                  />
-                </div>
-              }
-              <Button icon='plus' id='create_btn' type='primary' onClick={() => { this.showElements('stagedProgrammes') }}>Create Programme</Button>
-            </div>
-            <div class='right-div'>
-              <div id='stagedProgrammes' class='hide_staged_resources'>
-                <h1>All staged programmes</h1>
-                  <p> Filter By Name : </p>
-                  <Input
-                    name='stagedNameFilter'
-                    placeholder="Search name"
-                    onChange={this.handleChange}
-                    onPressEnter={this.filterStagedByName}
-                  />
-                <List id='staged-list'
-                  grid={{ gutter: 50, column: 2 }}
-                  dataSource={this.state.viewStaged}
+      <Layout>
+        <div class='container'>
+          <div class='left-div'>
+            {this.state.error ?
+              <p> Error getting all the programmes (Maybe there aren´t any programms) </p> :
+              <div>
+                <h1>All Programmes in ISEL</h1>
+                <p> Filter By Name </p>
+                <Input
+                  name='nameFilter'
+                  placeholder='Search name'
+                  onChange={this.handleChange}
+                  onPressEnter={this.filterProgrammesByName}
+                />
+                <List
+                  itemLayout='vertical'
+                  size='large'
+                  bordered
+                  dataSource={this.state.viewProgrammes}
                   renderItem={item => (
-                    <List.Item>
-                      <Card title={`${item.fullName} (${item.shortName})`}>
-                        <p>Academic degree: {item.academicDegree}</p>
-                        <p>Total Credits: {item.totalCredits}</p>
-                        <p>Duration: {item.duration}</p>
-                        <p>Created by: {item.createdBy}</p>
-                      </Card>
+                    <List.Item
+                      actions={[<IconText type="like-o" text={item.votes} />]}
+                    >
+                      <List.Item.Meta
+                        title={<Link to={{ pathname: `/programmes/${item.id}` }}> {item.fullName} ({item.shortName})</Link>}
+                        description={`Created by ${item.createdBy}`}
+                      />
                     </List.Item>
                   )}
                 />
-                <Button type='primary' onClick={() => { this.showElements('formToCreateProgramme') }}>Still want to create?</Button>
               </div>
-              {this.createProgrammeForm()}
-            </div>
+            }
+            <Button icon='plus' id='create_btn' type='primary' onClick={() => { this.showElements('stagedProgrammes') }}>Create Programme</Button>
           </div>
-        }
-      />
+          <div class='right-div'>
+            <div id='stagedProgrammes' class='hide_staged_resources'>
+              <h1>All staged programmes</h1>
+                <p> Filter By Name : </p>
+                <Input
+                  name='stagedNameFilter'
+                  placeholder="Search name"
+                  onChange={this.handleChange}
+                  onPressEnter={this.filterStagedByName}
+                />
+              <List id='staged-list'
+                grid={{ gutter: 50, column: 2 }}
+                dataSource={this.state.viewStaged}
+                renderItem={item => (
+                  <List.Item>
+                    <Card title={`${item.fullName} (${item.shortName})`}>
+                      <p>Academic degree: {item.academicDegree}</p>
+                      <p>Total Credits: {item.totalCredits}</p>
+                      <p>Duration: {item.duration}</p>
+                      <p>Created by: {item.createdBy}</p>
+                    </Card>
+                  </List.Item>
+                )}
+              />
+              <Button type='primary' onClick={() => { this.showElements('formToCreateProgramme') }}>Still want to create?</Button>
+            </div>
+            {this.createProgrammeForm()}
+          </div>
+        </div>
+      </Layout>
     )
   }
 

@@ -14,8 +14,8 @@ export default (props) => (
       />
     </Header>
     <Content className='layout'>
-      <div style={{ background: '#fff', padding: 24, minHeight: 280 }}>
-        {props.component}
+      <div style={{ background: '#fff', padding: 57, minHeight: 280 }}>
+        {props.children}
       </div>
     </Content>
     <Footer className='footer' style={{ textAlign: 'center' }}>
