@@ -5,6 +5,7 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ClassReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseClassReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.HomeworkReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.LessonReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.model.staging.ClassStage
 import isel.leic.ps.eduWikiAPI.service.interfaces.ClassService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
@@ -98,7 +99,7 @@ class ClassController {
     fun getClassSpecificStageEntry(@PathVariable stageId: Int) = classService.getSpecificStagedClass(stageId)
 
     @PostMapping("/stage")
-    fun createStagingClass(@RequestBody input: ClassInputModel) = classService.createStagingClass(input)
+    fun createStagingClass(@RequestBody classStage: ClassStage) = classService.createStagingClass(classStage)
 
     @PostMapping("/stage/{stageId}")
     fun createClassFromStaged(@PathVariable stageId: Int) = classService.createClassFromStaged(stageId)
@@ -109,12 +110,11 @@ class ClassController {
             @RequestBody vote: VoteInputModel
     ) = classService.voteOnStagedClass(stageId, vote)
 
-
     @DeleteMapping("/stage")
     fun deleteAllStagedClasses() = classService.deleteAllStagedClasses()
 
     @DeleteMapping("/stage/{stageId}")
-    fun deleteStagedClass(@PathVariable stageId: Int) = classService.deleteSpecificStagedClass(stageId)
+    fun deleteSpecificStagedClass(@PathVariable stageId: Int) = classService.deleteSpecificStagedClass(stageId)
 
     // ----------------------------
     // Course Version Endpoints

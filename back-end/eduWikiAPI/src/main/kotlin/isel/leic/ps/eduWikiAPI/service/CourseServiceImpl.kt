@@ -113,7 +113,7 @@ class CourseServiceImpl : CourseService {
 
     override fun voteOnCourse(courseId: Int, inputVote: VoteInputModel): Int = courseDAO.voteOnCourse(courseId, Vote.valueOf(inputVote.vote))
 
-    override fun reportCourse(courseId: Int, inputCourseReport: CourseReportInputModel): Int {
+    override fun reportCourse(courseId: Int, inputCourseReport: CourseReportInputModel): Optional<CourseReport> {
         val courseReport = CourseReport(
                 courseId = courseId,
                 courseFullName = inputCourseReport.fullName,

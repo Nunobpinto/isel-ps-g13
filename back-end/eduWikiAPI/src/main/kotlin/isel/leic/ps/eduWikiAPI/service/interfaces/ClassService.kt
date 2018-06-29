@@ -61,7 +61,7 @@ interface ClassService {
 
     fun getSpecificStagedClass(stageId: Int): Optional<ClassStage>
 
-    fun createStagingClass(inputClass: ClassInputModel): Optional<ClassStage>
+    fun createStagingClass(classStage: ClassStage): Optional<ClassStage>
 
     fun createClassFromStaged(stageId: Int): Optional<Class>
 

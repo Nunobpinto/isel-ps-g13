@@ -1,6 +1,5 @@
 package isel.leic.ps.eduWikiAPI.repository.interfaces
 
-import isel.leic.ps.eduWikiAPI.domain.inputModel.ClassInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Class
 import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.domain.model.report.ClassReport
@@ -39,7 +38,7 @@ interface ClassDAO {
 
     fun getSpecificStagedClass(stageId: Int): Optional<ClassStage>
 
-    fun createStagingClass(inputClass: ClassInputModel): Optional<ClassStage>
+    fun createStagedClass(classStage: ClassStage): Optional<ClassStage>
 
     fun deleteSpecificStagedClass(stageId: Int): Int
 
@@ -61,7 +60,7 @@ interface ClassDAO {
 
     fun deleteAllReportsInClass(classId: Int): Int
 
-    fun deleteSpecificReportOfClass(reportId: Int) : Int
+    fun deleteSpecificReportInClass(classId: Int, reportId: Int) : Int
 
 
     /**
@@ -73,9 +72,9 @@ interface ClassDAO {
 
     fun getVersionOfSpecificClass(classId: Int, versionId: Int): Optional<ClassVersion>
 
-    fun deleteAllVersionsOfClass(courseId: Int): Int
+    fun deleteAllVersionsOfClass(classId: Int): Int
 
-    fun deleteSpecificVersionOfClass(courseId: Int, versionId: Int): Int
+    fun deleteSpecificVersionOfClass(classId: Int, versionId: Int): Int
 
     fun getSpecificReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int): Optional<CourseClassReport>
 
