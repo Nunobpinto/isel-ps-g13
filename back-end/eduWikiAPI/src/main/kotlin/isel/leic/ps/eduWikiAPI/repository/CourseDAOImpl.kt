@@ -1,11 +1,6 @@
 package isel.leic.ps.eduWikiAPI.repository
 
-import isel.leic.ps.eduWikiAPI.repository.TermDAOImpl.Companion.TERM_ID
-import isel.leic.ps.eduWikiAPI.repository.TermDAOImpl.Companion.TERM_SHORT_NAME
-import isel.leic.ps.eduWikiAPI.repository.TermDAOImpl.Companion.TERM_TYPE
-import isel.leic.ps.eduWikiAPI.repository.TermDAOImpl.Companion.TERM_YEAR
-import isel.leic.ps.eduWikiAPI.repository.TermDAOImpl.Companion.TERM_TABLE
-
+import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseClassReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseProgrammeReport
@@ -31,12 +26,14 @@ class CourseDAOImpl : CourseDAO {
         const val COURSE_REPORT_TABLE = "course_report"
         const val COURSE_STAGE_TABLE = "course_stage"
 
+        const val COURSE_CLASS_REPORT_TABLE = "course_class_report"
+        const val COURSE_CLASS_TABLE = "course_class"
+
         const val COURSE_PROG_TABLE = "course_programme"
         const val COURSE_PROG_STAGE_TABLE = "course_programme_stage"
         const val COURSE_PROG_REPORT_TABLE = "course_programme_report"
         const val COURSE_PROG_VERSION_TABLE = "course_programme_version"
 
-        const val COURSE_CLASS_TABLE = "course_class"
         const val COURSE_TERM_TABLE = "course_term"
         const val COURSE_MISC_UNIT_TABLE = "course_misc_unit"
         const val COURSE_MISC_UNIT_STAGE_TABLE = "course_misc_unit_stage"
@@ -67,6 +64,12 @@ class CourseDAOImpl : CourseDAO {
         const val COURSE_PROG_CREATED_BY = "created_by"
         const val COURSE_PROG_REPORTED_BY = "reported_by"
         const val COURSE_PROG_REPORT_ID = "report_id"
+        // COURSE_CLASS_FIELDS
+        const val CRS_CLASS_TERM_ID = "term_id"
+        const val CRS_CLASS_CLASS_ID = "class_id"
+        const val CRS_CLASS_VOTES = "votes"
+        const val CRS_CLASS_TIMESTAMP = "time_stamp"
+        const val CRS_CLASS_REPORT_ID = "reportId"
 
     }
 
@@ -242,10 +245,10 @@ class CourseDAOImpl : CourseDAO {
 
     override fun getTermsOfCourse(courseId: Int) =
             handle.createQuery(
-                    "select T.$TERM_ID, $TERM_SHORT_NAME, " +
-                            "$TERM_YEAR, $TERM_TYPE " +
-                            "from $TERM_TABLE as T " +
-                            "inner join $COURSE_TERM_TABLE as C on T.$TERM_ID = C.$TERM_ID " +
+                    "select T.${TermDAOImpl.TERM_ID}, ${TermDAOImpl.TERM_SHORT_NAME}, " +
+                            "${TermDAOImpl.TERM_YEAR}, ${TermDAOImpl.TERM_TYPE} " +
+                            "from ${TermDAOImpl.TERM_TABLE} as T " +
+                            "inner join $COURSE_TERM_TABLE as C on T.${TermDAOImpl.TERM_ID} = C.${TermDAOImpl.TERM_ID} " +
                             "where C.$COURSE_ID = :courseId"
             )
                     .bind("courseId", courseId)
@@ -254,10 +257,10 @@ class CourseDAOImpl : CourseDAO {
 
     override fun getSpecificTermOfCourse(courseId: Int, termId: Int) =
             handle.createQuery(
-                    "select T.$TERM_ID, T.$TERM_SHORT_NAME, " +
-                            "T.$TERM_YEAR, T.$TERM_TYPE " +
-                            "from $TERM_TABLE as T " +
-                            "inner join $COURSE_TERM_TABLE as C on T.$TERM_ID = C.$TERM_ID " +
+                    "select T.${TermDAOImpl.TERM_ID}, T.${TermDAOImpl.TERM_SHORT_NAME}, " +
+                            "T.${TermDAOImpl.TERM_YEAR}, T.${TermDAOImpl.TERM_TYPE} " +
+                            "from ${TermDAOImpl.TERM_TABLE} as T " +
+                            "inner join $COURSE_TERM_TABLE as C on T.${TermDAOImpl.TERM_ID} = C.${TermDAOImpl.TERM_ID} " +
                             "where C.$COURSE_ID = :courseId"
             )
                     .bind("courseId", courseId)
@@ -553,33 +556,71 @@ class CourseDAOImpl : CourseDAO {
                     .bind("reportId", reportId)
                     .execute()
 
-    override fun getAllCoursesOfClass(classId: Int): List<Course> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun getAllCoursesOfClass(classId: Int): List<Course> =
+            handle.createQuery("select C.${COURSE_ID}, C.${OrganizationDAOImpl.ORG_ID}, C.${COURSE_VERSION}," +
+                    "C.${COURSE_CREATED_BY}, C.${COURSE_FULL_NAME}, C.${COURSE_SHORT_NAME}, C.${COURSE_VOTES}," +
+                    "C.${COURSE_TIMESTAMP} from ${COURSE_TABLE} as C " +
+                    "inner join ${COURSE_CLASS_TABLE} as CC " +
+                    "on C.${COURSE_ID} = CC.${COURSE_ID}" +
+                    "where CC.${ClassDAOImpl.CLASS_ID} = :classId")
+                    .bind("classId", classId)
+                    .mapTo(Course::class.java)
+                    .list()
+
+    override fun getSpecificCourseOfClass(classId: Int, courseId: Int): Optional<Course> =
+            handle.createQuery("select C.${COURSE_ID}, C.${OrganizationDAOImpl.ORG_ID}, C.${COURSE_VERSION}," +
+                    "C.${COURSE_CREATED_BY}, C.${COURSE_FULL_NAME}, C.${COURSE_SHORT_NAME}, C.${COURSE_VOTES}," +
+                    "C.${COURSE_TIMESTAMP} from ${COURSE_TABLE} as C " +
+                    "inner join ${COURSE_CLASS_TABLE} as CC " +
+                    "on C.${COURSE_ID} = CC.${COURSE_ID}" +
+                    "where CC.${ClassDAOImpl.CLASS_ID} = :classId and CC.${COURSE_ID} = :courseId")
+                    .bind("classId", classId)
+                    .bind("courseId", courseId)
+                    .mapTo(Course::class.java)
+                    .findFirst()
+
+    override fun voteOnCourseInClass(classId: Int, courseId: Int, vote: Vote): Int {
+        var votes = handle.createQuery("select $CRS_CLASS_VOTES from $COURSE_CLASS_TABLE" +
+                "where ${CRS_CLASS_CLASS_ID} = :classId and ${COURSE_ID} = :courseId")
+                .bind("classId", classId)
+                .bind("courseId", courseId)
+                .mapTo(Int::class.java).findOnly()
+        votes = if (vote == Vote.Down) votes.dec() else votes.inc()
+        return handle.createUpdate("update $COURSE_CLASS_TABLE set ${CRS_CLASS_VOTES} = :votes " +
+                "where $CRS_CLASS_CLASS_ID = :classId and ${COURSE_ID} = :courseId")
+                .bind("classId", classId)
+                .bind("courseId", courseId)
+                .execute()
     }
 
-    override fun getSpecificCourseOfClass(classId: Int, courseId: Int): Optional<Course> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deleteAllCoursesInClass(classId: Int): Int =
+            handle.createUpdate("delete from ${COURSE_CLASS_TABLE} where ${CRS_CLASS_CLASS_ID} = :classId")
+                    .bind("classId", classId)
+                    .execute()
 
-    override fun voteOnCourseInClass(classId: Int, courseId: Int, valueOf: Vote): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deleteSpecificCourseInClass(classId: Int, courseId: Int): Int =
+            handle.createUpdate("delete from ${COURSE_CLASS_TABLE} " +
+                    "where ${CRS_CLASS_CLASS_ID} = :classId and ${COURSE_ID} = :courseId")
+                    .bind("classId", classId)
+                    .bind("courseId", courseId)
+                    .execute()
 
-    override fun deleteAllCoursesInClass(classId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getAllReportsOfCourseInClass(classId: Int, courseId: Int): List<CourseClassReport> =
+            handle.createQuery("select * from ${COURSE_CLASS_REPORT_TABLE} " +
+                    "where ${CRS_CLASS_CLASS_ID} = :classId and ${COURSE_ID} = :courseId")
+                    .bind("classId", classId)
+                    .bind("courseId", courseId)
+                    .mapTo(CourseClassReport::class.java)
+                    .list()
 
-    override fun deleteSpecificCourseInClass(classId: Int, courseId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getAllReportsOfCourseInClass(classId: Int, courseId: Int): List<CourseClassReport> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getSpecificReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int): Optional<CourseClassReport> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getSpecificReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int): Optional<CourseClassReport> =
+            handle.createQuery("select * from ${COURSE_CLASS_REPORT_TABLE} " +
+                    "where ${CRS_CLASS_CLASS_ID} = :classId and ${COURSE_ID} = :courseId and ${CRS_CLASS_REPORT_ID} = :reportId")
+                    .bind("classId", classId)
+                    .bind("courseId", courseId)
+                    .bind("reportId", reportId)
+                    .mapTo(CourseClassReport::class.java)
+                    .findFirst()
 
     override fun voteOnReportOfCourseClass(classId: Int, courseId: Int, reportId: Int, valueOf: Vote): Int {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -612,5 +653,22 @@ class CourseDAOImpl : CourseDAO {
     override fun deleteSpecificStagedCourseInClass(classId: Int, stageId: Int): Int {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+
+    override fun addCourseToClass(classId: Int, courseId: Int): Int {
+        val termId = handle.createQuery("select ${TermDAOImpl.TERM_ID} " +
+                "from ${ClassDAOImpl.CLASS_TABLE} where ${ClassDAOImpl.CLASS_ID} = :classId")
+                .bind("classId", classId)
+                .mapTo(Int::class.java)
+        return handle.createUpdate("insert into ${COURSE_CLASS_TABLE}" +
+                "(${COURSE_ID}, ${CRS_CLASS_CLASS_ID}," +
+                "${CRS_CLASS_TERM_ID}, ${CRS_CLASS_VOTES}" +
+                "${CRS_CLASS_TIMESTAMP}" +
+                "values(:courseId, :classId, :termId, :votes, :timestamp)")
+                .bind("courseId", courseId)
+                .bind("classId", classId)
+                .bind("termId", termId)
+                .execute()
+    }
+
 }
 

@@ -194,9 +194,7 @@ class ClassServiceImpl : ClassService {
 
     override fun getSpecificCourseOfClass(classId: Int, courseId: Int): Optional<Course> = courseDAO.getSpecificCourseOfClass(classId, courseId)
 
-    override fun addCourseToClass(classId: Int, courseId: Int): Optional<Course> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun addCourseToClass(classId: Int, courseId: Int): Int = courseDAO.addCourseToClass(classId, courseId)
 
     override fun voteOnCourseInClass(classId: Int, courseId: Int, vote: VoteInputModel): Int = courseDAO.voteOnCourseInClass(classId, courseId, Vote.valueOf(vote.vote))
 
