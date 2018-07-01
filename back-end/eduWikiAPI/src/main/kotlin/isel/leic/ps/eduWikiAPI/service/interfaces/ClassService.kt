@@ -89,7 +89,7 @@ interface ClassService {
 
     fun getSpecificCourseOfClass(classId: Int, courseId: Int): Optional<Course>
 
-    fun addCourseToClass(classId: Int, courseId: Int): Optional<Course>
+    fun addCourseToClass(classId: Int, courseId: Int): Int
 
     fun voteOnCourseInClass(classId: Int, courseId: Int, vote: VoteInputModel): Int
 

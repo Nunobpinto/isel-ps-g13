@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.repository.interfaces
 
+import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Term
 import isel.leic.ps.eduWikiAPI.domain.model.Vote
@@ -135,7 +136,7 @@ interface CourseDAO {
 
     fun getSpecificCourseOfClass(classId: Int, courseId: Int): Optional<Course>
 
-    fun voteOnCourseInClass(classId: Int, courseId: Int, valueOf: Vote): Int
+    fun voteOnCourseInClass(classId: Int, courseId: Int, vote: Vote): Int
 
     fun deleteAllCoursesInClass(classId: Int): Int
 
@@ -157,7 +158,10 @@ interface CourseDAO {
 
     fun voteOnStagedCourseInClass(classId: Int, stageId: Int, vote: Vote): Int
 
+    fun addCourseToClass(classId: Int, courseId: Int): Int
+
     fun deleteAllStagedCoursesInClass(classId: Int): Int
 
     fun deleteSpecificStagedCourseInClass(classId: Int, stageId: Int): Int
+
 }

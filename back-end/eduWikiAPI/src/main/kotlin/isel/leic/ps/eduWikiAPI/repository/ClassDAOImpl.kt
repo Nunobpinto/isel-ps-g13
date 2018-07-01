@@ -33,12 +33,6 @@ class ClassDAOImpl : ClassDAO {
         const val CLASS_REPORT_ID = "reportId"
         const val CLASS_REPORTED_BY = "reported_by"
         const val CLASS_STAGE_ID = "course_stage_id"
-        // COURSE_CLASS_FIELDS
-        const val CRS_CLASS_CLASS_ID = "class_id"
-        const val CRS_CLASS_TERM_ID = "term_id"
-        const val CRS_CLASS_COURSE_ID = "course_id"
-        const val CRS_CLASS_VOTES = "votes"
-        const val CRS_CLASS_TIMESTAMP = "time_stamp"
     }
 
     @Autowired
@@ -271,4 +265,5 @@ class ClassDAOImpl : ClassDAO {
     override fun getSpecificReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int): Optional<CourseClassReport> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+
 }
