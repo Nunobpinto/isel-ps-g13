@@ -39,20 +39,20 @@ export default class extends React.Component {
     this.showElements = this.showElements.bind(this)
   }
 
-  filterProgrammesByName () {
-    const name = this.state.nameFilter
+  filterProgrammesByName (ev) {
+    const name = ev.target.value.toLowerCase()
     this.setState(prevState => {
-      let array = prevState.programmes
-      array = array.filter(programme => programme.shortName.includes(name))
+      let array = [...prevState.programmes]
+      array = array.filter(programme => programme.fullName.toLowerCase().includes(name))
       return ({viewProgrammes: array})
     })
   }
 
-  filterStagedByName () {
-    const name = this.state.stagedNameFilter
+  filterStagedByName (ev) {
+    const name = ev.target.value.toLowerCase()
     this.setState(prevState => {
-      let array = prevState.staged
-      array = array.filter(programme => programme.shortName.includes(name))
+      let array = [...prevState.staged]
+      array = array.filter(programme => programme.fullName.toLowerCase().includes(name))
       return ({viewStaged: array})
     })
   }
@@ -95,8 +95,7 @@ export default class extends React.Component {
                 <Input
                   name='nameFilter'
                   placeholder='Search name'
-                  onChange={this.handleChange}
-                  onPressEnter={this.filterProgrammesByName}
+                  onChange={this.filterProgrammesByName}
                 />
                 <List
                   itemLayout='vertical'
@@ -145,8 +144,7 @@ export default class extends React.Component {
               <Input
                 name='stagedNameFilter'
                 placeholder='Search name'
-                onChange={this.handleChange}
-                onPressEnter={this.filterStagedByName}
+                onChange={this.filterStagedByName}
               />
               <List id='staged-list'
                 grid={{ gutter: 50, column: 2 }}

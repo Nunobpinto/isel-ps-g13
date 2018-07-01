@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card, Col, Row } from 'antd'
+import { Card, Col, Row, Button } from 'antd'
 import { Link } from 'react-router-dom'
 const { Meta } = Card
 
@@ -8,6 +8,8 @@ export default (props) => {
     <div id='holder'>
       <img alt='EduWiki Logo' id='home-logo' src='logo_color.png' />
       <div style={{ padding: '30px' }}>
+        <Button icon='google'>Sign In With Google</Button>
+        <Button icon='windows'>Sign In With Microsoft</Button>
         <Row>
           <Col span={5}>
             <Card

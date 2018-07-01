@@ -21,6 +21,10 @@ export default class extends React.Component {
     }
     this.showElements = this.showElements.bind(this)
     this.createCourseForm = this.createCourseForm.bind(this)
+    this.voteUp = this.voteUp.bind(this)
+    this.voteDown = this.voteDown.bind(this)
+    this.voteUpStaged = this.voteUpStaged.bind(this)
+    this.voteDownStaged = this.voteDownStaged.bind(this)
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.createStagedCourse = this.createStagedCourse.bind(this)
@@ -33,20 +37,20 @@ export default class extends React.Component {
     element.className = 'show_staged_resources'
   }
 
-  filterCoursesByName () {
-    const name = this.state.nameFilter
+  filterCoursesByName (ev) {
+    const name = ev.target.value.toLowerCase()
     this.setState(prevState => {
       let array = prevState.courses
-      array = array.filter(course => course.shortName.includes(name))
+      array = array.filter(course => course.fullName.toLowerCase().includes(name))
       return ({viewCourses: array})
     })
   }
 
-  filterStagedByName () {
-    const name = this.state.stagedNameFilter
+  filterStagedByName (ev) {
+    const name = ev.target.value.toLowerCase()
     this.setState(prevState => {
       let array = prevState.staged
-      array = array.filter(staged => staged.shortName.includes(name))
+      array = array.filter(staged => staged.fullName.toLowerCase().includes(name))
       return ({viewStaged: array})
     })
   }
@@ -81,8 +85,7 @@ export default class extends React.Component {
                 <Input
                   name='nameFilter'
                   placeholder='Search name'
-                  onChange={this.handleChange}
-                  onPressEnter={this.filterCoursesByName}
+                  onChange={this.filterCoursesByName}
                 />
                 <List
                   itemLayout='vertical'
@@ -91,7 +94,27 @@ export default class extends React.Component {
                   dataSource={this.state.viewCourses}
                   renderItem={item => (
                     <List.Item
-                      actions={[<IconText type='like-o' text={item.votes} />]}
+                      actions={[
+                        <IconText
+                          type='like-o'
+                          id='like_btn'
+                          onClick={() =>
+                            this.setState({
+                              voteUp: true,
+                              courseID: item.id
+                            })}
+                          text={item.votes}
+                        />,
+                        <IconText
+                          type='dislike-o'
+                          id='dislike_btn'
+                          onClick={() =>
+                            this.setState({
+                              voteDown: true,
+                              courseID: item.id
+                            })}
+                        />
+                      ]}
                     >
                       <List.Item.Meta
                         title={<Link to={{ pathname: `/courses/${item.id}` }}> {item.fullName} ({item.shortName})</Link>}
@@ -111,8 +134,7 @@ export default class extends React.Component {
               <Input
                 name='stagedNameFilter'
                 placeholder='Search name'
-                onChange={this.handleChange}
-                onPressEnter={this.filterStagedByName}
+                onChange={this.filterStagedByName}
               />
               <List id='staged-list'
                 grid={{ gutter: 50, column: 2 }}
@@ -240,9 +262,33 @@ export default class extends React.Component {
       })
   }
 
+  voteUp () {
+
+  }
+
+  voteDown () {
+
+  }
+
+  voteUpStaged () {
+
+  }
+
+  voteDownStaged () {
+
+  }
+
   componentDidUpdate () {
     if (this.state.createStagedFlag) {
       this.createStagedCourse()
+    } else if (this.state.voteUp) {
+      this.voteUp()
+    } else if (this.state.voteDown) {
+      this.voteDown()
+    } else if (this.state.voteUpStaged) {
+      this.voteUpStaged()
+    } else if (this.state.voteDownStaged) {
+      this.voteDownStaged()
     }
   }
 }

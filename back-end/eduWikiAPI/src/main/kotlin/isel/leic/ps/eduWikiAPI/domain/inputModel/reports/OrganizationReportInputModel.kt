@@ -9,6 +9,6 @@ class OrganizationReportInputModel (
         val shortName: String? =null,
         val address: String? =null,
         val contact: String? = null,
-        @JsonProperty("created_by")
-        val createdBy: String = ""
+        @JsonProperty("reported_by")
+        val reportedBy: String = ""
 )
