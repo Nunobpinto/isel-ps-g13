@@ -75,8 +75,8 @@ export default class extends React.Component {
   render () {
     return (
       <Layout>
-        <div class='container'>
-          <div class='left-div'>
+        <div className='container'>
+          <div className='left-div'>
             {this.state.error
               ? <p> Error getting all the courses please try again !!! </p>
               : <div>

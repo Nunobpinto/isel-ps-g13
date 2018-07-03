@@ -85,8 +85,8 @@ export default class extends React.Component {
   render () {
     return (
       <Layout>
-        <div class='container'>
-          <div class='left-div'>
+        <div className='container'>
+          <div className='left-div'>
             {this.state.error
               ? <p> Error getting all the programmes (Maybe there aren´t any programms) </p>
               : <div>
@@ -147,35 +147,35 @@ export default class extends React.Component {
                 onChange={this.filterStagedByName}
               />
               <List id='staged-list'
-                grid={{ gutter: 50, column: 2 }}
+                itemLayout='vertical'
+                bordered
                 dataSource={this.state.viewStaged}
                 renderItem={item => (
                   <List.Item>
-                    <Card title={`${item.fullName} (${item.shortName})`}>
-                      <p>Academic degree: {item.academicDegree}</p>
-                      <p>Total Credits: {item.totalCredits}</p>
-                      <p>Duration: {item.duration}</p>
-                      <p>Created by: {item.createdBy}</p>
-                      <IconText
-                        type='like-o'
-                        id='like_btn'
-                        onClick={() =>
-                          this.setState({
-                            voteUpStaged: true,
-                            stageID: item.programmeId
-                          })}
-                        text={item.votes}
-                      />
-                      <IconText
-                        type='dislike-o'
-                        id='dislike_btn'
-                        onClick={() =>
-                          this.setState({
-                            voteDownStaged: true,
-                            stageID: item.programmeId
-                          })}
-                      />
-                    </Card>
+                    <h1>{`${item.fullName} (${item.shortName})`}</h1>
+                    <p>Academic degree: {item.academicDegree}</p>
+                    <p>Total Credits: {item.totalCredits}</p>
+                    <p>Duration: {item.duration}</p>
+                    <p>Created by: {item.createdBy}</p>
+                    <IconText
+                      type='like-o'
+                      id='like_btn'
+                      onClick={() =>
+                        this.setState({
+                          voteUpStaged: true,
+                          stageID: item.programmeId
+                        })}
+                      text={item.votes}
+                    />
+                    <IconText
+                      type='dislike-o'
+                      id='dislike_btn'
+                      onClick={() =>
+                        this.setState({
+                          voteDownStaged: true,
+                          stageID: item.programmeId
+                        })}
+                    />
                   </List.Item>
                 )}
               />

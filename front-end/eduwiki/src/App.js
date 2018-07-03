@@ -2,6 +2,7 @@ import React from 'react'
 import Organization from './components/Organization'
 import Programmes from './components/Programmes'
 import Programme from './components/Programme'
+import Register from './components/Register'
 import Courses from './components/Courses'
 import Course from './components/Course'
 import Home from './components/Home'
@@ -12,6 +13,7 @@ export default () => (
     <BrowserRouter>
       <Switch>
         <Route exact path='/' component={Home} />
+        <Route exact path='/register' component={Register} />
         <Route exact path='/organization' render={props => <Organization {...props} />} />
         <Route exact path='/programmes' render={props => <Programmes {...props} />} />
         <Route exact path='/programmes/:id' render={props => <Programme {...props} />} />

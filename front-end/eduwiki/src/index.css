@@ -36,11 +36,11 @@ body {
 }
 
 .hide_staged_resources {
-  display: none
+  visibility : hidden
 }
 
 .show_staged_resources {
-  display: block
+  visibility: visible
 }
 
 #like_btn:hover {
@@ -82,6 +82,12 @@ body {
   background: rgba(255, 255, 255, 0.164);  
   margin: 16px 24px 16px 0;
   float: left;
+}
+
+#formItem{
+  display: inline-block;
+  text-align: center;
+  margin-top: 50px;
 }
 
 .layout {
