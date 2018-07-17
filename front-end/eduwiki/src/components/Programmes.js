@@ -92,7 +92,7 @@ export default class extends React.Component {
               : <div>
                 <h1>All Programmes in ISEL</h1>
                 <p> Filter By Name </p>
-                <Input
+                <Input.Search
                   name='nameFilter'
                   placeholder='Search name'
                   onChange={this.filterProgrammesByName}
@@ -141,7 +141,7 @@ export default class extends React.Component {
             <div id='stagedProgrammes' class='hide_staged_resources'>
               <h1>All staged programmes</h1>
               <p> Filter By Name : </p>
-              <Input
+              <Input.Search
                 name='stagedNameFilter'
                 placeholder='Search name'
                 onChange={this.filterStagedByName}
@@ -207,9 +207,6 @@ export default class extends React.Component {
           Duration: <br />
           <input type='number' name='duration' onChange={this.handleChange} />
           <br />
-          Created By: <br />
-          <Input name='created_by' onChange={this.handleChange} />
-          <br />
           <Button type='primary' onClick={this.handleSubmit}>Create</Button>
         </Form>
       </div>
@@ -271,7 +268,6 @@ export default class extends React.Component {
       academic_degree: this.state.academic_degree,
       total_credits: this.state.total_credits,
       duration: this.state.duration,
-      created_by: this.state.created_by,
       organization_id: 1
     }
     const body = {
@@ -294,7 +290,6 @@ export default class extends React.Component {
           academicDegree: data.academic_degree,
           totalCredits: data.total_credits,
           duration: data.duration,
-          createdBy: data.created_by,
           organizationId: 1
         }
         this.setState(prevState => ({

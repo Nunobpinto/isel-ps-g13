@@ -8,7 +8,8 @@ export default (props) => {
   return (
     <div id='holder'>
       <img alt='EduWiki Logo' id='home-logo' src='logo_color.png' />
-      <div style={{ padding: '30px' }}>
+      <div>
+        <Login />
         <Row>
           <Col span={5}>
             <Card
@@ -56,7 +57,6 @@ export default (props) => {
           </Col>
         </Row>
       </div>
-      <Login />
       <h1>Current web pages</h1>
       <ul>
         <li>

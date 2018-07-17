@@ -11,7 +11,6 @@ export default class extends React.Component {
       academic_degree: undefined,
       total_credits: undefined,
       duration: undefined,
-      reported_by: undefined,
       programmeID: props.id
     }
     this.handleChange = this.handleChange.bind(this)
@@ -31,7 +30,6 @@ export default class extends React.Component {
       academic_degree: this.state.academic_degree,
       total_credits: this.state.total_credits,
       duration: this.state.duration,
-      reported_by: this.state.reported_by,
       reported: true
     })
   }
@@ -54,9 +52,6 @@ export default class extends React.Component {
           <br />
         Duration: <br />
           <input type='number' name='duration' onChange={this.handleChange} />
-          <br />
-        Reported By: <br />
-          <Input name='reported_by' onChange={this.handleChange} />
           <br />
           <Button type='primary' onClick={this.handleSubmit}>Create</Button>
         </Form>

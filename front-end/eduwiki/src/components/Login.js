@@ -34,7 +34,7 @@ class LoginForm extends React.Component {
     }
     const { getFieldDecorator } = this.props.form
     return (
-      <div className='App'>
+      <div id='centre_div'>
         <Form onSubmit={this.handleSubmit} className='login-form' id='formItem' >
           <Form.Item>
             {getFieldDecorator('username', {
@@ -75,6 +75,7 @@ class LoginForm extends React.Component {
   componentDidUpdate () {
     if (this.state.redirect) {
       message.warning('Authentication not implemented yet')
+      cookies.set('auth', 'idi', {maxAge: 9999})
       this.setState({redirect: false})
     }
   }

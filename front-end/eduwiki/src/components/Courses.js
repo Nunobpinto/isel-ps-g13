@@ -66,7 +66,6 @@ export default class extends React.Component {
     this.setState({
       full_name: this.state.full_name,
       short_name: this.state.short_name,
-      created_by: this.state.created_by,
       organization_id: 1,
       createStagedFlag: true
     })
@@ -82,7 +81,7 @@ export default class extends React.Component {
               : <div>
                 <h1>All courses in ISEL</h1>
                 <p> Filter By Name </p>
-                <Input
+                <Input.Search
                   name='nameFilter'
                   placeholder='Search name'
                   onChange={this.filterCoursesByName}
@@ -131,10 +130,11 @@ export default class extends React.Component {
             <div id='stagedCourses' class='hide_staged_resources'>
               <h1>All staged Courses</h1>
               <p> Filter By Name : </p>
-              <Input
+              <Input.Search
                 name='stagedNameFilter'
                 placeholder='Search name'
                 onChange={this.filterStagedByName}
+                
               />
               <List id='staged-list'
                 grid={{ gutter: 50, column: 2 }}
@@ -166,9 +166,6 @@ export default class extends React.Component {
           <br />
           Short name: <br />
           <Input name='short_name' onChange={this.handleChange} />
-          <br />
-          Created By: <br />
-          <Input name='created_by' onChange={this.handleChange} />
           <br />
           <Button type='primary' onClick={this.handleSubmit}>Create</Button>
         </Form>
@@ -228,7 +225,6 @@ export default class extends React.Component {
     const data = {
       full_name: this.state.full_name,
       short_name: this.state.short_name,
-      created_by: this.state.created_by,
       organization_id: 1
     }
     const body = {
@@ -248,7 +244,6 @@ export default class extends React.Component {
         const newItem = {
           fullName: data.full_name,
           shortName: data.short_name,
-          createdBy: data.created_by,
           organizationId: 1
         }
         this.setState(prevState => ({

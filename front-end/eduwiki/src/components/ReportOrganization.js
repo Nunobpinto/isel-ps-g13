@@ -10,7 +10,6 @@ export default class extends React.Component {
       short_name: undefined,
       address: undefined,
       contact: undefined,
-      reported_by: undefined,
       organizationId: props.id,
       history: props.history
     }
@@ -30,7 +29,6 @@ export default class extends React.Component {
       short_name: this.state.short_name,
       address: this.state.address,
       contact: this.state.contact,
-      reported_by: this.state.reported_by,
       reported: true
     })
   }
@@ -50,9 +48,6 @@ export default class extends React.Component {
           <br />
         Contact: <br />
           <Input name='contact' onChange={this.handleChange} />
-          <br />
-        Reported By: <br />
-          <Input name='reported_by' onChange={this.handleChange} />
           <br />
           <Button type='primary' onClick={this.handleSubmit}>Create</Button>
         </Form>
