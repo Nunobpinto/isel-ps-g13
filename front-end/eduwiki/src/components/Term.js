@@ -1,12 +1,6 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
-import {Link} from 'react-router-dom'
-import MyLayout from './Layout'
-import Term from './Term'
 import {Button, Card, Col, Row, Tooltip, Menu, Layout} from 'antd'
-
-const { Content, Sider } = Layout
-const { SubMenu } = Menu
 
 export default class extends React.Component {
   constructor (props) {
@@ -17,20 +11,18 @@ export default class extends React.Component {
       createdBy: '',
       votes: 0,
       timestamp: '',
-      terms: [],
       exams: [],
-      classes: [],
       workAssignments: [],
       voteType: undefined,
       examFlag: false,
       workAssignmentFlag: false,
       termId: undefined,
-      courseError: undefined,
       termError: undefined,
       examError: undefined,
       workAssignmentError: undefined,
       voteUp: false,
-      voteDown: false
+      voteDown: false,
+      courseId: props.courseId
     }
     this.voteUp = this.voteUp.bind(this)
     this.voteDown = this.voteDown.bind(this)
@@ -38,11 +30,6 @@ export default class extends React.Component {
     this.getWorkAssignments = this.getWorkAssignments.bind(this)
     this.fetchExams = this.fetchExams.bind(this)
     this.fetchWorkAssignments = this.fetchWorkAssignments.bind(this)
-    this.showTerm = this.showTerm.bind(this)
-  }
-
-  showTerm (term) {
-    this.setState({term: term})
   }
 
   getExams (termId) {
@@ -61,55 +48,46 @@ export default class extends React.Component {
 
   render () {
     return (
-      <div>
-        <MyLayout>
-          {this.state.courseError
-            ? <p> Error getting this course, please try again !!! </p>
-            : <div>
-              <h1>{this.state.full_name} - {this.state.short_name} <small>({this.state.timestamp})</small> </h1>
-              <div>
-                <p>Created By : {this.state.createdBy}</p>
-                <p>
-                  Votes : {this.state.votes}
-                  <Tooltip placement='bottom' title={`Vote Up on ${this.state.short_name}`}>
-                    <Button id='like_btn' shape='circle' icon='like' onClick={() => this.setState({voteUp: true})} />
-                  </Tooltip>
-                  <Tooltip placement='bottom' title={`Vote Down on ${this.state.short_name}`}>
-                    <Button id='dislike_btn' shape='circle' icon='dislike' onClick={() => this.setState({voteDown: true})} />
-                  </Tooltip>
-                </p>
-                {this.state.termError
-                  ? <p>this.state.termError </p>
-                  : <Layout style={{ padding: '24px 0', background: '#fff' }}>
-                    <Sider width={200} style={{ background: '#fff' }}>
-                      <Menu
-                        mode='inline'
-                        style={{ height: '100%' }}
-                      >
-                        {this.state.terms.map(item =>
-                          <Menu.Item
-                            key={item.id}
-                            onClick={() => this.showTerm(item)}
-                          >
-                            {item.shortName}
-                          </Menu.Item>
-
-                        )}
-                      </Menu>
-                    </Sider>
-                    <Content style={{ padding: '0 24px', minHeight: 280 }}>
-                      {this.state.term
-                        ? <Term term={this.state.term} courseId={this.props.match.params.id} />
-                        : <h1>Please choose one of the available Terms</h1>
-                      }
-                    </Content>
-                  </Layout>
-                }
-
-              </div>
-            </div>
+      <div id={`term_${this.props.term.id}`}>
+        <button id={`exam_button_term${this.props.term.id}`} onClick={() => this.getExams(this.props.term.id)}>Exams</button>
+        <div id={`exms_term_${this.props.term.id}`}>
+          {this.state.exams.map(exam => {
+            if (exam.termId === this.props.term.id) {
+              return (
+                <div style={{ padding: '30px' }}>
+                  <Row gutter={16}>
+                    <Col span={8} key={exam.id}>
+                      <Card title={`${exam.type} - ${exam.phase} - ${exam.dueDate}`}>
+                        {exam.sheet}
+                      </Card>
+                    </Col>
+                  </Row>
+                </div>
+              )
+            }
+            return undefined
           }
-        </MyLayout>
+          )}
+        </div>
+        <button id={`wrs_button_term${this.props.term.id}`} onClick={() => this.getWorkAssignments(this.props.term.id)}>WorkAssignments</button>
+        <div id={`wrs_term_${this.props.term.id}`}>
+          {this.state.workAssignments.map(wrs => {
+            if (wrs.termId === this.props.term.id) {
+              return (
+                <div style={{ padding: '30px' }}>
+                  <Row gutter={16}>
+                    <Col span={8} key={wrs.id}>
+                      <Card title={`${wrs.type} - ${wrs.individual} - ${wrs.lateDelivery}`}>
+                        {wrs.sheet}
+                      </Card>
+                    </Col>
+                  </Row>
+                </div>
+              )
+            }
+            return undefined
+          })}
+        </div>
       </div>
     )
   }
@@ -119,7 +97,7 @@ export default class extends React.Component {
       vote: 'Up',
       created_by: 'ze'
     }
-    const id = this.props.match.params.id
+    const id = this.props.courseId
     const uri = 'http://localhost:8080/courses/' + id + '/vote'
     const body = {
       method: 'POST',
@@ -168,62 +146,12 @@ export default class extends React.Component {
       })
   }
 
-  componentDidMount () {
-    const id = this.props.match.params.id
-    const uri = 'http://localhost:8080/courses/' + id
-    const header = {
-      headers: { 'Access-Control-Allow-Origin': '*' }
-    }
-    fetch(uri, header)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
-        const ct = resp.headers.get('content-type') || ''
-        if (ct === 'application/json' || ct.startsWith('application/json;')) {
-          return resp.json().then(json => [resp, json])
-        }
-        throw new Error(`unexpected content type ${ct}`)
-      })
-      .then(([resp, json]) => {
-        const termsUri = `http://localhost:8080/courses/${json.id}/terms`
-        fetch(termsUri, header)
-          .then(resp => {
-            if (resp.status >= 400) {
-              throw new Error('Unable to access content')
-            }
-            const ct = resp.headers.get('content-type') || ''
-            if (ct === 'application/json' || ct.startsWith('application/json;')) {
-              return resp.json()
-            }
-            throw new Error(`unexpected content type ${ct}`)
-          })
-          .then(terms =>
-            this.setState({
-              full_name: json.fullName,
-              short_name: json.shortName,
-              createdBy: json.createdBy,
-              timestamp: json.timestamp,
-              votes: json.votes,
-              terms: terms
-            }))
-          .catch(err => {
-            this.setState({termError: err})
-          })
-      })
-      .catch(error => {
-        this.setState({
-          courseError: error
-        })
-      })
-  }
-
   componentDidUpdate () {
     if (this.state.examFlag) {
-      const courseId = this.props.match.params.id
+      const courseId = this.props.courseId
       this.fetchExams(courseId, this.state.termId)
     } else if (this.state.workAssignmentFlag) {
-      const courseId = this.props.match.params.id
+      const courseId = this.props.courseId
       this.fetchWorkAssignments(courseId, this.state.termId)
     } else if (this.state.voteUp) {
       this.voteUp()
