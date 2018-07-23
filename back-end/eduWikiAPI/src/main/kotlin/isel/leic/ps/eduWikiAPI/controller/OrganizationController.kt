@@ -61,7 +61,7 @@ class OrganizationController {
             = organizationService.updateReportedOrganization(organizationId, reportId)
 
     @PostMapping("/{organizationId}/reports/{reportId}/vote")
-    fun voteOrganizationReport(@PathVariable organizationId: Int, @PathVariable reportId: Int, @RequestBody input: VoteInputModel) = organizationService.voteOnReport(organizationId, reportId, input)
+    fun voteOrganizationReport(@PathVariable organizationId: Int, @PathVariable reportId: Int, @RequestBody input: VoteInputModel) = organizationService.voteOnOrganizationReport(organizationId, reportId, input)
 
     @DeleteMapping("/{organizationId}/reports")
     fun deleteAllReports(@PathVariable organizationId: Int) = organizationService.deleteAllReportsOnOrganization(organizationId)

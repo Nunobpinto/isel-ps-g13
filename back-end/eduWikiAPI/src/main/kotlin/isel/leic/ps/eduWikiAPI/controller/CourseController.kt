@@ -405,13 +405,13 @@ class CourseController {
             @PathVariable workAssignmentId: Int
     ) = courseService.getAllVersionsOfSpecificWorkAssignment(workAssignmentId)
 
-    @GetMapping("/{courseId}/terms/{termId}/work-assignments/{workAssignmentId}/versions/{versionId}")
+    @GetMapping("/{courseId}/terms/{termId}/work-assignments/{workAssignmentId}/versions/{version}")
     fun getVersionOfSpecificWorkAssignment(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable workAssignmentId: Int,
-            @PathVariable versionId: Int
-    ) = courseService.getVersionOfSpecificWorkAssignment(workAssignmentId, versionId, courseId, termId)
+            @PathVariable version: Int
+    ) = courseService.getVersionOfSpecificWorkAssignment(workAssignmentId, version)
 
     @DeleteMapping("/{courseId}/terms/{termId}/work-assignments/{workAssignmentId}/versions")
     fun deleteAllVersionsOfWorkAssignment(
@@ -538,51 +538,5 @@ class CourseController {
             @PathVariable termId: Int,
             @PathVariable stageId: Int
     ) = courseService.deleteSpecificStagedWorkAssignment(stageId)
-
-    // ----- CLASS ------ TODO: Ver melhor a utilidade destes endpoints
-
-    // ----------------------------
-    // Class of Course Endpoints
-    // ----------------------------
-/*
-    @GetMapping("/{courseId}/terms/{termId}/classes")
-    fun getClassesOnSpecificTermOfCourse(
-            @PathVariable courseId: Int,
-            @PathVariable termId: Int
-    ) = courseService.getAllClassesOnSpecificTermOfCourse(courseId, termId)
-
-    @GetMapping("/{courseId}/terms/{termId}/classes/{classId}")
-    fun getClassOnSpecificTermOfCourse(
-            @PathVariable courseId: Int,
-            @PathVariable termId: Int,
-            @PathVariable classId: Int
-    ) = courseService.getClassOnSpecificTermOfCourse(courseId, termId, classId)
-*/
-    // ----------------------------
-    // Class of Course Version Endpoints
-    // ----------------------------
-/*
-    @GetMapping("/{courseId}/terms/{termId}/classes/{classId}/versions")
-    fun getAllVersionsOfSpecificClass(
-            @PathVariable courseId: Int,
-            @PathVariable termId: Int,
-            @PathVariable classId: Int
-    ) = courseService.getAllVersionsOfSpecificClass(classId)
-
-    @GetMapping("/{courseId}/terms/{termId}/classes/{classId}/versions/{versionId}")
-    fun getVersionOfSpecificClass(
-            @PathVariable courseId: Int,
-            @PathVariable termId: Int,
-            @PathVariable classId: Int,
-            @PathVariable versionId: Int
-    ) = courseService.getVersionOfSpecificClass(classId, versionId)
-*/
-    // ----------------------------
-    // Class of Course Report Endpoints
-    // ----------------------------
-
-    // ----------------------------
-    // Class of Course Stage Endpoints
-    // ----------------------------
 
 }
