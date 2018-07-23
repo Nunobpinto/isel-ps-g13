@@ -114,28 +114,28 @@ insert into course_term (course_id, term_id, time_stamp)
 insert into course_misc_unit (misc_type, course_id, term_id)
     values ('Work Assignment', 1, 1);
 
-insert into work_assignment (id, created_by, sheet, supplement, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
+insert into work_assignment (work_assignment_id, created_by, sheet, supplement, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
     values (1,'ze','Exemplo-PI','Apoio',current_date,false ,true ,true ,false ,current_timestamp);
 
-insert into work_assignment_version (id, work_assignment_version, created_by, sheet, supplement, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
+insert into work_assignment_version (work_assignment_id, work_assignment_version, created_by, sheet, supplement, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
     values (1, 1, 'ze','Exemplo-PI','Apoio',current_date,false ,true ,true ,false ,current_timestamp);
 
 insert into course_misc_unit (misc_type, course_id, term_id)
     values ('Work Assignment', 1, 2);
 
-insert into work_assignment (id, created_by, sheet, supplement, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
+insert into work_assignment (work_assignment_id, created_by, sheet, supplement, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
     values (2,'ze','Exemplo-PI-2','Apoio',current_date,false ,true ,true ,false ,current_timestamp);
 
-insert into work_assignment_version (id, work_assignment_version, created_by, sheet, supplement, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
+insert into work_assignment_version (work_assignment_id, work_assignment_version, created_by, sheet, supplement, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
     values (2, 1, 'ze','Exemplo-PI-2','Apoio',current_date,false ,true ,true ,false ,current_timestamp);
 
 insert into course_misc_unit (misc_type, course_id, term_id)
     values ('Work Assignment', 3, 2);
 
-insert into work_assignment (id, created_by, sheet, supplement, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
+insert into work_assignment (work_assignment_id, created_by, sheet, supplement, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
     values (3,'ze','Exemplo-MAV','Apoio',current_date,false ,true ,true ,false ,current_timestamp);
 
-insert into work_assignment_version (id, work_assignment_version, created_by, sheet, supplement, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
+insert into work_assignment_version (work_assignment_id, work_assignment_version, created_by, sheet, supplement, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
     values (3, 1, 'ze','Exemplo-MAV','Apoio',current_date,false ,true ,true ,false ,current_timestamp);
 
 -- Exam Insert
@@ -143,97 +143,97 @@ insert into work_assignment_version (id, work_assignment_version, created_by, sh
 insert into course_misc_unit (misc_type, course_id, term_id)
     values ('Exam/Test', 1, 1);
 
-insert into exam (id, created_by, sheet, due_date, exam_type, phase, location, time_stamp)
+insert into exam (exam_id, created_by, sheet, due_date, exam_type, phase, location, time_stamp)
     values (4, 'ze', '1ºexame de PI 1718v',current_date,'Exam', '1ª','A.2.14',current_timestamp);
 
-insert into exam_version (id, exam_version, created_by, sheet, due_date, exam_type, phase, location, time_stamp)
+insert into exam_version (exam_id, exam_version, created_by, sheet, due_date, exam_type, phase, location, time_stamp)
     values (4, 1, 'ze', '1ºexame de PI 1718v',current_date,'Exam', '1ª','A.2.14',current_timestamp);
 
 insert into course_misc_unit (misc_type, course_id, term_id)
     values ('Exam/Test', 2, 1);
 
-insert into exam (id, created_by, sheet, due_date, exam_type, phase, location, time_stamp)
+insert into exam (exam_id, created_by, sheet, due_date, exam_type, phase, location, time_stamp)
     values (5, 'ze', '1ºteste de RCP 1718v',current_date,'Test', '1ª','A.2.14',current_timestamp);
 
-insert into exam_version (id, exam_version, created_by, sheet, due_date, exam_type, phase, location, time_stamp)
+insert into exam_version (exam_id, exam_version, created_by, sheet, due_date, exam_type, phase, location, time_stamp)
     values (5, 1, 'ze', '1ºteste de RCP 1718v',current_date,'Test', '1ª','A.2.14',current_timestamp);
 
 insert into course_misc_unit (misc_type, course_id, term_id)
     values ('Exam/Test', 2, 2);
 
-insert into exam (id, created_by, sheet, due_date, exam_type, phase, location, time_stamp)
+insert into exam (exam_id, created_by, sheet, due_date, exam_type, phase, location, time_stamp)
     values (6, 'ze', '2ºexame de RCP 1718i',current_date,'Exam', '2ª','A.2.14',current_timestamp);
 
-insert into exam_version (id, exam_version, created_by, sheet, due_date, exam_type, phase, location, time_stamp)
+insert into exam_version (exam_id, exam_version, created_by, sheet, due_date, exam_type, phase, location, time_stamp)
     values (6, 1, 'ze', '2ºexame de RCP 1718i',current_date,'Exam', '2ª','A.2.14',current_timestamp);
 
 -- Course-class Insert
 
-insert into course_class (course_id, class_id, term_id, time_stamp)
-    values (1,1,1,current_timestamp);
+insert into course_class (course_id, class_id, term_id, created_by, votes, time_stamp) 
+	values (1,1,1, 'rui', 0, current_timestamp);
 
-insert into course_class (course_id, class_id, term_id, time_stamp)
-    values (2,2,2,current_timestamp);
+insert into course_class (course_id, class_id, term_id, created_by, votes, time_stamp)
+    values (2,2,2, 'igor', 1, current_timestamp);
 
-insert into course_class (course_id, class_id, term_id, time_stamp)
-    values (3,2,2,current_timestamp);
+insert into course_class (course_id, class_id, term_id, created_by, votes, time_stamp)
+    values (3,2,2,'andre', 2, current_timestamp);
 
 -- Lecture Insert
 
-insert into class_misc_unit (misc_type, course_id, class_id, term_id)
-    values ('Lecture',1,1,1);
+insert into class_misc_unit (class_misc_unit_id, misc_type, course_class_id)
+    values (1, 'Lecture', 1);
 
-insert into lecture (id, created_by, weekday, begins, duration, location, time_stamp)
+insert into lecture (lecture_id, created_by, weekday, begins, duration, location, time_stamp)
     values (1, 'bruno', 'Monday', current_time, '02:00:00', 'E.1.07', current_timestamp);
 
-insert into lecture_version (id, lecture_version, created_by, weekday, begins, duration, location, time_stamp)
+insert into lecture_version (lecture_id, lecture_version, created_by, weekday, begins, duration, location, time_stamp)
     values (1, 1, 'bruno', 'Monday', current_time, '02:00:00', 'E.1.07', current_timestamp);
 
-insert into class_misc_unit (misc_type, course_id, class_id, term_id)
-    values ('Lecture',2,2,2);
+insert into class_misc_unit (class_misc_unit_id, misc_type, course_class_id)
+    values (2, 'Lecture', 2);
 
-insert into lecture (id, created_by, weekday, begins, duration, location, time_stamp)
+insert into lecture (lecture_id, created_by, weekday, begins, duration, location, time_stamp)
     values (2, 'bruno', 'Tuesday', current_time, '02:00:00', 'G.1.07', current_timestamp);
 
-insert into lecture_version (id, lecture_version, created_by, weekday, begins, duration, location, time_stamp)
+insert into lecture_version (lecture_id, lecture_version, created_by, weekday, begins, duration, location, time_stamp)
     values (2, 1, 'bruno', 'Tuesday', current_time, '02:00:00', 'G.1.07', current_timestamp);
 
-insert into class_misc_unit (misc_type, course_id, class_id, term_id)
-    values ('Lecture',3,2,2);
+insert into class_misc_unit (class_misc_unit_id, misc_type, course_class_id)
+    values (3, 'Lecture', 3);
 
-insert into lecture (id, created_by, weekday, begins, duration, location, time_stamp)
+insert into lecture (lecture_id, created_by, weekday, begins, duration, location, time_stamp)
     values (3, 'bruno', 'Friday', current_time, '02:00:00', 'G.0.14', current_timestamp);
 
-insert into lecture_version (id, lecture_version, created_by, weekday, begins, duration, location, time_stamp)
+insert into lecture_version (lecture_id, lecture_version, created_by, weekday, begins, duration, location, time_stamp)
     values (3, 1, 'bruno', 'Friday', current_time, '02:00:00', 'G.0.14', current_timestamp);
 
 -- Homework Insert
 
-insert into class_misc_unit (misc_type, course_id, class_id, term_id)
-    values ('Homework',1,1,1);
+insert into class_misc_unit (class_misc_unit_id, misc_type, course_class_id)
+    values (4, 'Homework', 1);
 
-insert into homework (id, created_by, sheet, due_date, late_delivery, multiple_deliveries, time_stamp)
+insert into homework (homework_id, created_by, sheet, due_date, late_delivery, multiple_deliveries, time_stamp)
     values (4,'bruno','Fazer router', current_date, true, true, current_timestamp );
 
-insert into homework_version (id, homework_version, created_by, sheet, due_date, late_delivery, multiple_deliveries, time_stamp)
+insert into homework_version (homework_id, homework_version, created_by, sheet, due_date, late_delivery, multiple_deliveries, time_stamp)
     values (4, 1, 'bruno','Fazer router', current_date, true, true, current_timestamp );
 
-insert into class_misc_unit (misc_type, course_id, class_id, term_id)
-    values ('Homework',2,2,2);
+insert into class_misc_unit (class_misc_unit_id, misc_type, course_class_id)
+    values (5, 'Homework', 2);
 
-insert into homework (id, created_by, sheet, due_date, late_delivery, multiple_deliveries, time_stamp)
+insert into homework (homework_id, created_by, sheet, due_date, late_delivery, multiple_deliveries, time_stamp)
     values (5, 'ze', 'Criar switchs e routers nos nós',current_date, false , true , current_timestamp);
 
-insert into homework_version (id, homework_version, created_by, sheet, due_date, late_delivery, multiple_deliveries, time_stamp)
+insert into homework_version (homework_id, homework_version, created_by, sheet, due_date, late_delivery, multiple_deliveries, time_stamp)
     values (5, 1, 'ze', 'Criar switchs e routers nos nós',current_date, false , true , current_timestamp);
 
-insert into class_misc_unit (misc_type, course_id, class_id, term_id)
-    values ('Homework',3,2,2);
+insert into class_misc_unit (class_misc_unit_id, misc_type, course_class_id)
+    values (6, 'Homework', 1);
 
-insert into homework(id, created_by, sheet, due_date, late_delivery, multiple_deliveries, time_stamp)
+insert into homework(homework_id, created_by, sheet, due_date, late_delivery, multiple_deliveries, time_stamp)
     values (6, 'ze','Desenhar modelo do boneco', current_date, true , true , current_timestamp);
 
-insert into homework_version (id, homework_version, created_by, sheet, due_date, late_delivery, multiple_deliveries, time_stamp)
+insert into homework_version (homework_id, homework_version, created_by, sheet, due_date, late_delivery, multiple_deliveries, time_stamp)
     values (6, 1, 'ze','Desenhar modelo do boneco', current_date, true , true , current_timestamp);
 
 
@@ -250,27 +250,28 @@ insert into student (student_username, student_given_name, student_family_name, 
 
 -- Reputation Insert
 
-insert into reputation (reputation_points, reputation_rank, student)
+insert into reputation (reputation_points, reputation_rank, student_username)
   values (10,'Admin', 'ze');
 
-insert into reputation (reputation_points, reputation_rank, student)
+insert into reputation (reputation_points, reputation_rank, student_username)
   values (5,'Admin', 'bruno');
 
-insert into reputation (reputation_points, reputation_rank, student)
+insert into reputation (reputation_points, reputation_rank, student_username)
   values (1,'Beginner', 'jg');
 
 -- Reputation Log Insert
 
-insert into reputation_log (reputation_log_action, reputation_log_given_by, reputation_log_points, reputation_id, student)
+insert into reputation_log (reputation_log_action, reputation_log_given_by, reputation_log_points, reputation_id, student_username)
   values ('insert course','bruno',5,1,'ze');
 
 -- Student Course Class
 
-insert into student_course_class (username, course_id, class_id)
+insert into student_course_class (student_username, course_id, class_id)
   values ('ze', 3, 3);
 
-insert into student_course_class (username, course_id, class_id)
+insert into student_course_class (student_username, course_id, class_id)
   values ('ze', 2, 3);
 
-insert into student_course_class (username, course_id, class_id)
+insert into student_course_class (student_username, course_id, class_id)
   values ('bruno', 1, 1);
+    
