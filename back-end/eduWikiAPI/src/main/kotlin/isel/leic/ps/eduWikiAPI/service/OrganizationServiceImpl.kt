@@ -12,8 +12,6 @@ import isel.leic.ps.eduWikiAPI.service.interfaces.OrganizationService
 import org.jdbi.v3.core.Handle
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.sql.Timestamp
-import java.time.LocalDateTime
 import java.util.*
 
 @Service
@@ -25,7 +23,8 @@ class OrganizationServiceImpl : OrganizationService {
     @Autowired
     lateinit var handle: Handle
 
-    override fun getSpecificOrganization(organizationId: Int) = organizationDAO.getSpecificOrganization(organizationId)
+    override fun getSpecificOrganization(organizationId: Int) =
+            organizationDAO.getSpecificOrganization(organizationId)
 
     override fun getAllOrganizations(): List<Organization> = organizationDAO.getAllOrganizations()
 
@@ -36,13 +35,12 @@ class OrganizationServiceImpl : OrganizationService {
                 shortName = organizationInputModel.shortName,
                 address = organizationInputModel.address,
                 createdBy = organizationInputModel.createdBy,
-                contact = organizationInputModel.contact,
-                timestamp = Timestamp.valueOf(LocalDateTime.now())
+                contact = organizationInputModel.contact
         )
         organization = organizationDAO.createOrganization(organization).get()
 
         organizationDAO.createVersion(OrganizationVersion(
-                organizationId = organization.id,
+                organizationId = organization.organizationId,
                 version = organization.version,
                 createdBy = organization.createdBy,
                 fullName = organization.fullName,
@@ -63,19 +61,18 @@ class OrganizationServiceImpl : OrganizationService {
         handle.begin()
         val prevOrganization = organizationDAO.getSpecificOrganization(organizationId).get()
         val organization = Organization(
-                id = prevOrganization.id,
+                organizationId = prevOrganization.organizationId,
                 version = prevOrganization.version.inc(),
                 createdBy = organizationInputModel.createdBy,
                 fullName = if(organizationInputModel.fullName.isEmpty()) prevOrganization.fullName else organizationInputModel.fullName,
                 shortName = if(organizationInputModel.shortName.isEmpty()) prevOrganization.shortName else organizationInputModel.shortName,
                 address = if(organizationInputModel.address.isEmpty()) prevOrganization.address else organizationInputModel.address,
-                contact = if(organizationInputModel.contact.isEmpty()) prevOrganization.contact else organizationInputModel.contact,
-                timestamp = Timestamp.valueOf(LocalDateTime.now())
+                contact = if(organizationInputModel.contact.isEmpty()) prevOrganization.contact else organizationInputModel.contact
         )
         val updatedRows = organizationDAO.updateOrganization(organization)
 
         organizationDAO.createVersion(OrganizationVersion(
-                organizationId = organization.id,
+                organizationId = organization.organizationId,
                 version = organization.version,
                 createdBy = organization.createdBy,
                 fullName = organization.fullName,
@@ -88,11 +85,14 @@ class OrganizationServiceImpl : OrganizationService {
         return updatedRows
     }
 
-    override fun voteOnOrganization(organizationId: Int, input: VoteInputModel) = organizationDAO.voteOnOrganization(organizationId, Vote.valueOf(input.vote))
+    override fun voteOnOrganization(organizationId: Int, input: VoteInputModel) =
+            organizationDAO.voteOnOrganization(organizationId, Vote.valueOf(input.vote))
 
-    override fun getAllReportsOnOrganization(organizationId: Int) = organizationDAO.getAllReportsOnOrganization(organizationId)
+    override fun getAllReportsOnOrganization(organizationId: Int) =
+            organizationDAO.getAllReportsOnOrganization(organizationId)
 
-    override fun getSpecificReportOnOrganization(organizationId: Int, reportId: Int) = organizationDAO.getSpecificReportOnOrganization(organizationId, reportId)
+    override fun getSpecificReportOnOrganization(organizationId: Int, reportId: Int) =
+            organizationDAO.getSpecificReportOnOrganization(organizationId, reportId)
 
     override fun reportOrganization(organizationId: Int, input: OrganizationReportInputModel): Optional<OrganizationReport> {
         val report = OrganizationReport(
@@ -101,25 +101,31 @@ class OrganizationServiceImpl : OrganizationService {
                 address = input.address,
                 contact = input.contact,
                 reportedBy = input.reportedBy,
-                organization_id = organizationId,
-                timestamp = Timestamp.valueOf(LocalDateTime.now())
+                organizationId = organizationId
         )
         return organizationDAO.reportOrganization(report)
     }
 
-    override fun deleteAllReportsOnOrganization(organizationId: Int) = organizationDAO.deleteAllReportsOnOrganization(organizationId)
+    override fun deleteAllReportsOnOrganization(organizationId: Int) =
+            organizationDAO.deleteAllReportsOnOrganization(organizationId)
 
-    override fun deleteSpecificReportOnOrganization(organizationId: Int, reportId: Int) = organizationDAO.deleteReportOnOrganization(reportId)
+    override fun deleteSpecificReportOnOrganization(organizationId: Int, reportId: Int) =
+            organizationDAO.deleteReportOnOrganization(reportId)
 
-    override fun voteOnReport(organizationId: Int, reportId: Int, input: VoteInputModel) = organizationDAO.voteOnReport(organizationId, reportId, Vote.valueOf(input.vote))
+    override fun voteOnOrganizationReport(organizationId: Int, reportId: Int, input: VoteInputModel) =
+            organizationDAO.voteOnOrganizationReport(organizationId, reportId, Vote.valueOf(input.vote))
 
-    override fun getAllVersionsOfOrganization(organizationId: Int): List<OrganizationVersion> = organizationDAO.getAllVersionsOfOrganization(organizationId)
+    override fun getAllVersionsOfOrganization(organizationId: Int): List<OrganizationVersion> =
+            organizationDAO.getAllVersionsOfOrganization(organizationId)
 
-    override fun getSpecificVersionOfOrganization(organizationId: Int, version: Int) = organizationDAO.getSpecificVersionOfOrganization(organizationId, version)
+    override fun getSpecificVersionOfOrganization(organizationId: Int, version: Int) =
+            organizationDAO.getSpecificVersionOfOrganization(organizationId, version)
 
-    override fun deleteAllVersionsOfOrganization(organizationId: Int) = organizationDAO.deleteAllVersionsOfOrganization(organizationId)
+    override fun deleteAllVersionsOfOrganization(organizationId: Int) =
+            organizationDAO.deleteAllVersionsOfOrganization(organizationId)
 
-    override fun deleteSpecificVersionOfOrganization(organizationId: Int, version: Int) = organizationDAO.deleteSpecificVersionOfOrganization(organizationId, version)
+    override fun deleteSpecificVersionOfOrganization(organizationId: Int, version: Int) =
+            organizationDAO.deleteSpecificVersionOfOrganization(organizationId, version)
 
     override fun updateReportedOrganization(organizationId: Int, reportId: Int) {
         handle.begin()
@@ -127,20 +133,19 @@ class OrganizationServiceImpl : OrganizationService {
         val report = organizationDAO.getSpecificReportOnOrganization(organizationId, reportId).get()
 
         val updatedOrganization = Organization(
-                id = organization.id,
+                organizationId = organization.organizationId,
                 version = organization.version.inc(),
                 votes = organization.votes,
-                createdBy = organization.createdBy,
+                createdBy = report.reportedBy,
                 fullName = report.fullName ?: organization.fullName,
                 shortName = report.shortName ?: organization.shortName,
                 contact = report.contact ?: organization.contact,
-                address = report.address ?: organization.address,
-                timestamp = Timestamp.valueOf(LocalDateTime.now())
+                address = report.address ?: organization.address
         )
         organizationDAO.updateOrganization(updatedOrganization)
 
         organizationDAO.createVersion(OrganizationVersion(
-                organizationId = updatedOrganization.id,
+                organizationId = updatedOrganization.organizationId,
                 version = updatedOrganization.version,
                 createdBy = updatedOrganization.createdBy,
                 fullName = updatedOrganization.fullName,

@@ -34,7 +34,7 @@ interface OrganizationService {
 
     fun voteOnOrganization(organizationId: Int, input: VoteInputModel): Int
 
-    fun voteOnReport(organizationId: Int, reportId: Int, input: VoteInputModel): Int
+    fun voteOnOrganizationReport(organizationId: Int, reportId: Int, input: VoteInputModel): Int
 
     fun getAllVersionsOfOrganization(organizationId: Int): List<OrganizationVersion>
 

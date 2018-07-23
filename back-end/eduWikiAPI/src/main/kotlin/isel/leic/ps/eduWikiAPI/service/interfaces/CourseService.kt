@@ -132,7 +132,7 @@ interface CourseService {
 
     fun getAllVersionsOfSpecificWorkAssignment(workAssignmentId: Int): List<WorkAssignmentVersion>
 
-    fun getVersionOfSpecificWorkAssignment(workAssignmentId: Int, versionId: Int, courseId: Int, termId: Int): Optional<WorkAssignmentVersion>
+    fun getVersionOfSpecificWorkAssignment(workAssignmentId: Int, versionId: Int): Optional<WorkAssignmentVersion>
 
     fun getAllVersionsOfSpecificClass(classId: Int): List<ClassVersion>
 
