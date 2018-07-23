@@ -3,12 +3,14 @@ package isel.leic.ps.eduWikiAPI.domain.inputModel.reports
 import com.fasterxml.jackson.annotation.JsonProperty
 
 class CourseClassReportInputModel (
-        @JsonProperty("reported_by")
-        val reportedBy: String = "",
+        @JsonProperty("course_class_id")
+        val courseClassId: Int = 0, //TODO no usage
         @JsonProperty("course_id")
-        val courseId: Int = -1,
+        val courseId: Int? = null,
         @JsonProperty("class_id")
-        val classId: Int = -1,
+        val classId: Int? = null,
         @JsonProperty("term_id")
-        val termId: Int = -1
+        val termId: Int? = null,
+        @JsonProperty("reported_by")
+        val reportedBy: String = ""
 )

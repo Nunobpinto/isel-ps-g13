@@ -7,16 +7,15 @@ import java.time.LocalDate
 class WorkAssignmentInputModel(
         @JsonProperty("created_by")
         val createdBy: String,
-        val sheet: String = "",
-        val supplement: String = "",
+        val sheet: String = "", //TODO
+        val supplement: String? = null,
         @JsonProperty("due_date")
         val dueDate: LocalDate = LocalDate.now(),
         val individual: Boolean = false,
         @JsonProperty("late_delivery")
         val lateDelivery: Boolean = false,
-        @JsonProperty("multiple_deliveries")
+        @JsonProperty("multipleDeliveries")
         val multipleDeliveries: Boolean = false,
         @JsonProperty("requires_report")
-        val requiresReport: Boolean = false,
-        val timestamp: Timestamp = Timestamp(1)
+        val requiresReport: Boolean = false
 )

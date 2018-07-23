@@ -1,37 +1,38 @@
 package isel.leic.ps.eduWikiAPI.domain.model.report
 
-import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROG_ACADEMIC_DEGREE
-import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROG_DURATION
-import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROG_FULL_NAME
-import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROG_ID
-import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROG_REPORTED_BY
-import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROG_REPORT_ID
-import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROG_SHORT_NAME
-import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROG_TIMESTAMP
-import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROG_TOTAL_CREDITS
-import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROG_VOTES
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_ACADEMIC_DEGREE
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_DURATION
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_FULL_NAME
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_ID
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_REPORTED_BY
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_REPORT_ID
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_SHORT_NAME
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_TIMESTAMP
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_TOTAL_CREDITS
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_VOTES
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.sql.Timestamp
+import java.time.LocalDateTime
 
 data class ProgrammeReport(
-        @ColumnName(PROG_REPORT_ID)
-        val reportId: Int = 0,
-        @ColumnName(PROG_ID)
-        val programmeId: Int? = 0,
-        @ColumnName(PROG_FULL_NAME)
-        val programmeFullName: String? = "",
-        @ColumnName(PROG_SHORT_NAME)
-        val programmeShortName: String? = "",
-        @ColumnName(PROG_ACADEMIC_DEGREE)
-        val programmeAcademicDegree: String? = "",
-        @ColumnName(PROG_TOTAL_CREDITS)
-        val programmeTotalCredits: Int? = 0,
-        @ColumnName(PROG_DURATION)
-        val programmeDuration: Int? = 0,
-        @ColumnName(PROG_REPORTED_BY)
+        @ColumnName(PROGRAMME_REPORT_ID)
+        val reportId: Int = -1,
+        @ColumnName(PROGRAMME_ID)
+        val programmeId: Int = 0,
+        @ColumnName(PROGRAMME_FULL_NAME)
+        val programmeFullName: String? = null,
+        @ColumnName(PROGRAMME_SHORT_NAME)
+        val programmeShortName: String? = null,
+        @ColumnName(PROGRAMME_ACADEMIC_DEGREE)
+        val programmeAcademicDegree: String? = null,
+        @ColumnName(PROGRAMME_TOTAL_CREDITS)
+        val programmeTotalCredits: Int? = null,
+        @ColumnName(PROGRAMME_DURATION)
+        val programmeDuration: Int? = null,
+        @ColumnName(PROGRAMME_REPORTED_BY)
         val reportedBy: String = "",
-        @ColumnName(PROG_VOTES)
+        @ColumnName(PROGRAMME_VOTES)
         val votes: Int = 0,
-        @ColumnName(PROG_TIMESTAMP)
-        val timestamp: Timestamp
+        @ColumnName(PROGRAMME_TIMESTAMP)
+        val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 )

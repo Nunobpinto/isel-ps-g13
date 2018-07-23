@@ -3,12 +3,13 @@ package isel.leic.ps.eduWikiAPI.domain.inputModel
 import com.fasterxml.jackson.annotation.JsonProperty
 
 class OrganizationInputModel(
-        val id: Int = -1,
-        @JsonProperty("full_name")
+        @JsonProperty("organization_full_name")
         val fullName: String = "",
-        @JsonProperty("short_name")
+        @JsonProperty("organization_short_name")
         val shortName: String = "",
+        @JsonProperty("organization_address")
         val address: String = "",
+        @JsonProperty("organization_contact")
         val contact: String = "",
         @JsonProperty("created_by")
         val createdBy: String = ""
