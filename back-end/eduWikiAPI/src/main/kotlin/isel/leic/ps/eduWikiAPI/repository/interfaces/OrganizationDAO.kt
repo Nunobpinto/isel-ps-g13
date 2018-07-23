@@ -56,6 +56,6 @@ interface OrganizationDAO {
 
     fun getSpecificReportOnOrganization(organizationId: Int, reportId: Int) : Optional<OrganizationReport>
 
-    fun voteOnReport(organizationId: Int, reportId: Int, vote: Vote): Int
+    fun voteOnOrganizationReport(organizationId: Int, reportId: Int, vote: Vote): Int
 
 }

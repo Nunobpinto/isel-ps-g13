@@ -55,11 +55,11 @@ interface WorkAssignmentDAO {
 
     fun getAllVersionsOfSpecificWorkAssignment(workAssignmentId: Int): List<WorkAssignmentVersion>
 
-    fun getVersionOfSpecificWorkAssignment(versionWorkAssignmentId: Int, version: Int, courseId: Int, termId: Int) : Optional<WorkAssignmentVersion>
+    fun getVersionOfSpecificWorkAssignment(workAssignmentId: Int, version: Int) : Optional<WorkAssignmentVersion>
 
-    fun deleteVersionWorkAssignment(versionWorkAssignmentId: Int, version: Int) : Int
+    fun deleteVersionWorkAssignment(workAssignmentId: Int, version: Int) : Int
 
-    fun deleteAllVersionOfWorkAssignments(versionWorkAssignmentId: Int) : Int
+    fun deleteAllVersionOfWorkAssignments(workAssignmentId: Int) : Int
 
     fun createWorkAssignmentVersion(workAssignmentVersion: WorkAssignmentVersion) : Optional<WorkAssignmentVersion>
 

@@ -19,6 +19,7 @@ class TermDAOImpl : TermDAO {
         const val TERM_SHORT_NAME = "term_short_name"
         const val TERM_YEAR = "term_year"
         const val TERM_TYPE = "term_type"
+        const val TERM_TIMESTAMP = "time_stamp"
     }
 
     @Autowired

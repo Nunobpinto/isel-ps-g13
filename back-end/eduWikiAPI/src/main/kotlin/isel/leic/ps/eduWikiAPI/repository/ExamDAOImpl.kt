@@ -1,6 +1,5 @@
 package isel.leic.ps.eduWikiAPI.repository
 
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_UNIT_ID
 import isel.leic.ps.eduWikiAPI.domain.model.CourseMiscUnit
 import isel.leic.ps.eduWikiAPI.domain.model.Exam
 import isel.leic.ps.eduWikiAPI.domain.model.Vote
@@ -8,11 +7,6 @@ import isel.leic.ps.eduWikiAPI.domain.model.report.ExamReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseMiscUnitStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ExamStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.ExamVersion
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_ID
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_TYPE
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_UNIT_STAGE_TABLE
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_UNIT_TABLE
-import isel.leic.ps.eduWikiAPI.repository.TermDAOImpl.Companion.TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ExamDAO
 import org.jdbi.v3.core.Handle
 import org.springframework.beans.factory.annotation.Autowired
@@ -29,7 +23,9 @@ class ExamDAOImpl : ExamDAO {
         const val EXAM_REPORT_TABLE = "exam_report"
         const val EXAM_STAGE_TABLE = "exam_stage"
         // FIELDS
+        const val EXAM_ID = "exam_id"
         const val EXAM_VERSION = "exam_version"
+        const val EXAM_VERSION_ID = "exam_id"
         const val EXAM_SHEET = "sheet"
         const val EXAM_DUE_DATE = "due_date"
         const val EXAM_TYPE = "exam_type"
@@ -37,9 +33,8 @@ class ExamDAOImpl : ExamDAO {
         const val EXAM_LOCATION = "location"
         const val EXAM_VOTES = "votes"
         const val EXAM_TIMESTAMP = "time_stamp"
-        const val EXAM_REPORT_ID = "report_id"
-        const val EXAM_STAGE_ID = "id"
-        const val EXAM_VERSION_ID = "id"
+        const val EXAM_REPORT_ID = "exam_report_id"
+        const val EXAM_STAGE_ID = "exam_stage_id"
         const val EXAM_REPORTED_BY = "reported_by"
         const val EXAM_CREATED_BY = "created_by"
     }
@@ -49,19 +44,25 @@ class ExamDAOImpl : ExamDAO {
 
     override fun deleteSpecificExamOfCourseInTerm(courseMiscUnitId: Int) =
             handle.createUpdate(
-                    "delete from $COURSE_MISC_UNIT_TABLE where $COURSE_MISC_UNIT_ID = :organization_id"
+                    "delete from ${CourseDAOImpl.COURSE_MISC_UNIT_TABLE}" +
+                            "where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :examId"
             )
-                    .bind("organization_id", courseMiscUnitId)
+                    .bind("examId", courseMiscUnitId)
                     .execute()
 
     override fun updateExam(examId: Int, exam: Exam) =
             handle.createUpdate(
                     "update $EXAM_TABLE SET " +
-                            "$EXAM_VERSION = :version, $EXAM_CREATED_BY = :createdBy, " +
-                            "$EXAM_SHEET = :sheet, $EXAM_DUE_DATE = :dueDate, " +
-                            "$EXAM_TYPE = :type::exam_type, $EXAM_PHASE = :phase, " +
-                            "$EXAM_LOCATION = :location, $EXAM_VOTES = :votes, $EXAM_TIMESTAMP = :timestamp " +
-                            "where $COURSE_MISC_UNIT_ID = :examId"
+                            "$EXAM_VERSION = :version, " +
+                            "$EXAM_CREATED_BY = :createdBy, " +
+                            "$EXAM_SHEET = :sheet, " +
+                            "$EXAM_DUE_DATE = :dueDate, " +
+                            "$EXAM_TYPE = :type, " +
+                            "$EXAM_PHASE = :phase, " +
+                            "$EXAM_LOCATION = :location, " +
+                            "$EXAM_VOTES = :votes, " +
+                            "$EXAM_TIMESTAMP = :timestamp " +
+                            "where $EXAM_ID = :examId"
             )
                     .bind("version", exam.version)
                     .bind("createdBy", exam.createdBy)
@@ -76,27 +77,39 @@ class ExamDAOImpl : ExamDAO {
                     .execute()
 
     override fun createExam(courseId: Int, termId: Int, exam: Exam): Optional<Exam> {
-        if(!handle.isInTransaction) handle.begin()
+        if (!handle.isInTransaction) handle.begin()
         val courseMiscUnit = handle.createUpdate(
-                "insert into $COURSE_MISC_UNIT_TABLE " +
-                        "($COURSE_MISC_TYPE, $COURSE_ID, $TERM_ID) " +
-                        "values(:miscType::course_misc_unit_type, :courseId, :termId)"
+                "insert into ${CourseDAOImpl.COURSE_MISC_UNIT_TABLE} (" +
+                        "${CourseDAOImpl.COURSE_MISC_UNIT_TYPE}, " +
+                        "${CourseDAOImpl.COURSE_MISC_UNIT_COURSE_ID}, " +
+                        "${CourseDAOImpl.COURSE_MISC_UNIT_TERM_ID} " +
+                        ") " +
+                        "values(:type, :courseId, :termId)"
         )
-                .bind("miscType", "Exam/Test")
+                .bind("type", exam.type)
                 .bind("courseId", courseId)
                 .bind("termId", termId)
                 .executeAndReturnGeneratedKeys()
                 .mapTo(CourseMiscUnit::class.java)
                 .findOnly()
-        val res = handle.createUpdate(
-                "insert into $EXAM_TABLE " +
-                        "($COURSE_MISC_UNIT_ID, $EXAM_CREATED_BY, " +
-                        "$EXAM_SHEET, $EXAM_DUE_DATE, $EXAM_TYPE, $EXAM_PHASE, $EXAM_LOCATION, " +
-                        "$EXAM_VOTES, $EXAM_TIMESTAMP) " +
-                        "values(:courseMiscUnitId, :createdBy, :sheet, :dueDate, :type::exam_type, " +
+        val exam = handle.createUpdate(
+                "insert into $EXAM_TABLE (" +
+                        "$EXAM_ID, " +
+                        "$EXAM_VERSION, " +
+                        "$EXAM_CREATED_BY, " +
+                        "$EXAM_SHEET, " +
+                        "$EXAM_DUE_DATE, " +
+                        "$EXAM_TYPE, " +
+                        "$EXAM_PHASE, " +
+                        "$EXAM_LOCATION, " +
+                        "$EXAM_VOTES, " +
+                        "$EXAM_TIMESTAMP " +
+                        ") " +
+                        "values(:examId, :version, :createdBy, :sheet, :dueDate, :type, " +
                         ":phase, :location, :votes, :timestamp)"
         )
-                .bind("courseMiscUnitId", courseMiscUnit.id)
+                .bind("examId", courseMiscUnit.courseMiscUnitId)
+                .bind("examVersion", exam.version)
                 .bind("createdBy", exam.createdBy)
                 .bind("sheet", exam.sheet)
                 .bind("dueDate", exam.dueDate)
@@ -108,19 +121,23 @@ class ExamDAOImpl : ExamDAO {
                 .executeAndReturnGeneratedKeys()
                 .mapTo(Exam::class.java)
                 .findFirst()
-        if(!handle.isInTransaction) handle.commit()
-        return res
+        if (!handle.isInTransaction) handle.commit()
+        return exam
     }
 
-    override fun voteOnExam(courseMiscUnitId: Int, vote: Vote): Int {
-        var votes = handle.createQuery("select $EXAM_VOTES from $EXAM_TABLE where $COURSE_MISC_UNIT_ID = :examId")
-                .bind("examId", courseMiscUnitId)
+    override fun voteOnExam(examId: Int, vote: Vote): Int {
+        var votes = handle.createQuery(
+                "select $EXAM_VOTES from $EXAM_TABLE " +
+                        "where $EXAM_ID = :examId"
+        )
+                .bind("examId", examId)
                 .mapTo(Int::class.java).findOnly()
         votes = if (vote == Vote.Down) --votes else ++votes
-
-        return handle.createUpdate("update $EXAM_TABLE set $EXAM_VOTES = :votes where $COURSE_MISC_UNIT_ID = :examId")
+        return handle.createUpdate(
+                "update $EXAM_TABLE set $EXAM_VOTES = :votes " +
+                        "where $EXAM_ID = :examId")
                 .bind("votes", votes)
-                .bind("examId", courseMiscUnitId)
+                .bind("examId", examId)
                 .execute()
     }
 
@@ -132,26 +149,35 @@ class ExamDAOImpl : ExamDAO {
     override fun createStagingExam(courseId: Int, termId: Int, examStage: ExamStage): Optional<ExamStage> {
         handle.begin()
         val courseMiscUnitStage = handle.createUpdate(
-                "insert into $COURSE_MISC_UNIT_STAGE_TABLE " +
-                        "($COURSE_ID, $TERM_ID, $COURSE_MISC_TYPE) " +
-                        "values(:courseId, :termId, :miscType::course_misc_unit_type)"
+                "insert into ${CourseDAOImpl.COURSE_MISC_UNIT_STAGE_TABLE} (" +
+                        "${CourseDAOImpl.COURSE_MISC_UNIT_COURSE_ID}, " +
+                        "${CourseDAOImpl.COURSE_MISC_UNIT_TERM_ID}, " +
+                        "${CourseDAOImpl.COURSE_MISC_UNIT_TYPE} " +
+                        ") " +
+                        "values(:courseId, :termId, :miscType:)"
         )
                 .bind("courseId", courseId)
                 .bind("termId", termId)
-                .bind("miscType", "Exam/Test")
+                .bind("miscType", examStage.type)
                 .executeAndReturnGeneratedKeys()
                 .mapTo(CourseMiscUnitStage::class.java)
                 .findOnly()
 
-        val res = handle.createUpdate(
-                "insert into $EXAM_STAGE_TABLE " +
-                        "($COURSE_MISC_UNIT_ID, $EXAM_SHEET, $EXAM_DUE_DATE, " +
-                        "$EXAM_TYPE, $EXAM_PHASE, $EXAM_LOCATION, $EXAM_CREATED_BY, " +
-                        "$EXAM_VOTES, $EXAM_TIMESTAMP) " +
-                        "values(:courseMiscUnitId, :sheet, :dueDate, :type::exam_type, :phase, :location, " +
-                        ":createdBy, :votes, :timestamp)"
+        val examStage = handle.createUpdate(
+                "insert into $EXAM_STAGE_TABLE(" +
+                        "$EXAM_STAGE_ID, " +
+                        "$EXAM_SHEET, " +
+                        "$EXAM_DUE_DATE, " +
+                        "$EXAM_TYPE, " +
+                        "$EXAM_PHASE, " +
+                        "$EXAM_LOCATION, " +
+                        "$EXAM_CREATED_BY, " +
+                        "$EXAM_VOTES, " +
+                        "$EXAM_TIMESTAMP) " +
+                        "values(:stageId, :sheet, :dueDate, :type, " +
+                        ":phase, :location, :createdBy, :votes, :timestamp)"
         )
-                .bind("courseMiscUnitId", courseMiscUnitStage.id)
+                .bind("stageId", courseMiscUnitStage.stageId)
                 .bind("sheet", examStage.sheet)
                 .bind("dueDate", examStage.dueDate)
                 .bind("type", examStage.type)
@@ -164,23 +190,32 @@ class ExamDAOImpl : ExamDAO {
                 .mapTo(ExamStage::class.java)
                 .findFirst()
         handle.commit()
-        return res
+        return examStage
     }
 
     override fun voteOnStagedExam(stageId: Int, vote: Vote): Int {
-        var votes = handle.createQuery("select $EXAM_VOTES from $EXAM_STAGE_TABLE where $COURSE_MISC_UNIT_ID = :examId")
-                .bind("examId", stageId)
+        var votes = handle.createQuery(
+                "select $EXAM_VOTES from $EXAM_STAGE_TABLE " +
+                        "where $EXAM_STAGE_ID = :stageId"
+        )
+                .bind("stageId", stageId)
                 .mapTo(Int::class.java).findOnly()
         votes = if (vote == Vote.Down) --votes else ++votes
-        return handle.createUpdate("update $EXAM_STAGE_TABLE set $EXAM_VOTES = :votes where $COURSE_MISC_UNIT_ID = :examId")
+        return handle.createUpdate(
+                "update $EXAM_STAGE_TABLE set $EXAM_VOTES = :votes " +
+                        "where $EXAM_STAGE_ID = :stageId")
                 .bind("votes", votes)
-                .bind("examId", stageId)
+                .bind("stageId", stageId)
                 .execute()
     }
 
-    override fun getVersionExam(versionExamId: Int, version: Int) =
-            handle.createQuery("select * from $EXAM_VERSION_TABLE where $EXAM_VERSION_ID = :examId and $EXAM_VERSION = :version")
-                    .bind("examId", versionExamId)
+    override fun getVersionExam(examId: Int, version: Int) =
+            handle.createQuery(
+                    "select * from $EXAM_VERSION_TABLE " +
+                            "where $EXAM_VERSION_ID = :examId " +
+                            "and $EXAM_VERSION = :version"
+            )
+                    .bind("examId", examId)
                     .bind("version", version)
                     .mapTo(ExamVersion::class.java)
                     .findFirst()
@@ -190,29 +225,40 @@ class ExamDAOImpl : ExamDAO {
                     .mapTo(ExamVersion::class.java)
                     .list()
 
-    override fun deleteVersionOfExam(versionExamId: Int, version: Int) =
-            handle.createUpdate("delete from $EXAM_VERSION_TABLE where $COURSE_MISC_UNIT_ID = :versionExamId and $EXAM_VERSION = :version")
-                    .bind("versionExamId", versionExamId)
+    override fun deleteVersionOfExam(examId: Int, version: Int) =
+            handle.createUpdate(
+                    "delete from $EXAM_VERSION_TABLE " +
+                            "where $EXAM_VERSION_ID = :examId " +
+                            "and $EXAM_VERSION = :version"
+            )
+                    .bind("examId", examId)
                     .bind("version", version)
                     .execute()
 
     override fun createVersionExam(examVersion: ExamVersion) =
             handle.createUpdate(
-                    "insert into $EXAM_VERSION_TABLE " +
-                            "($EXAM_VERSION_ID, $EXAM_VERSION, " +
-                            "$EXAM_SHEET, $EXAM_DUE_DATE, $EXAM_TYPE, $EXAM_PHASE, " +
-                            "$EXAM_LOCATION, $EXAM_CREATED_BY, $EXAM_TIMESTAMP) " +
-                            "values(:id, :version, :sheet, :dueDate, :type::exam_type, " +
+                    "insert into $EXAM_VERSION_TABLE (" +
+                            "$EXAM_VERSION_ID, " +
+                            "$EXAM_VERSION, " +
+                            "$EXAM_SHEET, " +
+                            "$EXAM_DUE_DATE, " +
+                            "$EXAM_TYPE, " +
+                            "$EXAM_PHASE, " +
+                            "$EXAM_LOCATION, " +
+                            "$EXAM_CREATED_BY, " +
+                            "$EXAM_TIMESTAMP " +
+                            ") " +
+                            "values(:examId, :version, :sheet, :dueDate, :type, " +
                             ":phase, :location, :createdBy, :timestamp)"
             )
-                    .bind("id", examVersion.courseMiscUnitId)
+                    .bind("examId", examVersion.examId)
                     .bind("version", examVersion.version)
-                    .bind("createdBy", examVersion.createdBy)
                     .bind("sheet", examVersion.sheet)
                     .bind("dueDate", examVersion.dueDate)
                     .bind("type", examVersion.type)
                     .bind("phase", examVersion.phase)
                     .bind("location", examVersion.location)
+                    .bind("createdBy", examVersion.createdBy)
                     .bind("timestamp", examVersion.timestamp)
                     .executeAndReturnGeneratedKeys()
                     .mapTo(ExamVersion::class.java)
@@ -220,44 +266,67 @@ class ExamDAOImpl : ExamDAO {
 
     override fun reportExam(examReport: ExamReport) =
             handle.createUpdate(
-                    "insert into $EXAM_REPORT_TABLE " +
-                            "($COURSE_MISC_UNIT_ID, $EXAM_REPORTED_BY, " +
-                            "$EXAM_SHEET, $EXAM_DUE_DATE, $EXAM_TYPE, $EXAM_PHASE, " +
-                            "$EXAM_LOCATION, $EXAM_TIMESTAMP) " +
-                            "values(:id, :reportedBy, :sheet, :dueDate, :type::exam_type, " +
-                            ":phase, :location, :timestamp)"
+                    "insert into $EXAM_REPORT_TABLE (" +
+                            "$EXAM_ID, " +
+                            "$EXAM_SHEET, " +
+                            "$EXAM_DUE_DATE, " +
+                            "$EXAM_TYPE, " +
+                            "$EXAM_PHASE, " +
+                            "$EXAM_LOCATION, " +
+                            "$EXAM_REPORTED_BY, " +
+                            "$EXAM_VOTES, " +
+                            "$EXAM_TIMESTAMP " +
+                            ") " +
+                            "values(:examId, :sheet, :dueDate, :type, " +
+                            ":phase, :location, :reportedBy, :votes, :timestamp)"
             )
-                    .bind("id", examReport.courseMiscUnitId)
-                    .bind("reportedBy", examReport.reportedBy)
+                    .bind("examId", examReport.examId)
                     .bind("sheet", examReport.sheet)
                     .bind("dueDate", examReport.dueDate)
                     .bind("type", examReport.type)
                     .bind("phase", examReport.phase)
                     .bind("location", examReport.location)
+                    .bind("reportedBy", examReport.reportedBy)
+                    .bind("votes", examReport.votes)
                     .bind("timestamp", examReport.timestamp)
                     .executeAndReturnGeneratedKeys()
                     .mapTo(ExamReport::class.java)
                     .findFirst()
 
     override fun deleteReportOnExam(examId: Int, reportId: Int) =
-            handle.createUpdate("delete from $EXAM_REPORT_TABLE where $COURSE_MISC_UNIT_ID = :examId and $EXAM_REPORT_ID = :reportId")
+            handle.createUpdate(
+                    "delete from $EXAM_REPORT_TABLE " +
+                            "where $EXAM_ID = :examId " +
+                            "and $EXAM_REPORT_ID = :reportId")
                     .bind("examId", examId)
                     .bind("reportId", reportId)
                     .execute()
 
     override fun deleteAllReportsOnExam(courseMiscUnitId: Int) =
-            handle.createUpdate("delete from $EXAM_REPORT_TABLE where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :organization_id")
-                    .bind("organization_id", courseMiscUnitId)
+            handle.createUpdate(
+                    "delete from $EXAM_REPORT_TABLE " +
+                            "where $EXAM_ID = :examId"
+            )
+                    .bind("examId", courseMiscUnitId)
                     .execute()
 
     override fun getAllExamsFromSpecificTermOfCourse(courseId: Int, termId: Int) =
             handle.createQuery(
-                    "select C.$COURSE_MISC_UNIT_ID, $EXAM_LOCATION, $EXAM_VERSION, $EXAM_DUE_DATE, $EXAM_PHASE, " +
-                            "$EXAM_SHEET, $EXAM_TYPE, $EXAM_VOTES, C.$TERM_ID, $EXAM_CREATED_BY " +
+                    "select E.$EXAM_ID, " +
+                            "E.$EXAM_VERSION, " +
+                            "E.$EXAM_CREATED_BY, " +
+                            "E.$EXAM_SHEET, " +
+                            "E.$EXAM_DUE_DATE, " +
+                            "E.$EXAM_TYPE, " +
+                            "E.$EXAM_PHASE, " +
+                            "E.$EXAM_LOCATION, " +
+                            "E.$EXAM_VOTES, " +
+                            "E.$EXAM_TIMESTAMP " +
                             "from $EXAM_TABLE as E " +
-                            "inner join $COURSE_MISC_UNIT_TABLE as C " +
-                            "on E.$COURSE_MISC_UNIT_ID = C.$COURSE_MISC_UNIT_ID " +
-                            "where C.$COURSE_ID = :courseId and C.$TERM_ID = :termId"
+                            "inner join ${CourseDAOImpl.COURSE_MISC_UNIT_TABLE} as C " +
+                            "on E.$EXAM_ID = C.${CourseDAOImpl.COURSE_MISC_UNIT_ID} " +
+                            "where C.${CourseDAOImpl.COURSE_MISC_UNIT_COURSE_ID} = :courseId " +
+                            "and C.${CourseDAOImpl.COURSE_MISC_UNIT_TERM_ID} = :termId"
             )
                     .bind("courseId", courseId)
                     .bind("termId", termId)
@@ -266,14 +335,22 @@ class ExamDAOImpl : ExamDAO {
 
     override fun getSpecificExamFromSpecificTermOfCourse(courseId: Int, termId: Int, examId: Int) =
             handle.createQuery(
-                    "select C.$TERM_ID, C.$COURSE_MISC_UNIT_ID, E.$EXAM_TIMESTAMP, E.$EXAM_LOCATION, E.$EXAM_VERSION, E.$EXAM_DUE_DATE, E.$EXAM_PHASE, " +
-                            "E.$EXAM_SHEET, E.$EXAM_TYPE, E.$EXAM_VOTES, E.$EXAM_CREATED_BY " +
+                    "select E.$EXAM_ID, " +
+                            "E:$EXAM_VERSION, " +
+                            "E.$EXAM_CREATED_BY " +
+                            "E.$EXAM_SHEET, " +
+                            "E.$EXAM_DUE_DATE, " +
+                            "E.$EXAM_TYPE, " +
+                            "E.$EXAM_PHASE, " +
+                            "E.$EXAM_LOCATION, " +
+                            "E.$EXAM_VOTES," +
+                            "E.$EXAM_TIMESTAMP, " +
                             "from $EXAM_TABLE as E " +
-                            "inner join $COURSE_MISC_UNIT_TABLE as C " +
-                            "on E.$COURSE_MISC_UNIT_ID = C.$COURSE_MISC_UNIT_ID " +
-                            "where C.$COURSE_ID = :courseId " +
-                            "and C.$TERM_ID = :termId " +
-                            "and C.$COURSE_MISC_UNIT_ID = :examId"
+                            "inner join ${CourseDAOImpl.COURSE_MISC_UNIT_TABLE} as C " +
+                            "on E.$EXAM_ID = C.${CourseDAOImpl.COURSE_MISC_UNIT_ID}" +
+                            "where C.${CourseDAOImpl.COURSE_MISC_UNIT_COURSE_ID} = :courseId " +
+                            "and C.${CourseDAOImpl.COURSE_MISC_UNIT_TERM_ID} = :termId " +
+                            "and C.${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :examId"
             )
                     .bind("courseId", courseId)
                     .bind("termId", termId)
@@ -283,12 +360,20 @@ class ExamDAOImpl : ExamDAO {
 
     override fun getStageEntriesFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int) =
             handle.createQuery(
-                    "select E.$EXAM_STAGE_ID, $EXAM_LOCATION, $EXAM_DUE_DATE, $EXAM_PHASE " +
-                            "$EXAM_SHEET, $EXAM_TYPE, $EXAM_VOTES, $EXAM_CREATED_BY " +
+                    "select E.$EXAM_STAGE_ID, " +
+                            "E.$EXAM_SHEET, " +
+                            "E.$EXAM_DUE_DATE, " +
+                            "E.$EXAM_TYPE, " +
+                            "E.$EXAM_PHASE " +
+                            "E.$EXAM_LOCATION, " +
+                            "E.$EXAM_CREATED_BY " +
+                            "E.$EXAM_VOTES, " +
+                            "E.$EXAM_TIMESTAMP " +
                             "from $EXAM_STAGE_TABLE as E " +
-                            "inner join $COURSE_MISC_UNIT_STAGE_TABLE as C " +
-                            "on E.$COURSE_MISC_UNIT_ID = C.$COURSE_MISC_UNIT_ID " +
-                            "where C.$COURSE_ID = :courseId and C.$TERM_ID = :termId"
+                            "inner join ${CourseDAOImpl.COURSE_MISC_UNIT_STAGE_TABLE} as C " +
+                            "on E.$EXAM_ID = C.${CourseDAOImpl.COURSE_MISC_UNIT_ID} " +
+                            "where C.${CourseDAOImpl.COURSE_MISC_UNIT_COURSE_ID} = :courseId " +
+                            "and C.${CourseDAOImpl.COURSE_MISC_UNIT_TERM_ID} = :termId"
             )
                     .bind("courseId", courseId)
                     .bind("termId", termId)
@@ -297,14 +382,21 @@ class ExamDAOImpl : ExamDAO {
 
     override fun getStageEntryFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int) =
             handle.createQuery(
-                    "select E.$EXAM_STAGE_ID, $EXAM_LOCATION, $EXAM_DUE_DATE, $EXAM_PHASE " +
-                            "$EXAM_SHEET, $EXAM_TYPE, $EXAM_VOTES " +
+                    "select E.$EXAM_STAGE_ID, " +
+                            "E.$EXAM_SHEET, " +
+                            "E.$EXAM_DUE_DATE, " +
+                            "E.$EXAM_TYPE, " +
+                            "E.$EXAM_PHASE " +
+                            "E.$EXAM_LOCATION, " +
+                            "E.$EXAM_CREATED_BY, " +
+                            "E.$EXAM_VOTES, " +
+                            "E.$EXAM_TIMESTAMP " +
                             "from $EXAM_STAGE_TABLE as E " +
-                            "inner join $COURSE_MISC_UNIT_STAGE_TABLE as C " +
-                            "on E.$COURSE_MISC_UNIT_ID = C.$COURSE_MISC_UNIT_ID " +
-                            "where C.$COURSE_ID = :courseId " +
-                            "and C.$TERM_ID = :termId " +
-                            "and C.$COURSE_MISC_UNIT_ID = :stageId"
+                            "inner join ${CourseDAOImpl.COURSE_MISC_UNIT_STAGE_TABLE} as C " +
+                            "on E.$EXAM_STAGE_ID = C.${CourseDAOImpl.COURSE_MISC_UNIT_STAGE_ID} " +
+                            "where C.${CourseDAOImpl.COURSE_MISC_UNIT_COURSE_ID} = :courseId " +
+                            "and C.${CourseDAOImpl.COURSE_MISC_UNIT_TERM_ID} = :termId " +
+                            "and C.${CourseDAOImpl.COURSE_MISC_UNIT_STAGE_ID} = :stageId"
             )
                     .bind("courseId", courseId)
                     .bind("termId", termId)
@@ -315,7 +407,7 @@ class ExamDAOImpl : ExamDAO {
     override fun getAllReportsOnExamOnSpecificTermOfCourse(examId: Int) =
             handle.createQuery(
                     "select * from $EXAM_REPORT_TABLE " +
-                            "where $COURSE_MISC_UNIT_ID = :examId"
+                            "where $EXAM_ID = :examId"
             )
                     .bind("examId", examId)
                     .mapTo(ExamReport::class.java)
@@ -331,11 +423,17 @@ class ExamDAOImpl : ExamDAO {
                     .findFirst()
 
     override fun voteOnReportToExamOnCourseInTerm(reportId: Int, vote: Vote): Int {
-        var votes = handle.createQuery("select $EXAM_VOTES from $EXAM_REPORT_TABLE where $EXAM_REPORT_ID = :reportId")
+        var votes = handle.createQuery(
+                "select $EXAM_VOTES from $EXAM_REPORT_TABLE " +
+                        "where $EXAM_REPORT_ID = :reportId"
+        )
                 .bind("reportId", reportId)
                 .mapTo(Int::class.java).findOnly()
         votes = if (vote == Vote.Down) --votes else ++votes
-        return handle.createUpdate("update $EXAM_REPORT_TABLE set $EXAM_VOTES = :votes where $EXAM_REPORT_ID = :reportId")
+        return handle.createUpdate(
+                "update $EXAM_REPORT_TABLE set $EXAM_VOTES = :votes " +
+                        "where $EXAM_REPORT_ID = :reportId"
+        )
                 .bind("votes", votes)
                 .bind("reportId", reportId)
                 .execute()
@@ -344,7 +442,7 @@ class ExamDAOImpl : ExamDAO {
     override fun getSpecificReportOfExam(examId: Int, reportId: Int) =
             handle.createQuery(
                     "select * from $EXAM_REPORT_TABLE " +
-                            "where $COURSE_MISC_UNIT_ID = :examId and $EXAM_REPORT_ID = :reportId"
+                            "where $EXAM_ID = :examId and $EXAM_REPORT_ID = :reportId"
             )
                     .bind("examId", examId)
                     .bind("reportId", reportId)
@@ -354,54 +452,66 @@ class ExamDAOImpl : ExamDAO {
     override fun getExamSpecificStageEntry(stageId: Int) =
             handle.createQuery(
                     "select * from $EXAM_STAGE_TABLE " +
-                            "where $COURSE_MISC_UNIT_ID = :examId"
+                            "where $EXAM_STAGE_ID = :stageId"
             )
-                    .bind("examId", stageId)
+                    .bind("stageId", stageId)
                     .mapTo(ExamStage::class.java)
                     .findFirst()
 
     override fun deleteStagedExam(stageId: Int) =
             handle.createUpdate(
-                    "delete from $COURSE_MISC_UNIT_STAGE_TABLE " +
-                            "where $COURSE_MISC_UNIT_ID = :examId"
+                    "delete from ${CourseDAOImpl.COURSE_MISC_UNIT_STAGE_TABLE}" +
+                            "where ${CourseDAOImpl.COURSE_MISC_UNIT_STAGE_ID} = :stageId"
             )
-                    .bind("examId", stageId)
+                    .bind("stageId", stageId)
                     .execute()
 
     override fun deleteAllExamsOfCourseInTerm(courseId: Int, termId: Int) =
-        handle.createUpdate(
-                "delete from $COURSE_MISC_UNIT_TABLE " +
-                        "where $COURSE_ID = :courseId and $TERM_ID = :termId and $COURSE_MISC_TYPE = Exam/Test"
-        )
-                .bind("courseId", courseId)
-                .bind("termId", termId)
-                .execute()
+            handle.createUpdate(
+                    "delete from ${CourseDAOImpl.COURSE_MISC_UNIT_TABLE} " +
+                            "where ${CourseDAOImpl.COURSE_MISC_UNIT_COURSE_ID} = :courseId " +
+                            "and ${CourseDAOImpl.COURSE_MISC_UNIT_TERM_ID} = :termId "
+            )
+                    .bind("courseId", courseId)
+                    .bind("termId", termId)
+                    .execute()
 
     override fun deleteAllStagedExamsOfCourseInTerm(courseId: Int, termId: Int) =
-        handle.createUpdate(
-                "delete from $COURSE_MISC_UNIT_STAGE_TABLE " +
-                        "where $COURSE_MISC_UNIT_ID = :courseId and $TERM_ID = :termId and $COURSE_MISC_TYPE = Exam/Test"
-        )
-                .bind("courseId", courseId)
-                .bind("termId", termId)
-                .execute()
+            handle.createUpdate(
+                    "delete from ${CourseDAOImpl.COURSE_MISC_UNIT_STAGE_TABLE} " +
+                            "where ${CourseDAOImpl.COURSE_MISC_UNIT_ID} = :courseId " +
+                            "and ${CourseDAOImpl.COURSE_MISC_UNIT_TERM_ID} = :termId"
+            )
+                    .bind("courseId", courseId)
+                    .bind("termId", termId)
+                    .execute()
 
-    override fun deleteAllVersionOfExam(versionExamId: Int) =
-        handle.createUpdate("delete from $EXAM_VERSION_TABLE where $COURSE_MISC_UNIT_ID = :versionExamId")
-                .bind("versionExamId", versionExamId)
-                .execute()
+    override fun deleteAllVersionOfExam(examId: Int) =
+            handle.createUpdate(
+                    "delete from $EXAM_VERSION_TABLE " +
+                            "where $EXAM_VERSION_ID = :examId"
+            )
+                    .bind("examId", examId)
+                    .execute()
 
     override fun getAllVersionsOfSpecificExam(examId: Int) =
-        handle.createQuery("select * from $EXAM_VERSION_TABLE where $COURSE_MISC_UNIT_ID = :examId")
-                .bind("examId", examId)
-                .mapTo(ExamVersion::class.java)
-                .list()
+            handle.createQuery(
+                    "select * from $EXAM_VERSION_TABLE " +
+                            "where $EXAM_VERSION_ID = :examId"
+            )
+                    .bind("examId", examId)
+                    .mapTo(ExamVersion::class.java)
+                    .list()
 
-    override fun getVersionOfSpecificExam(examId: Int, versionId: Int) =
-        handle.createQuery("select * from $EXAM_VERSION_TABLE where $COURSE_MISC_UNIT_ID = :examId and $EXAM_VERSION = :versionId")
-                .bind("examId", examId)
-                .bind("versionId", versionId)
-                .mapTo(ExamVersion::class.java)
-                .findFirst()
+    override fun getVersionOfSpecificExam(examId: Int, version: Int) =
+            handle.createQuery(
+                    "select * from $EXAM_VERSION_TABLE " +
+                            "where $EXAM_VERSION_ID = :examId " +
+                            "and $EXAM_VERSION = :versionId"
+            )
+                    .bind("examId", examId)
+                    .bind("versionId", version)
+                    .mapTo(ExamVersion::class.java)
+                    .findFirst()
 
 }
