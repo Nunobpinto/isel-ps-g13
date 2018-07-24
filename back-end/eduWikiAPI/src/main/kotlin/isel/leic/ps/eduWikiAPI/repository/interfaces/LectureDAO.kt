@@ -52,7 +52,7 @@ interface LectureDAO {
 
     fun getSpecificVersionOfLectureOfCourseInClass(courseClassId: Int, lectureId: Int, version: Int): Optional<LectureVersion>
 
-    fun deleteAllVersionsOfLectureOfCourseInTerm(courseClassId: Int, lectureId: Int): Int
+    fun deleteAllVersionsOfLectureOfCourseInClass(courseClassId: Int, lectureId: Int): Int
 
     fun deleteSpecificVersionOfLectureOfCourseInClass(courseClassId: Int, lectureId: Int, version: Int): Int
 }

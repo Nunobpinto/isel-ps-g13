@@ -41,5 +41,19 @@ interface HomeworkDAO {
 
     fun updateHomeWork(homework: Homework): Optional<Homework>
 
+    fun voteOnReportOfHomeworkOfCourseInClass(homeworkId: Int, reportId: Int, vote: Vote): Int
+
+    fun deleteAllReportsOnHomeworkOfCourseInClass(courseClassId: Int, homeworkId: Int): Int
+
+    fun deleteSpecificReportOnHomeworkOfCourseInClass(courseClassId: Int, homeworkId: Int, reportId: Int): Int
+
+    fun getAllVersionsOfHomeworkOfCourseInclass(courseClassId: Int, homeworkId: Int): List<HomeworkVersion>
+
+    fun getSpecificVersionOfHomeworkOfCourseInClass(courseClassId: Int, homeworkId: Int, version: Int): Optional<HomeworkVersion>
+
+    fun deleteAllVersionsOfHomeworkOfCourseInClass(courseClassId: Int, homeworkId: Int): Int
+
+    fun deleteSpecificVersionOfHomeworkOfCourseInClass(courseClassId: Int, homeworkId: Int, version: Int): Int
+
 
 }

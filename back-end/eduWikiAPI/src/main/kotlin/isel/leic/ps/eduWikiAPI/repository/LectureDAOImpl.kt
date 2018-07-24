@@ -444,7 +444,7 @@ class LectureDAOImpl : LectureDAO {
                         "L.$LECTURE_BEGINS" +
                         "L.$LECTURE_DURATION, " +
                         "L.$LECTURE_LOCATION, " +
-                        "L:$LECTURE_VOTES, " +
+                        "L.$LECTURE_VOTES, " +
                         "L.$LECTURE_TIMESTAMP, " +
                         "from $LECTURE_VERSION_TABLE as L " +
                         "inner join ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE} as C" +
@@ -485,7 +485,7 @@ class LectureDAOImpl : LectureDAO {
                     .mapTo(LectureVersion::class.java)
                     .findFirst()
 
-    override fun deleteAllVersionsOfLectureOfCourseInTerm(courseClassId: Int, lectureId: Int): Int =
+    override fun deleteAllVersionsOfLectureOfCourseInClass(courseClassId: Int, lectureId: Int): Int =
             handle.createUpdate(
                     "delete from $LECTURE_VERSION_TABLE" +
                             "using ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE}" +

@@ -598,51 +598,51 @@ class ClassController {
     fun voteOnReportOfHomeworkOfCourseInClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
-            @PathVariable homeWorkId: Int,
+            @PathVariable homeworkId: Int,
             @PathVariable reportId: Int,
             @RequestBody vote: VoteInputModel
-    ) = classService.voteOnReportOfHomeworkInCourse(classId, courseId, homeWorkId, reportId, vote)
+    ) = classService.voteOnReportOfHomeworkOfCourseInClass(classId, courseId, homeworkId, reportId, vote)
 
     @DeleteMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}/reports")
-    fun deleteAllReportsOnHomework(
+    fun deleteAllReportsOnHomeworkOfCourseInClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
             @PathVariable homeworkId: Int
-    ) = classService.deleteAllReportsInHomework(classId, courseId, homeworkId)
+    ) = classService.deleteAllReportsOnHomeworkOfCourseInClass(classId, courseId, homeworkId)
 
     @DeleteMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}/reports/{reportId}")
-    fun deleteSpecificReportOnHomework(
+    fun deleteSpecificReportOnHomeworkOfCourseInClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
             @PathVariable homeworkId: Int,
             @PathVariable reportId: Int
-    ) = classService.deleteSpecificReportInHomework(classId, courseId, homeworkId, reportId)
+    ) = classService.deleteSpecificReportOnHomeworkOfCourseInClass(classId, courseId, homeworkId, reportId)
 
     // ----------------------------
     // Homeworks Version in Class Endpoints
     // ----------------------------
 
     @GetMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}/versions")
-    fun getAllVersionsOfHomeworkOfCourseClass(
+    fun getAllVersionsOfHomeworkOnCourseInClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
             @PathVariable homeworkId: Int
-    ) = classService.getAllVersionsOfHomeworkOnCourseInClass(classId, courseId, homeworkId)
+    ) = classService.getAllVersionsOfHomeworkOfCourseInClass(classId, courseId, homeworkId)
 
     @GetMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}/versions/{versionId}")
-    fun getSpecificVersionOfHomeworkCourseInClass(
+    fun getSpecificVersionOfHomeworkOfCourseInClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
             @PathVariable homeworkId: Int,
-            @PathVariable versionId: Int
-    ) = classService.getSpecificVersionOfHomework(classId, courseId, homeworkId, versionId)
+            @PathVariable version: Int
+    ) = classService.getSpecificVersionOfHomeworkOfCourseInClass(classId, courseId, homeworkId, version)
 
     @DeleteMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}/versions")
-    fun deleteAllVersionsOfHomeworkCourseInClass(
+    fun deleteAllVersionsOfHomeworkOfCourseInClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
             @PathVariable homeworkId: Int
-    ) = classService.deleteAllVersionsOfHomework(classId, courseId, homeworkId)
+    ) = classService.deleteAllVersionsOfHomeworkOfCourseInClass(classId, courseId, homeworkId)
 
     @DeleteMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}/versions/{versionId}")
     fun deleteSpecificVersionOfHomeworkOfCourseInClass(
@@ -650,5 +650,5 @@ class ClassController {
             @PathVariable courseId: Int,
             @PathVariable homeworkId: Int,
             @PathVariable versionId: Int
-    ) = classService.deleteSpecificVersionOfHomework(classId, courseId, homeworkId, versionId)
+    ) = classService.deleteSpecificVersionOfHomeworkOfCourseInClass(classId, courseId, homeworkId, versionId)
 }

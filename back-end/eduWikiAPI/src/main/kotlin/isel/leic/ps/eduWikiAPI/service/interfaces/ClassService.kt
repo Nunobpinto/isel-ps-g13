@@ -229,22 +229,22 @@ interface ClassService {
 
     fun updateHomeworkFromReport(classId: Int, courseId: Int, homeworkId: Int, reportId: Int): Optional<Homework>
 
-    fun voteOnReportOfHomeworkInCourse(classId: Int, courseId: Int, homeWorkId: Int, reportId: Int, vote: VoteInputModel): Optional<HomeworkReport>
+    fun voteOnReportOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, reportId: Int, vote: VoteInputModel): Int
 
-    fun deleteAllReportsInHomework(classId: Int, courseId: Int, homeworkId: Int): Int
+    fun deleteAllReportsOnHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int): Int
 
-    fun deleteSpecificReportInHomework(classId: Int, courseId: Int, homeworkId: Int, reportId: Int): Int
+    fun deleteSpecificReportOnHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, reportId: Int): Int
     
     /**
      * Homework version
      */
-    fun getAllVersionsOfHomeworkOnCourseInClass(classId: Int, courseId: Int, homeworkId: Int): List<HomeworkVersion>
+    fun getAllVersionsOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int): List<HomeworkVersion>
 
-    fun getSpecificVersionOfHomework(classId: Int, courseId: Int, homeworkId: Int, versionId: Int): Optional<HomeworkVersion>
+    fun getSpecificVersionOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, version: Int): Optional<HomeworkVersion>
 
-    fun deleteAllVersionsOfHomework(classId: Int, courseId: Int, homeworkId: Int): Int
+    fun deleteAllVersionsOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int): Int
 
-    fun deleteSpecificVersionOfHomework(classId: Int, courseId: Int, homeworkId: Int, versionId: Int): Int
+    fun deleteSpecificVersionOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, version: Int): Int
 
 
 }

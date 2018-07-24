@@ -521,7 +521,7 @@ class ClassServiceImpl : ClassService {
             )
 
     override fun deleteAllVersionsOfLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int): Int =
-            lectureDAO.deleteAllVersionsOfLectureOfCourseInTerm(
+            lectureDAO.deleteAllVersionsOfLectureOfCourseInClass(
                     classDAO.getCourseClassId(classId, courseId),
                     lectureId
             )
@@ -669,7 +669,7 @@ class ClassServiceImpl : ClassService {
             )
 
     override fun createReportOnHomeworkFromCourseInClass(classId: Int, courseId: Int, homeworkId: Int, homeworkReportInputModel: HomeworkReportInputModel): Optional<HomeworkReport> =
-            //TODO params unused
+    //TODO params unused
             homeworkDAO.createReportOnHomework(
                     HomeworkReport(
                             homeworkId = homeworkReportInputModel.homeworkId,
@@ -710,37 +710,52 @@ class ClassServiceImpl : ClassService {
                 multipleDeliveries = updatedHomework.multipleDeliveries,
                 timestamp = updatedHomework.timestamp
         ))
-        //homeworkDAO.deleteSpecificReportOnHomeworkOfCourseInClass(courseClassId, homeworkId, reportId) //TODO HEEERE
+        homeworkDAO.deleteSpecificReportOnHomeworkOfCourseInClass(courseClassId, homeworkId, reportId)
         handle.commit()
         return res
     }
 
-
-    override fun voteOnReportOfHomeworkInCourse(classId: Int, courseId: Int, homeWorkId: Int, reportId: Int, vote: VoteInputModel): Optional<HomeworkReport> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun voteOnReportOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, reportId: Int, vote: VoteInputModel): Int {
+        //TODO no usage params
+        return homeworkDAO.voteOnReportOfHomeworkOfCourseInClass(homeworkId, reportId, Vote.valueOf(vote.vote))
     }
 
-    override fun deleteAllReportsInHomework(classId: Int, courseId: Int, homeworkId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deleteAllReportsOnHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int): Int =
+            homeworkDAO.deleteAllReportsOnHomeworkOfCourseInClass(
+                    classDAO.getCourseClassId(classId, courseId),
+                    homeworkId
+            )
 
-    override fun deleteSpecificReportInHomework(classId: Int, courseId: Int, homeworkId: Int, reportId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deleteSpecificReportOnHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, reportId: Int): Int =
+            homeworkDAO.deleteSpecificReportOnHomeworkOfCourseInClass(
+                    classDAO.getCourseClassId(classId, courseId),
+                    homeworkId,
+                    reportId
+            )
 
-    override fun getAllVersionsOfHomeworkOnCourseInClass(classId: Int, courseId: Int, homeworkId: Int): List<HomeworkVersion> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getAllVersionsOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int): List<HomeworkVersion> =
+            homeworkDAO.getAllVersionsOfHomeworkOfCourseInclass(
+                    classDAO.getCourseClassId(classId, courseId),
+                    homeworkId
+            )
 
-    override fun getSpecificVersionOfHomework(classId: Int, courseId: Int, homeworkId: Int, versionId: Int): Optional<HomeworkVersion> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getSpecificVersionOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, version: Int): Optional<HomeworkVersion> =
+            homeworkDAO.getSpecificVersionOfHomeworkOfCourseInClass(
+                    classDAO.getCourseClassId(classId, courseId),
+                    homeworkId,
+                    version
+            )
 
-    override fun deleteAllVersionsOfHomework(classId: Int, courseId: Int, homeworkId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deleteAllVersionsOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int): Int =
+            homeworkDAO.deleteAllVersionsOfHomeworkOfCourseInClass(
+                    classDAO.getCourseClassId(classId, courseId),
+                    homeworkId
+            )
 
-    override fun deleteSpecificVersionOfHomework(classId: Int, courseId: Int, homeworkId: Int, versionId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deleteSpecificVersionOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, version: Int): Int =
+            homeworkDAO.deleteSpecificVersionOfHomeworkOfCourseInClass(
+                    classDAO.getCourseClassId(classId, courseId),
+                    homeworkId,
+                    version
+            )
 }

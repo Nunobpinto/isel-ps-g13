@@ -14,7 +14,6 @@ import java.util.*
 @Repository
 class HomeworkDAOImpl : HomeworkDAO {
 
-
     companion object {
         //TABLE NAMES
         const val HOMEWORK_TABLE = "homework"
@@ -397,6 +396,140 @@ class HomeworkDAOImpl : HomeworkDAO {
                     .executeAndReturnGeneratedKeys()
                     .mapTo(Homework::class.java)
                     .findFirst()
+
+    override fun voteOnReportOfHomeworkOfCourseInClass(homeworkId: Int, reportId: Int, vote: Vote): Int {
+        var votes = handle.createQuery(
+                "select $HOMEWORK_VOTES from $HOMEWORK_REPORT_TABLE " +
+                        "where $HOMEWORK_ID = :homeworkId" +
+                        "and $HOMEWORK_REPORT_ID = :reportId"
+        )
+                .bind("homeworkId", homeworkId)
+                .bind("reportId", reportId)
+                .mapTo(Int::class.java)
+                .findOnly()
+        votes = if (vote == Vote.Down) --votes else ++votes
+
+        return handle.createUpdate(
+                "update $HOMEWORK_REPORT_TABLE set $HOMEWORK_VOTES = :votes " +
+                        "where $HOMEWORK_ID = :homeworkId" +
+                        "and $HOMEWORK_REPORT_ID = :reportId"
+        )
+                .bind("votes", votes)
+                .bind("homeworkId", homeworkId)
+                .bind("reportId", reportId)
+                .execute()
+    }
+
+    override fun deleteAllReportsOnHomeworkOfCourseInClass(courseClassId: Int, homeworkId: Int): Int =
+            handle.createUpdate(
+                    "delete from $HOMEWORK_REPORT_TABLE" +
+                            "using ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE}" +
+                            "where $HOMEWORK_ID = ${ClassDAOImpl.CLASS_MISC_UNIT_ID}" +
+                            "and ${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId" +
+                            "and ${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType" +
+                            "and $HOMEWORK_ID = :homeworkId"
+            )
+                    .bind("courseClassId", courseClassId)
+                    .bind("miscType", "Homework")
+                    .bind("homeworkId", homeworkId)
+                    .execute()
+
+    override fun deleteSpecificReportOnHomeworkOfCourseInClass(courseClassId: Int, homeworkId: Int, reportId: Int): Int =
+            handle.createUpdate(
+                    "delete from $HOMEWORK_REPORT_TABLE" +
+                            "using ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE}" +
+                            "where $HOMEWORK_ID = ${ClassDAOImpl.CLASS_MISC_UNIT_ID}" +
+                            "and ${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId" +
+                            "and ${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType" +
+                            "and $HOMEWORK_ID = :homeworkId" +
+                            "and $HOMEWORK_REPORT_ID = :reportId"
+            )
+                    .bind("courseClassId", courseClassId)
+                    .bind("miscType", "Homework")
+                    .bind("homeworkId", homeworkId)
+                    .bind("reportId", reportId)
+                    .execute()
+
+    override fun getAllVersionsOfHomeworkOfCourseInclass(courseClassId: Int, homeworkId: Int): List<HomeworkVersion> =
+            handle.createQuery(
+                    "select H.$HOMEWORK_ID," +
+                            "H.$HOMEWORK_VERSION, " +
+                            "H.$HOMEWORK_CREATED_BY, " +
+                            "H.$HOMEWORK_SHEET, " +
+                            "H.$HOMEWORK_DUE_DATE" +
+                            "H.$HOMEWORK_LATE_DELIVERY, " +
+                            "H.$HOMEWORK_TIMESTAMP, " +
+                            "H.$HOMEWORK_MULTIPLE_DELIVERIES " +
+                            "from $HOMEWORK_VERSION_TABLE as H " +
+                            "inner join ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE} as C" +
+                            "on H.$HOMEWORK_ID = C.${ClassDAOImpl.CLASS_MISC_UNIT_ID}" +
+                            "where C.${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId " +
+                            "and C.${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType" +
+                            "and H.$HOMEWORK_ID = :homeworkId"
+            )
+                    .bind("courseClassId", courseClassId)
+                    .bind("miscType", "Homework")
+                    .bind("homeworkId", homeworkId)
+                    .mapTo(HomeworkVersion::class.java)
+                    .list()
+
+    override fun getSpecificVersionOfHomeworkOfCourseInClass(courseClassId: Int, homeworkId: Int, version: Int): Optional<HomeworkVersion> =
+            handle.createQuery(
+                    "select H.$HOMEWORK_ID," +
+                            "H.$HOMEWORK_VERSION, " +
+                            "H.$HOMEWORK_CREATED_BY, " +
+                            "H.$HOMEWORK_SHEET, " +
+                            "H.$HOMEWORK_DUE_DATE" +
+                            "H.$HOMEWORK_LATE_DELIVERY, " +
+                            "H.$HOMEWORK_TIMESTAMP, " +
+                            "H.$HOMEWORK_MULTIPLE_DELIVERIES " +
+                            "from $HOMEWORK_VERSION_TABLE as H " +
+                            "inner join ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE} as C" +
+                            "on H.$HOMEWORK_ID = C.${ClassDAOImpl.CLASS_MISC_UNIT_ID}" +
+                            "where C.${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId " +
+                            "and C.${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType" +
+                            "and H.$HOMEWORK_ID = :homeworkId" +
+                            "and H.$HOMEWORK_VERSION = :version"
+            )
+                    .bind("courseClassId", courseClassId)
+                    .bind("miscType", "Homework")
+                    .bind("homeworkId", homeworkId)
+                    .bind("version", version)
+                    .mapTo(HomeworkVersion::class.java)
+                    .findFirst()
+
+    override fun deleteAllVersionsOfHomeworkOfCourseInClass(courseClassId: Int, homeworkId: Int): Int =
+            handle.createUpdate(
+                    "delete from $HOMEWORK_VERSION_TABLE" +
+                            "using ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE}" +
+                            "where $HOMEWORK_ID = ${ClassDAOImpl.CLASS_MISC_UNIT_ID}" +
+                            "and ${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId" +
+                            "and ${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType" +
+                            "and $HOMEWORK_ID = :homeworkId"
+            )
+                    .bind("courseClassId", courseClassId)
+                    .bind("miscType", "Homework")
+                    .bind("homeworkId", homeworkId)
+                    .execute()
+
+    override fun deleteSpecificVersionOfHomeworkOfCourseInClass(courseClassId: Int, homeworkId: Int, version: Int): Int =
+            handle.createUpdate(
+                    "delete from $HOMEWORK_VERSION_TABLE" +
+                            "using ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE}" +
+                            "where $HOMEWORK_ID = ${ClassDAOImpl.CLASS_MISC_UNIT_ID}" +
+                            "and ${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId" +
+                            "and ${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType" +
+                            "and $HOMEWORK_ID = :homeworkId" +
+                            "and $HOMEWORK_VERSION = :version"
+            )
+                    .bind("courseClassId", courseClassId)
+                    .bind("miscType", "Homework")
+                    .bind("homeworkId", homeworkId)
+                    .bind("version", version)
+                    .execute()
+
+
+
 
 
 }
