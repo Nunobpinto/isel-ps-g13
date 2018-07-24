@@ -524,7 +524,7 @@ class ClassController {
             @PathVariable stageId: Int
     ) = classService.getSpecificStagedHomeworkOfCourseInClass(classId, courseId, stageId)
 
-    @PostMapping("/{classId}/courses/{courseId}/stage")
+    @PostMapping("/{classId}/courses/{courseId}/homeworks/stage")
     fun createStagingHomeworkOfCourseInClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int,

@@ -34,29 +34,11 @@ export default class extends React.Component {
     }
     this.voteUp = this.voteUp.bind(this)
     this.voteDown = this.voteDown.bind(this)
-    this.getExams = this.getExams.bind(this)
-    this.getWorkAssignments = this.getWorkAssignments.bind(this)
-    this.fetchExams = this.fetchExams.bind(this)
-    this.fetchWorkAssignments = this.fetchWorkAssignments.bind(this)
     this.showTerm = this.showTerm.bind(this)
   }
 
   showTerm (term) {
     this.setState({term: term})
-  }
-
-  getExams (termId) {
-    this.setState({
-      examFlag: true,
-      termId: termId
-    })
-  }
-
-  getWorkAssignments (termId) {
-    this.setState({
-      workAssignmentFlag: true,
-      termId: termId
-    })
   }
 
   render () {
@@ -186,7 +168,7 @@ export default class extends React.Component {
         throw new Error(`unexpected content type ${ct}`)
       })
       .then(([resp, json]) => {
-        const termsUri = `http://localhost:8080/courses/${json.id}/terms`
+        const termsUri = `http://localhost:8080/courses/${json.courseId}/terms`
         fetch(termsUri, header)
           .then(resp => {
             if (resp.status >= 400) {
@@ -219,76 +201,10 @@ export default class extends React.Component {
   }
 
   componentDidUpdate () {
-    if (this.state.examFlag) {
-      const courseId = this.props.match.params.id
-      this.fetchExams(courseId, this.state.termId)
-    } else if (this.state.workAssignmentFlag) {
-      const courseId = this.props.match.params.id
-      this.fetchWorkAssignments(courseId, this.state.termId)
-    } else if (this.state.voteUp) {
+    if (this.state.voteUp) {
       this.voteUp()
     } else if (this.state.voteDown) {
       this.voteDown()
     }
-  }
-
-  fetchExams (courseId, termId) {
-    const uri = `http://localhost:8080/courses/${courseId}/terms/${termId}/exams`
-    const header = {
-      headers: { 'Access-Control-Allow-Origin': '*' }
-    }
-    fetch(uri, header)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
-        const ct = resp.headers.get('content-type') || ''
-        if (ct === 'application/json' || ct.startsWith('application/json;')) {
-          return resp.json()
-        }
-        throw new Error(`unexpected content type ${ct}`)
-      })
-      .then(exams => this.setState(
-        {
-          examFlag: false,
-          exams: exams
-        }
-      ))
-      .catch(error => this.setState(
-        {
-          examFlag: false,
-          examError: error
-        }
-      ))
-  }
-
-  fetchWorkAssignments (courseId, termId) {
-    const uri = `http://localhost:8080/courses/${courseId}/terms/${termId}/workAssignments`
-    const header = {
-      headers: { 'Access-Control-Allow-Origin': '*' }
-    }
-    fetch(uri, header)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
-        const ct = resp.headers.get('content-type') || ''
-        if (ct === 'application/json' || ct.startsWith('application/json;')) {
-          return resp.json()
-        }
-        throw new Error(`unexpected content type ${ct}`)
-      })
-      .then(works => this.setState(
-        {
-          workAssignmentFlag: false,
-          workAssignments: works
-        }
-      ))
-      .catch(error => this.setState(
-        {
-          workAssignmentFlag: false,
-          workAssignmentError: error
-        }
-      ))
   }
 }

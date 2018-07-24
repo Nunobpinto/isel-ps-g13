@@ -243,7 +243,7 @@ class CourseDAOImpl : CourseDAO {
     override fun getTermsOfCourse(courseId: Int) =
             handle.createQuery(
                     "select T.${TermDAOImpl.TERM_ID}, T.${TermDAOImpl.TERM_SHORT_NAME}, " +
-                            "T.${TermDAOImpl.TERM_YEAR}, T.${TermDAOImpl.TERM_TYPE}, T.${TermDAOImpl.TERM_TIMESTAMP}" +
+                            "T.${TermDAOImpl.TERM_YEAR}, T.${TermDAOImpl.TERM_TYPE}, T.${TermDAOImpl.TERM_TIMESTAMP} " +
                             "from ${TermDAOImpl.TERM_TABLE} as T " +
                             "inner join $COURSE_TERM_TABLE as C on T.${TermDAOImpl.TERM_ID} = C.${COURSE_TERM_TERM_ID} " +
                             "where C.$COURSE_ID = :courseId"

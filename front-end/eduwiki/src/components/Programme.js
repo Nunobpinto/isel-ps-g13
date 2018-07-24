@@ -88,7 +88,7 @@ export default class extends React.Component {
                   {item.optional === false ? <p>Mandatory</p> : <p>Optional</p>}
                   <p>Credits : {item.credits}</p>
                   <p>Lectured in term {item.lecturedTerm} </p>
-                  <Link to={{pathname: `/courses/${item.id}`}}>See it's page</Link>
+                  <Link to={{pathname: `/courses/${item.courseId}`}}>See it's page</Link>
                 </Card>
               </Col>
             )}
@@ -231,7 +231,7 @@ export default class extends React.Component {
       })
       .then(allCourses => this.setState(prevState => {
         let programmeCourses = prevState.courses
-        let newCourses = allCourses.filter(crs => !programmeCourses.some(cr => crs.courseID === cr.courseId))
+        let newCourses = allCourses.filter(crs => !programmeCourses.some(cr => crs.courseId === cr.courseId))
         return ({
           seeAllCourses: false,
           allCourses: newCourses

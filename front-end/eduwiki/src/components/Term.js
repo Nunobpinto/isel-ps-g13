@@ -54,13 +54,13 @@ export default class extends React.Component {
         >
           <Menu.Item
             key={1}
-            onClick={() => this.getExams(this.props.term.id)}
+            onClick={() => this.getExams(this.props.term.termId)}
           >
             Exams
           </Menu.Item>
           <Menu.Item
             key={2}
-            onClick={() => this.getWorkAssignments(this.props.term.id)}
+            onClick={() => this.getWorkAssignments(this.props.term.termId)}
           >
             Work Assignments
           </Menu.Item>
