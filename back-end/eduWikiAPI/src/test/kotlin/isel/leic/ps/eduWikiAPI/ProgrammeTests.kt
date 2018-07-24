@@ -48,7 +48,7 @@ class ProgrammeTests {
         val versionRows = programmeDAO.addToProgrammeVersion(programme)
         assertEquals(1,versionRows)
         val updatedProgramme = Programme(
-                id=programme.id,
+                programmeId= programme.programmeId,
                 academicDegree = report.programmeAcademicDegree!!,
                 duration = programme.duration,
                 fullName = programme.fullName,

@@ -36,7 +36,7 @@ interface ProgrammeService {
 
     fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course>
 
-    fun addCourseToProgramme(programmeId: Int, input: CourseProgrammeInputModel): Optional<CourseProgrammeVersion>
+    fun addCourseToProgramme(programmeId: Int, input: CourseProgrammeInputModel): Optional<Course>
 
     fun voteOnProgramme(programmeId: Int, inputVote: VoteInputModel)
 

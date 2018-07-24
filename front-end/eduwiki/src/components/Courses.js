@@ -100,7 +100,7 @@ export default class extends React.Component {
                           onClick={() =>
                             this.setState({
                               voteUp: true,
-                              courseID: item.id
+                              courseID: item.courseId
                             })}
                           text={item.votes}
                         />,
@@ -110,13 +110,13 @@ export default class extends React.Component {
                           onClick={() =>
                             this.setState({
                               voteDown: true,
-                              courseID: item.id
+                              courseID: item.courseId
                             })}
                         />
                       ]}
                     >
                       <List.Item.Meta
-                        title={<Link to={{ pathname: `/courses/${item.id}` }}> {item.fullName} ({item.shortName})</Link>}
+                        title={<Link to={{ pathname: `/courses/${item.courseId}` }}> {item.fullName} ({item.shortName})</Link>}
                         description={`Created by ${item.createdBy}`}
                       />
                     </List.Item>

@@ -68,7 +68,7 @@ class OrganizationTests {
         handle.begin()
         val time = Timestamp.valueOf(LocalDateTime.now())
         val org = Organization(
-                id = 1,
+                organizationId = 1,
                 version = 2,
                 fullName = "Instituto Superior de Engenharia de Lisboa",
                 shortName = "ISEL",
@@ -100,8 +100,8 @@ class OrganizationTests {
         )
         val dbOrg = organizationDAO.createOrganization(newOrg).get()
         //TODO: verificar se o ReturnGeneratedKeys() não esta a funcionar por estar-se no H2
-        assertEquals(dbOrg.id, 2)
-        val deleteRows = organizationDAO.deleteOrganization(dbOrg.id)
+        assertEquals(dbOrg.organizationId, 2)
+        val deleteRows = organizationDAO.deleteOrganization(dbOrg.organizationId)
         assertEquals(deleteRows, 1)
         handle.commit()
     }
@@ -125,7 +125,7 @@ class OrganizationTests {
     fun testApprovedReport() {
         handle.begin()
         val report = OrganizationReport(
-                organization_id = 1,
+                organizationId = 1,
                 contact = "+351218317000",
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )

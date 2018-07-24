@@ -126,6 +126,10 @@ body {
   width: 40%;
 }
 
+.course_items {
+  background-color: white;
+}
+
 .left-div:after {
   content: "";
   background-color: black;

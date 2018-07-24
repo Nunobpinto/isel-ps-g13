@@ -127,7 +127,7 @@ export default class extends React.Component {
                       ]}
                     >
                       <List.Item.Meta
-                        title={<Link to={{ pathname: `/programmes/${item.id}` }}> {item.fullName} ({item.shortName})</Link>}
+                        title={<Link to={{ pathname: `/programmes/${item.programmeId}` }}> {item.fullName} ({item.shortName})</Link>}
                         description={`Created by ${item.createdBy}`}
                       />
                     </List.Item>
@@ -137,8 +137,8 @@ export default class extends React.Component {
             }
             <Button icon='plus' id='create_btn' type='primary' onClick={() => { this.showElements('stagedProgrammes') }}>Create Programme</Button>
           </div>
-          <div class='right-div'>
-            <div id='stagedProgrammes' class='hide_staged_resources'>
+          <div className='right-div'>
+            <div id='stagedProgrammes' className='hide_staged_resources'>
               <h1>All staged programmes</h1>
               <p> Filter By Name : </p>
               <Input.Search

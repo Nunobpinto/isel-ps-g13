@@ -39,9 +39,9 @@ class ExamTests {
     @Test
     fun testGetExam() {
         val exam = examDAO.getSpecificExamFromSpecificTermOfCourse(1, 1, 4)
-        assertEquals("1ºexame de PI 1718v", exam.sheet)
-        assertEquals("1ª", exam.phase)
-        assertEquals("A.2.14", exam.location)
+        assertEquals("1ºexame de PI 1718v", exam.get().sheet)
+        assertEquals("1ª", exam.get().phase)
+        assertEquals("A.2.14", exam.get().location)
     }
 
     @Test

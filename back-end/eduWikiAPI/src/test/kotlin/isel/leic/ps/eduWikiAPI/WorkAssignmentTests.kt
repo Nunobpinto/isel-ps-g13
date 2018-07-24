@@ -33,10 +33,10 @@ class WorkAssignmentTests {
 
     @Test
     fun testGetWorkAssignment() {
-        val wrs = workAssignmentDAO.getSpecificWorkAssignment(1,, )
+       /* val wrs = workAssignmentDAO.getSpecificWorkAssignment(1,, )
         assertEquals("Apoio", wrs.supplement)
         assertEquals("Exemplo-PI", wrs.sheet)
-        assertEquals(false, wrs.individual)
+        assertEquals(false, wrs.individual)*/
     }
 
     @Test

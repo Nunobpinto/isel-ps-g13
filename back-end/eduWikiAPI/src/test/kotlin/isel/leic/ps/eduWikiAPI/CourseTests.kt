@@ -73,7 +73,7 @@ class CourseTests {
         val insertRows = courseDAO.createCourse(course)
         assertEquals(1, insertRows)
         val courseProgramme = Course(
-                id = 4,
+                courseId = 4,
                 programmeId = 1,
                 lecturedTerm = "quarto",
                 optional = false,

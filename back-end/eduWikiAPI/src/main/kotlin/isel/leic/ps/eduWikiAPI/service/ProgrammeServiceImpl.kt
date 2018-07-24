@@ -15,6 +15,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.version.ProgrammeVersion
 import isel.leic.ps.eduWikiAPI.repository.interfaces.CourseDAO
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ProgrammeDAO
 import isel.leic.ps.eduWikiAPI.service.interfaces.ProgrammeService
+import org.jdbi.v3.core.Handle
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.sql.Timestamp
@@ -28,6 +29,8 @@ class ProgrammeServiceImpl : ProgrammeService {
     lateinit var programmeDAO: ProgrammeDAO
     @Autowired
     lateinit var courseDAO: CourseDAO
+    @Autowired
+    lateinit var handle: Handle
 
     override fun getAllProgrammes(): List<Programme> = programmeDAO.getAllProgrammes()
 
@@ -93,7 +96,8 @@ class ProgrammeServiceImpl : ProgrammeService {
 
     override fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course> = courseDAO.getCoursesOnSpecificProgramme(programmeId)
 
-    override fun addCourseToProgramme(programmeId: Int, input: CourseProgrammeInputModel): Optional<CourseProgrammeVersion> {
+    override fun addCourseToProgramme(programmeId: Int, input: CourseProgrammeInputModel): Optional<Course> {
+        handle.begin()
         val course = Course(
                 courseId = input.courseId,
                 lecturedTerm = input.lecturedTerm,
@@ -103,7 +107,10 @@ class ProgrammeServiceImpl : ProgrammeService {
                 createdBy = input.createdBy
         )
         courseDAO.addCourseToProgramme(programmeId, course)
-        return courseDAO.addCourseProgrammeToVersion(course)
+        courseDAO.addCourseProgrammeToVersion(course)
+        val res = courseDAO.getSpecificCourse(course.courseId)
+        handle.commit()
+        return res
     }
 
     override fun voteOnProgramme(programmeId: Int, inputVote: VoteInputModel) = programmeDAO.voteOnProgramme(programmeId, Vote.valueOf(inputVote.vote))

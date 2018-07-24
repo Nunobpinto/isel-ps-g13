@@ -4,7 +4,10 @@ import {Link} from 'react-router-dom'
 import Layout from './Layout'
 import ReportProgramme from './ReportProgramme'
 import ProgrammeReports from './ProgrammeReports'
-import {Row, Col, Card, Button, Tooltip, Popover} from 'antd'
+import CourseProgramme from './CourseProgramme'
+import {Row, Col, Card, Button, Tooltip, Popover, Input, InputNumber, Form, Select} from 'antd'
+
+const FormItem = Form.Item
 
 export default class extends React.Component {
   constructor (props) {
@@ -19,6 +22,7 @@ export default class extends React.Component {
       votes: 0,
       timestamp: '',
       courses: [],
+      allCourses: [],
       voteUp: false,
       voteDown: false,
       progError: undefined,
@@ -26,12 +30,15 @@ export default class extends React.Component {
     }
     this.voteUp = this.voteUp.bind(this)
     this.voteDown = this.voteDown.bind(this)
+    this.fetchOtherCourses = this.fetchOtherCourses.bind(this)
+    this.addCourseToProgramme = this.addCourseToProgramme.bind(this)
   }
 
   render () {
     return (
       <Layout>
         <h1>{this.state.full_name} - {this.state.short_name} <small>({this.state.timestamp})</small> </h1>
+        <p>Created By : {this.state.createdBy}</p>
         <p>
           Votes : {this.state.votes}
           <Tooltip placement='bottom' title={`Vote Up on ${this.state.short_name}`}>
@@ -87,8 +94,69 @@ export default class extends React.Component {
             )}
           </Row>
         </div>
+        <div>
+          <Button onClick={() => this.setState({seeAllCourses: true})}>Add Course To This Programme</Button>
+          <div style={{ padding: '30px' }}>
+            <Row gutter={16}>
+              {this.state.allCourses.map(crs =>
+                <Col span={8} key={crs.id}>
+                  <Card title={crs.shortName}>
+                    <CourseProgramme crs={crs} addCourse={course => this.setState({addCourse: true, course: course})} />
+                  </Card>
+                </Col>
+              )}
+            </Row>
+          </div>
+        </div>
       </Layout>
     )
+  }
+
+  addCourseToProgramme () {
+    const id = this.props.match.params.id
+    const courseToAdd = this.state.course
+    const url = 'http://localhost:8080/programmes/' + id + '/courses'
+    const data = {
+      programme_id: this.props.match.params.id,
+      course_id: courseToAdd.course_id,
+      course_lectured_term: courseToAdd.lectured_term,
+      course_optional: courseToAdd.optional,
+      course_credits: courseToAdd.credits,
+      created_by: 'ze'
+    }
+    const options = {
+      method: 'POST',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    }
+    fetch(url, options)
+      .then(resp => {
+        if (resp.status >= 400) {
+          throw new Error('Unable to access content')
+        }
+        const ct = resp.headers.get('content-type') || ''
+        if (ct === 'application/json' || ct.startsWith('application/json;')) {
+          return resp.json()
+        }
+        throw new Error(`unexpected content type ${ct}`)
+      })
+      .then(courseProgramme => {
+        this.setState(prevState => {
+          let courses = prevState.courses
+          courses.push(courseProgramme)
+          let otherCourses = prevState.allCourses
+          const index = otherCourses.findIndex(course => course.id === courseProgramme.id)
+          otherCourses.splice(index, 1)
+          return ({
+            addCourse: false,
+            courses: courses,
+            allCourses: otherCourses
+          })
+        })
+      })
   }
 
   voteUp () {
@@ -143,6 +211,32 @@ export default class extends React.Component {
           votes: prevState.votes - 1
         }))
       })
+  }
+
+  fetchOtherCourses () {
+    const uri = 'http://localhost:8080/courses'
+    const header = {
+      headers: { 'Access-Control-Allow-Origin': '*' }
+    }
+    fetch(uri, header)
+      .then(resp => {
+        if (resp.status >= 400) {
+          throw new Error('Unable to access content')
+        }
+        const ct = resp.headers.get('content-type') || ''
+        if (ct === 'application/json' || ct.startsWith('application/json;')) {
+          return resp.json()
+        }
+        throw new Error(`unexpected content type ${ct}`)
+      })
+      .then(allCourses => this.setState(prevState => {
+        let programmeCourses = prevState.courses
+        let newCourses = allCourses.filter(crs => !programmeCourses.some(cr => crs.courseID === cr.courseId))
+        return ({
+          seeAllCourses: false,
+          allCourses: newCourses
+        })
+      }))
   }
 
   componentDidMount () {
@@ -204,6 +298,10 @@ export default class extends React.Component {
       this.voteUp()
     } else if (this.state.voteDown) {
       this.voteDown()
+    } else if (this.state.seeAllCourses) {
+      this.fetchOtherCourses()
+    } else if (this.state.addCourse) {
+      this.addCourseToProgramme()
     }
   }
 }
