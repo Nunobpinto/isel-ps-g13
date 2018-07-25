@@ -25,7 +25,8 @@ class ProgrammeController {
     fun getSpecificProgramme(@PathVariable programmeId: Int) = programmeService.getSpecificProgramme(programmeId)
 
     @GetMapping("/{programmeId}/reports")
-    fun getAllReportsOfProgramme(@PathVariable programmeId: Int) = programmeService.getAllReportsOfProgramme(programmeId)
+    fun getAllReportsOfSpecificProgramme(@PathVariable programmeId: Int) =
+            programmeService.getAllReportsOfSpecificProgramme(programmeId)
 
     @GetMapping("/{programmeId}/reports/{reportId}")
     fun getSpecificReportOfProgramme(
@@ -34,70 +35,80 @@ class ProgrammeController {
     ) = programmeService.getSpecificReportOfProgramme(programmeId, reportId)
 
     @GetMapping("/stage")
-    fun getAllProgrammeStageEntries() = programmeService.getStagedProgrammes()
+    fun getAllProgrammeStageEntries() = programmeService.getAllProgrammeStageEntries()
 
     @GetMapping("/stage/{stageId}")
-    fun getProgrammeSpecificStageEntry(@PathVariable stageId: Int) = programmeService.getSpecificStagedProgramme(stageId)
+    fun getSpecificStageEntryOfProgramme(@PathVariable stageId: Int) =
+            programmeService.getSpecificStageEntryOfProgramme(stageId)
 
     @GetMapping("/{programmeId}/courses")
-    fun getCoursesOnSpecificProgramme(@PathVariable programmeId: Int) = programmeService.getCoursesOnSpecificProgramme(programmeId)
+    fun getAllCoursesOnSpecificProgramme(@PathVariable programmeId: Int) =
+            programmeService.getAllCoursesOnSpecificProgramme(programmeId)
 
     @GetMapping("/{programmeId}/courses/stage")
-    fun getStagedCoursesOnSpecificProgramme(@PathVariable programmeId: Int) = programmeService.getStagedCoursesOfProgramme(programmeId)
+    fun getAllCourseStageEntriesOfSpecificProgramme(@PathVariable programmeId: Int) =
+            programmeService.getAllCourseStageEntriesOfSpecificProgramme(programmeId)
 
     @GetMapping("/{programmeId}/courses/stage/{stageId}")
-    fun getStagedCoursesOnSpecificProgramme(@PathVariable programmeId: Int, @PathVariable stageId: Int) = programmeService.getSpecificStagedCourseOfProgramme(programmeId, stageId)
+    fun getSpecificStagedCourseOfProgramme(
+            @PathVariable programmeId: Int,
+            @PathVariable stageId: Int
+    ) = programmeService.getSpecificStagedCourseOfProgramme(programmeId, stageId)
 
     @GetMapping("/{programmeId}/courses/{courseId}")
-    fun getCourseOnSpecificProgramme(
+    fun getSpecificCourseOfProgramme(
             @PathVariable programmeId: Int,
             @PathVariable courseId: Int
-    ) = programmeService.getSpecificCourseOnSpecificProgramme(programmeId, courseId)
+    ) = programmeService.getSpecificCourseOfProgramme(programmeId, courseId)
 
     @GetMapping("/{programmeId}/courses/{courseId}/versions")
-    fun getVersionsOfCourseOnSpecificProgramme(
+    fun getAllVersionsOfCourseOnProgramme(
             @PathVariable programmeId: Int,
             @PathVariable courseId: Int
-    ) = programmeService.getAllVersionsOfCourseOnSpecificProgramme(programmeId, courseId)
+    ) = programmeService.getAllVersionsOfCourseOnProgramme(programmeId, courseId)
 
-    @GetMapping("/{programmeId}/courses/{courseId}/versions/{versionId}")
-    fun getVersionOfCourseOnSpecificProgramme(
+    @GetMapping("/{programmeId}/courses/{courseId}/versions/{version}")
+    fun getSpecificVersionOfCourseOnProgramme(
             @PathVariable programmeId: Int,
             @PathVariable courseId: Int,
-            @PathVariable versionId: Int
-    ) = programmeService.getSpecificVersionOfCourseOnSpecificProgramme(programmeId, courseId, versionId)
+            @PathVariable version: Int
+    ) = programmeService.getSpecificVersionOfCourseOnProgramme(programmeId, courseId, version)
 
     @GetMapping("/{programmeId}/courses/{courseId}/reports")
-    fun getReportsOfCourseOnSpecificProgramme(
+    fun getAllReportsOfCourseOnProgramme(
             @PathVariable programmeId: Int,
             @PathVariable courseId: Int
-    ) = programmeService.getAllReportsOfCourseOnSpecificProgramme(programmeId, courseId)
+    ) = programmeService.getAllReportsOfCourseOnProgramme(programmeId, courseId)
 
     @GetMapping("/{programmeId}/courses/{courseId}/reports/{reportId}")
-    fun getReportOfCourseOnSpecificProgramme(
+    fun getSpecificReportOfCourseOnProgramme(
             @PathVariable programmeId: Int,
             @PathVariable courseId: Int,
             @PathVariable reportId: Int
-    ) = programmeService.getSpecificReportOfCourseOnSpecificProgramme(programmeId, courseId, reportId)
-
+    ) = programmeService.getSpecificReportOfCourseOnProgramme(programmeId, courseId, reportId)
 
     @GetMapping("/{programmeId}/versions")
-    fun getAllVersionsOfProgramme(@PathVariable programmeId: Int) = programmeService.getAllVersions(programmeId)
+    fun getAllVersionsOfProgramme(@PathVariable programmeId: Int) =
+            programmeService.getAllVersionsOfProgramme(programmeId)
 
-    @GetMapping("/{programmeId}/versions/{versionId]")
-    fun getVersionOfProgramme(@PathVariable programmeId: Int, @PathVariable versionId: Int) = programmeService.getVersion(programmeId, versionId)
-
+    @GetMapping("/{programmeId}/versions/{version}")
+    fun getSpecificVersionOfProgramme(
+            @PathVariable programmeId: Int,
+            @PathVariable version: Int
+    ) = programmeService.getSpecificVersionOfProgramme(programmeId, version)
 
     /**
      * All POST Routes
      */
 
     @PostMapping()
-    fun createProgramme(@RequestBody inputProgramme: ProgrammeInputModel) = programmeService.createProgramme(inputProgramme)
+    fun createProgramme(@RequestBody inputProgramme: ProgrammeInputModel) =
+            programmeService.createProgramme(inputProgramme)
 
     @PostMapping("/{programmeId}/courses")
-    fun addCourseToProgramme(@PathVariable programmeId: Int,
-                             @RequestBody inputCourseProgramme: CourseProgrammeInputModel
+    fun addCourseToProgramme(
+            @PathVariable programmeId: Int,
+            @RequestBody inputCourseProgramme: CourseProgrammeInputModel
     ) = programmeService.addCourseToProgramme(programmeId, inputCourseProgramme)
 
     @PostMapping("/{programmeId}/courses/{courseId}/vote")
@@ -124,19 +135,21 @@ class ProgrammeController {
             @PathVariable programmeId: Int,
             @PathVariable reportId: Int,
             @RequestBody inputVote: VoteInputModel
-    ) = programmeService.voteOnReportedProgramme(reportId, inputVote)
+    ) = programmeService.voteOnReportedProgramme(programmeId, reportId, inputVote)
 
     @PostMapping("/{programmeId}/reports/{reportId}")
-    fun updateReportedProgramme(
+    fun updateProgrammeFromReport(
             @PathVariable programmeId: Int,
             @PathVariable reportId: Int
-    ) = programmeService.updateReportedProgramme(programmeId, reportId)
+    ) = programmeService.updateProgrammeFromReport(programmeId, reportId)
 
     @PostMapping("/stage")
-    fun createStagingProgramme(@RequestBody inputProgramme: ProgrammeInputModel) = programmeService.createStagingProgramme(inputProgramme)
+    fun createStagingProgramme(@RequestBody inputProgramme: ProgrammeInputModel) =
+            programmeService.createStagingProgramme(inputProgramme)
 
     @PostMapping("/stage/{stageId}")
-    fun createProgrammeFromStaged(@PathVariable stageId: Int) = programmeService.createProgrammeFromStaged(stageId)
+    fun createProgrammeFromStaged(@PathVariable stageId: Int) =
+            programmeService.createProgrammeFromStaged(stageId)
 
     @PostMapping("/stage/{stageId}/vote")
     fun voteOnStagedProgramme(
@@ -145,34 +158,37 @@ class ProgrammeController {
     ) = programmeService.voteOnStagedProgramme(stageId, inputVote)
 
     @PostMapping("/{programmeId}/courses/stage")
-    fun createdStagedCourssOnSpecificProgramme(
+    fun createStagingCourseOnProgramme(
             @PathVariable programmeId: Int,
             @RequestBody inputCourseProgramme: CourseProgrammeInputModel
-    ) = programmeService.createStagedCourseOfProgramme(programmeId, inputCourseProgramme)
+    ) = programmeService.createStagingCourseOnProgramme(programmeId, inputCourseProgramme)
 
     @PostMapping("/{programmeId}/courses/stage/{stageId}")
-    fun createCourseProgrammeFromStaged(@PathVariable programmeId: Int, @PathVariable stageId: Int) = programmeService.createCourseProgrammeFromStaged(programmeId, stageId)
+    fun createCourseProgrammeFromStaged(
+            @PathVariable programmeId: Int,
+            @PathVariable stageId: Int
+    ) = programmeService.createCourseProgrammeFromStaged(programmeId, stageId)
 
     @PostMapping("/{programmeId}/courses/stage/{stageId}/vote")
-    fun voteCourseProgrammeFromStaged(
+    fun voteOnStagedCourseProgramme(
             @PathVariable programmeId: Int,
             @PathVariable stageId: Int,
             @RequestBody inputVote: VoteInputModel
-    ) = programmeService.voteOnCourseProgrammeStaged(programmeId, stageId, inputVote)
+    ) = programmeService.voteOnStagedCourseProgramme(programmeId, stageId, inputVote)
 
     @PostMapping("/{programmeId}/courses/{courseId}/reports")
-    fun reportCourseOnSpecificProgramme(
+    fun reportSpecificCourseOnProgramme(
             @PathVariable programmeId: Int,
             @PathVariable courseId: Int,
             @RequestBody inputCourseProgrammeReport: CourseProgrammeReportInputModel
-    ) = programmeService.reportCourseOnProgramme(programmeId, courseId, inputCourseProgrammeReport)
+    ) = programmeService.reportSpecificCourseOnProgramme(programmeId, courseId, inputCourseProgrammeReport)
 
     @PostMapping("/{programmeId}/courses/{courseId}/reports/{reportId}")
-    fun updateReportedCourseProgramme(
+    fun updateCourseProgrammeFromReport(
             @PathVariable programmeId: Int,
             @PathVariable courseId: Int,
             @PathVariable reportId: Int
-    ) = programmeService.updateReportedCourseProgramme(programmeId, courseId, reportId)
+    ) = programmeService.updateCourseProgrammeFromReport(programmeId, courseId, reportId)
 
     @PostMapping("/{programmeId}/courses/{courseId}/reports/{reportId}/vote")
     fun voteOnReportedCourseProgramme(
@@ -201,54 +217,61 @@ class ProgrammeController {
     fun deleteAllProgrammes() = programmeService.deleteAllProgrammes()
 
     @DeleteMapping("/{programmeId}")
-    fun deleteSpecificProgramme(@PathVariable programmeId: Int) = programmeService.deleteSpecificProgramme(programmeId)
+    fun deleteSpecificProgramme(@PathVariable programmeId: Int) =
+            programmeService.deleteSpecificProgramme(programmeId)
 
     @DeleteMapping("/stage")
     fun deleteAllStagedProgrammes() = programmeService.deleteAllStagedProgrammes()
 
     @DeleteMapping("/stage/{stageId}")
-    fun deleteStagedProgramme(@PathVariable stageId: Int) = programmeService.deleteStagedProgramme(stageId)
+    fun deleteSpecificStagedProgramme(@PathVariable stageId: Int) =
+            programmeService.deleteSpecificStagedProgramme(stageId)
 
     @DeleteMapping("/{programmeId}/report")
-    fun deleteAllReportsOnProgramme(@PathVariable programmeId: Int) = programmeService.deleteAllReportsOnProgramme(programmeId)
+    fun deleteAllReportsOnProgramme(@PathVariable programmeId: Int) =
+            programmeService.deleteAllReportsOnProgramme(programmeId)
 
     @DeleteMapping("/{programmeId}/report/{reportId}")
-    fun deleteReportOnProgramme(
+    fun deleteSpecificReportOnProgramme(
             @PathVariable programmeId: Int,
             @PathVariable reportId: Int
-    ) = programmeService.deleteReportOnProgramme(programmeId, reportId)
+    ) = programmeService.deleteSpecificReportOnProgramme(programmeId, reportId)
 
     @DeleteMapping("/{programmeId}/versions")
-    fun deleteAllVersions(@PathVariable programmeId: Int) = programmeService.deleteAllVersions(programmeId)
+    fun deleteAllProgrammeVersions(@PathVariable programmeId: Int) =
+            programmeService.deleteAllProgrammeVersions(programmeId)
 
     @DeleteMapping("/{programmeId}/courses/{courseId}")
-    fun deleteSpecificCourseOfProgramme(
+    fun deleteSpecificCourseProgramme(
             @PathVariable programmeId: Int,
             @PathVariable courseId: Int
-    ) = programmeService.deleteSpecificCourseOfProgramme(programmeId, courseId)
+    ) = programmeService.deleteSpecificCourseProgramme(programmeId, courseId)
 
-    @DeleteMapping("/{programmeId}/courses/{courseId}/version/{versionId}")
-    fun deleteSpecificVersionOfCourseOfProgramme(
+    @DeleteMapping("/{programmeId}/courses/{courseId}/versions/{version}")
+    fun deleteSpecificVersionOfCourseProgramme(
             @PathVariable programmeId: Int,
             @PathVariable courseId: Int,
-            @PathVariable versionId: Int
-    ) = programmeService.deleteSpecificVersionOfCourseOfProgramme(programmeId, courseId, versionId)
+            @PathVariable version: Int
+    ) = programmeService.deleteSpecificVersionOfCourseProgramme(programmeId, courseId, version)
 
     @DeleteMapping("/{programmeId}/courses/{courseId}/reports/{reportId}")
-    fun deleteSpecificReportOfCourseOfProgramme(
+    fun deleteSpecificReportOfCourseProgramme(
             @PathVariable programmeId: Int,
             @PathVariable courseId: Int,
             @PathVariable reportId: Int
-    ) = programmeService.deleteSpecificReportOfCourseOfProgramme(programmeId, courseId, reportId)
+    ) = programmeService.deleteSpecificReportOfCourseProgramme(programmeId, courseId, reportId)
 
     @DeleteMapping("/{programmeId}/courses/stage/{stageId}")
-    fun deleteSpecificStagedCourseOfProgramme(
+    fun deleteSpecificStagedCourseProgramme(
             @PathVariable programmeId: Int,
             @PathVariable courseId: Int,
             @PathVariable stageId: Int
-    ) = programmeService.deleteSpecificStagedCourseOfProgramme(programmeId, courseId, stageId)
+    ) = programmeService.deleteSpecificStagedCourseProgramme(programmeId, courseId, stageId)
 
-    @DeleteMapping("/{programmeId}/versions/{versionId}")
-    fun deleteSpecificVersion(@PathVariable programmeId: Int, @PathVariable versionId: Int) = programmeService.deleteSpecificVersion(programmeId, versionId)
+    @DeleteMapping("/{programmeId}/versions/{version}")
+    fun deleteSpecificProgrammeVersion(
+            @PathVariable programmeId: Int,
+            @PathVariable version: Int
+    ) = programmeService.deleteSpecificProgrammeVersion(programmeId, version)
 
 }

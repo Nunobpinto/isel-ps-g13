@@ -16,93 +16,93 @@ import java.util.*
 
 interface ProgrammeService {
 
-    fun createProgramme(inputProgramme: ProgrammeInputModel)
-
-    fun getSpecificProgramme(programmeId: Int): Programme
-
-    fun createStagingProgramme(inputProgramme: ProgrammeInputModel)
-
-    fun getSpecificStagedProgramme(stageId: Int) : ProgrammeStage
-
-    fun createProgrammeFromStaged(stageId: Int)
-
-    fun getStagedProgrammes() : List<ProgrammeStage>
-
     fun getAllProgrammes(): List<Programme>
 
-    fun getAllReportsOfProgramme(programmeId: Int): List<ProgrammeReport>
+    fun getSpecificProgramme(programmeId: Int): Optional<Programme>
 
-    fun getSpecificReportOfProgramme(programmeId: Int, reportId: Int): ProgrammeReport
+    fun createProgramme(inputProgramme: ProgrammeInputModel): Optional<Programme>
 
-    fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course>
+    fun createStagingProgramme(inputProgramme: ProgrammeInputModel): Optional<ProgrammeStage>
 
-    fun addCourseToProgramme(programmeId: Int, input: CourseProgrammeInputModel): Optional<Course>
+    fun getSpecificStageEntryOfProgramme(stageId: Int) : Optional<ProgrammeStage>
 
-    fun voteOnProgramme(programmeId: Int, inputVote: VoteInputModel)
+    fun createProgrammeFromStaged(stageId: Int): Optional<Programme>
 
-    fun reportProgramme(programmeId: Int, inputProgrammeReport: ProgrammeReportInputModel)
+    fun getAllProgrammeStageEntries() : List<ProgrammeStage>
 
-    fun voteOnReportedProgramme(reportId: Int, inputVote: VoteInputModel)
+    fun getAllReportsOfSpecificProgramme(programmeId: Int): List<ProgrammeReport>
 
-    fun updateReportedProgramme(programmeId: Int, reportId: Int)
+    fun getSpecificReportOfProgramme(programmeId: Int, reportId: Int): Optional<ProgrammeReport>
 
-    fun voteOnStagedProgramme(stageId: Int, inputVote: VoteInputModel)
+    fun getAllCoursesOnSpecificProgramme(programmeId: Int): List<Course>
 
-    fun deleteAllProgrammes()
+    fun addCourseToProgramme(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel): Optional<Course>
+
+    fun voteOnProgramme(programmeId: Int, inputVote: VoteInputModel): Int
+
+    fun reportProgramme(programmeId: Int, inputProgrammeReport: ProgrammeReportInputModel): Optional<ProgrammeReport>
+
+    fun voteOnReportedProgramme(programmeId: Int, reportId: Int, inputVote: VoteInputModel): Int
+
+    fun updateProgrammeFromReport(programmeId: Int, reportId: Int): Optional<Programme>
+
+    fun voteOnStagedProgramme(stageId: Int, inputVote: VoteInputModel): Int
+
+    fun deleteAllProgrammes(): Int
 
     fun deleteSpecificProgramme(programmeId: Int): Int
 
-    fun deleteAllStagedProgrammes()
+    fun deleteAllStagedProgrammes(): Int
 
-    fun deleteStagedProgramme(stageId : Int) : Int
+    fun deleteSpecificStagedProgramme(stageId : Int): Int
 
-    fun deleteAllReportsOnProgramme(programmeId: Int)
+    fun deleteAllReportsOnProgramme(programmeId: Int): Int
 
-    fun deleteReportOnProgramme(programmeId: Int, reportId: Int) : Int
+    fun deleteSpecificReportOnProgramme(programmeId: Int, reportId: Int) : Int
 
-    fun partialUpdateOnProgramme(programmeId: Int, inputProgramme: ProgrammeInputModel)
+    fun partialUpdateOnProgramme(programmeId: Int, inputProgramme: ProgrammeInputModel): Optional<Programme>
 
-    fun getAllVersions(programmeId: Int): List<ProgrammeVersion>
+    fun getAllVersionsOfProgramme(programmeId: Int): List<ProgrammeVersion>
 
-    fun getVersion(programmeId: Int, versionId: Int): ProgrammeVersion
+    fun getSpecificVersionOfProgramme(programmeId: Int, version: Int): Optional<ProgrammeVersion>
 
-    fun deleteAllVersions(programmeId: Int): Int
+    fun deleteAllProgrammeVersions(programmeId: Int): Int
 
-    fun deleteSpecificVersion(programmeId: Int, versionId: Int): Int
+    fun deleteSpecificProgrammeVersion(programmeId: Int, version: Int): Int
 
-    fun reportCourseOnProgramme(programmeId: Int, courseId: Int, inputCourseReport: CourseProgrammeReportInputModel): Optional<CourseProgrammeReport>
+    fun reportSpecificCourseOnProgramme(programmeId: Int, courseId: Int, inputCourseReport: CourseProgrammeReportInputModel): Optional<CourseProgrammeReport>
 
-    fun getSpecificCourseOnSpecificProgramme(programmeId: Int, courseId: Int): Optional<Course>
+    fun getSpecificCourseOfProgramme(programmeId: Int, courseId: Int): Optional<Course>
 
-    fun getAllVersionsOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int): List<CourseProgrammeVersion>
+    fun getAllVersionsOfCourseOnProgramme(programmeId: Int, courseId: Int): List<CourseProgrammeVersion>
 
-    fun getSpecificVersionOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int, versionId: Int): Optional<CourseProgrammeVersion>
+    fun getSpecificVersionOfCourseOnProgramme(programmeId: Int, courseId: Int, version: Int): Optional<CourseProgrammeVersion>
 
-    fun getAllReportsOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int): List<CourseProgrammeReport>
+    fun getAllReportsOfCourseOnProgramme(programmeId: Int, courseId: Int): List<CourseProgrammeReport>
 
-    fun getSpecificReportOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int, reportId: Int): Optional<CourseProgrammeReport>
+    fun getSpecificReportOfCourseOnProgramme(programmeId: Int, courseId: Int, reportId: Int): Optional<CourseProgrammeReport>
 
     fun voteOnCourseProgramme(programmeId: Int, courseId: Int, inputVote: VoteInputModel): Int
 
-    fun createStagedCourseOfProgramme(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel): Optional<CourseProgrammeStage>
+    fun createStagingCourseOnProgramme(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel): Optional<CourseProgrammeStage>
 
-    fun createCourseProgrammeFromStaged(programmeId: Int, stageId: Int): Optional<CourseProgrammeVersion>
+    fun createCourseProgrammeFromStaged(programmeId: Int, stageId: Int): Optional<Course>
 
-    fun voteOnCourseProgrammeStaged(programmeId: Int, stageId: Int, inputVote: VoteInputModel): Int
+    fun voteOnStagedCourseProgramme(programmeId: Int, stageId: Int, inputVote: VoteInputModel): Int
 
     fun voteOnReportedCourseProgramme(programmeId: Int, courseId: Int, reportId: Int, inputVote: VoteInputModel): Int
 
-    fun getStagedCoursesOfProgramme(programmeId: Int): List<CourseProgrammeStage>
+    fun getAllCourseStageEntriesOfSpecificProgramme(programmeId: Int): List<CourseProgrammeStage>
 
     fun getSpecificStagedCourseOfProgramme(programmeId: Int, stageId: Int): Optional<CourseProgrammeStage>
 
-    fun updateReportedCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int
+    fun updateCourseProgrammeFromReport(programmeId: Int, courseId: Int, reportId: Int): Optional<Course>
 
-    fun deleteSpecificCourseOfProgramme(programmeId: Int, courseId: Int): Int
+    fun deleteSpecificCourseProgramme(programmeId: Int, courseId: Int): Int
 
-    fun deleteSpecificVersionOfCourseOfProgramme(programmeId: Int, courseId: Int, versionId: Int): Int
+    fun deleteSpecificVersionOfCourseProgramme(programmeId: Int, courseId: Int, version: Int): Int
 
-    fun deleteSpecificReportOfCourseOfProgramme(programmeId: Int, courseId: Int, reportId: Int): Int
+    fun deleteSpecificReportOfCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int
 
-    fun deleteSpecificStagedCourseOfProgramme(programmeId: Int, courseId: Int, stageId: Int): Int
+    fun deleteSpecificStagedCourseProgramme(programmeId: Int, courseId: Int, stageId: Int): Int
 }

@@ -17,9 +17,9 @@ data class CourseReport(
         @ColumnName(COURSE_ID)
         val courseId: Int = 0,
         @ColumnName(COURSE_FULL_NAME)
-        val courseFullName: String? = null,
+        val fullName: String? = null,
         @ColumnName(COURSE_SHORT_NAME)
-        val courseShortName: String? = null,
+        val shortName: String? = null,
         @ColumnName(COURSE_REPORTED_BY)
         val reportedBy: String = "",
         @ColumnName(COURSE_VOTES)

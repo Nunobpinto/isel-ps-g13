@@ -38,7 +38,7 @@ class OrganizationDAOImpl : OrganizationDAO {
     override fun getAllOrganizations() =
             handle.createQuery("select * from $ORGANIZATION_TABLE")
                     .mapTo(Organization::class.java)
-                    .toList()
+                    .list()
 
     override fun getSpecificOrganization(organizationId: Int) =
             handle.createQuery(
@@ -179,7 +179,7 @@ class OrganizationDAOImpl : OrganizationDAO {
             )
                     .bind("organizationId", organizationId)
                     .mapTo(OrganizationReport::class.java)
-                    .toList()
+                    .list()
 
     override fun getSpecificReportOnOrganization(organizationId: Int, reportId: Int) =
             handle.createQuery(
@@ -221,7 +221,7 @@ class OrganizationDAOImpl : OrganizationDAO {
             )
                     .bind("organizationId", organizationId)
                     .mapTo(OrganizationVersion::class.java)
-                    .toList()
+                    .list()
 
     override fun getSpecificVersionOfOrganization(organizationId: Int, version: Int) =
             handle.createQuery(

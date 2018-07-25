@@ -28,19 +28,19 @@ interface CourseDAO {
 
     fun getSpecificTermOfCourse(courseId: Int, termId: Int): Optional<Term>
 
-    fun getCoursesOnSpecificProgramme(programmeId: Int): List<Course>
+    fun getAllCoursesOnSpecificProgramme(programmeId: Int): List<Course>
 
     fun getSpecificCourseOfProgramme(programmeId: Int, courseId: Int): Optional<Course>
 
     fun updateCourse(course: Course): Int
 
-    fun updateCourseProgramme(programmeId: Int, courseId: Int, updatedCourse: Course): Int
+    fun updateCourseProgramme(programmeId: Int, courseId: Int, course: Course): Optional<Course>
 
     fun createCourse(course: Course): Optional<Course>
 
     fun voteOnCourse(courseId: Int, vote: Vote): Int
 
-    fun voteOnCourseOfProgramme(programmeId: Int, vote: Vote, courseId: Int): Int
+    fun voteOnCourseProgramme(programmeId: Int, courseId: Int, vote: Vote): Int
 
     fun addCourseToProgramme(programmeId: Int, course: Course): Optional<Course>
 
@@ -48,7 +48,7 @@ interface CourseDAO {
 
     fun deleteAllCourses(): Int
 
-    fun deleteSpecificCourseOfProgramme(programmeId: Int, courseId: Int): Int
+    fun deleteSpecificCourseProgramme(programmeId: Int, courseId: Int): Int
 
     /**
      * Stage entities queries
@@ -58,26 +58,25 @@ interface CourseDAO {
 
     fun getCourseSpecificStageEntry(courseStageId: Int): Optional<CourseStage>
 
-    fun getStagedCoursesOfProgramme(programmeId: Int): List<CourseProgrammeStage>
+    fun getAllCourseStageEntriesOfSpecificProgramme(programmeId: Int): List<CourseProgrammeStage>
 
-    fun getSpecificStagedCourseProgramme(courseProgrammeStageId: Int): Optional<CourseProgrammeStage>
+    fun getSpecificStagedCourseProgramme(programmeId: Int, stageId: Int): Optional<CourseProgrammeStage>
 
     fun createStagedCourse(courseStage: CourseStage): Optional<CourseStage>
 
     fun createStagingCourseOfProgramme(courseProgrammeStage: CourseProgrammeStage): Optional<CourseProgrammeStage>
 
-    fun voteOnStagedCourse(courseStageId: Int, inputVote: Vote): Int
+    fun voteOnStagedCourse(stageId: Int, inputVote: Vote): Int
 
-    fun voteOnCourseProgrammeStaged(stageId: Int, vote: Vote): Int
+    fun voteOnStagedCourseProgramme(programmeId: Int, stageId: Int, vote: Vote): Int
 
     fun deleteStagedCourse(courseStageId: Int): Int
 
     fun deleteAllStagedCourses(): Int
 
-    fun deleteStagedCourseOfProgramme(courseProgrammeStageId: Int): Int
+    fun deleteStagedCourseProgramme(courseProgrammeStageId: Int): Int
 
-    fun deleteSpecificStagedCourseOfProgramme(programmeId: Int, courseId: Int, stageId: Int): Int
-
+    fun deleteSpecificStagedCourseProgramme(programmeId: Int, courseId: Int, stageId: Int): Int
 
     /**
      * Version entities queries
@@ -87,11 +86,11 @@ interface CourseDAO {
 
     fun getVersionOfSpecificCourse(courseId: Int, versionId: Int): Optional<CourseVersion>
 
-    fun getAllVersionsOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int): List<CourseProgrammeVersion>
+    fun getAllVersionsOfCourseOnProgramme(programmeId: Int, courseId: Int): List<CourseProgrammeVersion>
 
-    fun getSpecificVersionOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int, version: Int): Optional<CourseProgrammeVersion>
+    fun getSpecificVersionOfCourseOnProgramme(programmeId: Int, courseId: Int, version: Int): Optional<CourseProgrammeVersion>
 
-    fun addCourseProgrammeToVersion(courseProgramme: Course): Optional<CourseProgrammeVersion>
+    fun createCourseProgrammeVersion(courseProgramme: Course): Optional<CourseProgrammeVersion>
 
     fun createCourseVersion(courseVersion: CourseVersion): Optional<CourseVersion>
 
@@ -99,15 +98,15 @@ interface CourseDAO {
 
     fun deleteAllVersionsOfCourse(versionCourseId: Int): Int
 
-    fun deleteSpecificVersionOfCourseOfProgramme(programmeId: Int, courseId: Int, version: Int): Int
+    fun deleteSpecificVersionOfCourseProgramme(programmeId: Int, courseId: Int, version: Int): Int
 
     /**
      * Report entity queries
      */
 
-    fun getAllReportsOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int): List<CourseProgrammeReport>
+    fun getAllReportsOfCourseOnProgramme(programmeId: Int, courseId: Int): List<CourseProgrammeReport>
 
-    fun getSpecificReportOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int, reportId: Int): Optional<CourseProgrammeReport>
+    fun getSpecificReportOfCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Optional<CourseProgrammeReport>
 
     fun getAllReportsOnCourse(courseId: Int): List<CourseReport>
 
@@ -115,9 +114,9 @@ interface CourseDAO {
 
     fun voteOnReportOfCourse(reportId: Int, vote: Vote): Int
 
-    fun voteOnReportOfCourseProgramme(programmeId: Int, reportId: Int, vote: Vote): Int
+    fun voteOnReportOfCourseProgramme(programmeId: Int, courseId: Int, reportId: Int, vote: Vote): Int
 
-    fun reportCourseOnProgramme(programmeId: Int, courseId: Int, courseProgrammeReport: CourseProgrammeReport): Optional<CourseProgrammeReport>
+    fun reportSpecificCourseOnProgramme(programmeId: Int, courseId: Int, courseProgrammeReport: CourseProgrammeReport): Optional<CourseProgrammeReport>
 
     fun reportCourse(courseId: Int, courseReport: CourseReport): Optional<CourseReport>
 
@@ -127,6 +126,6 @@ interface CourseDAO {
 
     fun deleteAllReportsOnCourse(courseId: Int): Int
 
-    fun deleteSpecificReportOfCourseOfProgramme(programmeId: Int, courseId: Int, reportId: Int): Int
+    fun deleteSpecificReportOfCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int
 
 }

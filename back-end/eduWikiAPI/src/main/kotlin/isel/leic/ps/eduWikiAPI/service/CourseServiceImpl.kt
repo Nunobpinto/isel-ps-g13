@@ -133,8 +133,8 @@ class CourseServiceImpl : CourseService {
     override fun reportCourse(courseId: Int, inputCourseReport: CourseReportInputModel): Optional<CourseReport> {
         val courseReport = CourseReport(
                 courseId = courseId,
-                courseFullName = inputCourseReport.fullName,
-                courseShortName = inputCourseReport.shortName,
+                fullName = inputCourseReport.fullName,
+                shortName = inputCourseReport.shortName,
                 reportedBy = inputCourseReport.reportedBy,
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
@@ -153,8 +153,8 @@ class CourseServiceImpl : CourseService {
                 organizationId = course.organizationId,
                 version = course.version.inc(),
                 createdBy = report.reportedBy,
-                fullName = report.courseFullName ?: course.fullName,
-                shortName = report.courseShortName ?: course.shortName,
+                fullName = report.fullName ?: course.fullName,
+                shortName = report.shortName ?: course.shortName,
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
         val res = courseDAO.updateCourse(updatedCourse)

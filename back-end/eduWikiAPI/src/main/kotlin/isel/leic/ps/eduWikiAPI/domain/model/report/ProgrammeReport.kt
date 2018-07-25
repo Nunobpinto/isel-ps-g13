@@ -20,15 +20,15 @@ data class ProgrammeReport(
         @ColumnName(PROGRAMME_ID)
         val programmeId: Int = 0,
         @ColumnName(PROGRAMME_FULL_NAME)
-        val programmeFullName: String? = null,
+        val fullName: String? = null,
         @ColumnName(PROGRAMME_SHORT_NAME)
-        val programmeShortName: String? = null,
+        val shortName: String? = null,
         @ColumnName(PROGRAMME_ACADEMIC_DEGREE)
-        val programmeAcademicDegree: String? = null,
+        val academicDegree: String? = null,
         @ColumnName(PROGRAMME_TOTAL_CREDITS)
-        val programmeTotalCredits: Int? = null,
+        val totalCredits: Int? = null,
         @ColumnName(PROGRAMME_DURATION)
-        val programmeDuration: Int? = null,
+        val duration: Int? = null,
         @ColumnName(PROGRAMME_REPORTED_BY)
         val reportedBy: String = "",
         @ColumnName(PROGRAMME_VOTES)

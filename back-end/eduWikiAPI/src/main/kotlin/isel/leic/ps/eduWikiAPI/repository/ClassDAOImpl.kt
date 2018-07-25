@@ -495,7 +495,7 @@ class ClassDAOImpl : ClassDAO {
             )
                     .bind("classId", classId)
                     .mapTo(CourseClassStage::class.java)
-                    .toList()
+                    .list()
 
 
     override fun getSpecificStagedCourseInClass(classId: Int, stageId: Int): Optional<CourseClassStage> =

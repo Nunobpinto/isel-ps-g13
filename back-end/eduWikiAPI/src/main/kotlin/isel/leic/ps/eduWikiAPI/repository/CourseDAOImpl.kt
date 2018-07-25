@@ -1,10 +1,8 @@
 package isel.leic.ps.eduWikiAPI.repository
 
 import isel.leic.ps.eduWikiAPI.domain.model.*
-import isel.leic.ps.eduWikiAPI.domain.model.report.CourseClassReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
-import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseClassStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseProgrammeVersion
@@ -13,8 +11,6 @@ import isel.leic.ps.eduWikiAPI.repository.interfaces.CourseDAO
 import org.jdbi.v3.core.Handle
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
-import java.sql.Timestamp
-import java.time.LocalDateTime
 import java.util.*
 
 @Repository
@@ -166,14 +162,14 @@ class CourseDAOImpl : CourseDAO {
                     .mapTo(CourseStage::class.java)
                     .findFirst()
 
-    override fun voteOnStagedCourse(courseStageId: Int, inputVote: Vote): Int {
+    override fun voteOnStagedCourse(stageId: Int, inputVote: Vote): Int {
         var votes = handle.createQuery("select $COURSE_VOTES from $COURSE_STAGE_TABLE where $COURSE_STAGE_ID = :courseId")
-                .bind("courseId", courseStageId)
+                .bind("courseId", stageId)
                 .mapTo(Int::class.java).findOnly()
         votes = if (inputVote == Vote.Down) --votes else ++votes
         return handle.createUpdate("update $COURSE_STAGE_TABLE set $COURSE_VOTES = :votes where $COURSE_STAGE_ID = :courseId")
                 .bind("votes", votes)
-                .bind("courseId", courseStageId)
+                .bind("courseId", stageId)
                 .execute()
     }
 
@@ -185,14 +181,19 @@ class CourseDAOImpl : CourseDAO {
 
     override fun reportCourse(courseId: Int, courseReport: CourseReport) =
             handle.createUpdate(
-                    "insert into $COURSE_REPORT_TABLE " +
-                            "($COURSE_ID, $COURSE_FULL_NAME, " +
-                            "$COURSE_SHORT_NAME, $COURSE_REPORTED_BY, $COURSE_VOTES, $COURSE_TIMESTAMP) " +
-                            "values(:courseId, :fullName, :shortName, :reportedBy, :votes, :timestamp)"
+                    "insert into $COURSE_REPORT_TABLE (" +
+                            "$COURSE_ID, " +
+                            "$COURSE_FULL_NAME, " +
+                            "$COURSE_SHORT_NAME, " +
+                            "$COURSE_REPORTED_BY, " +
+                            "$COURSE_VOTES, " +
+                            "$COURSE_TIMESTAMP) " +
+                            "values(:courseId, :fullName, :shortName, " +
+                            ":reportedBy, :votes, :timestamp)"
             )
                     .bind("courseId", courseId)
-                    .bind("fullName", courseReport.courseFullName)
-                    .bind("shortName", courseReport.courseShortName)
+                    .bind("fullName", courseReport.fullName)
+                    .bind("shortName", courseReport.shortName)
                     .bind("reportedBy", courseReport.reportedBy)
                     .bind("votes", courseReport.votes)
                     .bind("timestamp", courseReport.timestamp)
@@ -275,13 +276,22 @@ class CourseDAOImpl : CourseDAO {
                 .execute()
     }
 
-    override fun getCoursesOnSpecificProgramme(programmeId: Int) =
+    override fun getAllCoursesOnSpecificProgramme(programmeId: Int) =
             handle.createQuery(
-                    "select cp.$COURSE_PROGRAMME_COURSE_ID, cp.$COURSE_PROGRAMME_PROGRAMME_ID, cp.$COURSE_PROGRAMME_VERSION, " +
-                            "cp.$COURSE_PROGRAMME_LECTURED_TERM, c.$COURSE_CREATED_BY, c.$COURSE_FULL_NAME, c.$COURSE_SHORT_NAME, c.$COURSE_TIMESTAMP, c.$COURSE_VOTES, " +
-                            "cp.$COURSE_PROGRAMME_OPTIONAL, cp.$COURSE_PROGRAMME_CREDITS " +
+                    "select cp.$COURSE_PROGRAMME_COURSE_ID, " +
+                            "cp.$COURSE_PROGRAMME_PROGRAMME_ID, " +
+                            "cp.$COURSE_PROGRAMME_VERSION, " +
+                            "cp.$COURSE_PROGRAMME_LECTURED_TERM, " +
+                            "c.$COURSE_CREATED_BY, " +
+                            "c.$COURSE_FULL_NAME, " +
+                            "c.$COURSE_SHORT_NAME, " +
+                            "c.$COURSE_TIMESTAMP, " +
+                            "c.$COURSE_VOTES, " +
+                            "cp.$COURSE_PROGRAMME_OPTIONAL, " +
+                            "cp.$COURSE_PROGRAMME_CREDITS " +
                             "from $COURSE_TABLE as c " +
-                            "inner join $COURSE_PROGRAMME_TABLE as cp on c.$COURSE_ID = cp.$COURSE_PROGRAMME_COURSE_ID " +
+                            "inner join $COURSE_PROGRAMME_TABLE as cp " +
+                            "on c.$COURSE_ID = cp.$COURSE_PROGRAMME_COURSE_ID " +
                             "where cp.$COURSE_PROGRAMME_PROGRAMME_ID = :programmeId"
             )
                     .bind("programmeId", programmeId)
@@ -290,12 +300,22 @@ class CourseDAOImpl : CourseDAO {
 
     override fun getSpecificCourseOfProgramme(programmeId: Int, courseId: Int) =
             handle.createQuery(
-                    "select cp.$COURSE_PROGRAMME_COURSE_ID, cp.$COURSE_PROGRAMME_PROGRAMME_ID, cp.$COURSE_PROGRAMME_VERSION, " +
-                            "cp.$COURSE_PROGRAMME_LECTURED_TERM, c.$COURSE_CREATED_BY, c.$COURSE_FULL_NAME, c.$COURSE_SHORT_NAME, c.$COURSE_TIMESTAMP, cp.$COURSE_VOTES, " +
-                            "cp.$COURSE_PROGRAMME_OPTIONAL, cp.$COURSE_PROGRAMME_CREDITS " +
+                    "select cp.$COURSE_PROGRAMME_COURSE_ID, " +
+                            "cp.$COURSE_PROGRAMME_PROGRAMME_ID, " +
+                            "cp.$COURSE_PROGRAMME_VERSION, " +
+                            "cp.$COURSE_PROGRAMME_LECTURED_TERM, " +
+                            "c.$COURSE_CREATED_BY, " +
+                            "c.$COURSE_FULL_NAME, " +
+                            "c.$COURSE_SHORT_NAME, " +
+                            "c.$COURSE_TIMESTAMP, " +
+                            "cp.$COURSE_VOTES, " +
+                            "cp.$COURSE_PROGRAMME_OPTIONAL, " +
+                            "cp.$COURSE_PROGRAMME_CREDITS " +
                             "from $COURSE_TABLE as c " +
-                            "inner join $COURSE_PROGRAMME_TABLE as cp on c.$COURSE_ID = cp.$COURSE_PROGRAMME_COURSE_ID " +
-                            "where cp.$COURSE_PROGRAMME_PROGRAMME_ID = :programmeId and cp.$COURSE_PROGRAMME_COURSE_ID = :courseId"
+                            "inner join $COURSE_PROGRAMME_TABLE as cp " +
+                            "on c.$COURSE_ID = cp.$COURSE_PROGRAMME_COURSE_ID " +
+                            "where cp.$COURSE_PROGRAMME_PROGRAMME_ID = :programmeId " +
+                            "and cp.$COURSE_PROGRAMME_COURSE_ID = :courseId"
             )
                     .bind("programmeId", programmeId)
                     .bind("courseId", courseId)
@@ -312,7 +332,8 @@ class CourseDAOImpl : CourseDAO {
                             "$COURSE_PROGRAMME_CREDITS, " +
                             "$COURSE_PROGRAMME_TIMESTAMP, " +
                             "$COURSE_PROGRAMME_CREATED_BY) " +
-                            "values (:courseId, :programmeId, :lecturedTerm, :optional, :credits, :timestamp, :createdBy)"
+                            "values (:courseId, :programmeId, :lecturedTerm, " +
+                            ":optional, :credits, :timestamp, :createdBy)"
             )
                     .bind("courseId", course.courseId)
                     .bind("programmeId", programmeId)
@@ -325,7 +346,7 @@ class CourseDAOImpl : CourseDAO {
                     .mapTo(Course::class.java)
                     .findFirst()
 
-    override fun reportCourseOnProgramme(programmeId: Int, courseId: Int, courseProgrammeReport: CourseProgrammeReport) =
+    override fun reportSpecificCourseOnProgramme(programmeId: Int, courseId: Int, courseProgrammeReport: CourseProgrammeReport) =
             handle.createUpdate("insert into $COURSE_PROGRAMME_REPORT_TABLE (" +
                     "$COURSE_PROGRAMME_COURSE_ID, " +
                     "$COURSE_PROGRAMME_PROGRAMME_ID, " +
@@ -333,8 +354,12 @@ class CourseDAOImpl : CourseDAO {
                     "$COURSE_PROGRAMME_OPTIONAL, " +
                     "$COURSE_PROGRAMME_CREDITS, " +
                     "$COURSE_PROGRAMME_TIMESTAMP, " +
-                    "$COURSE_PROGRAMME_REPORTED_BY) " +
-                    "values (:courseId, :programmeId, :lecturedTerm, :optional, :credits, :timestamp, :reportedBy)")
+                    "$COURSE_PROGRAMME_REPORTED_BY," +
+                    "$COURSE_PROGRAMME_VOTES " +
+                    ") " +
+                    "values (:courseId, :programmeId, :lecturedTerm, " +
+                    ":optional, :credits, :timestamp, :reportedBy, :votes)"
+            )
                     .bind("courseId", courseId)
                     .bind("programmeId", programmeId)
                     .bind("lecturedTerm", courseProgrammeReport.lecturedTerm)
@@ -342,6 +367,7 @@ class CourseDAOImpl : CourseDAO {
                     .bind("credits", courseProgrammeReport.credits)
                     .bind("timestamp", courseProgrammeReport.timestamp)
                     .bind("reportedBy", courseProgrammeReport.reportedBy)
+                    .bind("votes", courseProgrammeReport.votes)
                     .executeAndReturnGeneratedKeys()
                     .mapTo(CourseProgrammeReport::class.java)
                     .findFirst()
@@ -357,10 +383,13 @@ class CourseDAOImpl : CourseDAO {
                     .mapTo(CourseVersion::class.java)
                     .list()
 
-    override fun getVersionOfSpecificCourse(courseId: Int, versionId: Int) =
-            handle.createQuery("select * from $COURSE_VERSION_TABLE where $COURSE_ID = :courseId and $COURSE_VERSION = :versionId")
+    override fun getVersionOfSpecificCourse(courseId: Int, version: Int) =
+            handle.createQuery(
+                    "select * from $COURSE_VERSION_TABLE " +
+                            "where $COURSE_ID = :courseId and $COURSE_VERSION = :version"
+            )
                     .bind("courseId", courseId)
-                    .bind("versionId", versionId)
+                    .bind("version", version)
                     .mapTo(CourseVersion::class.java)
                     .findFirst()
 
@@ -383,46 +412,55 @@ class CourseDAOImpl : CourseDAO {
                     .mapTo(CourseVersion::class.java)
                     .findFirst()
 
-    override fun voteOnCourseOfProgramme(programmeId: Int, vote: Vote, courseId: Int): Int {
+    override fun voteOnCourseProgramme(programmeId: Int, courseId: Int, vote: Vote): Int {
         var votes = handle.createQuery(
-                "select $COURSE_VOTES from $COURSE_PROGRAMME_TABLE where " +
-                        "$COURSE_PROGRAMME_COURSE_ID = :courseId and " +
-                        "$COURSE_PROGRAMME_PROGRAMME_ID =:programmeId"
+                "select $COURSE_VOTES from $COURSE_PROGRAMME_TABLE " +
+                        "where $COURSE_PROGRAMME_COURSE_ID = :courseId " +
+                        "and $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId"
         )
                 .bind("courseId", courseId)
                 .bind("programmeId", programmeId)
-                .mapTo(Int::class.java).findOnly()
-        votes = if (vote == Vote.Down) votes.dec() else votes.inc()
-        val updateQuery = "update $COURSE_PROGRAMME_TABLE set " +
-                "$COURSE_PROGRAMME_VOTES = :votes where " +
-                "$COURSE_PROGRAMME_COURSE_ID = :courseId and " +
-                "$COURSE_PROGRAMME_PROGRAMME_ID = :programmeId"
-        return handle.createUpdate(updateQuery)
+                .mapTo(Int::class.java)
+                .findOnly()
+        votes = if (vote == Vote.Down) --votes else ++votes
+
+        return handle.createUpdate(
+                "update $COURSE_PROGRAMME_TABLE set " +
+                        "$COURSE_PROGRAMME_VOTES = :votes " +
+                        "where $COURSE_PROGRAMME_COURSE_ID = :courseId " +
+                        "and $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId"
+        )
                 .bind("votes", votes)
                 .bind("courseId", courseId)
                 .bind("programmeId", programmeId)
                 .execute()
     }
 
-    override fun updateCourseProgramme(programmeId: Int, courseId: Int, updatedCourse: Course) =
+    override fun updateCourseProgramme(programmeId: Int, courseId: Int, course: Course): Optional<Course> =
             handle.createUpdate(
                     "update $COURSE_PROGRAMME_TABLE SET " +
                             "$COURSE_PROGRAMME_VERSION = :version, " +
-                            "$COURSE_PROGRAMME_CREATED_BY = :createdBy, $COURSE_PROGRAMME_LECTURED_TERM = :lecturedTerm, " +
-                            "$COURSE_PROGRAMME_OPTIONAL = :optional, $COURSE_PROGRAMME_VOTES = :votes, " +
-                            "$COURSE_PROGRAMME_TIMESTAMP = :timestamp, $COURSE_PROGRAMME_CREDITS = :credits " +
-                            "where $COURSE_PROGRAMME_COURSE_ID = :courseId and $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId"
+                            "$COURSE_PROGRAMME_CREATED_BY = :createdBy, " +
+                            "$COURSE_PROGRAMME_LECTURED_TERM = :lecturedTerm, " +
+                            "$COURSE_PROGRAMME_OPTIONAL = :optional, " +
+                            "$COURSE_PROGRAMME_VOTES = :votes, " +
+                            "$COURSE_PROGRAMME_TIMESTAMP = :timestamp, " +
+                            "$COURSE_PROGRAMME_CREDITS = :credits " +
+                            "where $COURSE_PROGRAMME_COURSE_ID = :courseId " +
+                            "and $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId"
             )
-                    .bind("version", updatedCourse.version)
-                    .bind("createdBy", updatedCourse.createdBy)
-                    .bind("lecturedTerm", updatedCourse.lecturedTerm)
-                    .bind("optional", updatedCourse.optional)
-                    .bind("votes", updatedCourse.votes)
-                    .bind("timestamp", updatedCourse.timestamp)
-                    .bind("credits", updatedCourse.credits)
+                    .bind("version", course.version)
+                    .bind("createdBy", course.createdBy)
+                    .bind("lecturedTerm", course.lecturedTerm)
+                    .bind("optional", course.optional)
+                    .bind("votes", course.votes)
+                    .bind("timestamp", course.timestamp)
+                    .bind("credits", course.credits)
                     .bind("courseId", courseId)
                     .bind("programmeId", programmeId)
-                    .execute()
+                    .executeAndReturnGeneratedKeys()
+                    .mapTo(Course::class.java)
+                    .findFirst()
 
     override fun createStagingCourseOfProgramme(courseProgrammeStage: CourseProgrammeStage) =
             handle.createUpdate(
@@ -449,38 +487,47 @@ class CourseDAOImpl : CourseDAO {
                     .mapTo(CourseProgrammeStage::class.java)
                     .findFirst()
 
-    override fun getSpecificStagedCourseProgramme(courseProgrammeStageId: Int) =
+    override fun getSpecificStagedCourseProgramme(programmeId: Int, stageId: Int) =
             handle.createQuery(
-                    "select * from $COURSE_PROGRAMME_STAGE_TABLE where $COURSE_PROGRAMME_STAGE_ID = :stageId"
+                    "select * from $COURSE_PROGRAMME_STAGE_TABLE " +
+                            "where $COURSE_PROGRAMME_STAGE_ID = :stageId" +
+                            "and $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId"
             )
-                    .bind("stageId", courseProgrammeStageId)
+                    .bind("stageId", stageId)
+                    .bind("programmeId", programmeId)
                     .mapTo(CourseProgrammeStage::class.java)
                     .findFirst()
 
-    override fun deleteStagedCourseOfProgramme(courseProgrammeStageId: Int) =
+    override fun deleteStagedCourseProgramme(courseProgrammeStageId: Int) =
             handle.createUpdate("delete from $COURSE_PROGRAMME_STAGE_TABLE where $COURSE_PROGRAMME_STAGE_ID = :stageId")
                     .bind("stageId", courseProgrammeStageId)
                     .execute()
 
-    override fun voteOnCourseProgrammeStaged(stageId: Int, vote: Vote): Int {
-        var votes = handle.createQuery("select $COURSE_VOTES " +
-                "from $COURSE_PROGRAMME_STAGE_TABLE " +
-                "where $COURSE_PROGRAMME_STAGE_ID = :stageId"
+    override fun voteOnStagedCourseProgramme(programmeId: Int, stageId: Int, vote: Vote): Int {
+        var votes = handle.createQuery(
+                "select $COURSE_VOTES from $COURSE_PROGRAMME_STAGE_TABLE " +
+                        "where $COURSE_PROGRAMME_STAGE_ID = :stageId " +
+                        "and $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId"
         )
                 .bind("stageId", stageId)
-                .mapTo(Int::class.java).findOnly()
-        votes = if (vote == Vote.Down) votes.dec() else votes.inc()
+                .bind("programmeId", programmeId)
+                .mapTo(Int::class.java)
+                .findOnly()
+        votes = if (vote == Vote.Down) --votes else ++votes
+
         return handle.createUpdate(
                 "update $COURSE_PROGRAMME_STAGE_TABLE " +
                         "set $COURSE_PROGRAMME_VOTES = :votes " +
-                        "where $COURSE_PROGRAMME_STAGE_ID = :stageId"
+                        "where $COURSE_PROGRAMME_STAGE_ID = :stageId " +
+                        "and $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId"
         )
                 .bind("votes", votes)
                 .bind("stageId", stageId)
+                .bind("programmeId", programmeId)
                 .execute()
     }
 
-    override fun getAllVersionsOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int) =
+    override fun getAllVersionsOfCourseOnProgramme(programmeId: Int, courseId: Int) =
             handle.createQuery(
                     "select * from $COURSE_PROGRAMME_VERSION_TABLE " +
                             "where $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId " +
@@ -491,24 +538,23 @@ class CourseDAOImpl : CourseDAO {
                     .mapTo(CourseProgrammeVersion::class.java)
                     .list()
 
-    override fun getSpecificVersionOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int, version: Int) =
+    override fun getSpecificVersionOfCourseOnProgramme(programmeId: Int, courseId: Int, version: Int) =
             handle.createQuery(
                     "select * from $COURSE_PROGRAMME_VERSION_TABLE " +
                             "where $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId " +
                             "and $COURSE_PROGRAMME_COURSE_ID = :courseId " +
-                            "and $COURSE_PROGRAMME_VERSION = :versionId"
+                            "and $COURSE_PROGRAMME_VERSION = :version"
             )
                     .bind("programmeId", programmeId)
                     .bind("courseId", courseId)
-                    .bind("versionId", version)
+                    .bind("version", version)
                     .mapTo(CourseProgrammeVersion::class.java)
                     .findFirst()
 
-    //TODO: mudar par receber um courseProgrammeVersion
-    override fun addCourseProgrammeToVersion(courseProgramme: Course) =
+    override fun createCourseProgrammeVersion(courseProgramme: Course) =
             handle.createUpdate(
-                    "insert into $COURSE_PROGRAMME_VERSION_TABLE " +
-                            "($COURSE_PROGRAMME_COURSE_ID, " +
+                    "insert into $COURSE_PROGRAMME_VERSION_TABLE (" +
+                            "$COURSE_PROGRAMME_COURSE_ID, " +
                             "$COURSE_PROGRAMME_PROGRAMME_ID, " +
                             "$COURSE_PROGRAMME_VERSION, " +
                             "$COURSE_PROGRAMME_LECTURED_TERM, " +
@@ -516,24 +562,23 @@ class CourseDAOImpl : CourseDAO {
                             "$COURSE_PROGRAMME_CREDITS, " +
                             "$COURSE_PROGRAMME_CREATED_BY, " +
                             "$COURSE_PROGRAMME_TIMESTAMP," +
-                            "$COURSE_PROGRAMME_VOTES)" +
+                            ")" +
                             "values (:courseId, :progId, :version, :lectured, " +
-                            ":optional, :credits, :createdBy, :timestamp, :votes)"
+                            ":optional, :credits, :createdBy, :timestamp)"
             )
                     .bind("courseId", courseProgramme.courseId)
                     .bind("progId", courseProgramme.programmeId)
                     .bind("version", courseProgramme.version)
                     .bind("lectured", courseProgramme.lecturedTerm)
                     .bind("optional", courseProgramme.optional)
+                    .bind("credits", courseProgramme.credits)
                     .bind("createdBy", courseProgramme.createdBy)
                     .bind("timestamp", courseProgramme.timestamp)
-                    .bind("credits", courseProgramme.credits)
-                    .bind("votes", courseProgramme.votes)
                     .executeAndReturnGeneratedKeys()
                     .mapTo(CourseProgrammeVersion::class.java)
                     .findFirst()
 
-    override fun getAllReportsOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int) =
+    override fun getAllReportsOfCourseOnProgramme(programmeId: Int, courseId: Int) =
             handle.createQuery(
                     "select * from $COURSE_PROGRAMME_REPORT_TABLE " +
                             "where $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId " +
@@ -544,38 +589,60 @@ class CourseDAOImpl : CourseDAO {
                     .mapTo(CourseProgrammeReport::class.java)
                     .list()
 
-    override fun getSpecificReportOfCourseOnSpecificProgramme(programmeId: Int, courseId: Int, reportId: Int) =
+    override fun getSpecificReportOfCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Optional<CourseProgrammeReport> =
             handle.createQuery(
-                    "select * from $COURSE_PROGRAMME_REPORT_TABLE where $COURSE_REPORT_ID= :reportId"
+                    "select * from $COURSE_PROGRAMME_REPORT_TABLE " +
+                            "where $COURSE_PROGRAMME_REPORT_ID= :reportId " +
+                            "and $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId " +
+                            "and $COURSE_PROGRAMME_COURSE_ID = :courseId"
             )
                     .bind("reportId", reportId)
+                    .bind("programmeId", programmeId)
+                    .bind("courseId", courseId)
                     .mapTo(CourseProgrammeReport::class.java)
                     .findFirst()
 
-    override fun deleteReportOnCourseProgramme(programmeId: Int, courseId: Int, reportId: Int) =
+    override fun deleteReportOnCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int =
             handle.createUpdate(
                     "delete from $COURSE_PROGRAMME_REPORT_TABLE " +
-                            "where $COURSE_REPORT_ID = :reportId"
+                            "where $COURSE_PROGRAMME_REPORT_ID = :reportId" +
+                            "and $COURSE_PROGRAMME_COURSE_ID = :courseId " +
+                            "and $COURSE_PROGRAMME_PROGRAMME_ID = programmeId"
             )
-                    .bind("reportId", reportId).execute()
+                    .bind("reportId", reportId)
+                    .bind("courseId", courseId)
+                    .bind("programmeId", programmeId)
+                    .execute()
 
-    override fun voteOnReportOfCourseProgramme(programmeId: Int, reportId: Int, vote: Vote): Int {
+    override fun voteOnReportOfCourseProgramme(programmeId: Int, courseId: Int, reportId: Int, vote: Vote): Int {
         var votes = handle.createQuery(
                 "select $COURSE_PROGRAMME_VOTES from $COURSE_PROGRAMME_REPORT_TABLE " +
-                        "where $COURSE_REPORT_ID = :reportId")
+                        "where $COURSE_PROGRAMME_REPORT_ID = :reportId " +
+                        "and $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId " +
+                        "and $COURSE_PROGRAMME_COURSE_ID = :courseId"
+        )
                 .bind("reportId", reportId)
-                .mapTo(Int::class.java).findOnly()
-        votes = if (vote == Vote.Down) votes.dec() else votes.inc()
+                .bind("programmeId", programmeId)
+                .bind("courseId", courseId)
+                .mapTo(Int::class.java)
+                .findOnly()
+        votes = if (vote == Vote.Down) --votes else ++votes
+
         return handle.createUpdate(
                 "update $COURSE_PROGRAMME_REPORT_TABLE " +
                         "set $COURSE_PROGRAMME_VOTES = :votes " +
-                        "where $COURSE_REPORT_ID = :reportId")
+                        "where $COURSE_PROGRAMME_REPORT_ID = :reportId " +
+                        "and $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId " +
+                        "and $COURSE_PROGRAMME_COURSE_ID = :courseId"
+        )
                 .bind("votes", votes)
                 .bind("reportId", reportId)
+                .bind("programmeId", programmeId)
+                .bind("courseId", courseId)
                 .execute()
     }
 
-    override fun getStagedCoursesOfProgramme(programmeId: Int) =
+    override fun getAllCourseStageEntriesOfSpecificProgramme(programmeId: Int) =
             handle.createQuery(
                     "select * from $COURSE_PROGRAMME_STAGE_TABLE " +
                             "where $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId"
@@ -584,7 +651,7 @@ class CourseDAOImpl : CourseDAO {
                     .mapTo(CourseProgrammeStage::class.java)
                     .list()
 
-    override fun deleteSpecificCourseOfProgramme(programmeId: Int, courseId: Int) =
+    override fun deleteSpecificCourseProgramme(programmeId: Int, courseId: Int) =
             handle.createUpdate(
                     "delete from $COURSE_PROGRAMME_TABLE " +
                             "where $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId " +
@@ -594,17 +661,19 @@ class CourseDAOImpl : CourseDAO {
                     .bind("courseId", courseId)
                     .execute()
 
-    override fun deleteSpecificStagedCourseOfProgramme(programmeId: Int, courseId: Int, stageId: Int) =
+    override fun deleteSpecificStagedCourseProgramme(programmeId: Int, courseId: Int, stageId: Int) =
             handle.createUpdate(
                     "delete from $COURSE_PROGRAMME_STAGE_TABLE " +
                             "where $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId " +
-                            "and $COURSE_PROGRAMME_COURSE_ID = :courseId"
+                            "and $COURSE_PROGRAMME_COURSE_ID = :courseId" +
+                            "and $COURSE_PROGRAMME_STAGE_ID = :stageId"
             )
                     .bind("programmeId", programmeId)
                     .bind("courseId", courseId)
+                    .bind("stageId", stageId)
                     .execute()
 
-    override fun deleteSpecificVersionOfCourseOfProgramme(programmeId: Int, courseId: Int, version: Int) =
+    override fun deleteSpecificVersionOfCourseProgramme(programmeId: Int, courseId: Int, version: Int) =
             handle.createUpdate(
                     "delete from $COURSE_PROGRAMME_VERSION_TABLE " +
                             "where $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId " +
@@ -616,12 +685,16 @@ class CourseDAOImpl : CourseDAO {
                     .bind("version", version)
                     .execute()
 
-    override fun deleteSpecificReportOfCourseOfProgramme(programmeId: Int, courseId: Int, reportId: Int) =
+    override fun deleteSpecificReportOfCourseProgramme(programmeId: Int, courseId: Int, reportId: Int) =
             handle.createUpdate(
                     "delete from $COURSE_PROGRAMME_REPORT_TABLE " +
-                            "where $COURSE_PROGRAMME_REPORT_ID = :reportId"
+                            "where $COURSE_PROGRAMME_REPORT_ID = :reportId " +
+                            "and $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId " +
+                            "and $COURSE_PROGRAMME_COURSE_ID = :courseId"
             )
                     .bind("reportId", reportId)
+                    .bind("programmeId", programmeId)
+                    .bind("courseId", courseId)
                     .execute()
 }
 
