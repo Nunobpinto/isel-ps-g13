@@ -93,7 +93,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                     .bind("courseId", courseMiscUnitId)
                     .execute()
 
-    override fun updateWorkAssignment(workAssignmentId: Int, workAssignment: WorkAssignment) =
+    override fun updateWorkAssignment(workAssignmentId: Int, workAssignment: WorkAssignment): Optional<WorkAssignment> =
             handle.createUpdate(
                     "update $WORK_ASSIGNMENT_TABLE SET " +
                             "$WORK_ASSIGNMENT_VERSION = :version, " +
@@ -121,7 +121,9 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                     .bind("votes", workAssignment.votes)
                     .bind("timestamp", workAssignment.timestamp)
                     .bind("workAssignmentId", workAssignmentId)
-                    .execute()
+                    .executeAndReturnGeneratedKeys()
+                    .mapTo(WorkAssignment::class.java)
+                    .findFirst()
 
     override fun voteOnWorkAssignment(courseMiscUnitId: Int, vote: Vote): Int {
         var votes = handle.createQuery(

@@ -32,7 +32,7 @@ interface CourseDAO {
 
     fun getSpecificCourseOfProgramme(programmeId: Int, courseId: Int): Optional<Course>
 
-    fun updateCourse(course: Course): Int
+    fun updateCourse(course: Course): Optional<Course>
 
     fun updateCourseProgramme(programmeId: Int, courseId: Int, course: Course): Optional<Course>
 
@@ -90,7 +90,7 @@ interface CourseDAO {
 
     fun getSpecificVersionOfCourseOnProgramme(programmeId: Int, courseId: Int, version: Int): Optional<CourseProgrammeVersion>
 
-    fun createCourseProgrammeVersion(courseProgramme: Course): Optional<CourseProgrammeVersion>
+    fun createCourseProgrammeVersion(courseProgrammeVersion: CourseProgrammeVersion): Optional<CourseProgrammeVersion>
 
     fun createCourseVersion(courseVersion: CourseVersion): Optional<CourseVersion>
 

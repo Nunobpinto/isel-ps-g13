@@ -7,6 +7,7 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.WorkAssignmentInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ExamReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.WorkAssignmentReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.mappers.*
 import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.ExamReport
@@ -26,8 +27,6 @@ import isel.leic.ps.eduWikiAPI.service.interfaces.CourseService
 import org.jdbi.v3.core.Handle
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.sql.Timestamp
-import java.time.LocalDateTime
 import java.util.*
 
 @Service
@@ -108,21 +107,8 @@ class CourseServiceImpl : CourseService {
 
     override fun createCourse(inputCourse: CourseInputModel): Optional<Course> {
         handle.begin()
-        val course = courseDAO.createCourse(Course(
-                organizationId = inputCourse.organizationId,
-                createdBy = inputCourse.createdBy,
-                fullName = inputCourse.fullName,
-                shortName = inputCourse.shortName
-        )).get()
-        courseDAO.createCourseVersion(CourseVersion(
-                courseId = course.courseId,
-                organizationId = course.organizationId,
-                version = course.version,
-                fullName = course.fullName,
-                shortName = course.shortName,
-                createdBy = course.createdBy,
-                timestamp = course.timestamp
-        ))
+        val course = courseDAO.createCourse(toCourse(inputCourse)).get()
+        courseDAO.createCourseVersion(toCourseVersion(course))
         handle.commit()
         return Optional.of(course)
     }
@@ -130,21 +116,13 @@ class CourseServiceImpl : CourseService {
     override fun voteOnCourse(courseId: Int, inputVote: VoteInputModel): Int =
             courseDAO.voteOnCourse(courseId, Vote.valueOf(inputVote.vote))
 
-    override fun reportCourse(courseId: Int, inputCourseReport: CourseReportInputModel): Optional<CourseReport> {
-        val courseReport = CourseReport(
-                courseId = courseId,
-                fullName = inputCourseReport.fullName,
-                shortName = inputCourseReport.shortName,
-                reportedBy = inputCourseReport.reportedBy,
-                timestamp = Timestamp.valueOf(LocalDateTime.now())
-        )
-        return courseDAO.reportCourse(courseId, courseReport)
-    }
+    override fun reportCourse(courseId: Int, inputCourseReport: CourseReportInputModel): Optional<CourseReport> =
+            courseDAO.reportCourse(courseId, toCourseReport(courseId, inputCourseReport))
 
     override fun voteOnReportOfCourse(reportId: Int, inputVote: VoteInputModel): Int =
             courseDAO.voteOnReportOfCourse(reportId, Vote.valueOf(inputVote.vote))
 
-    override fun updateReportedCourse(courseId: Int, reportId: Int): Int {
+    override fun updateReportedCourse(courseId: Int, reportId: Int): Optional<Course> {
         handle.begin()
         val course = courseDAO.getSpecificCourse(courseId).get()
         val report = courseDAO.getSpecificReportOfCourse(courseId, reportId).get()
@@ -154,59 +132,29 @@ class CourseServiceImpl : CourseService {
                 version = course.version.inc(),
                 createdBy = report.reportedBy,
                 fullName = report.fullName ?: course.fullName,
-                shortName = report.shortName ?: course.shortName,
-                timestamp = Timestamp.valueOf(LocalDateTime.now())
+                shortName = report.shortName ?: course.shortName
         )
-        val res = courseDAO.updateCourse(updatedCourse)
-        courseDAO.createCourseVersion(CourseVersion(
-                courseId = updatedCourse.courseId,
-                organizationId = updatedCourse.organizationId,
-                version = updatedCourse.version,
-                fullName = updatedCourse.fullName,
-                shortName = updatedCourse.shortName,
-                timestamp = updatedCourse.timestamp,
-                createdBy = updatedCourse.createdBy
-        ))
+        val res = courseDAO.updateCourse(updatedCourse).get()
+        courseDAO.createCourseVersion(toCourseVersion(updatedCourse))
         courseDAO.deleteReportOnCourse(reportId)
         handle.commit()
-        return res
+        return Optional.of(res)
     }
 
-    override fun createStagingCourse(inputCourse: CourseInputModel): Optional<CourseStage> {
-        val stage = CourseStage(
-                organizationId = inputCourse.organizationId,
-                fullName = inputCourse.fullName,
-                shortName = inputCourse.shortName,
-                createdBy = inputCourse.createdBy,
-                timestamp = Timestamp.valueOf(LocalDateTime.now())
-        )
-        return courseDAO.createStagedCourse(stage)
-    }
+    override fun createStagingCourse(inputCourse: CourseInputModel): Optional<CourseStage> =
+            courseDAO.createStagedCourse(toCourseStage(inputCourse))
 
     override fun createCourseFromStaged(stageId: Int): Optional<Course> {
         handle.begin()
         val courseStage = courseDAO.getCourseSpecificStageEntry(stageId).get()
-        val createdCourse = courseDAO.createCourse(Course(
-                organizationId = courseStage.organizationId,
-                createdBy = courseStage.createdBy,
-                fullName = courseStage.fullName,
-                shortName = courseStage.shortName
-        )).get()
+        val createdCourse = courseDAO.createCourse(stagedToCourse(courseStage)).get()
         courseDAO.deleteStagedCourse(stageId)
-        courseDAO.createCourseVersion(CourseVersion(
-                courseId = createdCourse.courseId,
-                organizationId = createdCourse.organizationId,
-                version = createdCourse.version,
-                fullName = createdCourse.fullName,
-                shortName = createdCourse.shortName,
-                createdBy = createdCourse.createdBy,
-                timestamp = createdCourse.timestamp
-        ))
+        courseDAO.createCourseVersion(toCourseVersion(createdCourse))
         handle.commit()
         return Optional.of(createdCourse)
     }
 
-    override fun partialUpdateOnCourse(courseId: Int, inputCourse: CourseInputModel): Int {
+    override fun partialUpdateOnCourse(courseId: Int, inputCourse: CourseInputModel): Optional<Course> {
         handle.begin()
         val course = courseDAO.getSpecificCourse(courseId).get()
         val updatedCourse = Course(
@@ -217,18 +165,10 @@ class CourseServiceImpl : CourseService {
                 fullName = if (inputCourse.fullName.isEmpty()) course.fullName else inputCourse.fullName,
                 shortName = if (inputCourse.shortName.isEmpty()) course.shortName else inputCourse.shortName
         )
-        val res = courseDAO.updateCourse(updatedCourse)
-        courseDAO.createCourseVersion(CourseVersion(
-                courseId = updatedCourse.courseId,
-                organizationId = updatedCourse.organizationId,
-                version = updatedCourse.version,
-                fullName = updatedCourse.fullName,
-                shortName = updatedCourse.shortName,
-                createdBy = updatedCourse.createdBy,
-                timestamp = updatedCourse.timestamp
-        ))
+        val res = courseDAO.updateCourse(updatedCourse).get()
+        courseDAO.createCourseVersion(toCourseVersion(updatedCourse))
         handle.commit()
-        return res
+        return Optional.of(res)
     }
 
     override fun deleteAllCourses(): Int = courseDAO.deleteAllCourses()
@@ -249,46 +189,19 @@ class CourseServiceImpl : CourseService {
 
     override fun createExamOnCourseInTerm(courseId: Int, termId: Int, inputExam: ExamInputModel): Optional<Exam> {
         handle.begin()
-        val exam = examDAO.createExam(courseId, termId, Exam(
-                createdBy = inputExam.createdBy,
-                sheet = inputExam.sheet,
-                dueDate = inputExam.dueDate,
-                type = inputExam.type,
-                phase = inputExam.phase,
-                location = inputExam.location
-        )).get()
-        examDAO.createVersionExam(ExamVersion(
-                examId = exam.examId,
-                version = exam.version,
-                createdBy = exam.createdBy,
-                timestamp = exam.timestamp,
-                sheet = exam.sheet,
-                dueDate = exam.dueDate,
-                type = exam.type,
-                phase = exam.phase,
-                location = exam.location
-        ))
+        val exam = examDAO.createExam(courseId, termId, toExam(inputExam)).get()
+        examDAO.createVersionExam(toExamVersion(exam))
         handle.commit()
         return Optional.of(exam)
     }
 
-    override fun addReportToExamOnCourseInTerm(examId: Int, inputExamReport: ExamReportInputModel): Optional<ExamReport> {
-        val examReport = ExamReport(
-                examId = examId,
-                sheet = inputExamReport.sheet,
-                dueDate = inputExamReport.dueDate,
-                type = inputExamReport.type,
-                phase = inputExamReport.phase,
-                location = inputExamReport.location,
-                reportedBy = inputExamReport.reportedBy
-        )
-        return examDAO.reportExam(examReport)
-    }
+    override fun addReportToExamOnCourseInTerm(examId: Int, inputExamReport: ExamReportInputModel): Optional<ExamReport> =
+            examDAO.reportExam(toExamReport(examId, inputExamReport))
 
     override fun voteOnReportToExamOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int =
             examDAO.voteOnReportToExamOnCourseInTerm(reportId, Vote.valueOf(inputVote.vote))
 
-    override fun updateReportedExam(examId: Int, reportId: Int, courseId: Int, termId: Int): Int {
+    override fun updateReportedExam(examId: Int, reportId: Int, courseId: Int, termId: Int): Optional<Exam> {
         handle.begin()
         val exam = examDAO.getSpecificExamFromSpecificTermOfCourse(courseId, termId, examId).get()
         val report = examDAO.getSpecificReportOfExam(examId, reportId).get()
@@ -302,57 +215,21 @@ class CourseServiceImpl : CourseService {
                 phase = report.phase ?: exam.phase,
                 location = report.location ?: exam.location
         )
-        val res = examDAO.updateExam(examId, updatedExam)
-        examDAO.createVersionExam(ExamVersion(
-                examId = updatedExam.examId,
-                version = updatedExam.version,
-                createdBy = updatedExam.createdBy,
-                timestamp = updatedExam.timestamp,
-                sheet = updatedExam.sheet,
-                dueDate = updatedExam.dueDate,
-                type = updatedExam.type,
-                phase = updatedExam.phase,
-                location = updatedExam.location
-        ))
+        val res = examDAO.updateExam(examId, updatedExam).get()
+        examDAO.createVersionExam(toExamVersion(updatedExam))
         examDAO.deleteReportOnExam(examId, reportId)
         handle.commit()
-        return res
+        return Optional.of(res)
     }
 
-    override fun createStagingExam(courseId: Int, termId: Int, inputExam: ExamInputModel): Optional<ExamStage> {
-        val stage = ExamStage(
-                sheet = inputExam.sheet,
-                dueDate = inputExam.dueDate,
-                type = inputExam.type,
-                phase = inputExam.phase,
-                location = inputExam.location,
-                createdBy = inputExam.createdBy
-        )
-        return examDAO.createStagingExam(courseId, termId, stage)
-    }
+    override fun createStagingExam(courseId: Int, termId: Int, inputExam: ExamInputModel): Optional<ExamStage> =
+            examDAO.createStagingExam(courseId, termId, toStageExam(inputExam))
 
     override fun createExamFromStaged(courseId: Int, termId: Int, stageId: Int): Optional<Exam> {
         handle.begin()
         val examStage = examDAO.getExamSpecificStageEntry(stageId).get()
-        val newExam = examDAO.createExam(courseId, termId, Exam(
-                createdBy = examStage.createdBy,
-                sheet = examStage.sheet,
-                dueDate = examStage.dueDate,
-                type = examStage.type,
-                phase = examStage.phase,
-                location = examStage.location
-        )).get()
-        examDAO.createVersionExam(ExamVersion(
-                examId = newExam.examId,
-                version = newExam.version,
-                createdBy = newExam.createdBy,
-                timestamp = newExam.timestamp,
-                sheet = newExam.sheet,
-                dueDate = newExam.dueDate,
-                type = newExam.type,
-                phase = newExam.phase,
-                location = newExam.location
-        ))
+        val newExam = examDAO.createExam(courseId, termId, stagedToExam(examStage)).get()
+        examDAO.createVersionExam(toExamVersion(newExam))
         examDAO.deleteStagedExam(stageId)
         handle.commit()
         return Optional.of(newExam)
@@ -363,49 +240,21 @@ class CourseServiceImpl : CourseService {
 
     override fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): Optional<WorkAssignment> {
         handle.begin()
-        val workAssignment = workAssignmentDAO.createWorkAssignmentOnCourseInTerm(courseId, termId,
-                WorkAssignment(
-                        createdBy = inputWorkAssignment.createdBy,
-                        sheet = inputWorkAssignment.sheet,
-                        supplement = inputWorkAssignment.supplement,
-                        dueDate = inputWorkAssignment.dueDate,
-                        individual = inputWorkAssignment.individual,
-                        lateDelivery = inputWorkAssignment.lateDelivery,
-                        multipleDeliveries = inputWorkAssignment.multipleDeliveries,
-                        requiresReport = inputWorkAssignment.requiresReport
-                )
+        val workAssignment = workAssignmentDAO.createWorkAssignmentOnCourseInTerm(
+                courseId,
+                termId,
+                toWorkAssignment(inputWorkAssignment)
         ).get()
-        workAssignmentDAO.createWorkAssignmentVersion(WorkAssignmentVersion(
-                workAssignmentId = workAssignment.workAssignmentId,
-                version = workAssignment.version,
-                sheet = workAssignment.sheet,
-                supplement = workAssignment.supplement,
-                dueDate = workAssignment.dueDate,
-                individual = workAssignment.individual,
-                lateDelivery = workAssignment.lateDelivery,
-                multipleDeliveries = workAssignment.multipleDeliveries,
-                requiresReport = workAssignment.requiresReport,
-                createdBy = workAssignment.createdBy,
-                timestamp = workAssignment.timestamp
-        ))
+        workAssignmentDAO.createWorkAssignmentVersion(toWorkAssignmentVersion(workAssignment))
         handle.commit()
         return Optional.of(workAssignment)
     }
 
-    override fun addReportToWorkAssignmentOnCourseInTerm(workAssignmentId: Int, inputWorkAssignmentReport: WorkAssignmentReportInputModel): Optional<WorkAssignmentReport> {
-        val workAssignmentReport = WorkAssignmentReport(
-                workAssignmentId = workAssignmentId,
-                sheet = inputWorkAssignmentReport.sheet,
-                supplement = inputWorkAssignmentReport.supplement,
-                dueDate = inputWorkAssignmentReport.dueDate,
-                individual = inputWorkAssignmentReport.individual,
-                lateDelivery = inputWorkAssignmentReport.lateDelivery,
-                multipleDeliveries = inputWorkAssignmentReport.multipleDeliveries,
-                requiresReport = inputWorkAssignmentReport.requiresReport,
-                reportedBy = inputWorkAssignmentReport.reportedBy
-        )
-        return workAssignmentDAO.addReportToWorkAssignmentOnCourseInTerm(workAssignmentId, workAssignmentReport)
-    }
+    override fun addReportToWorkAssignmentOnCourseInTerm(workAssignmentId: Int, inputWorkAssignmentReport: WorkAssignmentReportInputModel): Optional<WorkAssignmentReport> =
+            workAssignmentDAO.addReportToWorkAssignmentOnCourseInTerm(
+                    workAssignmentId,
+                    toWorkAssignmentReport(workAssignmentId, inputWorkAssignmentReport)
+            )
 
     override fun voteOnReportToWorkAssignmentOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int =
             workAssignmentDAO.voteOnReportToWorkAssignmentOnCourseInTerm(reportId, Vote.valueOf(inputVote.vote))
@@ -416,7 +265,7 @@ class CourseServiceImpl : CourseService {
     override fun voteOnWorkAssignment(workAssignmentId: Int, inputVote: VoteInputModel): Int =
             workAssignmentDAO.voteOnWorkAssignment(workAssignmentId, Vote.valueOf(inputVote.vote))
 
-    override fun updateWorkAssignmentBasedOnReport(workAssignmentId: Int, reportId: Int, courseId: Int, termId: Int): Int {
+    override fun updateWorkAssignmentBasedOnReport(workAssignmentId: Int, reportId: Int, courseId: Int, termId: Int): Optional<WorkAssignment> {
         handle.begin()
         val workAssignment = workAssignmentDAO.getSpecificWorkAssignment(workAssignmentId, courseId, termId).get()
         val report = workAssignmentDAO.getSpecificReportOfWorkAssignment(workAssignmentId, reportId).get()
@@ -432,69 +281,33 @@ class CourseServiceImpl : CourseService {
                 multipleDeliveries = report.multipleDeliveries ?: workAssignment.multipleDeliveries,
                 requiresReport = report.requiresReport ?: workAssignment.requiresReport
         )
-        val res = workAssignmentDAO.updateWorkAssignment(workAssignmentId, updatedWorkAssignment)
-        workAssignmentDAO.createWorkAssignmentVersion(WorkAssignmentVersion(
-                workAssignmentId = updatedWorkAssignment.workAssignmentId,
-                version = updatedWorkAssignment.version,
-                sheet = updatedWorkAssignment.sheet,
-                supplement = updatedWorkAssignment.supplement,
-                dueDate = updatedWorkAssignment.dueDate,
-                individual = updatedWorkAssignment.individual,
-                lateDelivery = updatedWorkAssignment.lateDelivery,
-                multipleDeliveries = updatedWorkAssignment.multipleDeliveries,
-                requiresReport = updatedWorkAssignment.requiresReport,
-                createdBy = updatedWorkAssignment.createdBy,
-                timestamp = updatedWorkAssignment.timestamp
-
-        ))
+        val res = workAssignmentDAO.updateWorkAssignment(workAssignmentId, updatedWorkAssignment).get()
+        workAssignmentDAO.createWorkAssignmentVersion(toWorkAssignmentVersion(updatedWorkAssignment))
         workAssignmentDAO.deleteReportOnWorkAssignment(reportId)
         handle.commit()
-        return res
+        return Optional.of(res)
     }
 
     override fun createStagingWorkAssignment(courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): Optional<WorkAssignmentStage> {
         handle.begin()
-        val res = workAssignmentDAO.createStagingWorkAssingment(courseId, termId, WorkAssignmentStage(
-                sheet = inputWorkAssignment.sheet,
-                supplement = inputWorkAssignment.supplement,
-                dueDate = inputWorkAssignment.dueDate,
-                individual = inputWorkAssignment.individual,
-                lateDelivery = inputWorkAssignment.lateDelivery,
-                multipleDeliveries = inputWorkAssignment.multipleDeliveries,
-                requiresReport = inputWorkAssignment.requiresReport,
-                createdBy = inputWorkAssignment.createdBy
-        ))
+        val res = workAssignmentDAO.createStagingWorkAssingment(
+                courseId,
+                termId,
+                toStageWorkAssignment(inputWorkAssignment)
+        ).get()
         handle.commit()
-        return res
+        return Optional.of(res)
     }
 
     override fun createWorkAssignmentFromStaged(courseId: Int, termId: Int, stageId: Int): Optional<WorkAssignment> {
         handle.begin()
         val workAssignmentStage = workAssignmentDAO.getWorkAssignmentSpecificStageEntry(stageId).get()
-        val workAssignment = workAssignmentDAO.createWorkAssignmentOnCourseInTerm(courseId, termId, WorkAssignment(
-                createdBy = workAssignmentStage.createdBy,
-                sheet = workAssignmentStage.sheet,
-                supplement = workAssignmentStage.supplement,
-                dueDate = workAssignmentStage.dueDate,
-                individual = workAssignmentStage.individual,
-                lateDelivery = workAssignmentStage.lateDelivery,
-                multipleDeliveries = workAssignmentStage.multipleDeliveries,
-                requiresReport = workAssignmentStage.requiresReport
-        )).get()
-        workAssignmentDAO.createWorkAssignmentVersion(WorkAssignmentVersion(
-                workAssignmentId = workAssignment.workAssignmentId,
-                version = workAssignment.version,
-                sheet = workAssignment.sheet,
-                supplement = workAssignment.supplement,
-                dueDate = workAssignment.dueDate,
-                individual = workAssignment.individual,
-                lateDelivery = workAssignment.lateDelivery,
-                multipleDeliveries = workAssignment.multipleDeliveries,
-                requiresReport = workAssignment.requiresReport,
-                createdBy = workAssignment.createdBy,
-                timestamp = workAssignment.timestamp
-
-        ))
+        val workAssignment = workAssignmentDAO.createWorkAssignmentOnCourseInTerm(
+                courseId,
+                termId,
+                stagedToWorkAssignment(workAssignmentStage)
+        ).get()
+        workAssignmentDAO.createWorkAssignmentVersion(toWorkAssignmentVersion(workAssignment))
         workAssignmentDAO.deleteSpecificStagedWorkAssignment(stageId)
         handle.commit()
         return Optional.of(workAssignment)

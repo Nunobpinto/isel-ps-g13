@@ -64,7 +64,7 @@ interface CourseService {
 
     fun voteOnWorkAssignment(workAssignmentId: Int, inputVote: VoteInputModel): Int
 
-    fun partialUpdateOnCourse(courseId: Int, inputCourse: CourseInputModel): Int
+    fun partialUpdateOnCourse(courseId: Int, inputCourse: CourseInputModel): Optional<Course>
 
     fun deleteAllCourses(): Int
 
@@ -174,11 +174,11 @@ interface CourseService {
 
     fun voteOnReportToWorkAssignmentOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int
 
-    fun updateReportedCourse(courseId: Int, reportId: Int) : Int
+    fun updateReportedCourse(courseId: Int, reportId: Int) : Optional<Course>
 
-    fun updateReportedExam(examId: Int, reportId: Int, courseId: Int, termId: Int): Int
+    fun updateReportedExam(examId: Int, reportId: Int, courseId: Int, termId: Int): Optional<Exam>
 
-    fun updateWorkAssignmentBasedOnReport(workAssignmentId: Int, reportId: Int, courseId: Int, termId: Int): Int
+    fun updateWorkAssignmentBasedOnReport(workAssignmentId: Int, reportId: Int, courseId: Int, termId: Int): Optional<WorkAssignment>
 
     fun addReportToExamOnCourseInTerm(examId: Int, inputExamReport: ExamReportInputModel): Optional<ExamReport>
 

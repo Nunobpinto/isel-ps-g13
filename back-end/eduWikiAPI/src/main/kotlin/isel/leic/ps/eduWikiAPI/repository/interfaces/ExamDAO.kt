@@ -17,7 +17,7 @@ interface ExamDAO {
 
     fun deleteAllExamsOfCourseInTerm(courseId: Int, termId: Int): Int
 
-    fun updateExam(examId: Int, exam: Exam): Int
+    fun updateExam(examId: Int, exam: Exam): Optional<Exam>
 
     fun createExam(courseId: Int, termId: Int, exam: Exam): Optional<Exam>
 

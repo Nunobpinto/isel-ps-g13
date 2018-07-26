@@ -618,6 +618,7 @@ class ClassDAOImpl : ClassDAO {
                     .bind("termId", updatedCourseClass.termId)
                     .bind("votes", updatedCourseClass.votes)
                     .bind("timestamp", updatedCourseClass.timestamp)
+                    .bind("courseClassId", updatedCourseClass.courseClassId)
                     .executeAndReturnGeneratedKeys()
                     .mapTo(CourseClass::class.java)
                     .findFirst()

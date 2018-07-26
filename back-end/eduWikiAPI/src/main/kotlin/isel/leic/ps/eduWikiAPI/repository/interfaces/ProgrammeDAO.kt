@@ -54,7 +54,7 @@ interface ProgrammeDAO {
 
     fun deleteAllProgrammeVersions(programmeId: Int) : Int
 
-    fun createProgrammeVersion(programme: Programme): Optional<ProgrammeVersion>
+    fun createProgrammeVersion(programmeVersion: ProgrammeVersion): Optional<ProgrammeVersion>
 
     /**
      * Report entity queries

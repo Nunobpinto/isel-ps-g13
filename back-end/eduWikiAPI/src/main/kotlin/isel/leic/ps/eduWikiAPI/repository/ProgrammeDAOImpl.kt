@@ -342,7 +342,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                 .execute()
     }
 
-    override fun createProgrammeVersion(programme: Programme): Optional<ProgrammeVersion> =
+    override fun createProgrammeVersion(programmeVersion: ProgrammeVersion): Optional<ProgrammeVersion> =
         handle.createUpdate(
                 "insert into $PROGRAMME_VERSION_TABLE (" +
                         "$PROGRAMME_ID, " +
@@ -358,15 +358,15 @@ class ProgrammeDAOImpl : ProgrammeDAO {
                         "values (:programmeId, :version, :fullName, :shortName," +
                         ":academicDegree, :totalCredits, :duration, :createdBy, :timestamp)"
         )
-                .bind("programmeId", programme.programmeId)
-                .bind("version", programme.version)
-                .bind("fullName", programme.fullName)
-                .bind("shortName", programme.shortName)
-                .bind("academicDegree", programme.academicDegree)
-                .bind("totalCredits", programme.totalCredits)
-                .bind("duration", programme.duration)
-                .bind("createdBy", programme.createdBy)
-                .bind("timestamp", programme.timestamp)
+                .bind("programmeId", programmeVersion.programmeId)
+                .bind("version", programmeVersion.version)
+                .bind("fullName", programmeVersion.fullName)
+                .bind("shortName", programmeVersion.shortName)
+                .bind("academicDegree", programmeVersion.academicDegree)
+                .bind("totalCredits", programmeVersion.totalCredits)
+                .bind("duration", programmeVersion.duration)
+                .bind("createdBy", programmeVersion.createdBy)
+                .bind("timestamp", programmeVersion.timestamp)
                 .executeAndReturnGeneratedKeys()
                 .mapTo(ProgrammeVersion::class.java)
                 .findFirst()

@@ -3,6 +3,7 @@ package isel.leic.ps.eduWikiAPI.service
 import isel.leic.ps.eduWikiAPI.domain.inputModel.*
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseProgrammeReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ProgrammeReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.mappers.*
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Programme
 import isel.leic.ps.eduWikiAPI.domain.model.Vote
@@ -38,56 +39,22 @@ class ProgrammeServiceImpl : ProgrammeService {
             programmeDAO.getSpecificProgramme(programmeId)
 
     override fun createProgramme(inputProgramme: ProgrammeInputModel): Optional<Programme> {
-        val programme = programmeDAO.createProgramme(Programme(
-                createdBy = inputProgramme.createdBy,
-                fullName = inputProgramme.fullName,
-                shortName = inputProgramme.shortName,
-                academicDegree = inputProgramme.academicDegree,
-                totalCredits = inputProgramme.totalCredits,
-                duration = inputProgramme.duration
-        )).get()
-        programmeDAO.createProgrammeVersion(Programme(
-                programmeId = programme.programmeId,
-                createdBy = programme.createdBy,
-                fullName = programme.fullName,
-                shortName = programme.shortName,
-                academicDegree = programme.academicDegree,
-                totalCredits = programme.totalCredits,
-                duration = programme.duration,
-                timestamp = programme.timestamp)
-        )
+        val programme = programmeDAO.createProgramme(toProgramme(inputProgramme)).get()
+        programmeDAO.createProgrammeVersion(toProgrammeVersion(programme))
         return Optional.of(programme)
     }
 
     override fun createStagingProgramme(inputProgramme: ProgrammeInputModel): Optional<ProgrammeStage> =
-            programmeDAO.createStagingProgramme(
-                    ProgrammeStage(
-                            createdBy = inputProgramme.createdBy,
-                            fullName = inputProgramme.fullName,
-                            shortName = inputProgramme.shortName,
-                            academicDegree = inputProgramme.academicDegree,
-                            totalCredits = inputProgramme.totalCredits,
-                            duration = inputProgramme.duration
-                    )
-            )
-
+            programmeDAO.createStagingProgramme(toProgrammeStage(inputProgramme))
 
     override fun getSpecificStageEntryOfProgramme(stageId: Int): Optional<ProgrammeStage> =
             programmeDAO.getSpecificStageEntryOfProgramme(stageId)
 
     override fun createProgrammeFromStaged(stageId: Int): Optional<Programme> {
-        val programmeStage = programmeDAO.getSpecificStageEntryOfProgramme(stageId).get()
-        val programme = Programme(
-                createdBy = programmeStage.createdBy,
-                fullName = programmeStage.fullName,
-                shortName = programmeStage.shortName,
-                academicDegree = programmeStage.academicDegree,
-                totalCredits = programmeStage.totalCredits,
-                duration = programmeStage.duration
-        )
+        val programme = stagedToProgramme(programmeDAO.getSpecificStageEntryOfProgramme(stageId).get())
         val createdProgramme = programmeDAO.createProgramme(programme).get()
         programmeDAO.deleteSpecificStagedProgramme(stageId)
-        programmeDAO.createProgrammeVersion(programme)
+        programmeDAO.createProgrammeVersion(toProgrammeVersion(programme))
         return Optional.of(createdProgramme)
     }
 
@@ -108,16 +75,9 @@ class ProgrammeServiceImpl : ProgrammeService {
 
     override fun addCourseToProgramme(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel): Optional<Course> {
         handle.begin() //TODO
-        val course = Course(
-                courseId = inputCourseProgramme.courseId,
-                lecturedTerm = inputCourseProgramme.lecturedTerm,
-                programmeId = inputCourseProgramme.programmeId,
-                credits = inputCourseProgramme.credits,
-                optional = inputCourseProgramme.optional,
-                createdBy = inputCourseProgramme.createdBy
-        )
+        val course = toCourseProgramme(inputCourseProgramme)
         val res = courseDAO.addCourseToProgramme(programmeId, course).get()
-        courseDAO.createCourseProgrammeVersion(course)
+        courseDAO.createCourseProgrammeVersion(toCourseProgrammeVersion(course))
         handle.commit()
         return Optional.of(res)
     }
@@ -128,32 +88,15 @@ class ProgrammeServiceImpl : ProgrammeService {
     override fun reportProgramme(programmeId: Int, inputProgrammeReport: ProgrammeReportInputModel): Optional<ProgrammeReport> =
             programmeDAO.reportProgramme(
                     programmeId,
-                    ProgrammeReport(
-                            programmeId = programmeId,
-                            fullName = inputProgrammeReport.fullName,
-                            shortName = inputProgrammeReport.shortName,
-                            academicDegree = inputProgrammeReport.academicDegree,
-                            duration = inputProgrammeReport.duration,
-                            totalCredits = inputProgrammeReport.totalCredits,
-                            reportedBy = inputProgrammeReport.reportedBy
-                    )
+                    toProgrammeReport(programmeId, inputProgrammeReport)
             )
-
 
     override fun reportSpecificCourseOnProgramme(programmeId: Int, courseId: Int, inputCourseReport: CourseProgrammeReportInputModel): Optional<CourseProgrammeReport> =
             courseDAO.reportSpecificCourseOnProgramme(
                     programmeId,
                     courseId,
-                    CourseProgrammeReport(
-                            courseId = courseId,
-                            programmeId = programmeId,
-                            reportedBy = inputCourseReport.reportedBy,
-                            lecturedTerm = inputCourseReport.lecturedTerm,
-                            optional = inputCourseReport.optional,
-                            credits = inputCourseReport.credits
-                    )
+                    toCourseProgrammeReport(programmeId, courseId, inputCourseReport)
             )
-
 
     override fun voteOnReportedProgramme(programmeId: Int, reportId: Int, inputVote: VoteInputModel): Int =
             programmeDAO.voteOnReportedProgramme(programmeId, reportId, Vote.valueOf(inputVote.vote))
@@ -172,7 +115,7 @@ class ProgrammeServiceImpl : ProgrammeService {
                 duration = report.duration ?: programme.duration
         )
         val res = programmeDAO.updateProgramme(programmeId, updatedProgramme).get()
-        programmeDAO.createProgrammeVersion(updatedProgramme)
+        programmeDAO.createProgrammeVersion(toProgrammeVersion(updatedProgramme))
         programmeDAO.deleteSpecificReportOnProgramme(programmeId, reportId)
         return Optional.of(res)
     }
@@ -206,7 +149,7 @@ class ProgrammeServiceImpl : ProgrammeService {
                 duration = inputProgramme.duration
         )
         val res = programmeDAO.updateProgramme(programmeId, updatedProgramme).get()
-        programmeDAO.createProgrammeVersion(updatedProgramme)
+        programmeDAO.createProgrammeVersion(toProgrammeVersion(updatedProgramme))
         return Optional.of(res)
     }
 
@@ -241,32 +184,14 @@ class ProgrammeServiceImpl : ProgrammeService {
             courseDAO.voteOnCourseProgramme(programmeId, courseId, Vote.valueOf(inputVote.vote))
 
     override fun createStagingCourseOnProgramme(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel): Optional<CourseProgrammeStage> =
-            courseDAO.createStagingCourseOfProgramme(
-                    CourseProgrammeStage(
-                            courseId = inputCourseProgramme.courseId,
-                            programmeId = programmeId,
-                            credits = inputCourseProgramme.credits,
-                            optional = inputCourseProgramme.optional,
-                            lecturedTerm = inputCourseProgramme.lecturedTerm,
-                            createdBy = inputCourseProgramme.createdBy
-                    )
-            )
-
+            courseDAO.createStagingCourseOfProgramme(toCourseProgrammeStage(programmeId, inputCourseProgramme))
 
     override fun createCourseProgrammeFromStaged(programmeId: Int, stageId: Int): Optional<Course> {
         val courseProgrammeStage = courseDAO.getSpecificStagedCourseProgramme(programmeId, stageId).get()
-        val courseProgramme = Course(
-                createdBy = courseProgrammeStage.createdBy,
-                programmeId = programmeId,
-                lecturedTerm = courseProgrammeStage.lecturedTerm,
-                optional = courseProgrammeStage.optional,
-                credits = courseProgrammeStage.credits,
-                timestamp = Timestamp.valueOf(LocalDateTime.now())
-
-        )
+        val courseProgramme = stagedToCourseProgramme(programmeId, courseProgrammeStage)
         val res = courseDAO.addCourseToProgramme(programmeId, courseProgramme).get()
         courseDAO.deleteStagedCourseProgramme(programmeId)
-        courseDAO.createCourseProgrammeVersion(courseProgramme)
+        courseDAO.createCourseProgrammeVersion(toCourseProgrammeVersion(courseProgramme))
         return Optional.of(res)
     }
 
@@ -290,7 +215,7 @@ class ProgrammeServiceImpl : ProgrammeService {
                 credits = report.credits ?: course.credits
         )
         val res = courseDAO.updateCourseProgramme(programmeId, courseId, updatedCourse).get()
-        courseDAO.createCourseProgrammeVersion(updatedCourse)
+        courseDAO.createCourseProgrammeVersion(toCourseProgrammeVersion(updatedCourse))
         courseDAO.deleteReportOnCourseProgramme(programmeId, courseId, reportId)
         return Optional.of(res)
     }

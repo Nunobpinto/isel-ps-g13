@@ -21,7 +21,7 @@ interface WorkAssignmentDAO {
 
     fun deleteAllWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int
 
-    fun updateWorkAssignment(workAssignmentId: Int, workAssignment: WorkAssignment) : Int
+    fun updateWorkAssignment(workAssignmentId: Int, workAssignment: WorkAssignment) : Optional<WorkAssignment>
 
     fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, workAssignment: WorkAssignment) : Optional<WorkAssignment>
 

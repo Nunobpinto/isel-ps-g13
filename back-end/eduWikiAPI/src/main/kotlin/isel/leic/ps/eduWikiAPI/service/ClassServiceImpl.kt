@@ -5,6 +5,7 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ClassReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseClassReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.HomeworkReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.LectureReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.mappers.*
 import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.domain.model.report.ClassReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseClassReport
@@ -24,8 +25,6 @@ import isel.leic.ps.eduWikiAPI.service.interfaces.ClassService
 import org.jdbi.v3.core.Handle
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.sql.Timestamp
-import java.time.LocalDateTime
 import java.util.*
 
 @Service
@@ -53,18 +52,8 @@ class ClassServiceImpl : ClassService {
 
     override fun createClass(input: ClassInputModel): Optional<Class> {
         handle.begin()
-        val klass = classDAO.createClass(Class(
-                termId = input.termId,
-                className = input.className,
-                createdBy = input.createdBy
-        )).get()
-        classDAO.createClassVersion(ClassVersion(
-                classId = klass.classId,
-                timestamp = klass.timestamp,
-                className = klass.className,
-                termId = klass.termId,
-                createdBy = klass.createdBy
-        ))
+        val klass = classDAO.createClass(toClass(input)).get()
+        classDAO.createClassVersion(toClassVersion(klass))
         handle.commit()
         return Optional.of(klass)
     }
@@ -82,14 +71,7 @@ class ClassServiceImpl : ClassService {
                 className = if (input.className.isEmpty()) klass.className else input.className
         )
         val res = classDAO.updateClass(updatedClass)
-        classDAO.createClassVersion(ClassVersion(
-                classId = updatedClass.classId,
-                version = updatedClass.version,
-                termId = updatedClass.termId,
-                className = updatedClass.className,
-                createdBy = updatedClass.createdBy,
-                timestamp = updatedClass.timestamp
-        ))
+        classDAO.createClassVersion(toClassVersion(updatedClass))
         handle.commit()
         return res
     }
@@ -102,16 +84,8 @@ class ClassServiceImpl : ClassService {
     override fun getSpecificReportOfClass(classId: Int, reportId: Int): Optional<ClassReport> =
             classDAO.getSpecificReportFromClass(classId, reportId)
 
-    override fun reportClass(classId: Int, report: ClassReportInputModel): Optional<ClassReport> {
-        val rep = ClassReport(
-                classId = classId,
-                termId = report.termId,
-                className = report.className,
-                reportedBy = report.reportedBy,
-                timestamp = Timestamp.valueOf(LocalDateTime.now())
-        )
-        return classDAO.reportClass(classId, rep)
-    }
+    override fun reportClass(classId: Int, report: ClassReportInputModel): Optional<ClassReport> =
+            classDAO.reportClass(classId, toClassReport(classId, report))
 
     override fun voteOnReportClass(classId: Int, reportId: Int, vote: VoteInputModel): Int =
             classDAO.voteOnReportOfClass(classId, reportId, Vote.valueOf(vote.vote))
@@ -128,14 +102,7 @@ class ClassServiceImpl : ClassService {
                 createdBy = report.reportedBy
         )
         val res = classDAO.updateClass(updatedClass)
-        classDAO.createClassVersion(ClassVersion(
-                classId = updatedClass.classId,
-                version = updatedClass.version,
-                termId = updatedClass.termId,
-                className = updatedClass.className,
-                createdBy = updatedClass.createdBy,
-                timestamp = updatedClass.timestamp
-        ))
+        classDAO.createClassVersion(toClassVersion(updatedClass))
         classDAO.deleteSpecificReportInClass(classId, reportId)
         handle.commit()
         return res
@@ -157,20 +124,9 @@ class ClassServiceImpl : ClassService {
     override fun createClassFromStaged(stageId: Int): Optional<Class> {
         handle.begin()
         val classStaged = classDAO.getSpecificStagedClass(stageId).get()
-        val createdClass = classDAO.createClass(Class(
-                termId = classStaged.termId,
-                className = classStaged.className,
-                createdBy = classStaged.createdBy
-        )).get()
+        val createdClass = classDAO.createClass(stagedToClass(classStaged)).get()
         classDAO.deleteSpecificStagedClass(stageId)
-        classDAO.createClassVersion(ClassVersion(
-                classId = createdClass.classId,
-                termId = createdClass.termId,
-                version = createdClass.version,
-                className = createdClass.className,
-                createdBy = createdClass.createdBy,
-                timestamp = createdClass.timestamp
-        ))
+        classDAO.createClassVersion(toClassVersion(createdClass))
         handle.commit()
         return Optional.of(createdClass)
     }
@@ -249,6 +205,8 @@ class ClassServiceImpl : ClassService {
         val courseClassReport = classDAO.getSpecificReportOfCourseInClass(classId, courseId, reportId).get()
         val courseClass = classDAO.getCourseClass(classId, courseId).get()
         val updatedCourseClass = CourseClass(
+                courseClassId = courseClass.courseClassId,
+                createdBy = courseClassReport.reportedBy,
                 courseId = courseClassReport.courseId ?: courseClass.courseId,
                 classId = courseClassReport.classId ?: courseClass.courseId,
                 termId = courseClassReport.termId ?: courseClass.termId
@@ -292,12 +250,7 @@ class ClassServiceImpl : ClassService {
         //TODO classID no usage
         handle.begin()
         val courseClassStage = classDAO.getCourseClassStage(stageId).get()
-        val courseClass = CourseClass(
-                courseId = courseClassStage.courseId,
-                classId = courseClassStage.classId,
-                termId = courseClassStage.termId,
-                createdBy = courseClassStage.createdBy
-        )
+        val courseClass = stagedToCourseClass(courseClassStage)
         val res = classDAO.addCourseToClass(courseClass).get()
         handle.commit()
         return Optional.of(res)
@@ -330,15 +283,7 @@ class ClassServiceImpl : ClassService {
                 classDAO.getCourseClassId(classId, courseId),
                 "Lecture"
         ).get()
-        val lecture = Lecture(
-                lectureId = classMiscUnit.classMiscUnitId,
-                createdBy = lectureInputModel.createdBy,
-                weekDay = lectureInputModel.weekDay,
-                begins = lectureInputModel.begins,
-                duration = lectureInputModel.duration,
-                location = lectureInputModel.location
-        )
-        val res = lectureDAO.createLecture(lecture).get()
+        val res = lectureDAO.createLecture(toLecture(classMiscUnit, lectureInputModel)).get()
         handle.commit()
         return Optional.of(res)
     }
@@ -385,21 +330,11 @@ class ClassServiceImpl : ClassService {
 
     override fun createReportOnLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int, lectureReportInputModel: LectureReportInputModel): Optional<LectureReport> =
     //TODO check params
-            lectureDAO.createReportOnLecture(
-                    LectureReport(
-                            lectureId = lectureReportInputModel.lectureId,
-                            weekDay = lectureReportInputModel.weekday,
-                            begins = lectureReportInputModel.begins,
-                            duration = lectureReportInputModel.duration,
-                            location = lectureReportInputModel.location,
-                            reportedBy = lectureReportInputModel.reportedBy
-                    )
-            )
+            lectureDAO.createReportOnLecture(toLectureReport(lectureReportInputModel))
 
-    override fun voteOnReportOfLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int, reportId: Int, vote: VoteInputModel): Int {
-        //TODO check params
-        return lectureDAO.voteOnReportOfLecture(lectureId, reportId, Vote.valueOf(vote.vote))
-    }
+    override fun voteOnReportOfLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int, reportId: Int, vote: VoteInputModel): Int =
+    //TODO check params
+            lectureDAO.voteOnReportOfLecture(lectureId, reportId, Vote.valueOf(vote.vote))
 
 
     override fun updateLectureFromReport(classId: Int, courseId: Int, lectureId: Int, reportId: Int): Optional<Lecture> {
@@ -420,20 +355,11 @@ class ClassServiceImpl : ClassService {
                 duration = lectureReport.duration ?: lecture.duration,
                 location = lectureReport.location ?: lecture.location
         )
-        val res = lectureDAO.updateLecture(updatedLecture)
-        lectureDAO.createLectureVersion(LectureVersion(
-                version = updatedLecture.version,
-                lectureId = updatedLecture.lectureId,
-                createdBy = updatedLecture.createdBy,
-                weekDay = updatedLecture.weekDay,
-                begins = updatedLecture.begins,
-                duration = updatedLecture.duration,
-                location = updatedLecture.location,
-                timestamp = updatedLecture.timestamp
-        ))
+        val res = lectureDAO.updateLecture(updatedLecture).get()
+        lectureDAO.createLectureVersion(toLectureVersion(updatedLecture))
         lectureDAO.deleteSpecificReportOnLectureOfCourseInClass(courseClassId, lectureId, reportId)
         handle.commit()
-        return res
+        return Optional.of(res)
     }
 
     override fun getAllStagedLecturesOfCourseInClass(classId: Int, courseId: Int): List<LectureStage> =
@@ -452,15 +378,7 @@ class ClassServiceImpl : ClassService {
                 classDAO.getCourseClassId(classId, courseId),
                 "Lecture"
         ).get()
-        val lectureStage = LectureStage(
-                stageId = classMiscUnitStage.stageId,
-                createdBy = lectureInputModel.createdBy,
-                weekDay = lectureInputModel.weekDay,
-                begins = lectureInputModel.begins,
-                duration = lectureInputModel.duration,
-                location = lectureInputModel.location
-        )
-        val res = lectureDAO.createStagingLecture(lectureStage).get()
+        val res = lectureDAO.createStagingLecture(toLectureStage(classMiscUnitStage, lectureInputModel)).get()
         handle.commit()
         return Optional.of(res)
     }
@@ -482,30 +400,12 @@ class ClassServiceImpl : ClassService {
                 stageId
         ).get()
         val classMiscUnit = classDAO.createClassMiscUnit(courseClassId, "Lecture").get()
-        val createdLecture = lectureDAO.createLecture(Lecture(
-                lectureId = classMiscUnit.classMiscUnitId,
-                createdBy = stagedLecture.createdBy,
-                weekDay = stagedLecture.weekDay,
-                begins = stagedLecture.begins,
-                duration = stagedLecture.duration,
-                location = stagedLecture.location
-        )
-        ).get()
+        val createdLecture = lectureDAO.createLecture(stagedToLecture(classMiscUnit, stagedLecture)).get()
         classDAO.deleteSpecificStagedClassMiscUnitFromTypeOfCourseInClass(courseClassId, stageId)
-        lectureDAO.createLectureVersion(LectureVersion(
-                lectureId = createdLecture.lectureId,
-                createdBy = createdLecture.createdBy,
-                weekDay = createdLecture.weekDay,
-                begins = createdLecture.begins,
-                duration = createdLecture.duration,
-                location = createdLecture.location,
-                version = createdLecture.version,
-                timestamp = createdLecture.timestamp
-        ))
+        lectureDAO.createLectureVersion(toLectureVersion(createdLecture))
         handle.commit()
         return Optional.of(createdLecture)
     }
-
 
     override fun getAllVersionsOfLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int): List<LectureVersion> =
             lectureDAO.getAllVersionsOfLectureOfCourseInclass(
@@ -552,15 +452,7 @@ class ClassServiceImpl : ClassService {
                 classDAO.getCourseClassId(classId, courseId),
                 "Homework"
         ).get()
-        val homework = Homework(
-                homeworkId = classMiscUnit.classMiscUnitId,
-                createdBy = homeworkInputModel.createdBy,
-                sheet = homeworkInputModel.sheet,
-                dueDate = homeworkInputModel.dueDate,
-                lateDelivery = homeworkInputModel.lateDelivery,
-                multipleDeliveries = homeworkInputModel.multipleDeliveries
-        )
-        val res = homeworkDAO.createHomework(homework).get()
+        val res = homeworkDAO.createHomework(toHomework(classMiscUnit, homeworkInputModel)).get()
         handle.commit()
         return Optional.of(res)
     }
@@ -597,15 +489,7 @@ class ClassServiceImpl : ClassService {
                 classDAO.getCourseClassId(classId, courseId),
                 "Homework"
         ).get()
-        val homeworkStage = HomeworkStage(
-                stageId = classMiscUnitStage.stageId,
-                createdBy = homeworkInputModel.createdBy,
-                sheet = homeworkInputModel.sheet,
-                dueDate = homeworkInputModel.dueDate,
-                lateDelivery = homeworkInputModel.lateDelivery,
-                multipleDeliveries = homeworkInputModel.multipleDeliveries
-        )
-        val res = homeworkDAO.createStagingHomework(homeworkStage).get()
+        val res = homeworkDAO.createStagingHomework(toHomeworkStage(classMiscUnitStage, homeworkInputModel)).get()
         handle.commit()
         return Optional.of(res)
     }
@@ -618,26 +502,9 @@ class ClassServiceImpl : ClassService {
                 stageId
         ).get()
         val classMiscUnit = classDAO.createClassMiscUnit(courseClassId, "Homework").get()
-        val createdHomework = homeworkDAO.createHomework(Homework(
-                homeworkId = classMiscUnit.classMiscUnitId,
-                createdBy = stagedHomework.createdBy,
-                sheet = stagedHomework.sheet,
-                dueDate = stagedHomework.dueDate,
-                lateDelivery = stagedHomework.lateDelivery,
-                multipleDeliveries = stagedHomework.multipleDeliveries
-        )
-        ).get()
+        val createdHomework = homeworkDAO.createHomework(stagedToHomework(classMiscUnit, stagedHomework)).get()
         homeworkDAO.deleteSpecificStagedHomeworkOfCourseInClass(courseClassId, stageId)
-        homeworkDAO.createHomeworkVersion(HomeworkVersion(
-                version = createdHomework.version,
-                homeworkId = createdHomework.homeworkId,
-                createdBy = createdHomework.createdBy,
-                sheet = createdHomework.sheet,
-                dueDate = createdHomework.dueDate,
-                lateDelivery = createdHomework.lateDelivery,
-                multipleDeliveries = createdHomework.multipleDeliveries,
-                timestamp = createdHomework.timestamp
-        ))
+        homeworkDAO.createHomeworkVersion(toHomeworkVersion(createdHomework))
         handle.commit()
         return Optional.of(createdHomework)
     }
@@ -670,16 +537,7 @@ class ClassServiceImpl : ClassService {
 
     override fun createReportOnHomeworkFromCourseInClass(classId: Int, courseId: Int, homeworkId: Int, homeworkReportInputModel: HomeworkReportInputModel): Optional<HomeworkReport> =
     //TODO params unused
-            homeworkDAO.createReportOnHomework(
-                    HomeworkReport(
-                            homeworkId = homeworkReportInputModel.homeworkId,
-                            sheet = homeworkReportInputModel.sheet,
-                            dueDate = homeworkReportInputModel.dueDate,
-                            lateDelivery = homeworkReportInputModel.lateDelivery,
-                            multipleDeliveries = homeworkReportInputModel.multipleDeliveries,
-                            reportedBy = homeworkReportInputModel.reportedBy
-                    )
-            )
+            homeworkDAO.createReportOnHomework(toHomeworkReport(homeworkReportInputModel))
 
     override fun updateHomeworkFromReport(classId: Int, courseId: Int, homeworkId: Int, reportId: Int): Optional<Homework> {
         handle.begin()
@@ -699,26 +557,17 @@ class ClassServiceImpl : ClassService {
                 lateDelivery = homeworkReport.lateDelivery ?: homework.lateDelivery,
                 multipleDeliveries = homeworkReport.multipleDeliveries ?: homework.multipleDeliveries
         )
-        val res = homeworkDAO.updateHomeWork(updatedHomework)
-        homeworkDAO.createHomeworkVersion(HomeworkVersion(
-                version = updatedHomework.version,
-                homeworkId = updatedHomework.homeworkId,
-                createdBy = updatedHomework.createdBy,
-                sheet = updatedHomework.sheet,
-                dueDate = updatedHomework.dueDate,
-                lateDelivery = updatedHomework.lateDelivery,
-                multipleDeliveries = updatedHomework.multipleDeliveries,
-                timestamp = updatedHomework.timestamp
-        ))
+        val res = homeworkDAO.updateHomeWork(updatedHomework).get()
+        homeworkDAO.createHomeworkVersion(toHomeworkVersion(updatedHomework))
         homeworkDAO.deleteSpecificReportOnHomeworkOfCourseInClass(courseClassId, homeworkId, reportId)
         handle.commit()
-        return res
+        return Optional.of(res)
     }
 
-    override fun voteOnReportOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, reportId: Int, vote: VoteInputModel): Int {
+    override fun voteOnReportOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, reportId: Int, vote: VoteInputModel): Int =
         //TODO no usage params
-        return homeworkDAO.voteOnReportOfHomeworkOfCourseInClass(homeworkId, reportId, Vote.valueOf(vote.vote))
-    }
+         homeworkDAO.voteOnReportOfHomeworkOfCourseInClass(homeworkId, reportId, Vote.valueOf(vote.vote))
+
 
     override fun deleteAllReportsOnHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int): Int =
             homeworkDAO.deleteAllReportsOnHomeworkOfCourseInClass(
@@ -758,4 +607,5 @@ class ClassServiceImpl : ClassService {
                     homeworkId,
                     version
             )
+
 }

@@ -9,6 +9,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.report.OrganizationReport
 import isel.leic.ps.eduWikiAPI.domain.model.version.OrganizationVersion
 import isel.leic.ps.eduWikiAPI.repository.interfaces.OrganizationDAO
 import isel.leic.ps.eduWikiAPI.service.interfaces.OrganizationService
+import isel.leic.ps.eduWikiAPI.domain.mappers.*
 import org.jdbi.v3.core.Handle
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -28,27 +29,10 @@ class OrganizationServiceImpl : OrganizationService {
 
     override fun getAllOrganizations(): List<Organization> = organizationDAO.getAllOrganizations()
 
-    override fun createOrganization(organizationInputModel: OrganizationInputModel) : Optional<Organization> {
+    override fun createOrganization(organizationInputModel: OrganizationInputModel): Optional<Organization> {
         handle.begin()
-        var organization = Organization(
-                fullName = organizationInputModel.fullName,
-                shortName = organizationInputModel.shortName,
-                address = organizationInputModel.address,
-                createdBy = organizationInputModel.createdBy,
-                contact = organizationInputModel.contact
-        )
-        organization = organizationDAO.createOrganization(organization).get()
-
-        organizationDAO.createVersion(OrganizationVersion(
-                organizationId = organization.organizationId,
-                version = organization.version,
-                createdBy = organization.createdBy,
-                fullName = organization.fullName,
-                shortName = organization.shortName,
-                contact = organization.contact,
-                address = organization.address,
-                timestamp = organization.timestamp
-        ))
+        val organization = organizationDAO.createOrganization(toOrganization(organizationInputModel)).get()
+        organizationDAO.createVersion(toOrganizationVersion(organization))
         handle.commit()
         return Optional.of(organization)
     }
@@ -64,23 +48,14 @@ class OrganizationServiceImpl : OrganizationService {
                 organizationId = prevOrganization.organizationId,
                 version = prevOrganization.version.inc(),
                 createdBy = organizationInputModel.createdBy,
-                fullName = if(organizationInputModel.fullName.isEmpty()) prevOrganization.fullName else organizationInputModel.fullName,
-                shortName = if(organizationInputModel.shortName.isEmpty()) prevOrganization.shortName else organizationInputModel.shortName,
-                address = if(organizationInputModel.address.isEmpty()) prevOrganization.address else organizationInputModel.address,
-                contact = if(organizationInputModel.contact.isEmpty()) prevOrganization.contact else organizationInputModel.contact
+                fullName = if (organizationInputModel.fullName.isEmpty()) prevOrganization.fullName else organizationInputModel.fullName,
+                shortName = if (organizationInputModel.shortName.isEmpty()) prevOrganization.shortName else organizationInputModel.shortName,
+                address = if (organizationInputModel.address.isEmpty()) prevOrganization.address else organizationInputModel.address,
+                contact = if (organizationInputModel.contact.isEmpty()) prevOrganization.contact else organizationInputModel.contact
         )
         val updatedRows = organizationDAO.updateOrganization(organization)
 
-        organizationDAO.createVersion(OrganizationVersion(
-                organizationId = organization.organizationId,
-                version = organization.version,
-                createdBy = organization.createdBy,
-                fullName = organization.fullName,
-                shortName = organization.shortName,
-                contact = organization.contact,
-                address = organization.address,
-                timestamp = organization.timestamp
-        ))
+        organizationDAO.createVersion(toOrganizationVersion(organization))
         handle.commit()
         return updatedRows
     }
@@ -94,17 +69,8 @@ class OrganizationServiceImpl : OrganizationService {
     override fun getSpecificReportOnOrganization(organizationId: Int, reportId: Int) =
             organizationDAO.getSpecificReportOnOrganization(organizationId, reportId)
 
-    override fun reportOrganization(organizationId: Int, input: OrganizationReportInputModel): Optional<OrganizationReport> {
-        val report = OrganizationReport(
-                fullName = input.fullName,
-                shortName = input.shortName,
-                address = input.address,
-                contact = input.contact,
-                reportedBy = input.reportedBy,
-                organizationId = organizationId
-        )
-        return organizationDAO.reportOrganization(report)
-    }
+    override fun reportOrganization(organizationId: Int, input: OrganizationReportInputModel): Optional<OrganizationReport> =
+            organizationDAO.reportOrganization(toOrganizationReport(organizationId, input))
 
     override fun deleteAllReportsOnOrganization(organizationId: Int) =
             organizationDAO.deleteAllReportsOnOrganization(organizationId)
@@ -131,7 +97,6 @@ class OrganizationServiceImpl : OrganizationService {
         handle.begin()
         val organization = organizationDAO.getSpecificOrganization(organizationId).get()
         val report = organizationDAO.getSpecificReportOnOrganization(organizationId, reportId).get()
-
         val updatedOrganization = Organization(
                 organizationId = organization.organizationId,
                 version = organization.version.inc(),
@@ -143,17 +108,7 @@ class OrganizationServiceImpl : OrganizationService {
                 address = report.address ?: organization.address
         )
         organizationDAO.updateOrganization(updatedOrganization)
-
-        organizationDAO.createVersion(OrganizationVersion(
-                organizationId = updatedOrganization.organizationId,
-                version = updatedOrganization.version,
-                createdBy = updatedOrganization.createdBy,
-                fullName = updatedOrganization.fullName,
-                shortName = updatedOrganization.shortName,
-                contact = updatedOrganization.contact,
-                address = updatedOrganization.address,
-                timestamp = updatedOrganization.timestamp
-        ))
+        organizationDAO.createVersion(toOrganizationVersion(updatedOrganization))
         organizationDAO.deleteReportOnOrganization(reportId)
         handle.commit()
     }

@@ -89,7 +89,7 @@ class CourseDAOImpl : CourseDAO {
     override fun deleteAllCourses() =
             handle.createUpdate("delete from $COURSE_TABLE").execute()
 
-    override fun updateCourse(course: Course) =
+    override fun updateCourse(course: Course): Optional<Course> =
             handle.createUpdate(
                     "update $COURSE_TABLE SET " +
                             "$COURSE_ORGANIZATION_ID = :orgId, $COURSE_VERSION = :version, " +
@@ -106,7 +106,9 @@ class CourseDAOImpl : CourseDAO {
                     .bind("votes", course.votes)
                     .bind("timestamp", course.timestamp)
                     .bind("courseId", course.courseId)
-                    .execute()
+                    .executeAndReturnGeneratedKeys()
+                    .mapTo(Course::class.java)
+                    .findFirst()
 
     override fun createCourse(course: Course) =
             handle.createUpdate(
@@ -551,7 +553,7 @@ class CourseDAOImpl : CourseDAO {
                     .mapTo(CourseProgrammeVersion::class.java)
                     .findFirst()
 
-    override fun createCourseProgrammeVersion(courseProgramme: Course) =
+    override fun createCourseProgrammeVersion(courseProgrammeVersion: CourseProgrammeVersion) =
             handle.createUpdate(
                     "insert into $COURSE_PROGRAMME_VERSION_TABLE (" +
                             "$COURSE_PROGRAMME_COURSE_ID, " +
@@ -566,14 +568,14 @@ class CourseDAOImpl : CourseDAO {
                             "values (:courseId, :progId, :version, :lectured, " +
                             ":optional, :credits, :createdBy, :timestamp)"
             )
-                    .bind("courseId", courseProgramme.courseId)
-                    .bind("progId", courseProgramme.programmeId)
-                    .bind("version", courseProgramme.version)
-                    .bind("lectured", courseProgramme.lecturedTerm)
-                    .bind("optional", courseProgramme.optional)
-                    .bind("credits", courseProgramme.credits)
-                    .bind("createdBy", courseProgramme.createdBy)
-                    .bind("timestamp", courseProgramme.timestamp)
+                    .bind("courseId", courseProgrammeVersion.courseId)
+                    .bind("progId", courseProgrammeVersion.programmeId)
+                    .bind("version", courseProgrammeVersion.version)
+                    .bind("lectured", courseProgrammeVersion.lecturedTerm)
+                    .bind("optional", courseProgrammeVersion.optional)
+                    .bind("credits", courseProgrammeVersion.credits)
+                    .bind("createdBy", courseProgrammeVersion.createdBy)
+                    .bind("timestamp", courseProgrammeVersion.timestamp)
                     .executeAndReturnGeneratedKeys()
                     .mapTo(CourseProgrammeVersion::class.java)
                     .findFirst()
