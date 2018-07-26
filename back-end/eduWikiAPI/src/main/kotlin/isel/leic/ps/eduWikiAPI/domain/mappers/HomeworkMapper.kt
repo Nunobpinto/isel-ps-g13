@@ -18,7 +18,7 @@ fun toHomework(classMiscUnit: ClassMiscUnit, homeworkInputModel: HomeworkInputMo
         multipleDeliveries = homeworkInputModel.multipleDeliveries
 )
 
-fun toHomeworkStaged(classMiscUnitStaged: ClassMiscUnitStage, homeworkInputModel: HomeworkInputModel) = HomeworkStage(
+fun toHomeworkStage(classMiscUnitStaged: ClassMiscUnitStage, homeworkInputModel: HomeworkInputModel) = HomeworkStage(
         stageId = classMiscUnitStaged.stageId,
         createdBy = homeworkInputModel.createdBy,
         sheet = homeworkInputModel.sheet,
@@ -47,7 +47,7 @@ fun toHomeworkVersion(homework: Homework) = HomeworkVersion(
         timestamp = homework.timestamp
 )
 
-fun toReport(homeworkReportInputModel: HomeworkReportInputModel) =  HomeworkReport(
+fun toHomeworkReport(homeworkReportInputModel: HomeworkReportInputModel) =  HomeworkReport(
         homeworkId = homeworkReportInputModel.homeworkId,
         sheet = homeworkReportInputModel.sheet,
         dueDate = homeworkReportInputModel.dueDate,

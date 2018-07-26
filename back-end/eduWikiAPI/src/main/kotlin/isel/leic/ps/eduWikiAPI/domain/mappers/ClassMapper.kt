@@ -15,7 +15,7 @@ fun toClass(input: ClassInputModel) = Class(
         createdBy = input.createdBy
 )
 
-fun toReport(classId: Int, report: ClassReportInputModel) = ClassReport(
+fun toClassReport(classId: Int, report: ClassReportInputModel) = ClassReport(
         classId = classId,
         termId = report.termId,
         className = report.className,

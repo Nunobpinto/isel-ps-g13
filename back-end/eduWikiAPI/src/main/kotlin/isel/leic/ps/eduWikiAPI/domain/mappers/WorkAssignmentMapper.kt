@@ -18,21 +18,21 @@ fun toWorkAssignment(input: WorkAssignmentInputModel) = WorkAssignment(
         requiresReport = input.requiresReport
 )
 
-fun toWorkAssignmentVersion(wrs: WorkAssignment) = WorkAssignmentVersion(
-        workAssignmentId = wrs.workAssignmentId,
-        version = wrs.version,
-        sheet = wrs.sheet,
-        supplement = wrs.supplement,
-        dueDate = wrs.dueDate,
-        individual = wrs.individual,
-        lateDelivery = wrs.lateDelivery,
-        multipleDeliveries = wrs.multipleDeliveries,
-        requiresReport = wrs.requiresReport,
-        createdBy = wrs.createdBy,
-        timestamp = wrs.timestamp
+fun toWorkAssignmentVersion(workAssignment: WorkAssignment) = WorkAssignmentVersion(
+        workAssignmentId = workAssignment.workAssignmentId,
+        version = workAssignment.version,
+        sheet = workAssignment.sheet,
+        supplement = workAssignment.supplement,
+        dueDate = workAssignment.dueDate,
+        individual = workAssignment.individual,
+        lateDelivery = workAssignment.lateDelivery,
+        multipleDeliveries = workAssignment.multipleDeliveries,
+        requiresReport = workAssignment.requiresReport,
+        createdBy = workAssignment.createdBy,
+        timestamp = workAssignment.timestamp
 )
 
-fun toReport(workAssignmentId: Int, inputWorkAssignmentReport: WorkAssignmentReportInputModel) =  WorkAssignmentReport(
+fun toWorkAssignmentReport(workAssignmentId: Int, inputWorkAssignmentReport: WorkAssignmentReportInputModel) = WorkAssignmentReport(
         workAssignmentId = workAssignmentId,
         sheet = inputWorkAssignmentReport.sheet,
         supplement = inputWorkAssignmentReport.supplement,
@@ -44,7 +44,7 @@ fun toReport(workAssignmentId: Int, inputWorkAssignmentReport: WorkAssignmentRep
         reportedBy = inputWorkAssignmentReport.reportedBy
 )
 
-fun toStagedWorkAssignment(inputWorkAssignment: WorkAssignmentInputModel) = WorkAssignmentStage(
+fun toStageWorkAssignment(inputWorkAssignment: WorkAssignmentInputModel) = WorkAssignmentStage(
         sheet = inputWorkAssignment.sheet,
         supplement = inputWorkAssignment.supplement,
         dueDate = inputWorkAssignment.dueDate,
@@ -55,7 +55,7 @@ fun toStagedWorkAssignment(inputWorkAssignment: WorkAssignmentInputModel) = Work
         createdBy = inputWorkAssignment.createdBy
 )
 
-fun stageToWorkAssignment(stage: WorkAssignmentStage) = WorkAssignment(
+fun stagedToWorkAssignment(stage: WorkAssignmentStage) = WorkAssignment(
         createdBy = stage.createdBy,
         sheet = stage.sheet,
         supplement = stage.supplement,

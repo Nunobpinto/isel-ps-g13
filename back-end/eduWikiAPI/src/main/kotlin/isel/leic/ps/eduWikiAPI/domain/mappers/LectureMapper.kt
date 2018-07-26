@@ -19,7 +19,7 @@ fun toLecture(classMiscUnit: ClassMiscUnit, lectureInputModel: LectureInputModel
         location = lectureInputModel.location
 )
 
-fun toLectureStaged(classMiscUnitStaged: ClassMiscUnitStage, lectureInputModel: LectureInputModel) = LectureStage(
+fun toLectureStage(classMiscUnitStaged: ClassMiscUnitStage, lectureInputModel: LectureInputModel) = LectureStage(
         stageId = classMiscUnitStaged.stageId,
         createdBy = lectureInputModel.createdBy,
         weekDay = lectureInputModel.weekDay,
@@ -48,7 +48,7 @@ fun toLectureVersion(lecture: Lecture) = LectureVersion(
         timestamp = lecture.timestamp
 )
 
-fun toReport(lectureReportInputModel: LectureReportInputModel) =  LectureReport(
+fun toLectureReport(lectureReportInputModel: LectureReportInputModel) = LectureReport(
         lectureId = lectureReportInputModel.lectureId,
         weekDay = lectureReportInputModel.weekday,
         begins = lectureReportInputModel.begins,

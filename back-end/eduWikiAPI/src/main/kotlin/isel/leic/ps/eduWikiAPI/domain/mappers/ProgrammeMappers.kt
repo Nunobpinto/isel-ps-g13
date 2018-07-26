@@ -5,6 +5,7 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ProgrammeReportInputMod
 import isel.leic.ps.eduWikiAPI.domain.model.Programme
 import isel.leic.ps.eduWikiAPI.domain.model.report.ProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ProgrammeStage
+import isel.leic.ps.eduWikiAPI.domain.model.version.ProgrammeVersion
 import java.sql.Timestamp
 import java.time.LocalDateTime
 
@@ -17,7 +18,7 @@ fun toProgramme(input: ProgrammeInputModel) = Programme(
         duration = input.duration
 )
 
-fun toProgrammeStaged(input: ProgrammeInputModel) = ProgrammeStage(
+fun toProgrammeStage(input: ProgrammeInputModel) = ProgrammeStage(
         createdBy = input.createdBy,
         fullName = input.fullName,
         shortName = input.shortName,
@@ -26,7 +27,7 @@ fun toProgrammeStaged(input: ProgrammeInputModel) = ProgrammeStage(
         duration = input.duration
 )
 
-fun stageToProgramme(stage: ProgrammeStage) = Programme(
+fun stagedToProgramme(stage: ProgrammeStage) = Programme(
         createdBy = stage.createdBy,
         fullName = stage.fullName,
         shortName = stage.shortName,
@@ -35,13 +36,24 @@ fun stageToProgramme(stage: ProgrammeStage) = Programme(
         duration = stage.duration
 )
 
-fun toReport(programmeId: Int, inputProgrammeReport: ProgrammeReportInputModel) = ProgrammeReport(
+fun toProgrammeReport(programmeId: Int, inputProgrammeReport: ProgrammeReportInputModel) = ProgrammeReport(
         programmeId = programmeId,
-        programmeFullName = inputProgrammeReport.fullName,
-        programmeShortName = inputProgrammeReport.shortName,
-        programmeAcademicDegree = inputProgrammeReport.academicDegree,
-        programmeDuration = inputProgrammeReport.duration,
-        programmeTotalCredits = inputProgrammeReport.totalCredits,
-        reportedBy = inputProgrammeReport.reportedBy,
-        timestamp = Timestamp.valueOf(LocalDateTime.now())
+        fullName = inputProgrammeReport.fullName,
+        shortName = inputProgrammeReport.shortName,
+        academicDegree = inputProgrammeReport.academicDegree,
+        duration = inputProgrammeReport.duration,
+        totalCredits = inputProgrammeReport.totalCredits,
+        reportedBy = inputProgrammeReport.reportedBy
+)
+
+fun toProgrammeVersion(programme: Programme) = ProgrammeVersion(
+        version = programme.version,
+        programmeId = programme.programmeId,
+        fullName = programme.fullName,
+        shortName = programme.shortName,
+        academicDegree = programme.academicDegree,
+        totalCredits = programme.totalCredits,
+        duration = programme.duration,
+        createdBy = programme.createdBy,
+        timestamp = programme.timestamp
 )

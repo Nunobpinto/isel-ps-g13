@@ -5,6 +5,7 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseProgrammeReportIn
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseProgrammeStage
+import isel.leic.ps.eduWikiAPI.domain.model.version.CourseProgrammeVersion
 import java.sql.Timestamp
 import java.time.LocalDateTime
 
@@ -17,7 +18,7 @@ fun toCourseProgramme(input: CourseProgrammeInputModel) = Course(
         createdBy = input.createdBy
 )
 
-fun toReportOfCourseProgramme(programmeId: Int, courseId: Int, inputCourseReport: CourseProgrammeReportInputModel) = CourseProgrammeReport(
+fun toCourseProgrammeReport(programmeId: Int, courseId: Int, inputCourseReport: CourseProgrammeReportInputModel) = CourseProgrammeReport(
         courseId = courseId,
         programmeId = programmeId,
         reportedBy = inputCourseReport.reportedBy,
@@ -26,21 +27,30 @@ fun toReportOfCourseProgramme(programmeId: Int, courseId: Int, inputCourseReport
         credits = inputCourseReport.credits
 )
 
-fun toStageCourseProgramme(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel) = CourseProgrammeStage(
+fun toCourseProgrammeStage(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel) = CourseProgrammeStage(
         courseId = inputCourseProgramme.courseId,
         programmeId = programmeId,
         credits = inputCourseProgramme.credits,
         optional = inputCourseProgramme.optional,
         lecturedTerm = inputCourseProgramme.lecturedTerm,
-        timestamp = Timestamp.valueOf(LocalDateTime.now())
+        createdBy = inputCourseProgramme.createdBy
 )
 
-fun stageToCourseProgramme(courseProgrammeStage: CourseProgrammeStage) = Course (
+fun stagedToCourseProgramme(programmeId: Int, courseProgrammeStage: CourseProgrammeStage) = Course(
         createdBy = courseProgrammeStage.createdBy,
-        programmeId = courseProgrammeStage.programmeId,
+        programmeId = programmeId,
         lecturedTerm = courseProgrammeStage.lecturedTerm,
         optional = courseProgrammeStage.optional,
-        credits = courseProgrammeStage.credits,
-        timestamp = Timestamp.valueOf(LocalDateTime.now())
+        credits = courseProgrammeStage.credits
 )
 
+fun toCourseProgrammeVersion(course: Course) = CourseProgrammeVersion(
+        version = course.version,
+        courseId = course.courseId,
+        programmeId = course.programmeId,
+        lecturedTerm = course.lecturedTerm,
+        optional = course.optional,
+        credits = course.credits,
+        timestamp = course.timestamp,
+        createdBy = course.createdBy
+)

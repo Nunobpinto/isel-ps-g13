@@ -28,7 +28,7 @@ fun toExamVersion(exam: Exam) = ExamVersion(
         location = exam.location
 )
 
-fun toReport(examId: Int, inputExamReport: ExamReportInputModel) =  ExamReport(
+fun toExamReport(examId: Int, inputExamReport: ExamReportInputModel) =  ExamReport(
         examId = examId,
         sheet = inputExamReport.sheet,
         dueDate = inputExamReport.dueDate,
@@ -38,7 +38,7 @@ fun toReport(examId: Int, inputExamReport: ExamReportInputModel) =  ExamReport(
         reportedBy = inputExamReport.reportedBy
 )
 
-fun toStagedExam(inputExam: ExamInputModel) = ExamStage(
+fun toStageExam(inputExam: ExamInputModel) = ExamStage(
         sheet = inputExam.sheet,
         dueDate = inputExam.dueDate,
         type = inputExam.type,
@@ -47,7 +47,7 @@ fun toStagedExam(inputExam: ExamInputModel) = ExamStage(
         createdBy = inputExam.createdBy
 )
 
-fun stageToExam(stage: ExamStage) = Exam(
+fun stagedToExam(stage: ExamStage) = Exam(
         createdBy = stage.createdBy,
         sheet = stage.sheet,
         dueDate = stage.dueDate,

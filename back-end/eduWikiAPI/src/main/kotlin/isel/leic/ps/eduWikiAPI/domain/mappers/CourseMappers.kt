@@ -5,6 +5,7 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseStage
+import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
 import java.sql.Timestamp
 import java.time.LocalDateTime
 
@@ -15,25 +16,33 @@ fun toCourse(input: CourseInputModel) = Course(
         shortName = input.shortName
 )
 
-fun toCourseStaged(input: CourseInputModel) = CourseStage(
+fun toCourseStage(input: CourseInputModel) = CourseStage(
         organizationId = input.organizationId,
         fullName = input.fullName,
         shortName = input.shortName,
-        createdBy = input.createdBy,
-        timestamp = Timestamp.valueOf(LocalDateTime.now())
+        createdBy = input.createdBy
 )
 
-fun stageToCourse(stage: CourseStage) = Course(
+fun stagedToCourse(stage: CourseStage) = Course(
         organizationId = stage.organizationId,
         createdBy = stage.createdBy,
         fullName = stage.fullName,
         shortName = stage.shortName
 )
 
-fun toReport(courseId: Int, inputCourseReport: CourseReportInputModel) = CourseReport(
+fun toCourseReport(courseId: Int, inputCourseReport: CourseReportInputModel) = CourseReport(
         courseId = courseId,
-        courseFullName = inputCourseReport.fullName,
-        courseShortName = inputCourseReport.shortName,
-        reportedBy = inputCourseReport.reportedBy,
-        timestamp = Timestamp.valueOf(LocalDateTime.now())
+        fullName = inputCourseReport.fullName,
+        shortName = inputCourseReport.shortName,
+        reportedBy = inputCourseReport.reportedBy
+)
+
+fun toCourseVersion(course: Course) = CourseVersion(
+        courseId = course.courseId,
+        organizationId = course.organizationId,
+        version = course.version,
+        fullName = course.fullName,
+        shortName = course.shortName,
+        createdBy = course.createdBy,
+        timestamp = course.timestamp
 )
