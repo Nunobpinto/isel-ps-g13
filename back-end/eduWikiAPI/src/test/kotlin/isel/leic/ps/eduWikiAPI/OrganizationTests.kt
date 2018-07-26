@@ -136,7 +136,7 @@ class OrganizationTests {
         val versionRows = organizationDAO.addToOrganizationVersion(organization)
         assertEquals(1, versionRows)
         val updatedOrganization = Organization(
-                id = organization.id,
+                courseId = organization.courseId,
                 contact = report.contact!!,
                 address = organization.address,
                 fullName = organization.fullName,

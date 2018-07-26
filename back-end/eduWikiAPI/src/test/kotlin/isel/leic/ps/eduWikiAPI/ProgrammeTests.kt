@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI
 
+import isel.leic.ps.eduWikiAPI.domain.mappers.toProgrammeVersion
 import isel.leic.ps.eduWikiAPI.domain.model.Programme
 import isel.leic.ps.eduWikiAPI.domain.model.report.ProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ProgrammeStage
@@ -28,7 +29,7 @@ class ProgrammeTests {
 
     @Test
     fun testGetProgramme() {
-        val prog = programmeDAO.getSpecificProgramme(1)
+        val prog = programmeDAO.getSpecificProgramme(1).get()
         assertEquals("LEIC", prog.shortName)
         assertEquals("Licenciatura em Engenharia Informática e Computadores", prog.fullName)
         assertEquals("ze", prog.createdBy)
@@ -39,32 +40,31 @@ class ProgrammeTests {
     fun testApprovedReportOfProgramme(){
         val report = ProgrammeReport(
                 programmeId = 1,
-                programmeAcademicDegree = "bacherlato",
+                academicDegree = "bacherlato",
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
         val rows = programmeDAO.reportProgramme(programmeReport = report,programmeId = 1)
         assertEquals(1,rows)
-        val programme = programmeDAO.getSpecificProgramme(1)
-        val versionRows = programmeDAO.addToProgrammeVersion(programme)
+        val programme = programmeDAO.getSpecificProgramme(1).get()
+        val versionRows = programmeDAO.createProgrammeVersion(toProgrammeVersion(programme))
         assertEquals(1,versionRows)
         val updatedProgramme = Programme(
                 programmeId= programme.programmeId,
-                academicDegree = report.programmeAcademicDegree!!,
+                academicDegree = report.academicDegree!!,
                 duration = programme.duration,
                 fullName = programme.fullName,
                 shortName = programme.shortName,
                 version = programme.version + 1,
                 createdBy = programme.createdBy,
-                totalCredits = programme.totalCredits,
-                timestamp = Timestamp.valueOf(LocalDateTime.now())
+                totalCredits = programme.totalCredits
         )
         val updateRow = programmeDAO.updateProgramme(1,updatedProgramme)
         assertEquals(1,updateRow)
-        val newProg = programmeDAO.getSpecificProgramme(1)
+        val newProg = programmeDAO.getSpecificProgramme(1).get()
         assertEquals(2,newProg.version)
-        val deleteReportRows = programmeDAO.deleteReportOnProgramme(1,1)
+        val deleteReportRows = programmeDAO.deleteSpecificReportOnProgramme(1,1)
         assertEquals(1,deleteReportRows)
-        val deleteVersonRows = programmeDAO.deleteVersionProgramme(1,1)
+        val deleteVersonRows = programmeDAO.deleteSpecificProgrammeVersion(1,1)
         assertEquals(1,deleteVersonRows)
     }
 
@@ -90,7 +90,7 @@ class ProgrammeTests {
                 duration = 6,
                 timestamp = Timestamp.valueOf(LocalDateTime.now())
         )
-        val deleteRows = programmeDAO.deleteStagedProgramme(1)
+        val deleteRows = programmeDAO.deleteSpecificStagedProgramme(1)
         assertEquals(1,deleteRows)
         val createRows =programmeDAO.createProgramme(programme)
         assertEquals(1,createRows)
