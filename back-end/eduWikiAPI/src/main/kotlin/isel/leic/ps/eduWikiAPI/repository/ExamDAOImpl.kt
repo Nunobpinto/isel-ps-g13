@@ -50,7 +50,7 @@ class ExamDAOImpl : ExamDAO {
                     .bind("examId", courseMiscUnitId)
                     .execute()
 
-    override fun updateExam(examId: Int, exam: Exam) =
+    override fun updateExam(examId: Int, exam: Exam) : Optional<Exam> =
             handle.createUpdate(
                     "update $EXAM_TABLE SET " +
                             "$EXAM_VERSION = :version, " +
@@ -74,7 +74,9 @@ class ExamDAOImpl : ExamDAO {
                     .bind("votes", exam.votes)
                     .bind("timestamp", exam.timestamp)
                     .bind("examId", examId)
-                    .execute()
+                    .executeAndReturnGeneratedKeys()
+                    .mapTo(Exam::class.java)
+                    .findFirst()
 
     override fun createExam(courseId: Int, termId: Int, exam: Exam): Optional<Exam> {
         if (!handle.isInTransaction) handle.begin()
