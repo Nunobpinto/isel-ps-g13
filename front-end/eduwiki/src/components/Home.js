@@ -4,11 +4,9 @@ import { Link } from 'react-router-dom'
 
 export default (props) => {
   return (
-    <div id='holder'>
+    <div>
       <img alt='EduWiki Logo' id='home-logo' src='logo_color.png' />
-      <div>
-        <Login />
-      </div>
+      <Login />
       <h1>Current web pages</h1>
       <ul>
         <li>

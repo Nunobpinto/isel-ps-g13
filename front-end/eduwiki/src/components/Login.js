@@ -34,7 +34,7 @@ class LoginForm extends React.Component {
     }
     const { getFieldDecorator } = this.props.form
     return (
-      <div id='centre_div'>
+      <div>
         <Form onSubmit={this.handleSubmit} className='login-form' id='formItem' >
           <Form.Item>
             {getFieldDecorator('username', {
