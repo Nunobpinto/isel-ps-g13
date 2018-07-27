@@ -1,13 +1,13 @@
 package isel.leic.ps.eduWikiAPI.service.interfaces
 
-import isel.leic.ps.eduWikiAPI.domain.model.Student
+import isel.leic.ps.eduWikiAPI.domain.model.User
 
 
 interface UserService {
 
-    fun getUser(username: String): Student
+    fun getUser(username: String): User
 
-    fun saveUser(username: String): Student
+    fun saveUser(username: String): User
 
     fun deleteUser(username: String)
 }

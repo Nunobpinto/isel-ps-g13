@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		kotlinVersion = '1.2.20'
+		kotlinVersion = '1.2.51'
 		springBootVersion = '2.0.1.RELEASE'
 	}
 	repositories {
@@ -44,18 +44,24 @@ configurations.all {
 }
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter-jdbc')
+	compile('org.springframework.security:spring-security-core:5.0.6.RELEASE')
+	compile('org.springframework.security:spring-security-config:5.0.6.RELEASE')
+	compile('org.springframework.security:spring-security-web:5.0.6.RELEASE')
 	compile('org.springframework.boot:spring-boot-starter-web')
+	compile('org.springframework.boot:spring-boot-starter-jdbc')
+	compile('org.jdbi:jdbi3-testing:3.2.0')
     compile('org.jdbi:jdbi3-core:3.2.0')
 	compile('org.jdbi:jdbi3-kotlin:3.2.0')
 	compile('org.jdbi:jdbi3-postgres:3.2.1')
+	compile('org.jdbi:jdbi3-sqlobject:3.3.0')
+	compile('org.jdbi:jdbi3-kotlin-sqlobject:3.3.0')
 	compile('com.fasterxml.jackson.module:jackson-module-kotlin')
 	compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	compile("org.jetbrains.kotlin:kotlin-reflect")
 	compile('io.springfox:springfox-swagger2:2.7.0')
 	compile('io.springfox:springfox-swagger-ui:2.7.0')
-	compile group: 'com.googlecode.siren4j', name: 'siren4j', version: '2.1.0'
+	compile('com.googlecode.siren4j:siren4j:2.1.0')
 	runtime('org.postgresql:postgresql')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
-	testCompile group: 'com.h2database', name: 'h2', version: '1.4.197'
+	testCompile('com.h2database:h2:1.4.197')
 }

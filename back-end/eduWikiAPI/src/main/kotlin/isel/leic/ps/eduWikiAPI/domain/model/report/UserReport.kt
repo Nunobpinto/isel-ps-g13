@@ -3,7 +3,7 @@ package isel.leic.ps.eduWikiAPI.domain.model.report;
 import java.sql.Timestamp
 import javax.validation.constraints.Email
 
-data class StudentReport(
+data class UserReport(
         val reportId: Int = 0,
         val username: String = "",
         val givenName: String = "",
