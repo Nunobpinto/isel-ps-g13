@@ -4,8 +4,6 @@
 
   CREATE TYPE term_type AS ENUM ('Winter', 'Summer');
 
-  CREATE TYPE student_rank AS ENUM ('Beginner', 'Admin');
-
   CREATE TYPE course_misc_unit_type AS ENUM ('Work Assignment', 'Exam/Test');
 
   CREATE TYPE class_misc_unit_type AS ENUM ('Homework', 'Lecture');
@@ -184,21 +182,36 @@ CREATE TABLE IF NOT EXISTS homework (
   PRIMARY KEY (homework_id)
 );
 
-CREATE TABLE IF NOT EXISTS student (
-  student_username VARCHAR(20),
-  student_given_name VARCHAR(15) NOT NULL,
-  student_family_name VARCHAR(15) NOT NULL,
-  student_personal_email varchar(35) UNIQUE NOT NULL,
-  student_organization_email varchar(35) UNIQUE NOT NULL,
-  PRIMARY KEY (student_username)
+CREATE TABLE IF NOT EXISTS user_account (
+  user_username VARCHAR(20),
+  user_password VARCHAR(50),
+  user_given_name VARCHAR(15) NOT NULL,
+  user_family_name VARCHAR(15) NOT NULL,
+  user_personal_email varchar(35) UNIQUE NOT NULL,
+  user_organization_email varchar(35) UNIQUE NOT NULL,
+  PRIMARY KEY (user_username)
+);
+
+CREATE TABLE IF NOT EXISTS reputation_role (
+  reputation_role_id VARCHAR,
+  max_points INTEGER NOT NULL, 
+  min_points INTEGER NOT NULL, 
+  hierarchy_level INTEGER NOT NULL,
+  PRIMARY KEY (reputation_role_id)
+);
+
+CREATE TABLE IF NOT EXISTS reputation_matcher (
+  uri_match VARCHAR NOT NULL,
+  reputation_role_id VARCHAR REFERENCES reputation_role,
+  PRIMARY KEY (uri_match, reputation_role_id)
 );
 
 CREATE TABLE IF NOT EXISTS reputation (
   reputation_id SERIAL,
   reputation_points INTEGER NOT NULL,
-  reputation_rank student_rank NOT NULL, 
-  student_username varchar(20) REFERENCES student ON DELETE CASCADE,
-  PRIMARY KEY (reputation_id, student_username)
+  reputation_role VARCHAR REFERENCES reputation_role NOT NULL, 
+  user_username varchar(20) REFERENCES user_account ON DELETE CASCADE,
+  PRIMARY KEY (reputation_id, user_username)
 );
 
 CREATE TABLE IF NOT EXISTS reputation_log (
@@ -207,18 +220,18 @@ CREATE TABLE IF NOT EXISTS reputation_log (
   reputation_log_given_by varchar(15) NOT NULL,
   reputation_log_points INTEGER NOT NULL,
   reputation_id INTEGER,
-  student_username VARCHAR(20),
-  FOREIGN KEY (reputation_id, student_username) REFERENCES reputation(reputation_id, student_username) ON DELETE CASCADE,
+  user_username VARCHAR(20),
+  FOREIGN KEY (reputation_id, user_username) REFERENCES reputation(reputation_id, user_username) ON DELETE CASCADE,
   PRIMARY KEY (reputation_log_id)
 );
 
-CREATE TABLE IF NOT EXISTS student_course_class (
-  student_username VARCHAR(20) REFERENCES student ON DELETE CASCADE,
+CREATE TABLE IF NOT EXISTS user_course_class (
+  user_username VARCHAR(20) REFERENCES user_account ON DELETE CASCADE,
   course_id INTEGER REFERENCES course ON DELETE CASCADE,
   class_id INTEGER,
   term_id INTEGER,
   FOREIGN KEY (class_id, term_id) REFERENCES class (class_id, term_id) ON DELETE SET NULL,
-  PRIMARY KEY (student_username, course_id)
+  PRIMARY KEY (user_username, course_id)
 );
 
 --------------------------
@@ -496,13 +509,13 @@ CREATE TABLE IF NOT EXISTS homework_report (
   PRIMARY KEY (homework_report_id)
 );
 
-CREATE TABLE IF NOT EXISTS student_report (
-  student_report_id SERIAL,
-  student_username VARCHAR(20) REFERENCES student ON DELETE CASCADE,
+CREATE TABLE IF NOT EXISTS user_report (
+  report_id SERIAL,
+  user_username VARCHAR(20) REFERENCES user_account ON DELETE CASCADE,
   reason VARCHAR(200) NOT NULL,
   reported_by VARCHAR(20) NOT NULL,
   time_stamp timestamp NOT NULL,
-  PRIMARY KEY (student_report_id)
+  PRIMARY KEY (report_id)
 );
 
 --------------------------

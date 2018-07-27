@@ -236,42 +236,54 @@ insert into homework(homework_id, created_by, sheet, due_date, late_delivery, mu
 insert into homework_version (homework_id, homework_version, created_by, sheet, due_date, late_delivery, multiple_deliveries, time_stamp)
     values (6, 1, 'ze','Desenhar modelo do boneco', current_date, true , true , current_timestamp);
 
-
 -- Student Insert
 
-insert into student (student_username, student_given_name, student_family_name, student_personal_email, student_organization_email)
-    values ('ze', 'José', 'Antunes', 'ze@gmail.com', 'ze@isel.pt');
+insert into user_account (user_username, user_password, user_given_name, user_family_name, user_personal_email, user_organization_email)
+    values ('ze', 1234, 'José', 'Antunes', 'ze@gmail.com', 'ze@isel.pt');
 
-insert into student (student_username, student_given_name, student_family_name, student_personal_email, student_organization_email)
-    values ('bruno', 'Bruno', 'Filipe', 'bruno@gmail.com', 'bruno@isel.pt');
+insert into user_account (user_username, user_password, user_given_name, user_family_name, user_personal_email, user_organization_email)
+    values ('bruno', 1234, 'Bruno', 'Filipe', 'bruno@gmail.com', 'bruno@isel.pt');
 
-insert into student (student_username, student_given_name, student_family_name, student_personal_email, student_organization_email)
-    values ('jg', 'João', 'Gameiro', 'jg@gmail.com', 'jg@isel.pt');
+insert into user_account (user_username, user_password, user_given_name, user_family_name, user_personal_email, user_organization_email)
+    values ('jg', 1234, 'João', 'Gameiro', 'jg@gmail.com', 'jg@isel.pt');
+
+-- Reputation Roles
+
+insert into reputation_role (reputation_role_id, max_points, min_points, hierarchy_level)
+  values ('ROLE_BEGINNER', 1, 50, 1);
+
+insert into reputation_role (reputation_role_id, max_points, min_points, hierarchy_level)
+  values ('ROLE_ADMIN', 51, 100, 2);
+
+-- Reputation Matcher
+
+insert into reputation_matcher (uri_match, reputation_role_id)
+	values ('/**','ROLE_BEGINNER');
 
 -- Reputation Insert
 
-insert into reputation (reputation_points, reputation_rank, student_username)
-  values (10,'Admin', 'ze');
+insert into reputation (reputation_points, reputation_role, user_username)
+  values (10, 'ROLE_BEGINNER', 'ze');
 
-insert into reputation (reputation_points, reputation_rank, student_username)
-  values (5,'Admin', 'bruno');
+insert into reputation (reputation_points, reputation_role, user_username)
+  values (5, 'ROLE_BEGINNER', 'bruno');
 
-insert into reputation (reputation_points, reputation_rank, student_username)
-  values (1,'Beginner', 'jg');
+insert into reputation (reputation_points, reputation_role, user_username)
+  values (55, 'ROLE_ADMIN', 'jg');
 
 -- Reputation Log Insert
 
-insert into reputation_log (reputation_log_action, reputation_log_given_by, reputation_log_points, reputation_id, student_username)
+insert into reputation_log (reputation_log_action, reputation_log_given_by, reputation_log_points, reputation_id, user_username)
   values ('insert course','bruno',5,1,'ze');
 
 -- Student Course Class
 
-insert into student_course_class (student_username, course_id, class_id)
+insert into user_course_class (user_username, course_id, class_id)
   values ('ze', 3, 3);
 
-insert into student_course_class (student_username, course_id, class_id)
+insert into user_course_class (user_username, course_id, class_id)
   values ('ze', 2, 3);
 
-insert into student_course_class (student_username, course_id, class_id)
+insert into user_course_class (user_username, course_id, class_id)
   values ('bruno', 1, 1);
-    
+  
