@@ -1,7 +1,9 @@
 package isel.leic.ps.eduWikiAPI.repository.interfaces
 
 import isel.leic.ps.eduWikiAPI.domain.ReputationMatcher
+import isel.leic.ps.eduWikiAPI.domain.model.Reputation
 import isel.leic.ps.eduWikiAPI.domain.model.ReputationRole
+import isel.leic.ps.eduWikiAPI.domain.model.User
 import java.util.*
 
 interface ReputationDAO {
@@ -11,4 +13,6 @@ interface ReputationDAO {
     fun getAllReputationRoles(): List<ReputationRole>
 
     fun getReputationMatchers(): List<ReputationMatcher>
+
+    fun saveNewUser(reputation: Reputation) : Reputation
 }

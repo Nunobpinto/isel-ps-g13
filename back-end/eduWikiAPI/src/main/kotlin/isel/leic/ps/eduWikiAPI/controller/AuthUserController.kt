@@ -44,6 +44,10 @@ class AuthUserController {
     @PatchMapping("/user")
     fun updateAuthenticatedUser(@RequestBody input: UserInputModel) = NotImplementedError()
 
+    /**
+     * All POST Routes
+     */
+
     @PostMapping("/courses")
     fun addCourseToUser(principal: Principal, @RequestBody input: CourseInputModel) = NotImplementedError()
 

@@ -125,7 +125,7 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(value = [(IllegalArgumentException::class)])
     fun handleIllegalArgumentException(
-            ex: Exception,
+            ex: IllegalArgumentException,
             request: WebRequest
     ): ResponseEntity<ErrorOutputModel> {
         val httpHeaders = HttpHeaders()
@@ -143,7 +143,7 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(value = [(EmptyResultDataAccessException::class)])
     fun handleEmptyDataException(
-            ex: Exception,
+            ex: EmptyResultDataAccessException,
             request: WebRequest
     ): ResponseEntity<ErrorOutputModel> {
         val httpHeaders = HttpHeaders()
@@ -153,6 +153,24 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
                         title = "Not Found",
                         detail = "Could not find the resource you wanted",
                         status = 404,
+                        type = "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
+                ),
+                httpHeaders,
+                HttpStatus.NOT_FOUND)
+    }
+
+    @ExceptionHandler(value = [(UnconfirmedException::class)])
+    fun handleUnconfirmedaException(
+            ex: UnconfirmedException,
+            request: WebRequest
+    ): ResponseEntity<ErrorOutputModel> {
+        val httpHeaders = HttpHeaders()
+        httpHeaders.contentType = MediaType.APPLICATION_PROBLEM_JSON_UTF8
+        return ResponseEntity(
+                ErrorOutputModel(
+                        title = "Unconfirmed Account",
+                        detail = "Please confirm your organization email",
+                        status = 401,
                         type = "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
                 ),
                 httpHeaders,

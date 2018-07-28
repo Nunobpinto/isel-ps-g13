@@ -2,7 +2,9 @@ package isel.leic.ps.eduWikiAPI.repository
 
 import isel.leic.ps.eduWikiAPI.domain.model.User
 import isel.leic.ps.eduWikiAPI.repository.interfaces.UserDAO
+import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys
 import org.jdbi.v3.sqlobject.statement.SqlQuery
+import org.jdbi.v3.sqlobject.statement.SqlUpdate
 import java.util.*
 
 interface UserDAOJdbi : UserDAO {
@@ -24,6 +26,21 @@ interface UserDAOJdbi : UserDAO {
     @SqlQuery("SELECT * FROM $USER_TABLE where $USER_USERNAME = :username")
     override fun getUser(username: String): Optional<User>
 
-    @SqlQuery("SQL GOES HERE")
-    override fun createUser(user: User): Optional<User>
+    @SqlUpdate("INSERT INTO $USER_TABLE(" +
+            "$USER_USERNAME," +
+            "$USER_PASSWORD," +
+            "$USER_GIVEN_NAME," +
+            "$USER_FAMILY_NAME," +
+            "$USER_PERSONAL_EMAIL," +
+            USER_ORG_EMAIL +
+            ") VALUES ( " +
+            ":user.username," +
+            ":user.password," +
+            ":user.givenName," +
+            ":user.familyName," +
+            ":user.personalEmail," +
+            ":user.organizationEmail " +
+            ")")
+    @GetGeneratedKeys
+    override fun createUser(user: User): User
 }

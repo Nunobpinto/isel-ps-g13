@@ -1,11 +1,15 @@
 package isel.leic.ps.eduWikiAPI.repository
 
 import isel.leic.ps.eduWikiAPI.domain.ReputationMatcher
+import isel.leic.ps.eduWikiAPI.domain.model.Reputation
 import isel.leic.ps.eduWikiAPI.domain.model.ReputationRole
+import isel.leic.ps.eduWikiAPI.domain.model.User
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ReputationDAO
 import isel.leic.ps.eduWikiAPI.repository.UserDAOJdbi.Companion.USER_TABLE
 import isel.leic.ps.eduWikiAPI.repository.UserDAOJdbi.Companion.USER_USERNAME
+import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys
 import org.jdbi.v3.sqlobject.statement.SqlQuery
+import org.jdbi.v3.sqlobject.statement.SqlUpdate
 import java.util.*
 
 interface ReputationDAOJdbi : ReputationDAO {
@@ -46,4 +50,18 @@ interface ReputationDAOJdbi : ReputationDAO {
 
     @SqlQuery("SELECT * FROM $REPUTATION_MATCHER_TABLE")
     override fun getReputationMatchers(): List<ReputationMatcher>
+
+   @SqlUpdate(
+            "INSERT INTO $REPUTATION_TABLE (" +
+                    "$REPUTATION_POINTS," +
+                    "$REPUTATION_ROLE," +
+                    REPUTATION_USER +
+                    ") VALUES (" +
+                    ":reputation.reputationPoints," +
+                    ":reputation.reputationRole," +
+                    ":reputation.username" +
+                    ")")
+    @GetGeneratedKeys
+    override fun saveNewUser(reputation: Reputation): Reputation
+
 }

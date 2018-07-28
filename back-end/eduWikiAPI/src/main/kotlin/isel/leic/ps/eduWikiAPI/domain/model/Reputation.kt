@@ -1,10 +1,18 @@
-package isel.leic.ps.eduWikiAPI.domain.model;
+package isel.leic.ps.eduWikiAPI.domain.model
 
-import java.sql.Timestamp
+import org.jdbi.v3.core.mapper.reflect.ColumnName
+import isel.leic.ps.eduWikiAPI.repository.ReputationDAOJdbi.Companion.REPUTATION_ID
+import isel.leic.ps.eduWikiAPI.repository.ReputationDAOJdbi.Companion.REPUTATION_POINTS
+import isel.leic.ps.eduWikiAPI.repository.ReputationDAOJdbi.Companion.REPUTATION_ROLE
+import isel.leic.ps.eduWikiAPI.repository.ReputationDAOJdbi.Companion.REPUTATION_USER
 
 data class Reputation (
+        @ColumnName(REPUTATION_ID)
         val reputationId: Int = 0,
+        @ColumnName(REPUTATION_POINTS)
         val reputationPoints: Int = 0,
+        @ColumnName(REPUTATION_ROLE)
         val reputationRole: String = "",
-        val userId: Int = 0
+        @ColumnName(REPUTATION_USER)
+        val username: String = ""
 )

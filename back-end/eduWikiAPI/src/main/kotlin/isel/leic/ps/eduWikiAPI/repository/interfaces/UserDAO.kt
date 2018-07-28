@@ -7,5 +7,5 @@ interface UserDAO {
 
     fun getUser(username: String): Optional<User>
 
-    fun createUser(user: User): Optional<User>
+    fun createUser(user: User): User
 }
