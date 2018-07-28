@@ -4,8 +4,6 @@
 
   CREATE TYPE term_type AS ENUM ('Winter', 'Summer');
 
-  CREATE TYPE student_rank AS ENUM ('Beginner', 'Admin');
-
   CREATE TYPE course_misc_unit_type AS ENUM ('Work Assignment', 'Exam/Test');
 
   CREATE TYPE class_misc_unit_type AS ENUM ('Homework', 'Lecture');
@@ -101,17 +99,16 @@ CREATE TABLE IF NOT EXISTS course_term (
 );
 
 CREATE TABLE IF NOT EXISTS course_misc_unit (
-  id SERIAL,
+  course_misc_unit_id SERIAL,
   misc_type course_misc_unit_type NOT NULL,
   course_id INTEGER,
   term_id INTEGER,
-  time_stamp timestamp NOT NULL,
   FOREIGN KEY (course_id, term_id) REFERENCES course_term(course_id, term_id) ON DELETE CASCADE,
-  PRIMARY KEY (id)
+  PRIMARY KEY (course_misc_unit_id)
 );
 
 CREATE TABLE IF NOT EXISTS work_assignment (
-  id INTEGER REFERENCES course_misc_unit ON DELETE CASCADE,
+  work_assignment_id INTEGER REFERENCES course_misc_unit ON DELETE CASCADE,
   work_assignment_version INTEGER NOT NULL DEFAULT 1,
   created_by VARCHAR(20) NOT NULL,
   sheet VARCHAR(100) NOT NULL,
@@ -123,59 +120,57 @@ CREATE TABLE IF NOT EXISTS work_assignment (
   requires_report BOOLEAN NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (work_assignment_id)
 );
 
 CREATE TABLE IF NOT EXISTS exam (
-  id INTEGER REFERENCES course_misc_unit ON DELETE CASCADE,
+  exam_id INTEGER REFERENCES course_misc_unit ON DELETE CASCADE,
   exam_version INTEGER NOT NULL DEFAULT 1,
   created_by VARCHAR(20) NOT NULL,
   sheet VARCHAR(100) NOT NULL,
   due_date date NOT NULL,
   exam_type exam_type NOT NULL,
   phase VARCHAR(30) NOT NULL,
-  location varchar(30) NOT NULL,
+  location VARCHAR(30) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (exam_id)
 );
 
 CREATE TABLE IF NOT EXISTS course_class (
-  course_id INTEGER REFERENCES course ON DELETE CASCADE,
-  class_id INTEGER,
-  term_id INTEGER,
+  course_class_id SERIAL,
+  course_id INTEGER REFERENCES course ON DELETE CASCADE NOT NULL,
+  class_id INTEGER NOT NULL,
+  term_id INTEGER NOT NULL,
+  created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
   FOREIGN KEY (class_id, term_id) REFERENCES class(class_id, term_id) ON DELETE CASCADE,
-  PRIMARY KEY (course_id, class_id, term_id)
+  PRIMARY KEY (course_class_id)
 );
 
 CREATE TABLE IF NOT EXISTS class_misc_unit (
-  id SERIAL,
+  class_misc_unit_id SERIAL,
   misc_type class_misc_unit_type,
-  course_id INTEGER,
-  class_id INTEGER,
-  term_id INTEGER,
-  time_stamp timestamp NOT NULL,
-  FOREIGN KEY (course_id, class_id, term_id) REFERENCES course_class(course_id, class_id, term_id) ON DELETE CASCADE,
-  PRIMARY KEY (id)
+  course_class_id INTEGER REFERENCES course_class ON DELETE CASCADE,
+  PRIMARY KEY (class_misc_unit_id)
 );
 
 CREATE TABLE IF NOT EXISTS lecture (
-  id INTEGER REFERENCES class_misc_unit ON DELETE CASCADE,
+  lecture_id INTEGER REFERENCES class_misc_unit ON DELETE CASCADE,
   lecture_version INTEGER NOT NULL DEFAULT 1,
   created_by VARCHAR(20),
   weekday weekday,
   begins TIME,
-  duration INTEGER ,
+  duration INTERVAL,
   location varchar(30),
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (lecture_id)
 );
 
 CREATE TABLE IF NOT EXISTS homework (
-  id INTEGER REFERENCES class_misc_unit ON DELETE CASCADE,
+  homework_id INTEGER REFERENCES class_misc_unit ON DELETE CASCADE,
   homework_version INTEGER NOT NULL DEFAULT 1,
   created_by VARCHAR(20),
   sheet VARCHAR(100),
@@ -184,24 +179,39 @@ CREATE TABLE IF NOT EXISTS homework (
   multiple_deliveries BOOLEAN,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (homework_id)
 );
 
-CREATE TABLE IF NOT EXISTS student (
-  student_username VARCHAR(20),
-  student_given_name VARCHAR(15) NOT NULL,
-  student_family_name VARCHAR(15) NOT NULL,
-  student_personal_email varchar(35) UNIQUE NOT NULL,
-  student_organization_email varchar(35) UNIQUE NOT NULL,
-  PRIMARY KEY (student_username)
+CREATE TABLE IF NOT EXISTS user_account (
+  user_username VARCHAR(20),
+  user_password VARCHAR(50),
+  user_given_name VARCHAR(15) NOT NULL,
+  user_family_name VARCHAR(15) NOT NULL,
+  user_personal_email varchar(35) UNIQUE NOT NULL,
+  user_organization_email varchar(35) UNIQUE NOT NULL,
+  PRIMARY KEY (user_username)
+);
+
+CREATE TABLE IF NOT EXISTS reputation_role (
+  reputation_role_id VARCHAR,
+  max_points INTEGER NOT NULL,
+  min_points INTEGER NOT NULL,
+  hierarchy_level INTEGER NOT NULL,
+  PRIMARY KEY (reputation_role_id)
+);
+
+CREATE TABLE IF NOT EXISTS reputation_matcher (
+  uri_match VARCHAR NOT NULL,
+  reputation_role_id VARCHAR REFERENCES reputation_role,
+  PRIMARY KEY (uri_match, reputation_role_id)
 );
 
 CREATE TABLE IF NOT EXISTS reputation (
   reputation_id SERIAL,
   reputation_points INTEGER NOT NULL,
-  reputation_rank student_rank NOT NULL,
-  student varchar(20) REFERENCES student ON DELETE CASCADE,
-  PRIMARY KEY (reputation_id, student)
+  reputation_role VARCHAR REFERENCES reputation_role NOT NULL,
+  user_username varchar(20) REFERENCES user_account ON DELETE CASCADE,
+  PRIMARY KEY (reputation_id, user_username)
 );
 
 CREATE TABLE IF NOT EXISTS reputation_log (
@@ -210,18 +220,18 @@ CREATE TABLE IF NOT EXISTS reputation_log (
   reputation_log_given_by varchar(15) NOT NULL,
   reputation_log_points INTEGER NOT NULL,
   reputation_id INTEGER,
-  student VARCHAR(20),
-  FOREIGN KEY (reputation_id, student) REFERENCES reputation(reputation_id, student) ON DELETE CASCADE,
+  user_username VARCHAR(20),
+  FOREIGN KEY (reputation_id, user_username) REFERENCES reputation(reputation_id, user_username) ON DELETE CASCADE,
   PRIMARY KEY (reputation_log_id)
 );
 
-CREATE TABLE IF NOT EXISTS student_course_class (
-  username VARCHAR(20) REFERENCES student ON DELETE CASCADE,
+CREATE TABLE IF NOT EXISTS user_course_class (
+  user_username VARCHAR(20) REFERENCES user_account ON DELETE CASCADE,
   course_id INTEGER REFERENCES course ON DELETE CASCADE,
   class_id INTEGER,
   term_id INTEGER,
   FOREIGN KEY (class_id, term_id) REFERENCES class (class_id, term_id) ON DELETE SET NULL,
-  PRIMARY KEY (username, course_id)
+  PRIMARY KEY (user_username, course_id)
 );
 
 --------------------------
@@ -229,7 +239,7 @@ CREATE TABLE IF NOT EXISTS student_course_class (
 --------------------------
 
 CREATE TABLE IF NOT EXISTS programme_stage (
-  programme_id SERIAL,
+  programme_stage_id SERIAL,
   programme_full_name VARCHAR(100) NOT NULL,
   programme_short_name VARCHAR(10) NOT NULL,
   programme_academic_degree VARCHAR(50) NOT NULL,
@@ -238,21 +248,22 @@ CREATE TABLE IF NOT EXISTS programme_stage (
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  PRIMARY KEY (programme_id)
+  PRIMARY KEY (programme_stage_id)
 );
 
 CREATE TABLE IF NOT EXISTS course_stage (
-  course_id SERIAL,
+  course_stage_id SERIAL,
   organization_id INTEGER REFERENCES organization ON DELETE CASCADE,
   course_full_name VARCHAR(100) NOT NULL,
   course_short_name VARCHAR(10) NOT NULL,
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  PRIMARY KEY (course_id)
+  PRIMARY KEY (course_stage_id)
 );
 
 CREATE TABLE IF NOT EXISTS course_programme_stage (
+  course_programme_stage_id SERIAL,
   course_id INTEGER REFERENCES course ON DELETE CASCADE,
   programme_id INTEGER REFERENCES programme ON DELETE CASCADE,
   course_lectured_term VARCHAR(50) NOT NULL,
@@ -261,28 +272,29 @@ CREATE TABLE IF NOT EXISTS course_programme_stage (
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  PRIMARY KEY (course_id, programme_id)
+  PRIMARY KEY (course_programme_stage_id)
 );
 
 CREATE TABLE IF NOT EXISTS class_stage (
-  class_id SERIAL,
+  class_stage_id SERIAL,
   term_id INTEGER REFERENCES term ON DELETE CASCADE,
   class_name VARCHAR(10) NOT NULL,
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  PRIMARY KEY (class_id, term_id)
+  PRIMARY KEY (class_stage_id, term_id)
 );
 
 CREATE TABLE IF NOT EXISTS course_class_stage (
-  course_id INTEGER REFERENCES course ON DELETE CASCADE,
-  class_id INTEGER,
-  term_id INTEGER,
+  course_class_stage_id SERIAL,
+  course_id INTEGER REFERENCES course ON DELETE CASCADE NOT NULL,
+  class_id INTEGER NOT NULL,
+  term_id INTEGER NOT NULL,
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
   FOREIGN KEY (class_id, term_id) REFERENCES class(class_id, term_id) ON DELETE CASCADE,
-  PRIMARY KEY (course_id, class_id, term_id)
+  PRIMARY KEY (course_class_stage_id)
 );
 
 -- not sure how staging course specific misc units are going to be staged, it might be through references to this table
@@ -293,26 +305,24 @@ CREATE TABLE IF NOT EXISTS course_class_stage (
 -- );
 
 CREATE TABLE IF NOT EXISTS course_misc_unit_stage (
-  id SERIAL,
+  course_misc_unit_stage_id SERIAL,
   course_id INTEGER,
   term_id INTEGER,
   misc_type course_misc_unit_type NOT NULL,
   FOREIGN KEY (course_id, term_id) REFERENCES course_term(course_id, term_id) ON DELETE CASCADE,
-  PRIMARY KEY (id)
+  PRIMARY KEY (course_misc_unit_stage_id)
 );
 
 CREATE TABLE IF NOT EXISTS class_misc_unit_stage (
-  id SERIAL,
+  class_misc_unit_stage_id SERIAL,
   misc_type class_misc_unit_type NOT NULL,
-  course_id INTEGER,
-  class_id INTEGER,
-  term_id INTEGER,
-  FOREIGN KEY (course_id, class_id, term_id) REFERENCES course_class(course_id, class_id, term_id) ON DELETE CASCADE,
-  PRIMARY KEY (id)
+  course_class_id INTEGER REFERENCES course_class ON DELETE CASCADE,
+  FOREIGN KEY (course_class_id) REFERENCES course_class ON DELETE CASCADE,
+  PRIMARY KEY (class_misc_unit_stage_id)
 );
 
 CREATE TABLE IF NOT EXISTS work_assignment_stage (
-  id INTEGER REFERENCES course_misc_unit_stage ON DELETE CASCADE,
+  work_assignment_stage_id INTEGER REFERENCES course_misc_unit_stage ON DELETE CASCADE,
   sheet VARCHAR(100) NOT NULL,
   supplement VARCHAR(100) NOT NULL,
   due_date date NOT NULL,
@@ -323,11 +333,11 @@ CREATE TABLE IF NOT EXISTS work_assignment_stage (
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (work_assignment_stage_id)
 );
 
 CREATE TABLE IF NOT EXISTS exam_stage (
-  id INTEGER REFERENCES course_misc_unit_stage ON DELETE CASCADE,
+  exam_stage_id INTEGER REFERENCES course_misc_unit_stage ON DELETE CASCADE,
   sheet VARCHAR(100) NOT NULL,
   due_date date NOT NULL,
   exam_type  exam_type NOT NULL,
@@ -336,23 +346,23 @@ CREATE TABLE IF NOT EXISTS exam_stage (
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (exam_stage_id)
 );
 
 CREATE TABLE IF NOT EXISTS lecture_stage (
-  id INTEGER REFERENCES class_misc_unit_stage ON DELETE CASCADE,
+  lecture_stage_id INTEGER REFERENCES class_misc_unit_stage ON DELETE CASCADE,
   weekday weekday NOT NULL,
   begins TIME NOT NULL,
-  duration INTEGER NOT NULL,
+  duration INTERVAL NOT NULL,
   created_by VARCHAR(20) NOT NULL,
   time_stamp timestamp NOT NULL,
   votes INTEGER DEFAULT 0,
   location VARCHAR(30) NOT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (lecture_stage_id)
 );
 
 CREATE TABLE IF NOT EXISTS homework_stage (
-  id INTEGER REFERENCES class_misc_unit_stage ON DELETE CASCADE,
+  homework_stage_id INTEGER REFERENCES class_misc_unit_stage ON DELETE CASCADE,
   sheet VARCHAR(100) NOT NULL,
   due_date DATE NOT NULL,
   late_delivery BOOLEAN NOT NULL,
@@ -360,7 +370,7 @@ CREATE TABLE IF NOT EXISTS homework_stage (
   time_stamp timestamp NOT NULL,
   votes INTEGER DEFAULT 0,
   created_by VARCHAR(20) NOT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (homework_stage_id)
 );
 
 --------------------------
@@ -368,7 +378,7 @@ CREATE TABLE IF NOT EXISTS homework_stage (
 --------------------------
 
 CREATE TABLE IF NOT EXISTS organization_report (
-  report_id SERIAL,
+  organization_report_id SERIAL,
   organization_id INTEGER REFERENCES organization ON DELETE CASCADE,
   organization_full_name varchar(100),
   organization_short_name varchar(10),
@@ -377,11 +387,11 @@ CREATE TABLE IF NOT EXISTS organization_report (
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  PRIMARY KEY (report_id)
+  PRIMARY KEY (organization_report_id)
 );
 
 CREATE TABLE IF NOT EXISTS programme_report (
-    report_id SERIAL,
+    programme_report_id SERIAL,
     programme_id INTEGER REFERENCES programme ON DELETE CASCADE,
     programme_full_name varchar(100),
     programme_short_name varchar(10),
@@ -391,13 +401,13 @@ CREATE TABLE IF NOT EXISTS programme_report (
     reported_by VARCHAR(20) NOT NULL,
     votes INTEGER DEFAULT 0,
     time_stamp timestamp NOT NULL,
-    PRIMARY KEY (report_id)
+    PRIMARY KEY (programme_report_id)
 );
 
 CREATE TABLE IF NOT EXISTS course_programme_report (
-  report_id SERIAL,
-	course_id INTEGER,
-	programme_id INTEGER,
+   course_programme_report_id SERIAL,
+	course_id INTEGER NOT NULL,
+	programme_id INTEGER NOT NULL,
 	course_lectured_term varchar(50),
 	course_optional BOOLEAN,
 	course_credits INTEGER,
@@ -405,35 +415,47 @@ CREATE TABLE IF NOT EXISTS course_programme_report (
 	reported_by VARCHAR(20) NOT NULL,
 	votes INTEGER DEFAULT 0,
 	FOREIGN KEY (course_id, programme_id) REFERENCES course_programme(course_id, programme_id) ON DELETE CASCADE,
-	PRIMARY KEY (report_id)
+	PRIMARY KEY (course_programme_report_id)
 );
 
 CREATE TABLE IF NOT EXISTS course_report (
-    report_id SERIAL,
+    course_report_id SERIAL,
     course_id INTEGER REFERENCES course ON DELETE CASCADE,
     course_full_name varchar(100),
     course_short_name varchar(10),
     reported_by VARCHAR(20) NOT NULL,
     votes INTEGER DEFAULT 0,
     time_stamp timestamp NOT NULL,
-    PRIMARY KEY (report_id)
+    PRIMARY KEY (course_report_id)
 );
 
 CREATE TABLE IF NOT EXISTS class_report (
-  report_id SERIAL,
-  class_id INTEGER,
-  term_id INTEGER,
+  class_report_id SERIAL,
+  class_id INTEGER NOT NULL,
+  term_id INTEGER NOT NULL,
   class_name VARCHAR(10),
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
   FOREIGN KEY (class_id, term_id) REFERENCES class(class_id, term_id) ON DELETE CASCADE,
-  PRIMARY KEY (report_id)
+  PRIMARY KEY (class_report_id)
+);
+
+CREATE TABLE IF NOT EXISTS course_class_report (
+  course_class_report_id SERIAL,
+  course_class_id INTEGER REFERENCES course_class NOT NULL,
+  course_id INTEGER,
+  class_id INTEGER,
+  term_id INTEGER,
+  reported_by VARCHAR(20) NOT NULL,
+  votes INTEGER DEFAULT 0,
+  time_stamp timestamp NOT NULL,
+  PRIMARY KEY (course_class_report_id)
 );
 
 CREATE TABLE IF NOT EXISTS work_assignment_report (
-  report_id SERIAL,
-  id INTEGER REFERENCES course_misc_unit ON DELETE CASCADE,
+  work_assignment_report_id SERIAL,
+  work_assignment_id INTEGER REFERENCES course_misc_unit ON DELETE CASCADE,
   sheet VARCHAR(100),
   supplement VARCHAR(100),
   due_date date,
@@ -444,12 +466,12 @@ CREATE TABLE IF NOT EXISTS work_assignment_report (
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  PRIMARY KEY (report_id)
+  PRIMARY KEY (work_assignment_report_id)
 );
 
 CREATE TABLE IF NOT EXISTS exam_report (
-  report_id SERIAL,
-  id INTEGER REFERENCES course_misc_unit ON DELETE CASCADE,
+  exam_report_id SERIAL,
+  exam_id INTEGER REFERENCES course_misc_unit ON DELETE CASCADE,
   sheet VARCHAR(100),
   due_date date,
   exam_type exam_type,
@@ -458,25 +480,25 @@ CREATE TABLE IF NOT EXISTS exam_report (
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  PRIMARY KEY (report_id)
+  PRIMARY KEY (exam_report_id)
 );
 
 CREATE TABLE IF NOT EXISTS lecture_report (
-  report_id SERIAL,
-  id INTEGER REFERENCES class_misc_unit ON DELETE CASCADE,
+  lecture_report_id SERIAL,
+  lecture_id INTEGER REFERENCES class_misc_unit ON DELETE CASCADE,
   weekday weekday,
   begins TIME,
-  duration INTEGER,
+  duration INTERVAL,
   location varchar(30),
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  PRIMARY KEY (report_id)
+  PRIMARY KEY (lecture_report_id)
 );
 
 CREATE TABLE IF NOT EXISTS homework_report (
-  report_id SERIAL,
-  id INTEGER REFERENCES class_misc_unit ON DELETE CASCADE,
+  homework_report_id SERIAL,
+  homework_id INTEGER REFERENCES class_misc_unit ON DELETE CASCADE,
   sheet VARCHAR(100),
   due_date DATE,
   late_delivery BOOLEAN,
@@ -484,12 +506,12 @@ CREATE TABLE IF NOT EXISTS homework_report (
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  PRIMARY KEY (report_id)
+  PRIMARY KEY (homework_report_id)
 );
 
-CREATE TABLE IF NOT EXISTS student_report (
+CREATE TABLE IF NOT EXISTS user_report (
   report_id SERIAL,
-  student_username VARCHAR(20) REFERENCES student ON DELETE CASCADE,
+  user_username VARCHAR(20) REFERENCES user_account ON DELETE CASCADE,
   reason VARCHAR(200) NOT NULL,
   reported_by VARCHAR(20) NOT NULL,
   time_stamp timestamp NOT NULL,
@@ -540,7 +562,7 @@ CREATE TABLE IF NOT EXISTS course_version (
 CREATE TABLE IF NOT EXISTS course_programme_version (
 	course_id INTEGER,
 	programme_id INTEGER,
-  course_programme_version INTEGER,
+   course_programme_version INTEGER,
 	course_lectured_term varchar(50) NOT NULL,
 	course_optional BOOLEAN NOT NULL,
 	course_credits INTEGER NOT NULL,
@@ -560,7 +582,7 @@ CREATE TABLE IF NOT EXISTS class_version (
 );
 
 CREATE TABLE IF NOT EXISTS work_assignment_version (
-	id INTEGER,
+	work_assignment_id INTEGER,
 	work_assignment_version INTEGER,
 	sheet VARCHAR(100) NOT NULL,
    supplement VARCHAR(100) NOT NULL,
@@ -571,36 +593,36 @@ CREATE TABLE IF NOT EXISTS work_assignment_version (
    requires_report BOOLEAN NOT NULL,
 	created_by VARCHAR(20) NOT NULL,
 	time_stamp timestamp NOT NULL,
-	PRIMARY KEY (id, work_assignment_version)
+	PRIMARY KEY (work_assignment_id, work_assignment_version)
 );
 
 CREATE TABLE IF NOT EXISTS exam_version (
-    id INTEGER,
-  exam_version INTEGER,
+    exam_id INTEGER,
+    exam_version INTEGER,
     sheet VARCHAR(100) NOT NULL,
     due_date date NOT NULL,
     exam_type exam_type NOT NULL,
     phase VARCHAR(30) NOT NULL,
     location varchar(30) NOT NULL,
-  created_by VARCHAR(20) NOT NULL,
-  time_stamp timestamp NOT NULL,
-    PRIMARY KEY (id, exam_version)
+    created_by VARCHAR(20) NOT NULL,
+    time_stamp timestamp NOT NULL,
+    PRIMARY KEY (exam_id, exam_version)
 );
 
 CREATE TABLE IF NOT EXISTS lecture_version (
-  id INTEGER,
+  lecture_id INTEGER,
   lecture_version INTEGER,
   created_by VARCHAR(20) NOT NULL,
   weekday weekday NOT NULL,
   begins TIME NOT NULL,
-  duration INTEGER NOT NULL,
+  duration INTERVAL NOT NULL,
   time_stamp timestamp NOT NULL,
   location varchar(30) NOT NULL,
-  PRIMARY KEY (id, lecture_version)
+  PRIMARY KEY (lecture_id, lecture_version)
 );
 
 CREATE TABLE IF NOT EXISTS homework_version (
-  id INTEGER,
+  homework_id INTEGER,
   homework_version INTEGER,
   sheet VARCHAR(100) NOT NULL,
   due_date DATE NOT NULL,
@@ -608,5 +630,5 @@ CREATE TABLE IF NOT EXISTS homework_version (
   late_delivery BOOLEAN NOT NULL,
   time_stamp timestamp NOT NULL,
   multiple_deliveries BOOLEAN NOT NULL,
-  PRIMARY KEY (id, homework_version)
+  PRIMARY KEY (homework_id, homework_version)
 );

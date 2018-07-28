@@ -20,7 +20,9 @@ Drop Table IF EXISTS lecture_report;
 
 Drop Table IF EXISTS homework_report;
 
-Drop Table IF EXISTS student_report;
+Drop Table IF EXISTS user_report;
+
+Drop Table IF EXISTS course_class_report;
 
 --------------------------
 -- Drop Staged Tables
@@ -90,9 +92,13 @@ Drop Table IF EXISTS class_misc_unit;
 
 Drop Table IF EXISTS course_misc_unit;
 
-Drop Table IF EXISTS student_course_class;
+Drop Table IF EXISTS user_course_class;
 
 Drop Table IF EXISTS reputation;
+
+Drop Table IF EXISTS reputation_matcher;
+
+Drop Table IF EXISTS reputation_role;
 
 Drop Table IF EXISTS course_term;
 
@@ -108,7 +114,7 @@ Drop Table IF EXISTS course;
 
 Drop Table IF EXISTS organization;
 
-Drop Table IF EXISTS student;
+Drop Table IF EXISTS user_account;
 
 --------------------------
 -- Drop Auxiliary Types

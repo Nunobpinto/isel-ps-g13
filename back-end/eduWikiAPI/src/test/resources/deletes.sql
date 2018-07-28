@@ -1,5 +1,5 @@
 --------------------------
--- Delete Report 
+-- Delete Report
 --------------------------
 
 delete from organization_report;
@@ -21,7 +21,7 @@ delete from homework_report;
 delete from student_report;
 
 --------------------------
--- Delete Staged 
+-- Delete Staged
 --------------------------
 
 delete from programme_stage;
@@ -105,6 +105,3 @@ delete from course;
 delete from organization;
 
 delete from student;
-
-
-
