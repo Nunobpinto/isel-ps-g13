@@ -94,6 +94,8 @@ Drop Table IF EXISTS course_misc_unit;
 
 Drop Table IF EXISTS user_course_class;
 
+Drop Table IF EXISTS user_programme;
+
 Drop Table IF EXISTS reputation;
 
 Drop Table IF EXISTS reputation_matcher;

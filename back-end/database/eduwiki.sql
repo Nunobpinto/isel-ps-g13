@@ -234,6 +234,12 @@ CREATE TABLE IF NOT EXISTS user_course_class (
   PRIMARY KEY (user_username, course_id)
 );
 
+CREATE TABLE IF NOT EXISTS user_programme (
+  user_username VARCHAR(20) REFERENCES user_account ON DELETE CASCADE,
+  programme_id INTEGER REFERENCES programme ON DELETE CASCADE,
+  PRIMARY KEY (user_username)
+);
+
 --------------------------
 -- Create Stage Tables
 --------------------------
