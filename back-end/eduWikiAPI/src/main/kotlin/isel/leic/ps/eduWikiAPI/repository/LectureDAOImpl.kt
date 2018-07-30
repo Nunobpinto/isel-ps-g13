@@ -5,14 +5,22 @@ import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.domain.model.report.LectureReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.LectureStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.LectureVersion
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_MISC_UNIT_COURSE_CLASS_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_MISC_UNIT_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_MISC_UNIT_TABLE
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_MISC_UNIT_TYPE
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_ID
 import isel.leic.ps.eduWikiAPI.repository.interfaces.LectureDAO
 import org.jdbi.v3.core.Handle
+import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys
+import org.jdbi.v3.sqlobject.statement.SqlQuery
+import org.jdbi.v3.sqlobject.statement.SqlUpdate
+import org.jdbi.v3.sqlobject.transaction.Transaction
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 import java.util.*
 
-@Repository
-class LectureDAOImpl : LectureDAO {
+interface LectureDAOImpl : LectureDAO {
 
     companion object {
         //TABLE NAMES
@@ -35,151 +43,117 @@ class LectureDAOImpl : LectureDAO {
         const val LECTURE_CREATED_BY = "created_by"
     }
 
-    @Autowired
-    lateinit var handle: Handle
+    @SqlQuery(
+            "SELECT L.$LECTURE_ID, " +
+                    "L.$LECTURE_VERSION, " +
+                    "L.$LECTURE_CREATED_BY, " +
+                    "L.$LECTURE_WEEK_DAY, " +
+                    "L.$LECTURE_BEGINS, " +
+                    "L.$LECTURE_DURATION, " +
+                    "L.$LECTURE_LOCATION, " +
+                    "L.$LECTURE_VOTES, " +
+                    "L.$LECTURE_TIMESTAMP " +
+                    "FROM $LECTURE_TABLE AS L " +
+                    "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +
+                    "ON L.$LECTURE_ID = C.$CLASS_MISC_UNIT_ID " +
+                    "WHERE C.$COURSE_CLASS_ID = :courseClassId " +
+                    "AND C.$CLASS_MISC_UNIT_TYPE = Lecture"
+    )
+    override fun getAllLecturesFromCourseInClass(courseClassId: Int): List<Lecture>
 
-    override fun getAllLecturesFromCourseInClass(courseClassId: Int): List<Lecture> =
-            handle.createQuery(
-                    "select L.$LECTURE_ID, " +
-                            "L.$LECTURE_VERSION, " +
-                            "L.$LECTURE_CREATED_BY, " +
-                            "L.$LECTURE_WEEK_DAY, " +
-                            "L.$LECTURE_BEGINS, " +
-                            "L.$LECTURE_DURATION, " +
-                            "L.$LECTURE_LOCATION, " +
-                            "L.$LECTURE_VOTES, " +
-                            "L.$LECTURE_TIMESTAMP " +
-                            "from $LECTURE_TABLE as L" +
-                            "inner join ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE} as C" +
-                            "on L.$LECTURE_ID = C.${ClassDAOImpl.CLASS_MISC_UNIT_ID}" +
-                            "where C.${ClassDAOImpl.COURSE_CLASS_ID} = :courseClassId" +
-                            "and C.${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType"
-            )
-                    .bind("courseClassId", courseClassId)
-                    .bind("miscType", "Lecture")
-                    .mapTo(Lecture::class.java)
-                    .list()
+    @SqlQuery(
+            "SELECT L.$LECTURE_ID, " +
+                    "L.$LECTURE_VERSION, " +
+                    "L.$LECTURE_CREATED_BY, " +
+                    "L.$LECTURE_WEEK_DAY, " +
+                    "L.$LECTURE_BEGINS, " +
+                    "L.$LECTURE_DURATION, " +
+                    "L.$LECTURE_LOCATION, " +
+                    "L.$LECTURE_VOTES, " +
+                    "L.$LECTURE_TIMESTAMP " +
+                    "FROM $LECTURE_TABLE AS L " +
+                    "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +
+                    "ON L.$LECTURE_ID = C.$CLASS_MISC_UNIT_ID " +
+                    "WHERE C.$COURSE_CLASS_ID = :courseClassId " +
+                    "AND C.$CLASS_MISC_UNIT_TYPE = Lecture " +
+                    "AND L.$LECTURE_ID = :lectureId"
+    )
+    override fun getSpecificLectureFromCourseInClass(courseClassId: Int, lectureId: Int): Optional<Lecture>
 
-    override fun getSpecificLectureFromCourseInClass(courseClassId: Int, lectureId: Int): Optional<Lecture> =
-            handle.createQuery(
-                    "select L.$LECTURE_ID, " +
-                            "L.$LECTURE_VERSION, " +
-                            "L.$LECTURE_CREATED_BY, " +
-                            "L.$LECTURE_WEEK_DAY, " +
-                            "L.$LECTURE_BEGINS, " +
-                            "L.$LECTURE_DURATION, " +
-                            "L.$LECTURE_LOCATION, " +
-                            "L.$LECTURE_VOTES, " +
-                            "L.$LECTURE_TIMESTAMP " +
-                            "from $LECTURE_TABLE as L" +
-                            "inner join ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE} as C" +
-                            "on L.$LECTURE_ID = C.${ClassDAOImpl.CLASS_MISC_UNIT_ID}" +
-                            "where C.${ClassDAOImpl.COURSE_CLASS_ID} = :courseClassId" +
-                            "and C.${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType" +
-                            "and L.$LECTURE_ID = :lectureId"
-            )
-                    .bind("courseClassId", courseClassId)
-                    .bind("miscType", "Lecture")
-                    .bind("lectureId", lectureId)
-                    .mapTo(Lecture::class.java)
-                    .findFirst()
+    @SqlUpdate(
+            "INSERT INTO $LECTURE_TABLE (" +
+                    "$LECTURE_ID, " +
+                    "$LECTURE_VERSION, " +
+                    "$LECTURE_CREATED_BY, " +
+                    "$LECTURE_WEEK_DAY, " +
+                    "$LECTURE_BEGINS, " +
+                    "$LECTURE_DURATION, " +
+                    "$LECTURE_LOCATION, " +
+                    "$LECTURE_VOTES, " +
+                    "$LECTURE_TIMESTAMP) " +
+                    "VALUES (:lecture.lectureId, :lecture.version, :lecture.createdBy, :lecture.weekDay, " +
+                    ":lecture.begins, :lecture.duration, :lecture.location, :lecture.votes, :lecture.timestamp)"
+    )
+    @GetGeneratedKeys
+    override fun createLecture(lecture: Lecture): Optional<Lecture>
 
-    override fun createLecture(lecture: Lecture): Optional<Lecture> =
-            handle.createUpdate(
-                    "insert into $LECTURE_TABLE (" +
-                            "$LECTURE_ID, " +
-                            "$LECTURE_VERSION, " +
-                            "$LECTURE_CREATED_BY, " +
-                            "$LECTURE_WEEK_DAY, " +
-                            "$LECTURE_BEGINS, " +
-                            "$LECTURE_DURATION, " +
-                            "$LECTURE_LOCATION, " +
-                            "$LECTURE_VOTES, " +
-                            "$LECTURE_TIMESTAMP " +
-                            ")" +
-                            "values (:lectureId, :version, :createdBy, :weekDay" +
-                            ":begins, :duration, :location, :votes, :timestamp)"
-            )
-                    .bind("lectureId", lecture.lectureId)
-                    .bind("version", lecture.version)
-                    .bind("createdBy", lecture.createdBy)
-                    .bind("weekDay", lecture.weekDay)
-                    .bind("begins", lecture.begins)
-                    .bind("duration", lecture.duration)
-                    .bind("location", lecture.location)
-                    .bind("votes", lecture.votes)
-                    .bind("timestamp", lecture.timestamp)
-                    .executeAndReturnGeneratedKeys()
-                    .mapTo(Lecture::class.java)
-                    .findFirst()
+    @SqlQuery(
+            "SELECT L.$LECTURE_VOTES" +
+                    "FROM $LECTURE_TABLE AS L " +
+                    "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +
+                    "ON L.$LECTURE_ID = C.$CLASS_MISC_UNIT_ID " +
+                    "WHERE C.$COURSE_CLASS_ID = :courseClassId " +
+                    "AND L.$LECTURE_ID = :lectureId"
+    )
+    fun getVotesOnLecture(courseClassId: Int, lectureId: Int): Int
 
+    @SqlUpdate(
+            "UPDATE $LECTURE_TABLE AS L set L.$LECTURE_VOTES = :votes " +
+                    "FROM $CLASS_MISC_UNIT_TABLE AS C " +
+                    "WHERE L.$LECTURE_ID = C.$CLASS_MISC_UNIT_ID " +
+                    "AND L.$LECTURE_ID = :lectureId"
+    )
+    fun updateVotesOnLecture(lectureId: Int, votes: Int): Int
+
+    @Transaction
     override fun voteOnLectureOfCourseInClass(courseClassId: Int, lectureId: Int, vote: Vote): Int {
-        var votes = handle.createQuery(
-                "select L.$LECTURE_VOTES" +
-                        "from $LECTURE_TABLE as L" +
-                        "inner join ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE} as C" +
-                        "on L.$LECTURE_ID = C.${ClassDAOImpl.CLASS_MISC_UNIT_ID}" +
-                        "where C.${ClassDAOImpl.COURSE_CLASS_ID} = :courseClassId" +
-                        "and C.${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType" +
-                        "and L.$LECTURE_ID = :lectureId"
-        )
-                .bind("courseClassId", courseClassId)
-                .bind("miscType", "Lecture")
-                .bind("lectureId", lectureId)
-                .mapTo(Int::class.java)
-                .findOnly()
-        votes = if (vote == Vote.Down) --votes else ++votes
-
-        return handle.createUpdate(
-                "update $LECTURE_TABLE as L set L.$LECTURE_VOTES = :votes " +
-                        "from ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE} as C" +
-                        "where L.$LECTURE_ID = C.${ClassDAOImpl.CLASS_MISC_UNIT_ID} " +
-                        "and L.$LECTURE_ID = :lectureId"
-        )
-                .bind("votes", votes)
-                .bind("lectureId", lectureId)
-                .execute()
+        var votes = getVotesOnLecture(courseClassId, lectureId)
+        votes = if(vote == Vote.Down) -- votes else ++ votes
+        return updateVotesOnLecture(lectureId, votes)
     }
 
-    override fun deleteAllLecturesOfCourseInClass(courseClassId: Int): Int =
-            handle.createUpdate(
-                    "delete from ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE}" +
-                            "where ${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId" +
-                            "and ${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType"
-            )
-                    .bind("courseClassId", courseClassId)
-                    .bind("miscType", "Lecture")
-                    .execute()
+    @SqlUpdate(
+            "DELETE FROM $CLASS_MISC_UNIT_TABLE " +
+                    "WHERE $CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
+                    "AND $CLASS_MISC_UNIT_TYPE = Lecture"
+    )
+    override fun deleteAllLecturesOfCourseInClass(courseClassId: Int): Int
 
-    override fun deleteSpecificLectureOfCourseInClass(courseClassId: Int, lectureId: Int): Int =
-            handle.createUpdate(
-                    "delete from ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE}" +
-                            "where ${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId" +
-                            "and ${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType" +
-                            "and ${ClassDAOImpl.CLASS_MISC_UNIT_ID} = :lectureId"
-            )
-                    .bind("courseClassId", courseClassId)
-                    .bind("miscType", "Lecture")
-                    .bind("lectureId", lectureId)
-                    .execute()
+    @SqlUpdate(
+            "DELETE FROM $CLASS_MISC_UNIT_TABLE " +
+                    "WHERE $CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
+                    "AND $CLASS_MISC_UNIT_TYPE = Lecture " +
+                    "AND $CLASS_MISC_UNIT_ID = :lectureId"
+    )
+    override fun deleteSpecificLectureOfCourseInClass(courseClassId: Int, lectureId: Int): Int
 
     override fun getAllReportsOfLectureFromCourseInClass(courseClassId: Int, lectureId: Int): List<LectureReport> =
             handle.createQuery(
-                    "select L.$LECTURE_REPORT_ID," +
-                            "L.$LECTURE_ID," +
-                            "L.$LECTURE_WEEK_DAY," +
-                            "L.$LECTURE_BEGINS," +
-                            "L.$LECTURE_DURATION," +
-                            "L.$LECTURE_LOCATION," +
-                            "L.$LECTURE_REPORTED_BY," +
-                            "L.$LECTURE_VOTES," +
-                            "L.$LECTURE_TIMESTAMP" +
-                            "from $LECTURE_REPORT_TABLE as L" +
-                            "inner join ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE} as C" +
-                            "on L.$LECTURE_ID = C.${ClassDAOImpl.CLASS_MISC_UNIT_ID}" +
-                            "where C.${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId " +
-                            "and L.$LECTURE_ID = :lectureId"
-                    )
+                    "SELECT L.$LECTURE_REPORT_ID, " +
+                            "L.$LECTURE_ID, " +
+                            "L.$LECTURE_WEEK_DAY, " +
+                            "L.$LECTURE_BEGINS, " +
+                            "L.$LECTURE_DURATION, " +
+                            "L.$LECTURE_LOCATION, " +
+                            "L.$LECTURE_REPORTED_BY, " +
+                            "L.$LECTURE_VOTES, " +
+                            "L.$LECTURE_TIMESTAMP " +
+                            "FROM $LECTURE_REPORT_TABLE AS L " +
+                            "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +
+                            "ON L.$LECTURE_ID = C.$CLASS_MISC_UNIT_ID " +
+                            "WHERE C.$CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
+                            "AND L.$LECTURE_ID = :lectureId"
+            )
                     .bind("courseClassId", courseClassId)
                     .bind("lectureId", lectureId)
                     .mapTo(LectureReport::class.java)
@@ -187,7 +161,7 @@ class LectureDAOImpl : LectureDAO {
 
     override fun getSpecificReportOfLectureFromCourseInClass(courseClassId: Int, lectureId: Int, reportId: Int): Optional<LectureReport> =
             handle.createQuery(
-                    "select L.$LECTURE_REPORT_ID," +
+                    "SELECT L.$LECTURE_REPORT_ID," +
                             "L.$LECTURE_ID," +
                             "L.$LECTURE_WEEK_DAY," +
                             "L.$LECTURE_BEGINS," +
@@ -196,12 +170,12 @@ class LectureDAOImpl : LectureDAO {
                             "L.$LECTURE_REPORTED_BY," +
                             "L.$LECTURE_VOTES," +
                             "L.$LECTURE_TIMESTAMP" +
-                            "from $LECTURE_REPORT_TABLE as L" +
-                            "inner join ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE} as C" +
-                            "on L.$LECTURE_ID = C.${ClassDAOImpl.CLASS_MISC_UNIT_ID}" +
-                            "where C.${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId " +
-                            "and L.$LECTURE_ID = :lectureId" +
-                            "and L.$LECTURE_REPORT_ID = :reportId"
+                            "FROM $LECTURE_REPORT_TABLE AS L" +
+                            "INNER JOIN ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE} AS C" +
+                            "ON L.$LECTURE_ID = C.${ClassDAOImpl.CLASS_MISC_UNIT_ID}" +
+                            "WHERE C.${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId " +
+                            "AND L.$LECTURE_ID = :lectureId" +
+                            "AND L.$LECTURE_REPORT_ID = :reportId"
             )
                     .bind("courseClassId", courseClassId)
                     .bind("lectureId", lectureId)
@@ -211,12 +185,12 @@ class LectureDAOImpl : LectureDAO {
 
     override fun deleteAllReportsOnLectureOfCourseInClass(courseClassId: Int, lectureId: Int): Int =
             handle.createUpdate(
-                    "delete from $LECTURE_REPORT_TABLE" +
+                    "DELETE FROM $LECTURE_REPORT_TABLE" +
                             "using ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE}" +
-                            "where $LECTURE_ID = ${ClassDAOImpl.CLASS_MISC_UNIT_ID}" +
-                            "and ${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId" +
-                            "and ${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType" +
-                            "and $LECTURE_ID = :lectureId"
+                            "WHERE $LECTURE_ID = ${ClassDAOImpl.CLASS_MISC_UNIT_ID}" +
+                            "AND ${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId" +
+                            "AND ${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType" +
+                            "AND $LECTURE_ID = :lectureId"
             )
                     .bind("courseClassId", courseClassId)
                     .bind("miscType", "Lecture")
@@ -225,13 +199,13 @@ class LectureDAOImpl : LectureDAO {
 
     override fun deleteSpecificReportOnLectureOfCourseInClass(courseClassId: Int, lectureId: Int, reportId: Int): Int =
             handle.createUpdate(
-                    "delete from $LECTURE_REPORT_TABLE" +
-                            "using ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE}" +
-                            "where $LECTURE_ID = ${ClassDAOImpl.CLASS_MISC_UNIT_ID}" +
-                            "and ${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId" +
-                            "and ${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType" +
-                            "and $LECTURE_ID = :lectureId" +
-                            "and $LECTURE_REPORT_ID = :reportId"
+                    "DELETE FROM $LECTURE_REPORT_TABLE " +
+                            "using ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE} " +
+                            "WHERE $LECTURE_ID = ${ClassDAOImpl.CLASS_MISC_UNIT_ID} " +
+                            "AND ${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId " +
+                            "AND ${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType " +
+                            "AND $LECTURE_ID = :lectureId " +
+                            "AND $LECTURE_REPORT_ID = :reportId"
             )
                     .bind("courseClassId", courseClassId)
                     .bind("miscType", "Lecture")
@@ -241,7 +215,7 @@ class LectureDAOImpl : LectureDAO {
 
     override fun createReportOnLecture(lectureReport: LectureReport): Optional<LectureReport> =
             handle.createUpdate(
-                    "insert into $LECTURE_REPORT_TABLE (" +
+                    "INSERT INTO $LECTURE_REPORT_TABLE (" +
                             "$LECTURE_ID, " +
                             "$LECTURE_WEEK_DAY, " +
                             "$LECTURE_BEGINS, " +
@@ -251,7 +225,7 @@ class LectureDAOImpl : LectureDAO {
                             "$LECTURE_VOTES, " +
                             "$LECTURE_TIMESTAMP " +
                             ") " +
-                            "values (:lectureId, :weekDay, :begins, :duration, " +
+                            "VALUES (:lectureId, :weekDay, :begins, :duration, " +
                             ":location, :reportedBy, :votes, :timestamp)"
             )
                     .bind("lectureId", lectureReport.lectureId)
@@ -268,20 +242,20 @@ class LectureDAOImpl : LectureDAO {
 
     override fun voteOnReportOfLecture(lectureId: Int, reportId: Int, vote: Vote): Int {
         var votes = handle.createQuery(
-                "select $LECTURE_VOTES from $LECTURE_REPORT_TABLE " +
-                        "where $LECTURE_ID = :lectureId" +
-                        "and $LECTURE_REPORT_ID = :reportId"
+                "SELECT $LECTURE_VOTES FROM $LECTURE_REPORT_TABLE " +
+                        "WHERE $LECTURE_ID = :lectureId" +
+                        "AND $LECTURE_REPORT_ID = :reportId"
         )
                 .bind("lectureId", lectureId)
                 .bind("reportId", reportId)
                 .mapTo(Int::class.java)
                 .findOnly()
-        votes = if (vote == Vote.Down) --votes else ++votes
+        votes = if(vote == Vote.Down) -- votes else ++ votes
 
         return handle.createUpdate(
-                "update $LECTURE_REPORT_TABLE set $LECTURE_VOTES = :votes " +
-                        "where $LECTURE_ID = :lectureId" +
-                        "and $LECTURE_REPORT_ID = :reportId"
+                "UPDATE $LECTURE_REPORT_TABLE set $LECTURE_VOTES = :votes " +
+                        "WHERE $LECTURE_ID = :lectureId" +
+                        "AND $LECTURE_REPORT_ID = :reportId"
         )
                 .bind("votes", votes)
                 .bind("lectureId", lectureId)
@@ -291,7 +265,7 @@ class LectureDAOImpl : LectureDAO {
 
     override fun updateLecture(lecture: Lecture): Optional<Lecture> =
             handle.createUpdate(
-                    "update $LECTURE_TABLE set " +
+                    "UPDATE $LECTURE_TABLE set " +
                             "$LECTURE_VERSION = :version, " +
                             "$LECTURE_CREATED_BY = :createdBy," +
                             "$LECTURE_WEEK_DAY = :weekDay," +
@@ -300,7 +274,7 @@ class LectureDAOImpl : LectureDAO {
                             "$LECTURE_LOCATION = :location, " +
                             "$LECTURE_VOTES = :votes" +
                             "$LECTURE_TIMESTAMP = :timestamp " +
-                            "where $LECTURE_ID = :lectureId"
+                            "WHERE $LECTURE_ID = :lectureId"
             )
                     .bind("version", lecture.version)
                     .bind("createdBy", lecture.createdBy)
@@ -317,7 +291,7 @@ class LectureDAOImpl : LectureDAO {
 
     override fun createLectureVersion(lectureVersion: LectureVersion): Optional<LectureVersion> =
             handle.createUpdate(
-                    "insert into $LECTURE_VERSION_TABLE (" +
+                    "INSERT INTO $LECTURE_VERSION_TABLE (" +
                             "$LECTURE_ID = :lectureId, " +
                             "$LECTURE_VERSION = :version, " +
                             "$LECTURE_CREATED_BY = :createdBy, " +
@@ -326,7 +300,7 @@ class LectureDAOImpl : LectureDAO {
                             "$LECTURE_DURATION = :duration," +
                             "$LECTURE_TIMESTAMP = :timestamp " +
                             ")" +
-                            "values (:lectureId, :version, :createdBy, :weekDay, " +
+                            "VALUES (:lectureId, :version, :createdBy, :weekDay, " +
                             ":begins, :duration, :timestamp)"
             )
                     .bind("lectureId", lectureVersion.lectureId)
@@ -342,18 +316,18 @@ class LectureDAOImpl : LectureDAO {
 
     override fun getAllStagedLecturesOfCourseInClass(courseClassId: Int): List<LectureStage> =
             handle.createQuery(
-                    "select L.$LECTURE_STAGE_ID," +
+                    "SELECT L.$LECTURE_STAGE_ID," +
                             "L.$LECTURE_WEEK_DAY, " +
                             "L.$LECTURE_BEGINS, " +
                             "L.$LECTURE_DURATION, " +
                             "L.$LECTURE_CREATED_BY, " +
                             "L.$LECTURE_TIMESTAMP, " +
                             "L:$LECTURE_VOTES " +
-                            "from $LECTURE_STAGE_TABLE as L " +
-                            "inner join ${ClassDAOImpl.CLASS_MISC_UNIT_STAGE_TABLE} as C " +
-                            "on L.$LECTURE_STAGE_ID = C.${ClassDAOImpl.CLASS_MISC_UNIT_STAGE_ID}" +
-                            "where C.${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId " +
-                            "and C.${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType"
+                            "FROM $LECTURE_STAGE_TABLE AS L " +
+                            "INNER JOIN ${ClassDAOImpl.CLASS_MISC_UNIT_STAGE_TABLE} AS C " +
+                            "ON L.$LECTURE_STAGE_ID = C.${ClassDAOImpl.CLASS_MISC_UNIT_STAGE_ID}" +
+                            "WHERE C.${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId " +
+                            "AND C.${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType"
             )
                     .bind("courseClassId", courseClassId)
                     .bind("miscType", "Lecture")
@@ -362,19 +336,19 @@ class LectureDAOImpl : LectureDAO {
 
     override fun getSpecificStagedLectureOfCourseInClass(courseClassId: Int, stageId: Int): Optional<LectureStage> =
             handle.createQuery(
-                    "select L.$LECTURE_STAGE_ID," +
+                    "SELECT L.$LECTURE_STAGE_ID," +
                             "L.$LECTURE_WEEK_DAY, " +
                             "L.$LECTURE_BEGINS, " +
                             "L.$LECTURE_DURATION, " +
                             "L.$LECTURE_CREATED_BY, " +
                             "L.$LECTURE_TIMESTAMP, " +
                             "L:$LECTURE_VOTES " +
-                            "from $LECTURE_STAGE_TABLE as L " +
-                            "inner join ${ClassDAOImpl.CLASS_MISC_UNIT_STAGE_TABLE} as C " +
-                            "on L.$LECTURE_STAGE_ID = C.${ClassDAOImpl.CLASS_MISC_UNIT_STAGE_ID}" +
-                            "where C.${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId " +
-                            "and C.${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType" +
-                            "and L.$LECTURE_STAGE_ID = :stageId"
+                            "FROM $LECTURE_STAGE_TABLE AS L " +
+                            "INNER JOIN ${ClassDAOImpl.CLASS_MISC_UNIT_STAGE_TABLE} AS C " +
+                            "ON L.$LECTURE_STAGE_ID = C.${ClassDAOImpl.CLASS_MISC_UNIT_STAGE_ID}" +
+                            "WHERE C.${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId " +
+                            "AND C.${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType" +
+                            "AND L.$LECTURE_STAGE_ID = :stageId"
             )
                     .bind("courseClassId", courseClassId)
                     .bind("miscType", "Lecture")
@@ -384,7 +358,7 @@ class LectureDAOImpl : LectureDAO {
 
     override fun createStagingLecture(lectureStage: LectureStage): Optional<LectureStage> =
             handle.createUpdate(
-                    "insert into $LECTURE_STAGE_TABLE (" +
+                    "INSERT INTO $LECTURE_STAGE_TABLE (" +
                             "$LECTURE_STAGE_ID, " +
                             "$LECTURE_WEEK_DAY, " +
                             "$LECTURE_BEGINS, " +
@@ -393,7 +367,7 @@ class LectureDAOImpl : LectureDAO {
                             "$LECTURE_TIMESTAMP, " +
                             "$LECTURE_LOCATION " +
                             ")" +
-                            "values(:stageId, :weekDay, :begins, :duration," +
+                            "VALUES(:stageId, :weekDay, :begins, :duration," +
                             ":createdBy, :timestamp, :location)"
             )
                     .bind("stageId", lectureStage.stageId)
@@ -409,26 +383,26 @@ class LectureDAOImpl : LectureDAO {
 
     override fun voteOnStagedLectureOfCourseInClass(courseClassId: Int, stageId: Int, vote: Vote): Int {
         var votes = handle.createQuery(
-                "select L.$LECTURE_VOTES" +
-                        "from $LECTURE_STAGE_TABLE as L" +
-                        "inner join ${ClassDAOImpl.CLASS_MISC_UNIT_STAGE_TABLE} as C" +
-                        "on L.$LECTURE_STAGE_ID = C.${ClassDAOImpl.CLASS_MISC_UNIT_STAGE_ID}" +
-                        "where C.${ClassDAOImpl.COURSE_CLASS_ID} = :courseClassId" +
-                        "and C.${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType" +
-                        "and L.$LECTURE_STAGE_ID = :stageId"
+                "SELECT L.$LECTURE_VOTES" +
+                        "FROM $LECTURE_STAGE_TABLE AS L" +
+                        "INNER JOIN ${ClassDAOImpl.CLASS_MISC_UNIT_STAGE_TABLE} AS C" +
+                        "ON L.$LECTURE_STAGE_ID = C.${ClassDAOImpl.CLASS_MISC_UNIT_STAGE_ID}" +
+                        "WHERE C.${ClassDAOImpl.COURSE_CLASS_ID} = :courseClassId" +
+                        "AND C.${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType" +
+                        "AND L.$LECTURE_STAGE_ID = :stageId"
         )
                 .bind("courseClassId", courseClassId)
                 .bind("miscType", "Lecture")
                 .bind("stageId", stageId)
                 .mapTo(Int::class.java)
                 .findOnly()
-        votes = if (vote == Vote.Down) --votes else ++votes
+        votes = if(vote == Vote.Down) -- votes else ++ votes
 
         return handle.createUpdate(
-                "update $LECTURE_STAGE_TABLE as L set L.$LECTURE_VOTES = :votes " +
-                        "from ${ClassDAOImpl.CLASS_MISC_UNIT_STAGE_TABLE} as C" +
-                        "where L.$LECTURE_STAGE_ID = C.${ClassDAOImpl.CLASS_MISC_UNIT_STAGE_ID} " +
-                        "and L.$LECTURE_STAGE_ID = :stageId"
+                "UPDATE $LECTURE_STAGE_TABLE AS L set L.$LECTURE_VOTES = :votes " +
+                        "FROM ${ClassDAOImpl.CLASS_MISC_UNIT_STAGE_TABLE} AS C" +
+                        "WHERE L.$LECTURE_STAGE_ID = C.${ClassDAOImpl.CLASS_MISC_UNIT_STAGE_ID} " +
+                        "AND L.$LECTURE_STAGE_ID = :stageId"
         )
                 .bind("votes", votes)
                 .bind("lectureId", stageId)
@@ -436,32 +410,32 @@ class LectureDAOImpl : LectureDAO {
     }
 
     override fun getAllVersionsOfLectureOfCourseInclass(courseClassId: Int, lectureId: Int): List<LectureVersion> =
-        handle.createQuery(
-                "select L.$LECTURE_ID," +
-                        "L.$LECTURE_VERSION, " +
-                        "L.$LECTURE_CREATED_BY, " +
-                        "L.$LECTURE_WEEK_DAY, " +
-                        "L.$LECTURE_BEGINS" +
-                        "L.$LECTURE_DURATION, " +
-                        "L.$LECTURE_LOCATION, " +
-                        "L.$LECTURE_VOTES, " +
-                        "L.$LECTURE_TIMESTAMP, " +
-                        "from $LECTURE_VERSION_TABLE as L " +
-                        "inner join ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE} as C" +
-                        "on L.$LECTURE_ID = C.${ClassDAOImpl.CLASS_MISC_UNIT_ID}" +
-                        "where C.${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId " +
-                        "and C.${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType" +
-                        "and L.$LECTURE_ID = :lectureId"
-        )
-                .bind("courseClassId", courseClassId)
-                .bind("miscType", "Lecture")
-                .bind("lectureId", lectureId)
-                .mapTo(LectureVersion::class.java)
-                .list()
+            handle.createQuery(
+                    "SELECT L.$LECTURE_ID," +
+                            "L.$LECTURE_VERSION, " +
+                            "L.$LECTURE_CREATED_BY, " +
+                            "L.$LECTURE_WEEK_DAY, " +
+                            "L.$LECTURE_BEGINS" +
+                            "L.$LECTURE_DURATION, " +
+                            "L.$LECTURE_LOCATION, " +
+                            "L.$LECTURE_VOTES, " +
+                            "L.$LECTURE_TIMESTAMP, " +
+                            "FROM $LECTURE_VERSION_TABLE AS L " +
+                            "INNER JOIN ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE} AS C" +
+                            "ON L.$LECTURE_ID = C.${ClassDAOImpl.CLASS_MISC_UNIT_ID}" +
+                            "WHERE C.${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId " +
+                            "AND C.${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType" +
+                            "AND L.$LECTURE_ID = :lectureId"
+            )
+                    .bind("courseClassId", courseClassId)
+                    .bind("miscType", "Lecture")
+                    .bind("lectureId", lectureId)
+                    .mapTo(LectureVersion::class.java)
+                    .list()
 
     override fun getSpecificVersionOfLectureOfCourseInClass(courseClassId: Int, lectureId: Int, version: Int): Optional<LectureVersion> =
             handle.createQuery(
-                    "select L.$LECTURE_ID," +
+                    "SELECT L.$LECTURE_ID," +
                             "L.$LECTURE_VERSION, " +
                             "L.$LECTURE_CREATED_BY, " +
                             "L.$LECTURE_WEEK_DAY, " +
@@ -470,13 +444,13 @@ class LectureDAOImpl : LectureDAO {
                             "L.$LECTURE_LOCATION, " +
                             "L:$LECTURE_VOTES, " +
                             "L.$LECTURE_TIMESTAMP, " +
-                            "from $LECTURE_VERSION_TABLE as L " +
-                            "inner join ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE} as C" +
-                            "on L.$LECTURE_ID = C.${ClassDAOImpl.CLASS_MISC_UNIT_ID}" +
-                            "where C.${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId " +
-                            "and C.${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType" +
-                            "and L.$LECTURE_ID = :lectureId" +
-                            "and L.$LECTURE_VERSION = :version"
+                            "FROM $LECTURE_VERSION_TABLE AS L " +
+                            "INNER JOIN ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE} AS C" +
+                            "ON L.$LECTURE_ID = C.${ClassDAOImpl.CLASS_MISC_UNIT_ID}" +
+                            "WHERE C.${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId " +
+                            "AND C.${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType" +
+                            "AND L.$LECTURE_ID = :lectureId" +
+                            "AND L.$LECTURE_VERSION = :version"
             )
                     .bind("courseClassId", courseClassId)
                     .bind("miscType", "Lecture")
@@ -487,12 +461,12 @@ class LectureDAOImpl : LectureDAO {
 
     override fun deleteAllVersionsOfLectureOfCourseInClass(courseClassId: Int, lectureId: Int): Int =
             handle.createUpdate(
-                    "delete from $LECTURE_VERSION_TABLE" +
+                    "DELETE FROM $LECTURE_VERSION_TABLE" +
                             "using ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE}" +
-                            "where $LECTURE_ID = ${ClassDAOImpl.CLASS_MISC_UNIT_ID}" +
-                            "and ${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId" +
-                            "and ${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType" +
-                            "and $LECTURE_ID = :lectureId"
+                            "WHERE $LECTURE_ID = ${ClassDAOImpl.CLASS_MISC_UNIT_ID}" +
+                            "AND ${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId" +
+                            "AND ${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType" +
+                            "AND $LECTURE_ID = :lectureId"
             )
                     .bind("courseClassId", courseClassId)
                     .bind("miscType", "Lecture")
@@ -501,13 +475,13 @@ class LectureDAOImpl : LectureDAO {
 
     override fun deleteSpecificVersionOfLectureOfCourseInClass(courseClassId: Int, lectureId: Int, version: Int): Int =
             handle.createUpdate(
-                    "delete from $LECTURE_VERSION_TABLE" +
+                    "DELETE FROM $LECTURE_VERSION_TABLE" +
                             "using ${ClassDAOImpl.CLASS_MISC_UNIT_TABLE}" +
-                            "where $LECTURE_ID = ${ClassDAOImpl.CLASS_MISC_UNIT_ID}" +
-                            "and ${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId" +
-                            "and ${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType" +
-                            "and $LECTURE_ID = :lectureId" +
-                            "and $LECTURE_VERSION = :version"
+                            "WHERE $LECTURE_ID = ${ClassDAOImpl.CLASS_MISC_UNIT_ID}" +
+                            "AND ${ClassDAOImpl.CLASS_MISC_UNIT_COURSE_CLASS_ID} = :courseClassId" +
+                            "AND ${ClassDAOImpl.CLASS_MISC_UNIT_TYPE} = :miscType" +
+                            "AND $LECTURE_ID = :lectureId" +
+                            "AND $LECTURE_VERSION = :version"
             )
                     .bind("courseClassId", courseClassId)
                     .bind("miscType", "Lecture")

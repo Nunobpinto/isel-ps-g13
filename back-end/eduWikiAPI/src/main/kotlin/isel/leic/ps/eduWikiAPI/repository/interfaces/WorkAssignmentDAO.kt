@@ -21,9 +21,9 @@ interface WorkAssignmentDAO {
 
     fun deleteAllWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int
 
-    fun updateWorkAssignment(workAssignmentId: Int, workAssignment: WorkAssignment) : Optional<WorkAssignment>
+    fun updateWorkAssignment(workAssignmentId: Int, workAssignment: WorkAssignment) : WorkAssignment
 
-    fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, workAssignment: WorkAssignment) : Optional<WorkAssignment>
+    fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, workAssignment: WorkAssignment) : WorkAssignment
 
     fun voteOnWorkAssignment(courseMiscUnitId: Int, vote: Vote) : Int
 
@@ -45,7 +45,7 @@ interface WorkAssignmentDAO {
 
     fun getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): Optional<WorkAssignmentStage>
 
-    fun createStagingWorkAssingment(courseId: Int, termId: Int, stage: WorkAssignmentStage): Optional<WorkAssignmentStage>
+    fun createStagingWorkAssingment(courseId: Int, termId: Int, stage: WorkAssignmentStage): WorkAssignmentStage
 
     fun voteOnStagedWorkAssignment(stageId: Int, vote: Vote): Int
 
@@ -61,7 +61,7 @@ interface WorkAssignmentDAO {
 
     fun deleteAllVersionOfWorkAssignments(workAssignmentId: Int) : Int
 
-    fun createWorkAssignmentVersion(workAssignmentVersion: WorkAssignmentVersion) : Optional<WorkAssignmentVersion>
+    fun createWorkAssignmentVersion(workAssignmentVersion: WorkAssignmentVersion) : WorkAssignmentVersion
 
     /**
      * Report entity queries
@@ -73,7 +73,7 @@ interface WorkAssignmentDAO {
 
     fun getAllReportsOnWorkUnitOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): List<WorkAssignmentReport>
 
-    fun addReportToWorkAssignmentOnCourseInTerm(workAssignmentId: Int, workAssignmentReport: WorkAssignmentReport): Optional<WorkAssignmentReport>
+    fun addReportToWorkAssignmentOnCourseInTerm(workAssignmentId: Int, workAssignmentReport: WorkAssignmentReport): WorkAssignmentReport
 
     fun voteOnReportToWorkAssignmentOnCourseInTerm(reportId: Int, vote: Vote): Int
 

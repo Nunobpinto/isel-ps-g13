@@ -1,10 +1,10 @@
 package isel.leic.ps.eduWikiAPI.domain.model;
 
-import isel.leic.ps.eduWikiAPI.repository.TermDAOImpl.Companion.TERM_ID
-import isel.leic.ps.eduWikiAPI.repository.TermDAOImpl.Companion.TERM_SHORT_NAME
-import isel.leic.ps.eduWikiAPI.repository.TermDAOImpl.Companion.TERM_TIMESTAMP
-import isel.leic.ps.eduWikiAPI.repository.TermDAOImpl.Companion.TERM_TYPE
-import isel.leic.ps.eduWikiAPI.repository.TermDAOImpl.Companion.TERM_YEAR
+import isel.leic.ps.eduWikiAPI.repository.TermDAOJdbi.Companion.TERM_ID
+import isel.leic.ps.eduWikiAPI.repository.TermDAOJdbi.Companion.TERM_SHORT_NAME
+import isel.leic.ps.eduWikiAPI.repository.TermDAOJdbi.Companion.TERM_TIMESTAMP
+import isel.leic.ps.eduWikiAPI.repository.TermDAOJdbi.Companion.TERM_TYPE
+import isel.leic.ps.eduWikiAPI.repository.TermDAOJdbi.Companion.TERM_YEAR
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.sql.Timestamp
 import java.time.LocalDateTime

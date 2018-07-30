@@ -20,9 +20,9 @@ interface ProgrammeDAO {
 
     fun deleteSpecificProgramme(programmeId: Int): Int
 
-    fun updateProgramme(programmeId: Int, programme: Programme): Optional<Programme>
+    fun updateProgramme(programmeId: Int, programme: Programme): Programme
 
-    fun createProgramme(programme: Programme): Optional<Programme>
+    fun createProgramme(programme: Programme): Programme
 
     fun voteOnProgramme(programmeId: Int, vote: Vote): Int
 
@@ -36,7 +36,7 @@ interface ProgrammeDAO {
 
     fun deleteAllStagedProgrammes(): Int
 
-    fun createStagingProgramme(programmeStage: ProgrammeStage): Optional<ProgrammeStage>
+    fun createStagingProgramme(programmeStage: ProgrammeStage): ProgrammeStage
 
     fun voteOnStagedProgramme(stageId: Int, vote: Vote): Int
 
@@ -54,7 +54,7 @@ interface ProgrammeDAO {
 
     fun deleteAllProgrammeVersions(programmeId: Int) : Int
 
-    fun createProgrammeVersion(programmeVersion: ProgrammeVersion): Optional<ProgrammeVersion>
+    fun createProgrammeVersion(programme: Programme): ProgrammeVersion
 
     /**
      * Report entity queries
@@ -64,7 +64,7 @@ interface ProgrammeDAO {
 
     fun getSpecificReportOfProgramme(programmeId : Int, reportId: Int): Optional<ProgrammeReport>
 
-    fun reportProgramme(programmeId: Int, programmeReport: ProgrammeReport): Optional<ProgrammeReport>
+    fun reportProgramme(programmeId: Int, programmeReport: ProgrammeReport): ProgrammeReport
 
     fun deleteSpecificReportOnProgramme(programmeId: Int, reportId: Int): Int
 

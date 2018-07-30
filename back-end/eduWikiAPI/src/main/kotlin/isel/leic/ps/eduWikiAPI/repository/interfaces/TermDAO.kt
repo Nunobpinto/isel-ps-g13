@@ -11,10 +11,4 @@ interface TermDAO {
     fun getTerm(termId: Int) : Optional<Term>?
 
     fun getAllTerms() : List<Term>
-
-    fun deleteTerm(termId: Int) : Int
-
-    fun deleteAllTerm() : Int
-
-    fun createTerm(term: Term): Optional<Term>?
 }

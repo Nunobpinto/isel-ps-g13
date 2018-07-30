@@ -34,7 +34,6 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
                 .httpBasic().realmName(REALM)
                 .and().cors()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().authorizeRequests().antMatchers("/**").hasRole("BEGINNER")
         authorizationConfig.configureRequestAuthorizations(http)
     }
 

@@ -22,7 +22,7 @@ interface OrganizationDAO {
 
     fun updateOrganization(organization: Organization) : Int
 
-    fun createOrganization(organization: Organization) : Optional<Organization>
+    fun createOrganization(organization: Organization) : Organization
 
     fun voteOnOrganization(organizationId: Int, vote: Vote): Int
 
@@ -34,13 +34,7 @@ interface OrganizationDAO {
 
     fun getSpecificVersionOfOrganization(organizationId: Int, version: Int): Optional<OrganizationVersion>
 
-    fun createVersion(version: OrganizationVersion): Optional<OrganizationVersion>
-
-    fun deleteAllVersionsOfOrganization(organizationId: Int): Int
-
-    fun deleteSpecificVersionOfOrganization(organizationId: Int, version: Int): Int
-
-    fun addToOrganizationVersion(organization: Organization) : Int
+    fun createVersion(version: OrganizationVersion): OrganizationVersion
 
     /**
      * Report entity queries
