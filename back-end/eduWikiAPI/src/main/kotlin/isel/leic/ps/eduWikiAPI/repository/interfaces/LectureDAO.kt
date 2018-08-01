@@ -16,9 +16,7 @@ interface LectureDAO {
 
     fun getSpecificLectureFromCourseInClass(courseClassId: Int, lectureId: Int): Optional<Lecture>
 
-    fun createLecture(lecture: Lecture): Optional<Lecture>
-
-    fun voteOnLectureOfCourseInClass(courseClassId: Int, lectureId: Int, vote: Vote): Int
+    fun createLectureOnCourseInClass(courseClassId: Int, lecture: Lecture): Lecture
 
     fun deleteAllLecturesOfCourseInClass(courseClassId: Int): Int
 
@@ -32,21 +30,17 @@ interface LectureDAO {
 
     fun deleteSpecificReportOnLectureOfCourseInClass(courseClassId: Int, lectureId: Int, reportId: Int): Int
 
-    fun createReportOnLecture(lectureReport: LectureReport): Optional<LectureReport>
+    fun createReportOnLecture(lectureReport: LectureReport): LectureReport
 
-    fun voteOnReportOfLecture(lectureId: Int, reportId: Int, vote: Vote): Int
+    fun updateLecture(lecture: Lecture): Lecture
 
-    fun updateLecture(lecture: Lecture): Optional<Lecture>
-
-    fun createLectureVersion(lectureVersion: LectureVersion): Optional<LectureVersion>
+    fun createLectureVersion(lectureVersion: LectureVersion): LectureVersion
 
     fun getAllStagedLecturesOfCourseInClass(courseClassId: Int): List<LectureStage>
 
     fun getSpecificStagedLectureOfCourseInClass(courseClassId: Int, stageId: Int): Optional<LectureStage>
 
-    fun createStagingLecture(lectureStage: LectureStage): Optional<LectureStage>
-
-    fun voteOnStagedLectureOfCourseInClass(courseClassId: Int, stageId: Int, vote: Vote): Int
+    fun createStagingLectureOnCourseInClass(courseClassId: Int, lectureStage: LectureStage): LectureStage
 
     fun getAllVersionsOfLectureOfCourseInclass(courseClassId: Int, lectureId: Int): List<LectureVersion>
 
@@ -55,4 +49,21 @@ interface LectureDAO {
     fun deleteAllVersionsOfLectureOfCourseInClass(courseClassId: Int, lectureId: Int): Int
 
     fun deleteSpecificVersionOfLectureOfCourseInClass(courseClassId: Int, lectureId: Int, version: Int): Int
+
+    fun getVotesOnLecture(courseClassId: Int, lectureId: Int): Int
+
+    fun updateVotesOnLecture(lectureId: Int, votes: Int): Int
+
+    fun getVotesOnReportedLecture(lectureId: Int, reportId: Int): Int
+
+    fun updateVotesOnReportedLecture(lectureId: Int, reportId: Int, votes: Int): Int
+
+    fun deleteAllStagedLecturesOfCourseInClass(courseClassId: Int): Int
+
+    fun deleteSpecificStagedLectureOfCourseInClass(courseClassId: Int, stageId: Int): Int
+
+    fun getVotesOnStagedLecture(courseClassId: Int, stageId: Int): Int
+
+    fun updateVotesOnStagedLecture(stageId: Int, votes: Int): Int
+
 }
