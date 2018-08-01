@@ -9,8 +9,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.staging.ClassMiscUnitStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.HomeworkStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.HomeworkVersion
 
-fun toHomework(classMiscUnit: ClassMiscUnit, homeworkInputModel: HomeworkInputModel) = Homework(
-        homeworkId = classMiscUnit.classMiscUnitId,
+fun toHomework(homeworkInputModel: HomeworkInputModel) = Homework(
         createdBy = homeworkInputModel.createdBy,
         sheet = homeworkInputModel.sheet,
         dueDate = homeworkInputModel.dueDate,
@@ -18,8 +17,7 @@ fun toHomework(classMiscUnit: ClassMiscUnit, homeworkInputModel: HomeworkInputMo
         multipleDeliveries = homeworkInputModel.multipleDeliveries
 )
 
-fun toHomeworkStage(classMiscUnitStaged: ClassMiscUnitStage, homeworkInputModel: HomeworkInputModel) = HomeworkStage(
-        stageId = classMiscUnitStaged.stageId,
+fun toHomeworkStage(homeworkInputModel: HomeworkInputModel) = HomeworkStage(
         createdBy = homeworkInputModel.createdBy,
         sheet = homeworkInputModel.sheet,
         dueDate = homeworkInputModel.dueDate,
@@ -27,8 +25,7 @@ fun toHomeworkStage(classMiscUnitStaged: ClassMiscUnitStage, homeworkInputModel:
         multipleDeliveries = homeworkInputModel.multipleDeliveries
 )
 
-fun stagedToHomework(classMiscUnit: ClassMiscUnit, stagedHomework: HomeworkStage) = Homework(
-        homeworkId = classMiscUnit.classMiscUnitId,
+fun stagedToHomework(stagedHomework: HomeworkStage) = Homework(
         createdBy = stagedHomework.createdBy,
         sheet = stagedHomework.sheet,
         dueDate = stagedHomework.dueDate,

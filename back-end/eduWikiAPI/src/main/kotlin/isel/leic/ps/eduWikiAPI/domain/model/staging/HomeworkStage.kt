@@ -1,13 +1,13 @@
 package isel.leic.ps.eduWikiAPI.domain.model.staging
 
-import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_CREATED_BY
-import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_DUE_DATE
-import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_LATE_DELIVERY
-import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_MULTIPLE_DELIVERIES
-import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_SHEET
-import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_STAGE_ID
-import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_TIMESTAMP
-import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_VOTES
+import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_CREATED_BY
+import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_DUE_DATE
+import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_LATE_DELIVERY
+import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_MULTIPLE_DELIVERIES
+import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_SHEET
+import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_STAGE_ID
+import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_TIMESTAMP
+import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_VOTES
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.sql.Timestamp
 import java.time.LocalDate

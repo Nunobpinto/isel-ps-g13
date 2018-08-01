@@ -1,15 +1,15 @@
 package isel.leic.ps.eduWikiAPI.domain.model.report
 
-import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_DUE_DATE
-import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_ID
-import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_LOCATION
-import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_PHASE
-import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_REPORTED_BY
-import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_REPORT_ID
-import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_SHEET
-import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_TYPE
-import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_VOTES
-import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_TIMESTAMP
+import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_DUE_DATE
+import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_ID
+import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_LOCATION
+import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_PHASE
+import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_REPORTED_BY
+import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_REPORT_ID
+import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_SHEET
+import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_TYPE
+import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_VOTES
+import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_TIMESTAMP
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.sql.Timestamp
 import java.time.LocalDate

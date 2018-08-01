@@ -1,13 +1,13 @@
 package isel.leic.ps.eduWikiAPI.domain.model.staging
 
-import isel.leic.ps.eduWikiAPI.repository.LectureDAOImpl.Companion.LECTURE_BEGINS
-import isel.leic.ps.eduWikiAPI.repository.LectureDAOImpl.Companion.LECTURE_CREATED_BY
-import isel.leic.ps.eduWikiAPI.repository.LectureDAOImpl.Companion.LECTURE_DURATION
-import isel.leic.ps.eduWikiAPI.repository.LectureDAOImpl.Companion.LECTURE_LOCATION
-import isel.leic.ps.eduWikiAPI.repository.LectureDAOImpl.Companion.LECTURE_STAGE_ID
-import isel.leic.ps.eduWikiAPI.repository.LectureDAOImpl.Companion.LECTURE_TIMESTAMP
-import isel.leic.ps.eduWikiAPI.repository.LectureDAOImpl.Companion.LECTURE_VOTES
-import isel.leic.ps.eduWikiAPI.repository.LectureDAOImpl.Companion.LECTURE_WEEK_DAY
+import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_BEGINS
+import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_CREATED_BY
+import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_DURATION
+import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_LOCATION
+import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_STAGE_ID
+import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_TIMESTAMP
+import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_VOTES
+import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_WEEK_DAY
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.sql.Timestamp
 import java.time.DayOfWeek

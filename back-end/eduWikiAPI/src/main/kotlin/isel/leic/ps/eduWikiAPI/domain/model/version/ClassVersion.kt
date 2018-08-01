@@ -1,11 +1,11 @@
 package isel.leic.ps.eduWikiAPI.domain.model.version
 
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_CREATED_BY
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_ID
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_NAME
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_TERM_ID
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_TIMESTAMP
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_VERSION
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_CREATED_BY
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_NAME
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_TERM_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_TIMESTAMP
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_VERSION
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.sql.Timestamp
 import java.time.LocalDateTime

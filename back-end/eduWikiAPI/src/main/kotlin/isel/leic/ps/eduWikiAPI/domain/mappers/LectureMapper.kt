@@ -10,8 +10,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.staging.LectureStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.LectureVersion
 
 
-fun toLecture(classMiscUnit: ClassMiscUnit, lectureInputModel: LectureInputModel) = Lecture(
-        lectureId = classMiscUnit.classMiscUnitId,
+fun toLecture(lectureInputModel: LectureInputModel) = Lecture(
         createdBy = lectureInputModel.createdBy,
         weekDay = lectureInputModel.weekDay,
         begins = lectureInputModel.begins,
@@ -19,8 +18,7 @@ fun toLecture(classMiscUnit: ClassMiscUnit, lectureInputModel: LectureInputModel
         location = lectureInputModel.location
 )
 
-fun toLectureStage(classMiscUnitStaged: ClassMiscUnitStage, lectureInputModel: LectureInputModel) = LectureStage(
-        stageId = classMiscUnitStaged.stageId,
+fun toLectureStage(lectureInputModel: LectureInputModel) = LectureStage(
         createdBy = lectureInputModel.createdBy,
         weekDay = lectureInputModel.weekDay,
         begins = lectureInputModel.begins,
@@ -28,8 +26,7 @@ fun toLectureStage(classMiscUnitStaged: ClassMiscUnitStage, lectureInputModel: L
         location = lectureInputModel.location
 )
 
-fun stagedToLecture(classMiscUnit: ClassMiscUnit, stagedLecture: LectureStage) = Lecture(
-        lectureId = classMiscUnit.classMiscUnitId,
+fun stagedToLecture(stagedLecture: LectureStage) = Lecture(
         createdBy = stagedLecture.createdBy,
         weekDay = stagedLecture.weekDay,
         begins = stagedLecture.begins,
