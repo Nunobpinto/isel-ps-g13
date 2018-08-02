@@ -380,5 +380,4 @@ interface LectureDAOJdbi : LectureDAO {
     )
     override fun updateVotesOnStagedLecture(stageId: Int, votes: Int): Int
 
-
 }

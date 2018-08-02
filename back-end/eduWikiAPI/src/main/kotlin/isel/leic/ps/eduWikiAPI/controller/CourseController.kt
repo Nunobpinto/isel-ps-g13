@@ -94,7 +94,7 @@ class CourseController {
             @PathVariable courseId: Int,
             @PathVariable reportId: Int,
             @RequestBody inputVote: VoteInputModel
-    ) = courseService.voteOnReportOfCourse(reportId, inputVote)
+    ) = courseService.voteOnReportedCourse(reportId, inputVote)
 
     @PostMapping("/{courseId}/reports/{reportId}")
     fun updateReportedCourse(
@@ -270,7 +270,7 @@ class CourseController {
             @PathVariable examId: Int,
             @PathVariable reportId: Int,
             @RequestBody inputVote: VoteInputModel
-    ) = courseService.voteOnReportToExamOnCourseInTerm(reportId, inputVote)
+    ) = courseService.voteOnReportedExamOnCourseInTerm(reportId, inputVote)
 
     @PostMapping("/{courseId}/terms/{termId}/exams/{examId}/reports/{reportId}")
     fun updateReportedExam(
@@ -462,7 +462,7 @@ class CourseController {
             @PathVariable workAssignmentId: Int,
             @PathVariable reportId: Int,
             @RequestBody inputVote: VoteInputModel
-    ) = courseService.voteOnReportToWorkAssignmentOnCourseInTerm(reportId, inputVote)
+    ) = courseService.voteOnReportedWorkAssignmentOnCourseInTerm(reportId, inputVote)
 
     @PostMapping("/{courseId}/terms/{termId}/work-assignments/{workAssignmentId}/reports/{reportId}")
     fun updateReportedWorkAssignment(

@@ -1,17 +1,16 @@
 package isel.leic.ps.eduWikiAPI.repository.interfaces
 
-import isel.leic.ps.eduWikiAPI.domain.model.Course
-import isel.leic.ps.eduWikiAPI.domain.model.CourseClass
-import isel.leic.ps.eduWikiAPI.domain.model.Term
-import isel.leic.ps.eduWikiAPI.domain.model.Vote
+import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseClassReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseClassStage
+import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseMiscUnitStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseProgrammeVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
+import java.sql.Timestamp
 import java.util.*
 
 interface CourseDAO {
@@ -38,10 +37,6 @@ interface CourseDAO {
 
     fun createCourse(course: Course): Course
 
-    fun voteOnCourse(courseId: Int, vote: Vote): Int
-
-    fun voteOnCourseProgramme(programmeId: Int, courseId: Int, vote: Vote): Int
-
     fun addCourseToProgramme(programmeId: Int, course: Course): Course
 
     fun deleteSpecificCourse(courseId: Int): Int
@@ -49,6 +44,22 @@ interface CourseDAO {
     fun deleteAllCourses(): Int
 
     fun deleteSpecificCourseProgramme(programmeId: Int, courseId: Int): Int
+
+    fun getVotesOnCourse(courseId: Int): Int
+
+    fun updateVotesOnCourse(courseId: Int, votes: Int): Int
+
+    fun createCourseMiscUnit(courseId: Int, termId: Int, miscType: String): CourseMiscUnit
+
+    fun createCourseTerm(courseId: Int, termId: Int, timestamp: Timestamp): CourseTerm
+
+    fun deleteSpecificCourseMiscUnitEntry(courseMiscUnitId: Int): Int
+
+    fun deleteAllCourseMiscUnitsFromTypeOfCourseInTerm(courseId: Int, termId: Int, miscType: String): Int
+
+    fun getVotesOnCourseProgramme(programmeId: Int, courseId: Int): Int
+
+    fun updateVotesOnCourseProgramme(programmeId: Int, courseId: Int, votes: Int) : Int
 
     /**
      * Stage entities queries
@@ -62,13 +73,9 @@ interface CourseDAO {
 
     fun getSpecificStagedCourseProgramme(programmeId: Int, stageId: Int): Optional<CourseProgrammeStage>
 
-    fun createStagedCourse(courseStage: CourseStage): CourseStage
+    fun createStagingCourse(courseStage: CourseStage): CourseStage
 
     fun createStagingCourseOfProgramme(courseProgrammeStage: CourseProgrammeStage): CourseProgrammeStage
-
-    fun voteOnStagedCourse(stageId: Int, inputVote: Vote): Int
-
-    fun voteOnStagedCourseProgramme(programmeId: Int, stageId: Int, vote: Vote): Int
 
     fun deleteStagedCourse(courseStageId: Int): Int
 
@@ -77,6 +84,20 @@ interface CourseDAO {
     fun deleteStagedCourseProgramme(stageId: Int): Int
 
     fun deleteSpecificStagedCourseProgramme(programmeId: Int, courseId: Int, stageId: Int): Int
+
+    fun getVotesOnStagedCourse(stageId: Int): Int
+
+    fun updateVotesOnStagedCourse(stageId: Int, votes: Int): Int
+
+    fun createStagingCourseMiscUnit(courseId: Int, termId: Int, miscType: String): CourseMiscUnitStage
+
+    fun deleteAllStagedCourseMiscUnitsFromTypeOfCourseInTerm(courseId: Int, termId: Int, miscType: String ): Int
+
+    fun deleteSpecificStagedCourseMiscUnitEntry(stageId: Int): Int
+
+    fun getVotesOnStagedCourseProgramme(programmeId: Int, stageId: Int): Int
+
+    fun updateVotesOnStagedCourseProgramme(programmeId: Int, stageId: Int, votes: Int): Int
 
     /**
      * Version entities queries
@@ -112,10 +133,6 @@ interface CourseDAO {
 
     fun getSpecificReportOfCourse(courseId: Int, reportId: Int): Optional<CourseReport>
 
-    fun voteOnReportOfCourse(reportId: Int, vote: Vote): Int
-
-    fun voteOnReportOfCourseProgramme(programmeId: Int, courseId: Int, reportId: Int, vote: Vote): Int
-
     fun reportSpecificCourseOnProgramme(programmeId: Int, courseId: Int, courseProgrammeReport: CourseProgrammeReport): CourseProgrammeReport
 
     fun reportCourse(courseId: Int, courseReport: CourseReport): CourseReport
@@ -127,5 +144,13 @@ interface CourseDAO {
     fun deleteAllReportsOnCourse(courseId: Int): Int
 
     fun deleteSpecificReportOfCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int
+
+    fun getVotesOnReportedCourse(reportId: Int): Int
+
+    fun updateVotesOnReportedCourse(reportId: Int, votes: Int): Int
+
+    fun getVotesOnReportedCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int
+
+    fun updateVotesOnReportedCourseProgramme(programmeId: Int, courseId: Int, reportId: Int, votes: Int): Int
 
 }

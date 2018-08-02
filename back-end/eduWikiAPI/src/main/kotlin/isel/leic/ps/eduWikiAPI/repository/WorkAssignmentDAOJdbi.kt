@@ -1,10 +1,8 @@
 package isel.leic.ps.eduWikiAPI.repository
 
-import isel.leic.ps.eduWikiAPI.domain.model.CourseMiscUnit
 import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.domain.model.WorkAssignment
 import isel.leic.ps.eduWikiAPI.domain.model.report.WorkAssignmentReport
-import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseMiscUnitStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.WorkAssignmentVersion
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_COURSE_ID
@@ -13,16 +11,15 @@ import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UN
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_STAGE_TABLE
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_TABLE
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_TERM_ID
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_TYPE
 import isel.leic.ps.eduWikiAPI.repository.interfaces.WorkAssignmentDAO
+import org.jdbi.v3.sqlobject.CreateSqlObject
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys
 import org.jdbi.v3.sqlobject.statement.SqlQuery
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
 import org.jdbi.v3.sqlobject.transaction.Transaction
+import java.sql.Timestamp
+import java.time.LocalDateTime
 import java.util.*
-import org.jdbi.v3.sqlobject.CreateSqlObject
-
-
 
 interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
 
@@ -50,6 +47,9 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
         const val WORK_ASSIGNMENT_CREATED_BY = "created_by"
     }
 
+    @CreateSqlObject
+    fun createCourseDAO(): CourseDAOJdbi
+
     @SqlQuery(
             "SELECT W.$WORK_ASSIGNMENT_ID," +
                     "W.$WORK_ASSIGNMENT_VERSION," +
@@ -76,8 +76,8 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
     @SqlQuery("SELECT * FROM $WORK_ASSIGNMENT_TABLE")
     override fun getAllWorkAssignment(): List<WorkAssignment>
 
-    @SqlUpdate("DELETE FROM $COURSE_MISC_UNIT_TABLE WHERE $COURSE_MISC_UNIT_ID = :courseMiscUnitId")
-    override fun deleteSpecificWorkAssignment(courseMiscUnitId: Int): Int
+    override fun deleteSpecificWorkAssignment(courseMiscUnitId: Int): Int =
+            createCourseDAO().deleteSpecificCourseMiscUnitEntry(courseMiscUnitId)
 
     @SqlUpdate(
             "UPDATE $WORK_ASSIGNMENT_TABLE SET " +
@@ -96,27 +96,29 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
     )
     override fun updateWorkAssignment(workAssignmentId: Int, workAssignment: WorkAssignment): WorkAssignment
 
-    @SqlQuery("SELECT $WORK_ASSIGNMENT_VOTES FROM $WORK_ASSIGNMENT_TABLE WHERE $WORK_ASSIGNMENT_ID = :workAssignmentId")
-    fun getVotesOnWorkAssignment(workAssignmentId: Int): Int
+    @SqlQuery(
+            "SELECT $WORK_ASSIGNMENT_VOTES FROM $WORK_ASSIGNMENT_TABLE " +
+                    "WHERE $WORK_ASSIGNMENT_ID = :workAssignmentId"
+    )
+    override fun getVotesOnWorkAssignment(workAssignmentId: Int): Int
 
-    @SqlQuery("UPDATE $WORK_ASSIGNMENT_TABLE set $WORK_ASSIGNMENT_VOTES = :votes WHERE $WORK_ASSIGNMENT_ID = :workAssignmentId")
-    fun updateWorkAssignmentVotes(workAssignmentId: Int, votes: Int): Int
+    @SqlQuery(
+            "UPDATE $WORK_ASSIGNMENT_TABLE SET $WORK_ASSIGNMENT_VOTES = :votes" +
+                    " WHERE $WORK_ASSIGNMENT_ID = :workAssignmentId"
+    )
+    override fun updateVotesOnWorkAssignment(workAssignmentId: Int, votes: Int): Int
 
-    @Transaction
-    override fun voteOnWorkAssignment(courseMiscUnitId: Int, vote: Vote): Int {
-        var votes = getVotesOnWorkAssignment(courseMiscUnitId)
-        votes = if(vote == Vote.Down) -- votes else ++ votes
-        return updateWorkAssignmentVotes(courseMiscUnitId, votes)
-    }
-
-    @SqlQuery("SELECT * FROM $WORK_ASSIGNMENT_STAGE_TABLE WHERE $WORK_ASSIGNMENT_STAGE_ID = :stageId")
+    @SqlQuery(
+            "SELECT * FROM $WORK_ASSIGNMENT_STAGE_TABLE " +
+                    " WHERE $WORK_ASSIGNMENT_STAGE_ID = :stageId"
+    )
     override fun getWorkAssignmentSpecificStageEntry(stageId: Int): Optional<WorkAssignmentStage>
 
     @SqlQuery("SELECT * FROM $WORK_ASSIGNMENT_STAGE_TABLE")
-    override fun getAllWorkAssignmentStages(): List<WorkAssignmentStage>
+    override fun getAllStagedWorkAssignments(): List<WorkAssignmentStage>
 
-    @SqlUpdate("DELETE FROM $COURSE_MISC_UNIT_STAGE_TABLE WHERE $COURSE_MISC_UNIT_STAGE_ID = :stageId")
-    override fun deleteSpecificStagedWorkAssignment(stageId: Int): Int
+    override fun deleteSpecificStagedWorkAssignment(stageId: Int): Int =
+            createCourseDAO().deleteSpecificStagedCourseMiscUnitEntry(stageId)
 
     @SqlQuery(
             "SELECT * FROM $WORK_ASSIGNMENT_VERSION_TABLE " +
@@ -132,10 +134,16 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
     )
     override fun deleteVersionWorkAssignment(workAssignmentId: Int, version: Int): Int
 
-    @SqlUpdate("DELETE FROM $WORK_ASSIGNMENT_REPORT_TABLE WHERE $WORK_ASSIGNMENT_REPORT_ID = :reportId")
+    @SqlUpdate(
+            "DELETE FROM $WORK_ASSIGNMENT_REPORT_TABLE " +
+                    "WHERE $WORK_ASSIGNMENT_REPORT_ID = :reportId"
+    )
     override fun deleteReportOnWorkAssignment(reportId: Int): Int
 
-    @SqlUpdate("DELETE FROM $WORK_ASSIGNMENT_REPORT_TABLE WHERE $WORK_ASSIGNMENT_ID = :workAssignmentId")
+    @SqlUpdate(
+            "DELETE FROM $WORK_ASSIGNMENT_REPORT_TABLE " +
+                    "WHERE $WORK_ASSIGNMENT_ID = :workAssignmentId"
+    )
     override fun deleteAllReportsOnWorkAssignment(courseMiscUnitId: Int): Int
 
     @SqlQuery(
@@ -223,16 +231,6 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
     override fun getAllReportsOnWorkUnitOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): List<WorkAssignmentReport>
 
     @SqlUpdate(
-            "INSERT INTO $COURSE_MISC_UNIT_TABLE(" +
-                    "$COURSE_MISC_UNIT_TYPE, " +
-                    "$COURSE_MISC_UNIT_COURSE_ID, " +
-                    "$COURSE_MISC_UNIT_TERM_ID)" +
-                    "VALUES(:miscType, :courseId, :termId)"
-    )
-    @GetGeneratedKeys
-    fun createCourseMiscUnit(miscType: String, courseId: Int, termId: Int): CourseMiscUnit //TODO maybe it should be in CourseDAO
-
-    @SqlUpdate(
             "INSERT INTO $WORK_ASSIGNMENT_TABLE (" +
                     "$WORK_ASSIGNMENT_ID, " +
                     "$WORK_ASSIGNMENT_VERSION, " +
@@ -256,7 +254,11 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
 
     @Transaction
     override fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, workAssignment: WorkAssignment): WorkAssignment {
-        val courseMiscUnit = createCourseMiscUnit("Work Assignment", courseId, termId)
+        val courseDAO = createCourseDAO()
+        if (!courseDAO.getSpecificTermOfCourse(courseId, termId).isPresent) {
+            courseDAO.createCourseTerm(courseId, termId, Timestamp.valueOf(LocalDateTime.now()))
+        }
+        val courseMiscUnit = courseDAO.createCourseMiscUnit(courseId, termId, "WorkAssignment")
         return createWorkAssignment(courseMiscUnit.courseMiscUnitId, workAssignment)
     }
 
@@ -281,18 +283,17 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
     @GetGeneratedKeys
     override fun addReportToWorkAssignmentOnCourseInTerm(workAssignmentId: Int, workAssignmentReport: WorkAssignmentReport): WorkAssignmentReport
 
-    @SqlQuery("SELECT $WORK_ASSIGNMENT_VOTES FROM $WORK_ASSIGNMENT_REPORT_TABLE WHERE $WORK_ASSIGNMENT_REPORT_ID = :reportId")
-    fun getVotesOnReportedWorkAssignment(reportId: Int): Int
+    @SqlQuery(
+            "SELECT $WORK_ASSIGNMENT_VOTES FROM $WORK_ASSIGNMENT_REPORT_TABLE " +
+                    "WHERE $WORK_ASSIGNMENT_REPORT_ID = :reportId"
+    )
+    override fun getVotesOnReportedWorkAssignment(reportId: Int): Int
 
-    @SqlQuery("UPDATE $WORK_ASSIGNMENT_REPORT_TABLE set $WORK_ASSIGNMENT_VOTES = :votes WHERE $WORK_ASSIGNMENT_REPORT_ID = :reportId")
-    fun updateReportedWorkAssignmentVotes(reportId: Int, votes: Int): Int
-
-    @Transaction
-    override fun voteOnReportToWorkAssignmentOnCourseInTerm(reportId: Int, vote: Vote): Int {
-        var votes = getVotesOnReportedWorkAssignment(reportId)
-        votes = if(vote == Vote.Down) -- votes else ++ votes
-        return updateReportedWorkAssignmentVotes(reportId, votes)
-    }
+    @SqlQuery(
+            "UPDATE $WORK_ASSIGNMENT_REPORT_TABLE SET $WORK_ASSIGNMENT_VOTES = :votes " +
+                    "WHERE $WORK_ASSIGNMENT_REPORT_ID = :reportId"
+    )
+    override fun updateVotesOnReportedWorkAssignment(reportId: Int, votes: Int): Int
 
     @SqlQuery(
             "SELECT * FROM $WORK_ASSIGNMENT_REPORT_TABLE " +
@@ -302,7 +303,7 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
     override fun getSpecificReportOfWorkAssignment(workAssignmentId: Int, reportId: Int): Optional<WorkAssignmentReport>
 
     @SqlUpdate(
-            "INSERT INTO $WORK_ASSIGNMENT_VERSION_TABLE (" +
+            "INSERT INTO $WORK_ASSIGNMENT_VERSION_TABLE ( " +
                     "$WORK_ASSIGNMENT_ID," +
                     "$WORK_ASSIGNMENT_VERSION, " +
                     "$WORK_ASSIGNMENT_SHEET, " +
@@ -313,23 +314,16 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
                     "$WORK_ASSIGNMENT_MULTIPLE_DELIVERIES, " +
                     "$WORK_ASSIGNMENT_REQUIRES_REPORT, " +
                     "$WORK_ASSIGNMENT_CREATED_BY, " +
-                    "$WORK_ASSIGNMENT_TIMESTAMP) " +
-                    "VALUES (:workAssignmentVersion.workAssignmentId, :workAssignmentVersion.version, :workAssignmentVersion.sheet, :workAssignmentVersion.supplement, :workAssignmentVersion.dueDate, " +
-                    ":workAssignmentVersion.individual, :workAssignmentVersion.lateDelivery, :workAssignmentVersion.multipleDeliveries, " +
+                    "$WORK_ASSIGNMENT_TIMESTAMP " +
+                    ") " +
+                    "VALUES (:workAssignmentVersion.workAssignmentId, :workAssignmentVersion.version, " +
+                    ":workAssignmentVersion.sheet, :workAssignmentVersion.supplement, " +
+                    ":workAssignmentVersion.dueDate, :workAssignmentVersion.individual, " +
+                    ":workAssignmentVersion.lateDelivery, :workAssignmentVersion.multipleDeliveries, " +
                     ":workAssignmentVersion.requiresReport, :workAssignmentVersion.createdBy, :workAssignmentVersion.timestamp)"
     )
     @GetGeneratedKeys
     override fun createWorkAssignmentVersion(workAssignmentVersion: WorkAssignmentVersion): WorkAssignmentVersion
-
-    @SqlUpdate(
-            "INSERT INTO $COURSE_MISC_UNIT_STAGE_TABLE (" +
-                    "$COURSE_MISC_UNIT_COURSE_ID, " +
-                    "$COURSE_MISC_UNIT_TERM_ID, " +
-                    "$COURSE_MISC_UNIT_TYPE) " +
-                    "VALUES(:courseId, :termId, :miscType)"
-    )
-    @GetGeneratedKeys
-    fun createStageCourseMiscUnit(courseId: Int, termId: Int, miscType: String): CourseMiscUnitStage
 
     @SqlUpdate(
             "INSERT INTO $WORK_ASSIGNMENT_STAGE_TABLE (" +
@@ -344,50 +338,52 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
                     "$WORK_ASSIGNMENT_CREATED_BY, " +
                     "$WORK_ASSIGNMENT_VOTES, " +
                     "$WORK_ASSIGNMENT_TIMESTAMP) " +
-                    "VALUES(:stageId, :stage.sheet, :stage.supplement, :stage.dueDate, :stage.individual, :stage.lateDelivery, " +
-                    ":stage.multipleDeliveries, :stage.requiresReport, :stage.createdBy, :stage.votes, :stage.timestamp)"
+                    "VALUES(:stageId, :workAssignmentStage.sheet, :workAssignmentStage.supplement, :workAssignmentStage.dueDate," +
+                    ":workAssignmentStage.individual, :workAssignmentStage.lateDelivery, " +
+                    ":workAssignmentStage.multipleDeliveries, :workAssignmentStage.requiresReport, " +
+                    ":workAssignmentStage.createdBy, :workAssignmentStage.votes, :workAssignmentStage.timestamp)"
     )
     @GetGeneratedKeys
-    fun createStagedWorkAssignment(stage: WorkAssignmentStage, stageId: Int): WorkAssignmentStage
+    fun createStagingWorkAssignment(workAssignmentStage: WorkAssignmentStage, stageId: Int): WorkAssignmentStage
 
     @Transaction
-    override fun createStagingWorkAssingment(courseId: Int, termId: Int, stage: WorkAssignmentStage): WorkAssignmentStage {
-        val courseMiscUnitStage = createStageCourseMiscUnit(courseId, termId, "Work Assignment")
-        return createStagedWorkAssignment(stage, courseMiscUnitStage.stageId)
+    override fun createStagingWorkAssingment(courseId: Int, termId: Int, workAssignmentStage: WorkAssignmentStage): WorkAssignmentStage {
+        val courseDAO = createCourseDAO()
+        if (!courseDAO.getSpecificTermOfCourse(courseId, termId).isPresent) {
+            courseDAO.createCourseTerm(courseId, termId, Timestamp.valueOf(LocalDateTime.now()))
+        }
+        val courseMiscUnitStage = courseDAO.createStagingCourseMiscUnit(courseId, termId, "Work Assignment")
+        return createStagingWorkAssignment(workAssignmentStage, courseMiscUnitStage.stageId)
     }
 
-    @SqlQuery("SELECT $WORK_ASSIGNMENT_VOTES FROM $WORK_ASSIGNMENT_STAGE_TABLE WHERE $WORK_ASSIGNMENT_STAGE_ID = :stageId")
-    fun getVotesOnStagedWorkAssignment(stageId: Int): Int
+    @SqlQuery(
+            "SELECT $WORK_ASSIGNMENT_VOTES FROM $WORK_ASSIGNMENT_STAGE_TABLE " +
+                    "WHERE $WORK_ASSIGNMENT_STAGE_ID = :stageId"
+    )
+    override fun getVotesOnStagedWorkAssignment(stageId: Int): Int
 
-    @SqlQuery("UPDATE $WORK_ASSIGNMENT_STAGE_TABLE set $WORK_ASSIGNMENT_VOTES = :votes WHERE $WORK_ASSIGNMENT_STAGE_ID = :stageId")
-    fun updateStagedWorkAssignmentVotes(stageId: Int, votes: Int): Int
+    @SqlQuery(
+            "UPDATE $WORK_ASSIGNMENT_STAGE_TABLE SET $WORK_ASSIGNMENT_VOTES = :votes " +
+                    "WHERE $WORK_ASSIGNMENT_STAGE_ID = :stageId"
+    )
+    override fun updateStagedWorkAssignmentVotes(stageId: Int, votes: Int): Int
 
-    @Transaction
-    override fun voteOnStagedWorkAssignment(stageId: Int, vote: Vote): Int {
-        var votes = getVotesOnStagedWorkAssignment(stageId)
-        votes = if(vote == Vote.Down) -- votes else ++ votes
-        return updateStagedWorkAssignmentVotes(stageId, votes)
-    }
+    override fun deleteAllWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int =
+            createCourseDAO().deleteAllCourseMiscUnitsFromTypeOfCourseInTerm(courseId, termId, "Work Assignment")
+
+    override fun deleteAllStagedWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int =
+            createCourseDAO().deleteAllStagedCourseMiscUnitsFromTypeOfCourseInTerm(courseId, termId, "Work Assignment")
 
     @SqlUpdate(
-            "DELETE FROM $COURSE_MISC_UNIT_TABLE " +
-                    "WHERE $COURSE_MISC_UNIT_COURSE_ID = :courseId " +
-                    "AND $COURSE_MISC_UNIT_TERM_ID = :termId " +
-                    "AND $COURSE_MISC_UNIT_TYPE = :miscType"
+            "DELETE FROM $WORK_ASSIGNMENT_VERSION_TABLE " +
+                    "WHERE $WORK_ASSIGNMENT_ID = :workAssignmentId"
     )
-    override fun deleteAllWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int
-
-    @SqlUpdate(
-            "DELETE FROM $COURSE_MISC_UNIT_STAGE_TABLE " +
-                    "WHERE $COURSE_MISC_UNIT_COURSE_ID = :courseId " +
-                    "AND $COURSE_MISC_UNIT_TERM_ID = :termId " +
-                    "AND $COURSE_MISC_UNIT_TYPE  = miscType"
-    )
-    override fun deleteAllStagedWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int
-
-    @SqlUpdate("DELETE FROM $WORK_ASSIGNMENT_VERSION_TABLE WHERE $WORK_ASSIGNMENT_ID = :workAssignmentId")
     override fun deleteAllVersionOfWorkAssignments(workAssignmentId: Int): Int
 
-    @SqlQuery("SELECT * FROM $WORK_ASSIGNMENT_VERSION_TABLE WHERE $WORK_ASSIGNMENT_ID = :workAssignmentId")
+    @SqlQuery(
+            "SELECT * FROM $WORK_ASSIGNMENT_VERSION_TABLE " +
+                    "WHERE $WORK_ASSIGNMENT_ID = :workAssignmentId"
+    )
     override fun getAllVersionsOfSpecificWorkAssignment(workAssignmentId: Int): List<WorkAssignmentVersion>
+
 }

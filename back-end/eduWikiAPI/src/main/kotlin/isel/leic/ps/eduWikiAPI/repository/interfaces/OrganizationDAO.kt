@@ -20,11 +20,14 @@ interface OrganizationDAO {
 
     fun deleteAllOrganizations() : Int
 
-    fun updateOrganization(organization: Organization) : Int
+    fun updateOrganization(organization: Organization) : Organization
 
     fun createOrganization(organization: Organization) : Organization
 
-    fun voteOnOrganization(organizationId: Int, vote: Vote): Int
+    fun getVotesOnOrganization(organizationId: Int): Int
+
+    fun updateVotesOnOrganization(organizationId: Int, votes: Int): Int
+
 
     /**
      * Version entity queries
@@ -34,15 +37,19 @@ interface OrganizationDAO {
 
     fun getSpecificVersionOfOrganization(organizationId: Int, version: Int): Optional<OrganizationVersion>
 
-    fun createVersion(version: OrganizationVersion): OrganizationVersion
+    fun createOrganizationVersion(version: OrganizationVersion): OrganizationVersion
+
+    fun deleteAllOrganizationVersions(organizationId: Int) : Int
+
+    fun deleteSpecificVersionOfOrganization(organizationId: Int, version: Int): Int
 
     /**
      * Report entity queries
      */
 
-    fun reportOrganization(organizationReport: OrganizationReport) : Optional<OrganizationReport>
+    fun reportOrganization(organizationReport: OrganizationReport) : OrganizationReport
 
-    fun deleteReportOnOrganization(reportId: Int) : Int
+    fun deleteSpecificReportOnOrganization(reportId: Int) : Int
 
     fun deleteAllReportsOnOrganization(organizationId : Int) : Int
 
@@ -50,6 +57,10 @@ interface OrganizationDAO {
 
     fun getSpecificReportOnOrganization(organizationId: Int, reportId: Int) : Optional<OrganizationReport>
 
-    fun voteOnOrganizationReport(organizationId: Int, reportId: Int, vote: Vote): Int
+    fun updateVotesOnOrganizationReport(organizationId: Int, reportId: Int, votes: Int): Int
+
+    fun getVotesOnOrganizationReport(organizationId: Int, reportId: Int): Int
+
+    fun deleteReportOnOrganization(organizationId: Int, reportId: Int): Int
 
 }

@@ -82,17 +82,10 @@ interface ProgrammeDAOJdbi : ProgrammeDAO {
     override fun createProgramme(programme: Programme): Programme
 
     @SqlQuery("SELECT $PROGRAMME_VOTES FROM $PROGRAMME_TABLE WHERE $PROGRAMME_ID = :programmeId")
-    fun getVotesOnProgramme(programmeId: Int): Int
+    override fun getVotesOnProgramme(programmeId: Int): Int
 
     @SqlQuery("UPDATE $PROGRAMME_TABLE SET $PROGRAMME_VOTES = :votes WHERE $PROGRAMME_ID = :programmeId")
-    fun updateProgrammeVotes(programmeId: Int, votes: Int): Int
-
-    @Transaction
-    override fun voteOnProgramme(programmeId: Int, vote: Vote): Int {
-        var votes = getVotesOnProgramme(programmeId)
-        votes = if(vote == Vote.Down) -- votes else ++ votes
-        return updateProgrammeVotes(programmeId, votes)
-    }
+    override fun updateVotesOnProgramme(programmeId: Int, votes: Int): Int
 
     @SqlQuery("SELECT * FROM $PROGRAMME_STAGE_TABLE WHERE $PROGRAMME_STAGE_ID = :stageId")
     override fun getSpecificStageEntryOfProgramme(stageId: Int): Optional<ProgrammeStage>
@@ -119,17 +112,14 @@ interface ProgrammeDAOJdbi : ProgrammeDAO {
     @GetGeneratedKeys
     override fun createStagingProgramme(programmeStage: ProgrammeStage): ProgrammeStage
 
-    @SqlQuery("SELECT $PROGRAMME_VOTES FROM $PROGRAMME_STAGE_TABLE WHERE $PROGRAMME_STAGE_ID = :stageId")
-    fun getVotesOnStagedProgramme(stageId: Int): Int
+    @SqlQuery(
+            "SELECT $PROGRAMME_VOTES FROM $PROGRAMME_STAGE_TABLE " +
+            "WHERE $PROGRAMME_STAGE_ID = :stageId"
+    )
+    override fun getVotesOnStagedProgramme(stageId: Int): Int
 
     @SqlUpdate("UPDATE $PROGRAMME_STAGE_TABLE SET $PROGRAMME_VOTES = :votes WHERE $PROGRAMME_STAGE_ID = :stageId")
-    fun updateStagedProgrammeVotes(stageId: Int, votes: Int): Int
-
-    override fun voteOnStagedProgramme(stageId: Int, vote: Vote): Int {
-        var votes = getVotesOnStagedProgramme(stageId)
-        votes = if(vote == Vote.Down) -- votes else ++ votes
-        return updateStagedProgrammeVotes(stageId, votes)
-    }
+    override fun updateVotesOnStagedProgramme(stageId: Int, votes: Int): Int
 
     @SqlUpdate("DELETE FROM $PROGRAMME_STAGE_TABLE WHERE $PROGRAMME_STAGE_ID = :stageId")
     override fun deleteSpecificStagedProgramme(stageId: Int): Int
@@ -176,32 +166,27 @@ interface ProgrammeDAOJdbi : ProgrammeDAO {
     override fun deleteSpecificReportOnProgramme(programmeId: Int, reportId: Int): Int
 
     @SqlQuery("SELECT $PROGRAMME_VOTES FROM $PROGRAMME_REPORT_TABLE WHERE $PROGRAMME_REPORT_ID = :reportId AND $PROGRAMME_ID = :programmeId")
-    fun getVotesOnReportedProgramme(reportId: Int, programmeId: Int): Int
+    override fun getVotesOnReportedProgramme(reportId: Int, programmeId: Int): Int
 
     @SqlUpdate("UPDATE $PROGRAMME_REPORT_TABLE SET $PROGRAMME_VOTES = :votes WHERE $PROGRAMME_REPORT_ID = :reportId AND $PROGRAMME_ID = :programmeId")
-    fun updateReportedProgrammeVotes(reportId: Int, programmeId: Int, votes: Int): Int
-
-
-    override fun voteOnReportedProgramme(programmeId: Int, reportId: Int, vote: Vote): Int {
-        var votes = getVotesOnReportedProgramme(reportId, programmeId)
-        votes = if(vote == Vote.Down) -- votes else ++ votes
-        return updateReportedProgrammeVotes(reportId, programmeId, votes)
-    }
+    override fun updateVotesOnReportedProgramme(programmeId: Int, reportId: Int, votes: Int): Int
 
     @SqlUpdate(
-            "INSERT INTO $PROGRAMME_VERSION_TABLE (" +
+            "INSERT INTO $PROGRAMME_VERSION_TABLE ( " +
                     "$PROGRAMME_ID, " +
                     "$PROGRAMME_VERSION, " +
                     "$PROGRAMME_FULL_NAME, " +
                     "$PROGRAMME_SHORT_NAME, " +
                     "$PROGRAMME_ACADEMIC_DEGREE, " +
-                    "$PROGRAMME_TOTAL_CREDITS," +
+                    "$PROGRAMME_TOTAL_CREDITS, " +
                     "$PROGRAMME_DURATION, " +
                     "$PROGRAMME_CREATED_BY, " +
-                    "$PROGRAMME_TIMESTAMP)" +
-                    "VALUES (:programme.programmeId, :programme.version, :programme.fullName, :programme.shortName," +
-                    ":programme.academicDegree, :programme.totalCredits, :programme.duration, :programme.createdBy, :programme.timestamp)"
+                    "$PROGRAMME_TIMESTAMP " +
+                    ") " +
+                    "VALUES (:programmeVersion.programmeId, :programmeVersion.version, :programmeVersion.fullName, " +
+                    ":programmeVersion.shortName, :programmeVersion.academicDegree, :programmeVersion.totalCredits, " +
+                    ":programmeVersion.duration, :programmeVersion.createdBy, :programmeVersion.timestamp)"
     )
     @GetGeneratedKeys
-    override fun createProgrammeVersion(programme: Programme): ProgrammeVersion
+    override fun createProgrammeVersion(programmeVersion: ProgrammeVersion): ProgrammeVersion
 }

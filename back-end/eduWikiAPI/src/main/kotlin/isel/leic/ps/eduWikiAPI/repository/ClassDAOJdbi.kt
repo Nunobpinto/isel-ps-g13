@@ -564,7 +564,6 @@ interface ClassDAOJdbi : ClassDAO {
                     ") " +
                     "VALUES (:miscType, :courseClassId)"
     )
-    @GetGeneratedKeys
     override fun createClassMiscUnit(courseClassId: Int, miscType: String): ClassMiscUnit
 
     @SqlUpdate(

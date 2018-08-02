@@ -1,10 +1,7 @@
 package isel.leic.ps.eduWikiAPI.repository
 
-import isel.leic.ps.eduWikiAPI.domain.model.CourseMiscUnit
 import isel.leic.ps.eduWikiAPI.domain.model.Exam
-import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.domain.model.report.ExamReport
-import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseMiscUnitStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ExamStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.ExamVersion
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_COURSE_ID
@@ -14,9 +11,13 @@ import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UN
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_TABLE
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ExamDAO
+import org.jdbi.v3.sqlobject.CreateSqlObject
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys
 import org.jdbi.v3.sqlobject.statement.SqlQuery
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
+import org.jdbi.v3.sqlobject.transaction.Transaction
+import java.sql.Timestamp
+import java.time.LocalDateTime
 import java.util.*
 
 interface ExamDAOJdbi : ExamDAO {
@@ -44,11 +45,11 @@ interface ExamDAOJdbi : ExamDAO {
         const val EXAM_CREATED_BY = "created_by"
     }
 
-    @SqlUpdate(
-            "DELETE FROM $COURSE_MISC_UNIT_TABLE " +
-                    "WHERE $COURSE_MISC_UNIT_ID = :examId"
-    )
-    override fun deleteSpecificExamOfCourseInTerm(examId: Int): Int
+    @CreateSqlObject
+    fun createCourseDAO(): CourseDAOJdbi
+
+    override fun deleteSpecificExamOfCourseInTerm(examId: Int): Int =
+            createCourseDAO().deleteSpecificCourseMiscUnitEntry(examId)
 
     @SqlUpdate(
             "update $EXAM_TABLE SET " +
@@ -64,144 +65,96 @@ interface ExamDAOJdbi : ExamDAO {
                     "WHERE $EXAM_ID = :examId"
     )
     @GetGeneratedKeys
-    override fun updateExam(examId: Int, exam: Exam) : Exam
+    override fun updateExam(examId: Int, exam: Exam): Exam
 
-    @SqlUpdate()
-    override fun createExam(courseId: Int, termId: Int, exam: Exam): Exam {
-        if (!hANDle.isInTransaction) hANDle.begin()
-        val courseMiscUnit = hANDle.createUpdate(
-                "insert into $COURSE_MISC_UNIT_TABLE (" +
-                        "${CourseDAOJdbi.COURSE_MISC_UNIT_TYPE}, " +
-                        "$COURSE_MISC_UNIT_COURSE_ID, " +
-                        "$COURSE_MISC_UNIT_TERM_ID " +
-                        ") " +
-                        "values(:type, :courseId, :termId)"
-        )
-                .bind("type", exam.type)
-                .bind("courseId", courseId)
-                .bind("termId", termId)
-                .executeAndReturnGeneratedKeys()
-                .mapTo(CourseMiscUnit::class.java)
-                .findOnly()
-        val exam = hANDle.createUpdate(
-                "insert into $EXAM_TABLE (" +
-                        "$EXAM_ID, " +
-                        "$EXAM_VERSION, " +
-                        "$EXAM_CREATED_BY, " +
-                        "$EXAM_SHEET, " +
-                        "$EXAM_DUE_DATE, " +
-                        "$EXAM_TYPE, " +
-                        "$EXAM_PHASE, " +
-                        "$EXAM_LOCATION, " +
-                        "$EXAM_VOTES, " +
-                        "$EXAM_TIMESTAMP " +
-                        ") " +
-                        "values(:examId, :version, :createdBy, :sheet, :dueDate, :type, " +
-                        ":phase, :location, :votes, :timestamp)"
-        )
-                .bind("examId", courseMiscUnit.courseMiscUnitId)
-                .bind("examVersion", exam.version)
-                .bind("createdBy", exam.createdBy)
-                .bind("sheet", exam.sheet)
-                .bind("dueDate", exam.dueDate)
-                .bind("type", exam.type)
-                .bind("phase", exam.phase)
-                .bind("location", exam.location)
-                .bind("votes", exam.votes)
-                .bind("timestamp", exam.timestamp)
-                .executeAndReturnGeneratedKeys()
-                .mapTo(Exam::class.java)
-                .findFirst()
-        if (!hANDle.isInTransaction) hANDle.commit()
-        return exam
+    @SqlUpdate(
+
+            "INSERT INTO $EXAM_TABLE ( " +
+                    "$EXAM_ID, " +
+                    "$EXAM_VERSION, " +
+                    "$EXAM_CREATED_BY, " +
+                    "$EXAM_SHEET, " +
+                    "$EXAM_DUE_DATE, " +
+                    "$EXAM_TYPE, " +
+                    "$EXAM_PHASE, " +
+                    "$EXAM_LOCATION, " +
+                    "$EXAM_VOTES, " +
+                    "$EXAM_TIMESTAMP " +
+                    ") " +
+                    "VALUES(:courseMiscUnitId, :exam.version, :exam.createdBy, " +
+                    ":exam.sheet, :exam.dueDate, :exam.type, " +
+                    ":exam.phase, :exam.location, :exam.votes, :exam.timestamp)"
+    )
+    @GetGeneratedKeys
+    fun createExam(courseMiscUnitId: Int, exam: Exam): Exam
+
+    @Transaction
+    override fun createExamOnCourseInTerm(courseId: Int, termId: Int, exam: Exam): Exam {
+        val courseDAO = createCourseDAO()
+        if (!courseDAO.getSpecificTermOfCourse(courseId, termId).isPresent) {
+            courseDAO.createCourseTerm(courseId, termId, Timestamp.valueOf(LocalDateTime.now()))
+        }
+        val courseMiscUnit = courseDAO.createCourseMiscUnit(courseId, termId, "Exam")
+        return createExam(courseMiscUnit.courseMiscUnitId, exam)
     }
 
-    override fun voteOnExam(examId: Int, vote: Vote): Int {
-        var votes = hANDle.createQuery(
-                "SELECT $EXAM_VOTES FROM $EXAM_TABLE " +
-                        "WHERE $EXAM_ID = :examId"
-        )
-                .bind("examId", examId)
-                .mapTo(Int::class.java).findOnly()
-        votes = if (vote == Vote.Down) --votes else ++votes
-        return hANDle.createUpdate(
-                "update $EXAM_TABLE set $EXAM_VOTES = :votes " +
-                        "WHERE $EXAM_ID = :examId")
-                .bind("votes", votes)
-                .bind("examId", examId)
-                .execute()
-    }
+    @SqlQuery(
+            "SELECT $EXAM_VOTES FROM $EXAM_TABLE " +
+                    "WHERE $EXAM_ID = :examId"
+    )
+    override fun getVotesOnExam(examId: Int): Int
+
+    @SqlUpdate(
+            "UPDATE $EXAM_TABLE SET $EXAM_VOTES = :votes " +
+                    "WHERE $EXAM_ID = :examId"
+    )
+    override fun updateVotesOnExam(examId: Int, votes: Int): Int
 
     @SqlQuery(
             "SELECT * FROM $EXAM_STAGE_TABLE"
     )
-    override fun getAllExamStages(): List<ExamStage>
+    override fun getAllStagedExams(): List<ExamStage>
 
     @SqlUpdate(
-
+            "INSERT INTO $EXAM_STAGE_TABLE ( " +
+                    "$EXAM_STAGE_ID, " +
+                    "$EXAM_SHEET, " +
+                    "$EXAM_DUE_DATE, " +
+                    "$EXAM_TYPE, " +
+                    "$EXAM_PHASE, " +
+                    "$EXAM_LOCATION, " +
+                    "$EXAM_CREATED_BY, " +
+                    "$EXAM_VOTES, " +
+                    "$EXAM_TIMESTAMP " +
+                    ") " +
+                    "values(:courseMiscUnitStageId, :examStage.sheet, :examStage.dueDate, " +
+                    ":examStage.type, :examStage.phase, :examStage.location, " +
+                    ":examStage.createdBy, :examStage.votes, :examStage.timestamp)"
     )
-    override fun createStagingExam(courseId: Int, termId: Int, examStage: ExamStage): ExamStage {
-        hANDle.begin()
-        val courseMiscUnitStage = hANDle.createUpdate(
-                "insert into $COURSE_MISC_UNIT_STAGE_TABLE (" +
-                        "$COURSE_MISC_UNIT_COURSE_ID, " +
-                        "$COURSE_MISC_UNIT_TERM_ID, " +
-                        "${CourseDAOJdbi.COURSE_MISC_UNIT_TYPE} " +
-                        ") " +
-                        "values(:courseId, :termId, :miscType:)"
-        )
-                .bind("courseId", courseId)
-                .bind("termId", termId)
-                .bind("miscType", examStage.type)
-                .executeAndReturnGeneratedKeys()
-                .mapTo(CourseMiscUnitStage::class.java)
-                .findOnly()
+    @GetGeneratedKeys
+    fun createStagingExam(courseMiscUnitStageId: Int, examStage: ExamStage): ExamStage
 
-        val examStage = hANDle.createUpdate(
-                "insert into $EXAM_STAGE_TABLE(" +
-                        "$EXAM_STAGE_ID, " +
-                        "$EXAM_SHEET, " +
-                        "$EXAM_DUE_DATE, " +
-                        "$EXAM_TYPE, " +
-                        "$EXAM_PHASE, " +
-                        "$EXAM_LOCATION, " +
-                        "$EXAM_CREATED_BY, " +
-                        "$EXAM_VOTES, " +
-                        "$EXAM_TIMESTAMP) " +
-                        "values(:stageId, :sheet, :dueDate, :type, " +
-                        ":phase, :location, :createdBy, :votes, :timestamp)"
-        )
-                .bind("stageId", courseMiscUnitStage.stageId)
-                .bind("sheet", examStage.sheet)
-                .bind("dueDate", examStage.dueDate)
-                .bind("type", examStage.type)
-                .bind("phase", examStage.phase)
-                .bind("location", examStage.location)
-                .bind("createdBy", examStage.createdBy)
-                .bind("votes", examStage.votes)
-                .bind("timestamp", examStage.timestamp)
-                .executeAndReturnGeneratedKeys()
-                .mapTo(ExamStage::class.java)
-                .findFirst()
-        hANDle.commit()
-        return examStage
+    @Transaction
+    override fun createStagingExamOnCourseInTerm(courseId: Int, termId: Int, examStage: ExamStage): ExamStage {
+        val courseDAO = createCourseDAO()
+        if (!courseDAO.getSpecificTermOfCourse(courseId, termId).isPresent) {
+            courseDAO.createCourseTerm(courseId, termId, Timestamp.valueOf(LocalDateTime.now()))
+        }
+        val courseMiscUnitStage = courseDAO.createStagingCourseMiscUnit(courseId, termId, "Exam")
+        return createStagingExam(courseMiscUnitStage.stageId, examStage)
     }
 
-    override fun voteOnStagedExam(stageId: Int, vote: Vote): Int {
-        var votes = hANDle.createQuery(
-                "SELECT $EXAM_VOTES FROM $EXAM_STAGE_TABLE " +
-                        "WHERE $EXAM_STAGE_ID = :stageId"
-        )
-                .bind("stageId", stageId)
-                .mapTo(Int::class.java).findOnly()
-        votes = if (vote == Vote.Down) --votes else ++votes
-        return hANDle.createUpdate(
-                "update $EXAM_STAGE_TABLE set $EXAM_VOTES = :votes " +
-                        "WHERE $EXAM_STAGE_ID = :stageId")
-                .bind("votes", votes)
-                .bind("stageId", stageId)
-                .execute()
-    }
+    @SqlQuery(
+            "SELECT $EXAM_VOTES FROM $EXAM_STAGE_TABLE " +
+                    "WHERE $EXAM_STAGE_ID = :stageId"
+    )
+    override fun getVotesOnStagedExam(stageId: Int): Int
+
+    @SqlUpdate(
+            "UPDATE $EXAM_STAGE_TABLE SET $EXAM_VOTES = :votes " +
+                    "WHERE $EXAM_STAGE_ID = :stageId"
+    )
+    override fun updateVotesOnStagedExam(stageId: Int, votes: Int): Int
 
     @SqlQuery(
             "SELECT * FROM $EXAM_VERSION_TABLE " +
@@ -239,7 +192,7 @@ interface ExamDAOJdbi : ExamDAO {
                     ":examVersion.location, :examVersion.createdBy, :examVersion.timestamp)"
     )
     @GetGeneratedKeys
-    override fun createVersionExam(examVersion: ExamVersion): ExamVersion
+    override fun createExamVersion(examVersion: ExamVersion): ExamVersion
 
     @SqlUpdate(
             "INSERT INTO $EXAM_REPORT_TABLE ( " +
@@ -254,8 +207,8 @@ interface ExamDAOJdbi : ExamDAO {
                     "$EXAM_TIMESTAMP " +
                     ") " +
                     "VALUES(:examReport.examId, :examReport.sheet, :examReport.dueDate, " +
-                    ":examReport.type, :examReport.phase, :examReport.location, :examReport.reportedBy, " +
-                    ":examReport.votes, :examReport.timestamp)"
+                    ":examReport.type, :examReport.phase, :examReport.location, " +
+                    ":examReport.reportedBy, :examReport.votes, :examReport.timestamp)"
     )
     @GetGeneratedKeys
     override fun reportExam(examReport: ExamReport): ExamReport
@@ -361,22 +314,17 @@ interface ExamDAOJdbi : ExamDAO {
     )
     override fun getSpecificReportOnExamOnSpecificTermOfCourse(reportId: Int): Optional<ExamReport>
 
-    override fun voteOnReportToExamOnCourseInTerm(reportId: Int, vote: Vote): Int {
-        var votes = hANDle.createQuery(
-                "SELECT $EXAM_VOTES FROM $EXAM_REPORT_TABLE " +
-                        "WHERE $EXAM_REPORT_ID = :reportId"
-        )
-                .bind("reportId", reportId)
-                .mapTo(Int::class.java).findOnly()
-        votes = if (vote == Vote.Down) --votes else ++votes
-        return hANDle.createUpdate(
-                "update $EXAM_REPORT_TABLE set $EXAM_VOTES = :votes " +
-                        "WHERE $EXAM_REPORT_ID = :reportId"
-        )
-                .bind("votes", votes)
-                .bind("reportId", reportId)
-                .execute()
-    }
+    @SqlQuery(
+            "SELECT $EXAM_VOTES FROM $EXAM_REPORT_TABLE " +
+                    "WHERE $EXAM_REPORT_ID = :reportId"
+    )
+    override fun getVotesOnReportedExam(reportId: Int): Int
+
+    @SqlUpdate(
+            "UPDATE $EXAM_REPORT_TABLE SET $EXAM_VOTES = :votes " +
+                    "WHERE $EXAM_REPORT_ID = :reportId"
+    )
+    override fun updateVotesOnReportedExam(reportId: Int, votes: Int): Int
 
     @SqlQuery(
             "SELECT * FROM $EXAM_REPORT_TABLE " +
@@ -391,25 +339,14 @@ interface ExamDAOJdbi : ExamDAO {
     )
     override fun getExamSpecificStageEntry(stageId: Int): Optional<ExamStage>
 
-    @SqlUpdate(
-            "DELETE FROM $COURSE_MISC_UNIT_STAGE_TABLE" +
-                    "WHERE $COURSE_MISC_UNIT_STAGE_ID = :stageId"
-    )
-    override fun deleteStagedExam(stageId: Int): Int
+    override fun deleteStagedExam(stageId: Int): Int =
+            createCourseDAO().deleteSpecificStagedCourseMiscUnitEntry(stageId)
 
-    @SqlUpdate(
-            "DELETE FROM $COURSE_MISC_UNIT_TABLE " +
-                    "WHERE $COURSE_MISC_UNIT_COURSE_ID = :courseId " +
-                    "AND $COURSE_MISC_UNIT_TERM_ID = :termId "
-    )
-    override fun deleteAllExamsOfCourseInTerm(courseId: Int, termId: Int): Int
+    override fun deleteAllExamsOfCourseInTerm(courseId: Int, termId: Int): Int =
+            createCourseDAO().deleteAllCourseMiscUnitsFromTypeOfCourseInTerm(courseId, termId, "Exam")
 
-    @SqlUpdate(
-            "DELETE FROM $COURSE_MISC_UNIT_STAGE_TABLE " +
-                    "WHERE $COURSE_MISC_UNIT_ID = :courseId " +
-                    "AND $COURSE_MISC_UNIT_TERM_ID = :termId"
-    )
-    override fun deleteAllStagedExamsOfCourseInTerm(courseId: Int, termId: Int): Int
+    override fun deleteAllStagedExamsOfCourseInTerm(courseId: Int, termId: Int): Int =
+            createCourseDAO().deleteAllStagedCourseMiscUnitsFromTypeOfCourseInTerm(courseId, termId, "Exam")
 
     @SqlUpdate(
             "DELETE FROM $EXAM_VERSION_TABLE " +

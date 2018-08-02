@@ -19,13 +19,15 @@ interface ExamDAO {
 
     fun updateExam(examId: Int, exam: Exam): Exam
 
-    fun createExam(courseId: Int, termId: Int, exam: Exam): Exam
+    fun createExamOnCourseInTerm(courseId: Int, termId: Int, exam: Exam): Exam
 
     fun getAllExamsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<Exam>
 
-    fun voteOnExam(examId: Int, vote: Vote) : Int
-
     fun getSpecificExamFromSpecificTermOfCourse(courseId: Int, termId: Int, examId: Int): Optional<Exam>
+
+    fun getVotesOnExam(examId: Int): Int
+
+    fun updateVotesOnExam(examId: Int, votes: Int): Int
 
     /**
      * Stage entities queries
@@ -33,11 +35,9 @@ interface ExamDAO {
 
     fun getExamSpecificStageEntry(stageId: Int): Optional<ExamStage>
 
-    fun getAllExamStages(): List<ExamStage>
+    fun getAllStagedExams(): List<ExamStage>
 
-    fun createStagingExam(courseId: Int, termId: Int, examStage: ExamStage): ExamStage
-
-    fun voteOnStagedExam(stageId: Int, vote: Vote): Int
+    fun createStagingExamOnCourseInTerm(courseId: Int, termId: Int, examStage: ExamStage): ExamStage
 
     fun getStageEntriesFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int): List<ExamStage>
 
@@ -46,6 +46,11 @@ interface ExamDAO {
     fun deleteStagedExam(stageId: Int): Int
 
     fun deleteAllStagedExamsOfCourseInTerm(courseId: Int, termId: Int): Int
+
+    fun getVotesOnStagedExam(stageId: Int): Int
+
+    fun updateVotesOnStagedExam(stageId: Int, votes: Int): Int
+
 
     /**
      * Version entities queries
@@ -63,7 +68,7 @@ interface ExamDAO {
 
     fun deleteAllVersionOfExam(examId: Int): Int
 
-    fun createVersionExam(examVersion: ExamVersion): ExamVersion
+    fun createExamVersion(examVersion: ExamVersion): ExamVersion
 
     /**
      * Report entity queries
@@ -79,9 +84,11 @@ interface ExamDAO {
 
     fun getSpecificReportOnExamOnSpecificTermOfCourse(reportId: Int): Optional<ExamReport>
 
-    fun voteOnReportToExamOnCourseInTerm(reportId: Int, vote: Vote): Int
-
     fun getSpecificReportOfExam(examId: Int, reportId: Int): Optional<ExamReport>
+
+    fun getVotesOnReportedExam(reportId: Int): Int
+
+    fun updateVotesOnReportedExam(reportId: Int, votes: Int): Int
 
 }
 

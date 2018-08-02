@@ -24,7 +24,9 @@ interface ProgrammeDAO {
 
     fun createProgramme(programme: Programme): Programme
 
-    fun voteOnProgramme(programmeId: Int, vote: Vote): Int
+    fun getVotesOnProgramme(programmeId: Int): Int
+
+    fun updateVotesOnProgramme(programmeId: Int, votes: Int): Int
 
     /**
      * Stage entities queries
@@ -38,7 +40,9 @@ interface ProgrammeDAO {
 
     fun createStagingProgramme(programmeStage: ProgrammeStage): ProgrammeStage
 
-    fun voteOnStagedProgramme(stageId: Int, vote: Vote): Int
+    fun getVotesOnStagedProgramme(stageId: Int): Int
+
+    fun updateVotesOnStagedProgramme(stageId: Int, votes: Int): Int
 
     fun deleteSpecificStagedProgramme(stageId: Int): Int
 
@@ -54,7 +58,7 @@ interface ProgrammeDAO {
 
     fun deleteAllProgrammeVersions(programmeId: Int) : Int
 
-    fun createProgrammeVersion(programme: Programme): ProgrammeVersion
+    fun createProgrammeVersion(programmeVersion: ProgrammeVersion): ProgrammeVersion
 
     /**
      * Report entity queries
@@ -70,8 +74,8 @@ interface ProgrammeDAO {
 
     fun deleteAllReportsOnProgramme(programmeId : Int): Int
 
-    fun voteOnReportedProgramme(programmeId: Int, reportId: Int, vote: Vote): Int
+    fun getVotesOnReportedProgramme(reportId: Int, programmeId: Int): Int
 
-
+    fun updateVotesOnReportedProgramme(programmeId: Int, reportId: Int, votes: Int): Int
 
 }

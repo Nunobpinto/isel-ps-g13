@@ -369,10 +369,12 @@ class ClassServiceImpl : ClassService {
             jdbi.inTransaction<Lecture, Exception> {
                 val lectureDAO = it.attach(LectureDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
-                lectureDAO.createLectureOnCourseInClass(
+                val lecture = lectureDAO.createLectureOnCourseInClass(
                         classDAO.getCourseClassId(classId, courseId),
                         toLecture(lectureInputModel)
                 )
+                lectureDAO.createLectureVersion(toLectureVersion(lecture))
+                lecture
             }
 
     override fun voteOnLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int, vote: VoteInputModel): Int =
@@ -621,10 +623,12 @@ class ClassServiceImpl : ClassService {
             jdbi.inTransaction<Homework, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val homeworkDAO = it.attach(HomeworkDAOJdbi::class.java)
-                homeworkDAO.createHomeworkOnCourseInClass(
+                val homework = homeworkDAO.createHomeworkOnCourseInClass(
                         classDAO.getCourseClassId(classId, courseId),
                         toHomework(homeworkInputModel)
                 )
+                homeworkDAO.createHomeworkVersion(toHomeworkVersion(homework))
+                homework
             }
 
     override fun voteOnHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, vote: VoteInputModel): Int =

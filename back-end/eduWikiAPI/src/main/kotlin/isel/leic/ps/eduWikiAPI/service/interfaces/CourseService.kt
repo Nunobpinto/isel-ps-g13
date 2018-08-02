@@ -46,25 +46,25 @@ interface CourseService {
 
     fun getClassOnSpecificTermOfCourse(courseId: Int, termId: Int, classId: Int): Optional<Class>
 
-    fun createCourse(inputCourse: CourseInputModel): Optional<Course>
+    fun createCourse(inputCourse: CourseInputModel): Course
 
-    fun createCourseFromStaged(stageId: Int): Optional<Course>
+    fun createCourseFromStaged(stageId: Int): Course
 
-    fun createExamOnCourseInTerm(courseId: Int, termId: Int, inputExam: ExamInputModel): Optional<Exam>
+    fun createExamOnCourseInTerm(courseId: Int, termId: Int, inputExam: ExamInputModel): Exam
 
-    fun createExamFromStaged(courseId: Int, termId: Int, stageId: Int): Optional<Exam>
+    fun createExamFromStaged(courseId: Int, termId: Int, stageId: Int): Exam
 
-    fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): Optional<WorkAssignment>
+    fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): WorkAssignment
 
-    fun createWorkAssignmentFromStaged(courseId: Int, termId: Int, stageId: Int): Optional<WorkAssignment>
+    fun createWorkAssignmentFromStaged(courseId: Int, termId: Int, stageId: Int): WorkAssignment
 
-    fun voteOnCourse(courseId: Int, inputVote: VoteInputModel): Int
+    fun voteOnCourse(courseId: Int, vote: VoteInputModel): Int
 
-    fun voteOnExam(examId: Int, inputVote: VoteInputModel): Int
+    fun voteOnExam(examId: Int, vote: VoteInputModel): Int
 
-    fun voteOnWorkAssignment(workAssignmentId: Int, inputVote: VoteInputModel): Int
+    fun voteOnWorkAssignment(workAssignmentId: Int, vote: VoteInputModel): Int
 
-    fun partialUpdateOnCourse(courseId: Int, inputCourse: CourseInputModel): Optional<Course>
+    fun partialUpdateOnCourse(courseId: Int, inputCourse: CourseInputModel): Course
 
     fun deleteAllCourses(): Int
 
@@ -94,17 +94,17 @@ interface CourseService {
 
     fun getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): Optional<WorkAssignmentStage>
 
-    fun createStagingCourse(inputCourse: CourseInputModel): Optional<CourseStage>
+    fun createStagingCourse(inputCourse: CourseInputModel): CourseStage
 
-    fun createStagingExam(courseId: Int, termId: Int, inputExam: ExamInputModel): Optional<ExamStage>
+    fun createStagingExam(courseId: Int, termId: Int, inputExam: ExamInputModel): ExamStage
 
-    fun createStagingWorkAssignment(courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): Optional<WorkAssignmentStage>
+    fun createStagingWorkAssignment(courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): WorkAssignmentStage
 
-    fun voteOnStagedCourse(stageId: Int, inputVote: VoteInputModel): Int
+    fun voteOnStagedCourse(stageId: Int, vote: VoteInputModel): Int
 
-    fun voteOnStagedExam(stageId: Int, inputVote: VoteInputModel): Int
+    fun voteOnStagedExam(stageId: Int, vote: VoteInputModel): Int
 
-    fun voteOnStagedWorkAssignment(stageId: Int, inputVote: VoteInputModel): Int
+    fun voteOnStagedWorkAssignment(stageId: Int, vote: VoteInputModel): Int
 
     fun deleteAllStagedWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int
 
@@ -166,23 +166,23 @@ interface CourseService {
 
     fun getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(workAssignmentId: Int, reportId: Int): Optional<WorkAssignmentReport>
 
-    fun reportCourse(courseId: Int, inputCourseReport: CourseReportInputModel): Optional<CourseReport>
+    fun reportCourse(courseId: Int, inputCourseReport: CourseReportInputModel): CourseReport
 
-    fun voteOnReportOfCourse(reportId: Int, inputVote: VoteInputModel): Int
+    fun voteOnReportedCourse(reportId: Int, vote: VoteInputModel): Int
 
-    fun voteOnReportToExamOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int
+    fun voteOnReportedExamOnCourseInTerm(reportId: Int, vote: VoteInputModel): Int
 
-    fun voteOnReportToWorkAssignmentOnCourseInTerm(reportId: Int, inputVote: VoteInputModel): Int
+    fun voteOnReportedWorkAssignmentOnCourseInTerm(reportId: Int, vote: VoteInputModel): Int
 
-    fun updateReportedCourse(courseId: Int, reportId: Int) : Optional<Course>
+    fun updateReportedCourse(courseId: Int, reportId: Int) : Course
 
-    fun updateReportedExam(examId: Int, reportId: Int, courseId: Int, termId: Int): Optional<Exam>
+    fun updateReportedExam(examId: Int, reportId: Int, courseId: Int, termId: Int): Exam
 
-    fun updateWorkAssignmentBasedOnReport(workAssignmentId: Int, reportId: Int, courseId: Int, termId: Int): Optional<WorkAssignment>
+    fun updateWorkAssignmentBasedOnReport(workAssignmentId: Int, reportId: Int, courseId: Int, termId: Int): WorkAssignment
 
-    fun addReportToExamOnCourseInTerm(examId: Int, inputExamReport: ExamReportInputModel): Optional<ExamReport>
+    fun addReportToExamOnCourseInTerm(examId: Int, inputExamReport: ExamReportInputModel): ExamReport
 
-    fun addReportToWorkAssignmentOnCourseInTerm(workAssignmentId: Int, inputWorkAssignmentReport: WorkAssignmentReportInputModel): Optional<WorkAssignmentReport>
+    fun addReportToWorkAssignmentOnCourseInTerm(workAssignmentId: Int, inputWorkAssignmentReport: WorkAssignmentReportInputModel): WorkAssignmentReport
 
     fun deleteAllReportsOnCourse(courseId: Int): Int
 

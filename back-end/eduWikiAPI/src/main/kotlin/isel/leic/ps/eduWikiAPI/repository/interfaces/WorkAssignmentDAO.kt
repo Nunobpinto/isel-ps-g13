@@ -29,13 +29,17 @@ interface WorkAssignmentDAO {
 
     fun getAllWorkAssignmentsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignment>
 
+    fun getVotesOnWorkAssignment(workAssignmentId: Int): Int
+
+    fun updateVotesOnWorkAssignment(workAssignmentId: Int, votes: Int): Int
+
     /**
      * Stage entities queries
      */
 
     fun getWorkAssignmentSpecificStageEntry(stageId: Int) : Optional<WorkAssignmentStage>
 
-    fun getAllWorkAssignmentStages() : List<WorkAssignmentStage>
+    fun getAllStagedWorkAssignments() : List<WorkAssignmentStage>
 
     fun deleteSpecificStagedWorkAssignment(stageId: Int) : Int
 
@@ -45,9 +49,11 @@ interface WorkAssignmentDAO {
 
     fun getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): Optional<WorkAssignmentStage>
 
-    fun createStagingWorkAssingment(courseId: Int, termId: Int, stage: WorkAssignmentStage): WorkAssignmentStage
+    fun createStagingWorkAssingment(courseId: Int, termId: Int, workAssignmentStage: WorkAssignmentStage): WorkAssignmentStage
 
-    fun voteOnStagedWorkAssignment(stageId: Int, vote: Vote): Int
+    fun getVotesOnStagedWorkAssignment(stageId: Int): Int
+
+    fun updateStagedWorkAssignmentVotes(stageId: Int, votes: Int): Int
 
     /**
      * Version entities queries
@@ -75,8 +81,10 @@ interface WorkAssignmentDAO {
 
     fun addReportToWorkAssignmentOnCourseInTerm(workAssignmentId: Int, workAssignmentReport: WorkAssignmentReport): WorkAssignmentReport
 
-    fun voteOnReportToWorkAssignmentOnCourseInTerm(reportId: Int, vote: Vote): Int
-
     fun getSpecificReportOfWorkAssignment(workAssignmentId: Int, reportId: Int): Optional<WorkAssignmentReport>
+
+    fun getVotesOnReportedWorkAssignment(reportId: Int): Int
+
+    fun updateVotesOnReportedWorkAssignment(reportId: Int, votes: Int): Int
 
 }

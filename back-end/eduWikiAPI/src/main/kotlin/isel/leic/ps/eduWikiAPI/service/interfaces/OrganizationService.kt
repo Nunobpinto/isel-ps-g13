@@ -14,27 +14,27 @@ interface OrganizationService {
 
     fun getAllOrganizations(): List<Organization>
 
-    fun createOrganization(organizationInputModel: OrganizationInputModel) : Optional<Organization>
+    fun createOrganization(organizationInputModel: OrganizationInputModel) : Organization
 
     fun deleteOrganization(organizationId: Int): Int
 
     fun deleteAllOrganizations(): Int
 
-    fun updateOrganization(organizationId: Int, organizationInputModel: OrganizationInputModel): Int
+    fun updateOrganization(organizationId: Int, organizationInputModel: OrganizationInputModel): Organization
 
     fun getAllReportsOnOrganization(organizationId: Int): List<OrganizationReport>
 
     fun getSpecificReportOnOrganization(organizationId: Int, reportId: Int): Optional<OrganizationReport>
 
-    fun reportOrganization(organizationId: Int, input: OrganizationReportInputModel): Optional<OrganizationReport>
+    fun reportOrganization(organizationId: Int, input: OrganizationReportInputModel): OrganizationReport
 
     fun deleteAllReportsOnOrganization(organizationId: Int): Int
 
     fun deleteSpecificReportOnOrganization(organizationId: Int, reportId: Int): Int
 
-    fun voteOnOrganization(organizationId: Int, input: VoteInputModel): Int
+    fun voteOnOrganization(organizationId: Int, vote: VoteInputModel): Int
 
-    fun voteOnOrganizationReport(organizationId: Int, reportId: Int, input: VoteInputModel): Int
+    fun voteOnOrganizationReport(organizationId: Int, reportId: Int, vote: VoteInputModel): Int
 
     fun getAllVersionsOfOrganization(organizationId: Int): List<OrganizationVersion>
 
@@ -44,5 +44,5 @@ interface OrganizationService {
 
     fun deleteSpecificVersionOfOrganization(organizationId: Int, version: Int): Int
 
-    fun updateReportedOrganization(organizationId: Int, reportId: Int)
+    fun updateReportedOrganization(organizationId: Int, reportId: Int): Organization
 }

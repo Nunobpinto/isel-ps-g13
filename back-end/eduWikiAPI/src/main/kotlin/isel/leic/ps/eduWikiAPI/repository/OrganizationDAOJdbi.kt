@@ -56,7 +56,8 @@ interface OrganizationDAOJdbi : OrganizationDAO {
                     "$ORGANIZATION_TIMESTAMP = :organization.timestamp " +
                     "WHERE $ORGANIZATION_ID = :organization.organizationId"
     )
-    override fun updateOrganization(organization: Organization): Int
+    @GetGeneratedKeys
+    override fun updateOrganization(organization: Organization): Organization
 
     @SqlUpdate(
             "INSERT INTO $ORGANIZATION_TABLE (" +
@@ -75,17 +76,10 @@ interface OrganizationDAOJdbi : OrganizationDAO {
     override fun createOrganization(organization: Organization): Organization
 
     @SqlQuery("SELECT $ORGANIZATION_VOTES FROM $ORGANIZATION_TABLE WHERE $ORGANIZATION_ID = :organizationId")
-    fun getVotesOnOrganization(organizationId: Int): Int
+    override fun getVotesOnOrganization(organizationId: Int): Int
 
     @SqlQuery("UPDATE  $ORGANIZATION_TABLE SET $ORGANIZATION_VOTES = :votes WHERE $ORGANIZATION_ID = :organizationId")
-    fun updateOrganizationVotes(organizationId: Int, vote: Int): Int
-
-    @Transaction
-    override fun voteOnOrganization(organizationId: Int, vote: Vote): Int {
-        var votes = getVotesOnOrganization(organizationId)
-        votes = if(vote == Vote.Down) -- votes else ++ votes
-        return updateOrganizationVotes(organizationId, votes)
-    }
+    override fun updateVotesOnOrganization(organizationId: Int, votes: Int): Int
 
     @SqlUpdate(
             "INSERT INTO $ORGANIZATION_REPORT_TABLE( " +
@@ -102,13 +96,13 @@ interface OrganizationDAOJdbi : OrganizationDAO {
                     ":organizationReport.votes, :organizationReport.timestamp)"
     )
     @GetGeneratedKeys
-    override fun reportOrganization(organizationReport: OrganizationReport): Optional<OrganizationReport>
+    override fun reportOrganization(organizationReport: OrganizationReport): OrganizationReport
 
     @SqlUpdate("DELETE FROM $ORGANIZATION_REPORT_TABLE WHERE $ORGANIZATION_ID = :organizationId")
     override fun deleteAllReportsOnOrganization(organizationId: Int): Int
 
     @SqlUpdate("DELETE FROM $ORGANIZATION_REPORT_TABLE WHERE $ORGANIZATION_REPORT_ID = :reportId")
-    override fun deleteReportOnOrganization(reportId: Int): Int
+    override fun deleteSpecificReportOnOrganization(reportId: Int): Int
 
     @SqlQuery("SELECT * FROM $ORGANIZATION_REPORT_TABLE WHERE $ORGANIZATION_ID = :organizationId")
     override fun getAllReportsOnOrganization(organizationId: Int): List<OrganizationReport>
@@ -117,16 +111,10 @@ interface OrganizationDAOJdbi : OrganizationDAO {
     override fun getSpecificReportOnOrganization(organizationId: Int, reportId: Int): Optional<OrganizationReport>
 
     @SqlQuery("SELECT $ORGANIZATION_VOTES FROM $ORGANIZATION_REPORT_TABLE WHERE $ORGANIZATION_REPORT_ID = :reportId AND $ORGANIZATION_ID = :organizationId")
-    fun getVotesOnOrganizationReport(organizationId: Int, reportId: Int): Int
+    override fun getVotesOnOrganizationReport(organizationId: Int, reportId: Int): Int
 
     @SqlQuery("UPDATE $ORGANIZATION_REPORT_TABLE SET $ORGANIZATION_VOTES = :votes WHERE $ORGANIZATION_REPORT_ID = :reportId AND $ORGANIZATION_ID = :organizationId")
-    fun updateOrganizationReportVotes(organizationId: Int, reportId: Int, votes: Int): Int
-
-    override fun voteOnOrganizationReport(organizationId: Int, reportId: Int, vote: Vote): Int {
-        var votes = getVotesOnOrganizationReport(organizationId, reportId)
-        votes = if(vote == Vote.Down) -- votes else ++ votes
-        return updateOrganizationReportVotes(organizationId, reportId, votes)
-    }
+    override fun updateVotesOnOrganizationReport(organizationId: Int, reportId: Int, votes: Int): Int
 
     @SqlQuery("SELECT * FROM $ORGANIZATION_VERSION_TABLE WHERE $ORGANIZATION_ID = :organizationId")
     override fun getAllVersionsOfOrganization(organizationId: Int): List<OrganizationVersion>
@@ -149,5 +137,20 @@ interface OrganizationDAOJdbi : OrganizationDAO {
                     ":version.address, :version.contact, :version.timestamp)"
     )
     @GetGeneratedKeys
-    override fun createVersion(version: OrganizationVersion): OrganizationVersion
+    override fun createOrganizationVersion(version: OrganizationVersion): OrganizationVersion
+
+    @SqlUpdate(
+            "DELETE FROM $ORGANIZATION_VERSION_TABLE WHERE $ORGANIZATION_ID = :organizationId"
+    )
+    override fun deleteAllOrganizationVersions(organizationId: Int): Int
+
+    @SqlUpdate(
+            "DELETE FROM $ORGANIZATION_VERSION_TABLE WHERE $ORGANIZATION_ID = :organizationId AND $ORGANIZATION_VERSION = :version"
+    )
+    override fun deleteSpecificVersionOfOrganization(organizationId: Int, version: Int): Int
+
+    @SqlUpdate(
+            "DELETE FROM $ORGANIZATION_REPORT_TABLE WHERE $ORGANIZATION_ID = :organizationId AND $ORGANIZATION_REPORT_ID = :reportId"
+    )
+    override fun deleteReportOnOrganization(organizationId: Int, reportId: Int): Int
 }

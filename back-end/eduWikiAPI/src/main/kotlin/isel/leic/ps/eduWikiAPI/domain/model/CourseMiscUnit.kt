@@ -6,7 +6,7 @@ import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UN
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_TERM_ID
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 
-class CourseMiscUnit(
+data class CourseMiscUnit(
         @ColumnName(COURSE_MISC_UNIT_ID)
         val courseMiscUnitId: Int = -1,
         @ColumnName(COURSE_MISC_UNIT_TYPE)

@@ -3,10 +3,12 @@ package isel.leic.ps.eduWikiAPI.repository
 import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
+import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseMiscUnitStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseProgrammeVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_TYPE
 import isel.leic.ps.eduWikiAPI.repository.TermDAOJdbi.Companion.TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.TermDAOJdbi.Companion.TERM_SHORT_NAME
 import isel.leic.ps.eduWikiAPI.repository.TermDAOJdbi.Companion.TERM_TABLE
@@ -20,6 +22,7 @@ import org.jdbi.v3.sqlobject.statement.SqlQuery
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
+import java.sql.Timestamp
 import java.util.*
 
 interface CourseDAOJdbi : CourseDAO {
@@ -125,16 +128,17 @@ interface CourseDAOJdbi : CourseDAO {
     @GetGeneratedKeys
     override fun createCourse(course: Course): Course
 
-    override fun voteOnCourse(courseId: Int, vote: Vote): Int {
-        var votes = handle.createQuery("SELECT $COURSE_VOTES FROM $COURSE_TABLE WHERE $COURSE_ID = :courseId")
-                .bind("courseId", courseId)
-                .mapTo(Int::class.java).findOnly()
-        votes = if (vote == Vote.Down) --votes else ++votes
-        return handle.createUpdate("UPDATE $COURSE_TABLE SET $COURSE_VOTES = :votes WHERE $COURSE_ID = :courseId")
-                .bind("votes", votes)
-                .bind("courseId", courseId)
-                .execute()
-    }
+    @SqlQuery(
+            "SELECT $COURSE_VOTES FROM $COURSE_TABLE " +
+                    "WHERE $COURSE_ID = :courseId"
+    )
+    override fun getVotesOnCourse(courseId: Int): Int
+
+    @SqlUpdate(
+            "UPDATE $COURSE_TABLE SET $COURSE_VOTES = :votes " +
+                    "WHERE $COURSE_ID = :courseId"
+    )
+    override fun updateVotesOnCourse(courseId: Int, votes: Int): Int
 
     @SqlUpdate(
             "DELETE FROM $COURSE_STAGE_TABLE WHERE $COURSE_STAGE_ID = :courseStageId"
@@ -159,18 +163,19 @@ interface CourseDAOJdbi : CourseDAO {
                     ":courseStage.createdBy, :courseStage.votes, :courseStage.timestamp)"
     )
     @GetGeneratedKeys
-    override fun createStagedCourse(courseStage: CourseStage): CourseStage
+    override fun createStagingCourse(courseStage: CourseStage): CourseStage
 
-    override fun voteOnStagedCourse(stageId: Int, inputVote: Vote): Int {
-        var votes = handle.createQuery("SELECT $COURSE_VOTES FROM $COURSE_STAGE_TABLE WHERE $COURSE_STAGE_ID = :courseId")
-                .bind("courseId", stageId)
-                .mapTo(Int::class.java).findOnly()
-        votes = if (inputVote == Vote.Down) --votes else ++votes
-        return handle.createUpdate("UPDATE $COURSE_STAGE_TABLE SET $COURSE_VOTES = :votes WHERE $COURSE_STAGE_ID = :courseId")
-                .bind("votes", votes)
-                .bind("courseId", stageId)
-                .execute()
-    }
+    @SqlQuery(
+            "SELECT $COURSE_VOTES FROM $COURSE_STAGE_TABLE " +
+                    "WHERE $COURSE_STAGE_ID = :stageId"
+    )
+    override fun getVotesOnStagedCourse(stageId: Int): Int
+
+    @SqlUpdate(
+            "UPDATE $COURSE_STAGE_TABLE SET $COURSE_VOTES = :votes " +
+                    "WHERE $COURSE_STAGE_ID = :stageId"
+    )
+    override fun updateVotesOnStagedCourse(stageId: Int, votes: Int): Int
 
     @SqlUpdate(
             "DELETE FROM $COURSE_VERSION_TABLE " +
@@ -256,16 +261,17 @@ interface CourseDAOJdbi : CourseDAO {
     )
     override fun getSpecificTermOfCourse(courseId: Int, termId: Int): Optional<Term>
 
-    override fun voteOnReportOfCourse(reportId: Int, vote: Vote): Int {
-        var votes = handle.createQuery("SELECT $COURSE_VOTES FROM $COURSE_REPORT_TABLE WHERE $COURSE_REPORT_ID = :reportId")
-                .bind("reportId", reportId)
-                .mapTo(Int::class.java).findOnly()
-        votes = if (vote == Vote.Down) --votes else ++votes
-        return handle.createUpdate("UPDATE $COURSE_REPORT_TABLE SET $COURSE_VOTES = :votes WHERE $COURSE_REPORT_ID = :reportId")
-                .bind("votes", votes)
-                .bind("reportId", reportId)
-                .execute()
-    }
+    @SqlQuery(
+            "SELECT $COURSE_VOTES FROM $COURSE_REPORT_TABLE " +
+                    "WHERE $COURSE_REPORT_ID = :reportId"
+    )
+    override fun getVotesOnReportedCourse(reportId: Int): Int
+
+    @SqlUpdate(
+            "UPDATE $COURSE_REPORT_TABLE SET $COURSE_VOTES = :votes " +
+                    "WHERE $COURSE_REPORT_ID = :reportId"
+    )
+    override fun updateVotesOnReportedCourse(reportId: Int, votes: Int): Int
 
     @SqlQuery(
             "SELECT cp.$COURSE_PROGRAMME_COURSE_ID, " +
@@ -338,7 +344,11 @@ interface CourseDAOJdbi : CourseDAO {
                     ":courseProgrammeReport.reportedBy, :courseProgrammeReport.votes)"
     )
     @GetGeneratedKeys
-    override fun reportSpecificCourseOnProgramme(programmeId: Int, courseId: Int, courseProgrammeReport: CourseProgrammeReport): CourseProgrammeReport
+    override fun reportSpecificCourseOnProgramme(
+            programmeId: Int,
+            courseId: Int,
+            courseProgrammeReport: CourseProgrammeReport
+    ): CourseProgrammeReport
 
     @SqlUpdate(
             "DELETE FROM $COURSE_VERSION_TABLE WHERE $COURSE_ID = :courseId"
@@ -374,29 +384,20 @@ interface CourseDAOJdbi : CourseDAO {
     @GetGeneratedKeys
     override fun createCourseVersion(courseVersion: CourseVersion): CourseVersion
 
-    override fun voteOnCourseProgramme(programmeId: Int, courseId: Int, vote: Vote): Int {
-        var votes = handle.createQuery(
-                "SELECT $COURSE_VOTES FROM $COURSE_PROGRAMME_TABLE " +
-                        "WHERE $COURSE_PROGRAMME_COURSE_ID = :courseId " +
-                        "AND $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId"
-        )
-                .bind("courseId", courseId)
-                .bind("programmeId", programmeId)
-                .mapTo(Int::class.java)
-                .findOnly()
-        votes = if (vote == Vote.Down) --votes else ++votes
+    @SqlQuery(
+            "SELECT $COURSE_VOTES FROM $COURSE_PROGRAMME_TABLE " +
+                    "WHERE $COURSE_PROGRAMME_COURSE_ID = :courseId " +
+                    "AND $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId"
+    )
+    override fun getVotesOnCourseProgramme(programmeId: Int, courseId: Int): Int
 
-        return handle.createUpdate(
-                "UPDATE $COURSE_PROGRAMME_TABLE SET " +
-                        "$COURSE_PROGRAMME_VOTES = :votes " +
-                        "WHERE $COURSE_PROGRAMME_COURSE_ID = :courseId " +
-                        "AND $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId"
-        )
-                .bind("votes", votes)
-                .bind("courseId", courseId)
-                .bind("programmeId", programmeId)
-                .execute()
-    }
+    @SqlUpdate(
+            "UPDATE $COURSE_PROGRAMME_TABLE SET " +
+                    "$COURSE_PROGRAMME_VOTES = :votes " +
+                    "WHERE $COURSE_PROGRAMME_COURSE_ID = :courseId " +
+                    "AND $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId"
+    )
+    override fun updateVotesOnCourseProgramme(programmeId: Int, courseId: Int, votes: Int) : Int
 
     @SqlUpdate(
             "UPDATE $COURSE_PROGRAMME_TABLE SET " +
@@ -445,29 +446,20 @@ interface CourseDAOJdbi : CourseDAO {
     )
     override fun deleteStagedCourseProgramme(stageId: Int): Int
 
-    override fun voteOnStagedCourseProgramme(programmeId: Int, stageId: Int, vote: Vote): Int {
-        var votes = handle.createQuery(
-                "SELECT $COURSE_VOTES FROM $COURSE_PROGRAMME_STAGE_TABLE " +
-                        "WHERE $COURSE_PROGRAMME_STAGE_ID = :stageId " +
-                        "AND $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId"
-        )
-                .bind("stageId", stageId)
-                .bind("programmeId", programmeId)
-                .mapTo(Int::class.java)
-                .findOnly()
-        votes = if (vote == Vote.Down) --votes else ++votes
+    @SqlQuery(
+            "SELECT $COURSE_VOTES FROM $COURSE_PROGRAMME_STAGE_TABLE " +
+                    "WHERE $COURSE_PROGRAMME_STAGE_ID = :stageId " +
+                    "AND $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId"
+    )
+    override fun getVotesOnStagedCourseProgramme(programmeId: Int, stageId: Int): Int
 
-        return handle.createUpdate(
-                "UPDATE $COURSE_PROGRAMME_STAGE_TABLE " +
-                        "SET $COURSE_PROGRAMME_VOTES = :votes " +
-                        "WHERE $COURSE_PROGRAMME_STAGE_ID = :stageId " +
-                        "AND $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId"
-        )
-                .bind("votes", votes)
-                .bind("stageId", stageId)
-                .bind("programmeId", programmeId)
-                .execute()
-    }
+    @SqlUpdate(
+            "UPDATE $COURSE_PROGRAMME_STAGE_TABLE " +
+                    "SET $COURSE_PROGRAMME_VOTES = :votes " +
+                    "WHERE $COURSE_PROGRAMME_STAGE_ID = :stageId " +
+                    "AND $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId"
+    )
+    override fun updateVotesOnStagedCourseProgramme(programmeId: Int, stageId: Int, votes: Int): Int
 
     @SqlQuery(
             "SELECT * FROM $COURSE_PROGRAMME_VERSION_TABLE " +
@@ -525,33 +517,22 @@ interface CourseDAOJdbi : CourseDAO {
     )
     override fun deleteReportOnCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int
 
-    override fun voteOnReportOfCourseProgramme(programmeId: Int, courseId: Int, reportId: Int, vote: Vote): Int {
-        var votes = handle.createQuery(
-                "SELECT $COURSE_PROGRAMME_VOTES FROM $COURSE_PROGRAMME_REPORT_TABLE " +
-                        "WHERE $COURSE_PROGRAMME_REPORT_ID = :reportId " +
-                        "AND $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId " +
-                        "AND $COURSE_PROGRAMME_COURSE_ID = :courseId"
-        )
-                .bind("reportId", reportId)
-                .bind("programmeId", programmeId)
-                .bind("courseId", courseId)
-                .mapTo(Int::class.java)
-                .findOnly()
-        votes = if (vote == Vote.Down) --votes else ++votes
+    @SqlQuery(
+            "SELECT $COURSE_PROGRAMME_VOTES FROM $COURSE_PROGRAMME_REPORT_TABLE " +
+                    "WHERE $COURSE_PROGRAMME_REPORT_ID = :reportId " +
+                    "AND $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId " +
+                    "AND $COURSE_PROGRAMME_COURSE_ID = :courseId"
+    )
+    override fun getVotesOnReportedCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int
 
-        return handle.createUpdate(
-                "UPDATE $COURSE_PROGRAMME_REPORT_TABLE " +
-                        "SET $COURSE_PROGRAMME_VOTES = :votes " +
-                        "WHERE $COURSE_PROGRAMME_REPORT_ID = :reportId " +
-                        "AND $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId " +
-                        "AND $COURSE_PROGRAMME_COURSE_ID = :courseId"
-        )
-                .bind("votes", votes)
-                .bind("reportId", reportId)
-                .bind("programmeId", programmeId)
-                .bind("courseId", courseId)
-                .execute()
-    }
+    @SqlUpdate(
+            "UPDATE $COURSE_PROGRAMME_REPORT_TABLE " +
+                    "SET $COURSE_PROGRAMME_VOTES = :votes " +
+                    "WHERE $COURSE_PROGRAMME_REPORT_ID = :reportId " +
+                    "AND $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId " +
+                    "AND $COURSE_PROGRAMME_COURSE_ID = :courseId"
+    )
+    override fun updateVotesOnReportedCourseProgramme(programmeId: Int, courseId: Int, reportId: Int, votes: Int): Int
 
     @SqlQuery(
             "SELECT * FROM $COURSE_PROGRAMME_STAGE_TABLE " +
@@ -590,6 +571,66 @@ interface CourseDAOJdbi : CourseDAO {
     )
     override fun deleteSpecificReportOfCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int
 
+    @SqlUpdate(
+            "INSERT INTO $COURSE_MISC_UNIT_TABLE ( " +
+                    "$COURSE_MISC_UNIT_TYPE, " +
+                    "$COURSE_MISC_UNIT_COURSE_ID, " +
+                    "$COURSE_MISC_UNIT_TERM_ID " +
+                    ") " +
+                    "values(:miscType, :courseId, :termId)"
+    )
+    @GetGeneratedKeys
+    override fun createCourseMiscUnit(courseId: Int, termId: Int, miscType: String): CourseMiscUnit
+
+    @SqlUpdate(
+            "INSERT INTO $COURSE_TERM_TABLE ( " +
+                    "$COURSE_TERM_COURSE_ID, " +
+                    "$COURSE_TERM_TERM_ID, " +
+                    "$COURSE_TERM_TIMESTAMP " +
+                    ") " +
+                    "values(:courseId, :termId, :timestamp)"
+    )
+    @GetGeneratedKeys
+    override fun createCourseTerm(courseId: Int, termId: Int, timestamp: Timestamp): CourseTerm
+
+    @SqlUpdate(
+            "INSERT INTO $COURSE_MISC_UNIT_STAGE_TABLE ( " +
+                    "$COURSE_MISC_UNIT_COURSE_ID, " +
+                    "$COURSE_MISC_UNIT_TERM_ID, " +
+                    "$COURSE_MISC_UNIT_TYPE " +
+                    ") " +
+                    "values(:courseId, :termId, :miscType:)"
+    )
+    @GetGeneratedKeys
+    override fun createStagingCourseMiscUnit(courseId: Int, termId: Int, miscType: String): CourseMiscUnitStage
+
+    @SqlUpdate(
+            "DELETE FROM $COURSE_MISC_UNIT_TABLE " +
+                    "WHERE $COURSE_MISC_UNIT_ID = :courseMiscUnitId"
+    )
+    override fun deleteSpecificCourseMiscUnitEntry(courseMiscUnitId: Int): Int
+
+
+    @SqlUpdate(
+            "DELETE FROM $COURSE_MISC_UNIT_TABLE " +
+                    "WHERE $COURSE_MISC_UNIT_COURSE_ID = :courseId " +
+                    "AND $COURSE_MISC_UNIT_TERM_ID = :termId " +
+                    "AND $COURSE_MISC_UNIT_TYPE = :miscType"
+    )
+    override fun deleteAllCourseMiscUnitsFromTypeOfCourseInTerm(courseId: Int, termId: Int, miscType: String): Int
+
+    @SqlUpdate(
+            "DELETE FROM $COURSE_MISC_UNIT_STAGE_TABLE " +
+                    "WHERE $COURSE_MISC_UNIT_COURSE_ID = :courseId " +
+                    "AND $COURSE_MISC_UNIT_TERM_ID = :termId " +
+                    "AND $COURSE_MISC_UNIT_TYPE  = miscType"
+    )
+    override fun deleteAllStagedCourseMiscUnitsFromTypeOfCourseInTerm(courseId: Int, termId: Int, miscType: String): Int
+
+    @SqlUpdate(
+            "DELETE FROM $COURSE_MISC_UNIT_STAGE_TABLE " +
+                    "WHERE $COURSE_MISC_UNIT_COURSE_ID = :stageId"
+    )
+    override fun deleteSpecificStagedCourseMiscUnitEntry(stageId: Int): Int
+
 }
-
-
