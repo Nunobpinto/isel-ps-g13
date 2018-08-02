@@ -4,6 +4,8 @@ import Layout from './Layout'
 import OrganizationReports from './OrganizationReports'
 import ReportOrganization from './ReportOrganization'
 import {Row, Col, Card, Button, Tooltip, Popover} from 'antd'
+import Cookies from 'universal-cookie'
+const cookies = new Cookies()
 
 export default class extends React.Component {
   constructor (props) {
@@ -48,7 +50,8 @@ export default class extends React.Component {
       method: 'POST',
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + cookies.get('auth')
       },
       body: JSON.stringify(voteInput)
     }
@@ -75,7 +78,8 @@ export default class extends React.Component {
       method: 'POST',
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + cookies.get('auth')
       },
       body: JSON.stringify(voteInput)
     }
@@ -151,7 +155,8 @@ export default class extends React.Component {
     const url = 'http://localhost:8080/organizations'
     const headers = {
       headers: {
-        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*',
+        'Authorization': 'Basic ' + cookies.get('auth')
       }
     }
     fetch(url, headers)
@@ -185,7 +190,8 @@ export default class extends React.Component {
         method: 'POST',
         headers: {
           'Access-Control-Allow-Origin': '*',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': 'Basic ' + cookies.get('auth')
         },
         body: JSON.stringify(data)
       }

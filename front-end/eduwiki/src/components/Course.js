@@ -4,6 +4,8 @@ import {Link} from 'react-router-dom'
 import MyLayout from './Layout'
 import Term from './Term'
 import {Button, Card, Col, Row, Tooltip, Menu, Layout} from 'antd'
+import Cookies from 'universal-cookie'
+const cookies = new Cookies()
 
 const { Content, Sider } = Layout
 const { SubMenu } = Menu
@@ -30,11 +32,15 @@ export default class extends React.Component {
       examError: undefined,
       workAssignmentError: undefined,
       voteUp: false,
-      voteDown: false
+      voteDown: false,
+      followCourseFlag: false,
+      unFollowCourseFlag: false
     }
     this.voteUp = this.voteUp.bind(this)
     this.voteDown = this.voteDown.bind(this)
     this.showTerm = this.showTerm.bind(this)
+    this.followCourse = this.followCourse.bind(this)
+    this.unFollowCourse = this.unFollowCourse.bind(this)
   }
 
   showTerm (term) {
@@ -59,6 +65,14 @@ export default class extends React.Component {
                   <Tooltip placement='bottom' title={`Vote Down on ${this.state.short_name}`}>
                     <Button id='dislike_btn' shape='circle' icon='dislike' onClick={() => this.setState({voteDown: true})} />
                   </Tooltip>
+                  {this.state.userFollowing
+                    ? <Tooltip placement='bottom' title={'UnFollow this Course'}>
+                      <Button icon='close-circle' onClick={() => this.setState({unFollowCourseFlag: true})} />
+                    </Tooltip>
+                    : <Tooltip placement='bottom' title={'Follow this Course'}>
+                      <Button icon='heart-o' onClick={() => this.setState({followCourseFlag: true})} />
+                    </Tooltip>
+                  }
                 </p>
                 {this.state.termError
                   ? <p>this.state.termError </p>
@@ -107,7 +121,8 @@ export default class extends React.Component {
       method: 'POST',
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + cookies.get('auth')
       },
       body: JSON.stringify(voteInput)
     }
@@ -134,7 +149,8 @@ export default class extends React.Component {
       method: 'POST',
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + cookies.get('auth')
       },
       body: JSON.stringify(voteInput)
     }
@@ -154,7 +170,10 @@ export default class extends React.Component {
     const id = this.props.match.params.id
     const uri = 'http://localhost:8080/courses/' + id
     const header = {
-      headers: { 'Access-Control-Allow-Origin': '*' }
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Authorization': 'Basic ' + cookies.get('auth')
+      }
     }
     fetch(uri, header)
       .then(resp => {
@@ -167,7 +186,7 @@ export default class extends React.Component {
         }
         throw new Error(`unexpected content type ${ct}`)
       })
-      .then(([resp, json]) => {
+      .then(json => {
         const termsUri = `http://localhost:8080/courses/${json.courseId}/terms`
         fetch(termsUri, header)
           .then(resp => {
@@ -180,15 +199,28 @@ export default class extends React.Component {
             }
             throw new Error(`unexpected content type ${ct}`)
           })
-          .then(terms =>
-            this.setState({
-              full_name: json.fullName,
-              short_name: json.shortName,
-              createdBy: json.createdBy,
-              timestamp: json.timestamp,
-              votes: json.votes,
-              terms: terms
-            }))
+          .then(terms => {
+            const userCoursesUri = 'http://localhost:8080/user/courses'
+            fetch(userCoursesUri, header)
+              .then(resp => {
+                if(resp.status >= 400) {
+                  throw new Error('Erro')
+                }
+                return resp.json()
+              })
+              .then(userCourses => 
+                this.setState({
+                  full_name: json.fullName,
+                  short_name: json.shortName,
+                  createdBy: json.createdBy,
+                  timestamp: json.timestamp,
+                  id: json.courseId,
+                  votes: json.votes,
+                  terms: terms,
+                  userFollowing: (userCourses.find(course => course.courseId === json.courseId))
+                })
+              )
+          })
           .catch(err => {
             this.setState({termError: err})
           })
@@ -200,11 +232,55 @@ export default class extends React.Component {
       })
   }
 
+  followCourse () {
+    const data = {
+      'course_id': this.state.courseId
+    }
+    const options = {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + cookies.get('auth')
+
+      }
+    }
+    fetch('http://localhost:8080/user/courses', options)
+      .then(resp => {
+        if (resp.status >= 400){
+          throw new Error(`Can´t follow this Course`)
+        }
+        return resp.json()
+      })
+      .then(_=>this.setState({followProgrammeFlag: false}))
+  }
+
+  unFollowCourse () {
+    const options = {
+      method: 'DELETE',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Authorization': 'Basic ' + cookies.get('auth')
+
+      }
+    }
+    fetch('http://localhost:8080/user/courses/' + this.state.courseId, options)
+      .then(resp => {
+        if (resp.status >= 400)
+      })
+      .then(_=>this.setState({unFollowCourseFlag: false}))
+  }
+
   componentDidUpdate () {
     if (this.state.voteUp) {
       this.voteUp()
     } else if (this.state.voteDown) {
       this.voteDown()
+    } else if (this.state.followCourseFlag) {
+      this.followCourse()
+    } else if (this.state.unFollowCourseFlag) {
+      this.unFollowCourse()
     }
   }
 }

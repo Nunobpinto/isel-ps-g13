@@ -1,12 +1,24 @@
 import React from 'react'
 import Login from './Login'
 import { Link } from 'react-router-dom'
+import Cookies from 'universal-cookie'
+import UserPage from './UserPage'
+import Layout from './Layout'
+const cookies = new Cookies()
 
 export default (props) => {
+  const authCookie = cookies.get('auth')
+  if (authCookie) {
+    return (
+      <Layout>
+        <UserPage auth={authCookie} />
+      </Layout>
+    )
+  }
   return (
     <div>
       <img alt='EduWiki Logo' id='home-logo' src='logo_color.png' />
-      <Login />
+      <Login history={props.history} />
       <h1>Current web pages</h1>
       <ul>
         <li>
@@ -17,6 +29,9 @@ export default (props) => {
         </li>
         <li>
           <Link to={{pathname: '/courses'}}>Courses</Link>
+        </li>
+        <li>
+          <Link to={{pathname: '/classes'}}>Courses</Link>
         </li>
       </ul>
     </div>

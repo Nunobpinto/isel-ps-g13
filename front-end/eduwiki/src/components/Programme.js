@@ -6,8 +6,8 @@ import ReportProgramme from './ReportProgramme'
 import ProgrammeReports from './ProgrammeReports'
 import CourseProgramme from './CourseProgramme'
 import {Row, Col, Card, Button, Tooltip, Popover, Input, InputNumber, Form, Select} from 'antd'
-
-const FormItem = Form.Item
+import Cookies from 'universal-cookie'
+const cookies = new Cookies()
 
 export default class extends React.Component {
   constructor (props) {
@@ -26,12 +26,18 @@ export default class extends React.Component {
       voteUp: false,
       voteDown: false,
       progError: undefined,
-      courseError: undefined
+      courseError: undefined,
+      userFollowing: false,
+      unFollowProgrammeFlag: false,
+      followProgrammeFlag: false,
+      canBeFollowed: false
     }
     this.voteUp = this.voteUp.bind(this)
     this.voteDown = this.voteDown.bind(this)
     this.fetchOtherCourses = this.fetchOtherCourses.bind(this)
     this.addCourseToProgramme = this.addCourseToProgramme.bind(this)
+    this.followProgramme = this.followProgramme.bind(this)
+    this.unFollowProgramme = this.unFollowProgramme.bind(this)
   }
 
   render () {
@@ -57,7 +63,16 @@ export default class extends React.Component {
               Show all Reports On This Programme
             </Button>
           </Popover>
-
+          {this.state.canBeFollowed &&
+            <Tooltip placement='bottom' title={'Follow this programme'}>
+              <Button icon='heart' onClick={() => this.setState({followProgrammeFlag: true})} />
+            </Tooltip>
+          }
+          {this.state.userFollowing &&
+            <Tooltip placement='bottom' title={'UnFollow this programme'}>
+            <Button icon='close-circle' onClick={() => this.setState({unFollowProgrammeFlag: true})} />
+          </Tooltip>
+          }
         </p>
         <div style={{ padding: '20px' }}>
           <Row gutter={16}>
@@ -128,7 +143,8 @@ export default class extends React.Component {
       method: 'POST',
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + cookies.get('auth')
       },
       body: JSON.stringify(data)
     }
@@ -170,7 +186,8 @@ export default class extends React.Component {
       method: 'POST',
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + cookies.get('auth')
       },
       body: JSON.stringify(voteInput)
     }
@@ -197,7 +214,8 @@ export default class extends React.Component {
       method: 'POST',
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + cookies.get('auth')
       },
       body: JSON.stringify(voteInput)
     }
@@ -216,7 +234,10 @@ export default class extends React.Component {
   fetchOtherCourses () {
     const uri = 'http://localhost:8080/courses'
     const header = {
-      headers: { 'Access-Control-Allow-Origin': '*' }
+      headers: { 
+        'Access-Control-Allow-Origin': '*',
+        'Authorization': 'Basic ' + cookies.get('auth') 
+      }
     }
     fetch(uri, header)
       .then(resp => {
@@ -243,7 +264,10 @@ export default class extends React.Component {
     const id = this.props.match.params.id
     const uri = 'http://localhost:8080/programmes/' + id
     const header = {
-      headers: { 'Access-Control-Allow-Origin': '*' }
+      headers: { 
+        'Access-Control-Allow-Origin': '*' ,
+        'Authorization': 'Basic ' + cookies.get('auth')
+      }
     }
     fetch(uri, header)
       .then(resp => {
@@ -269,20 +293,45 @@ export default class extends React.Component {
             }
             throw new Error(`unexpected content type ${ct}`)
           })
-          .then(courses =>
-            this.setState({
-              full_name: json.fullName,
-              short_name: json.shortName,
-              academic_degree: json.academicDegree,
-              total_credits: json.totalCredits,
-              duration: json.duration,
-              createdBy: json.createdBy,
-              timestamp: json.timestamp,
-              votes: json.votes,
-              progError: undefined,
-              courseError: undefined,
-              courses: courses
-            })
+          .then(courses => {
+            const userProgrammeUri = 'http://localhost:8080/user/programme'
+            fetch(userProgrammeUri, header)
+              .then(resp => {
+                if(resp.status >= 400)
+                  return this.setState({
+                    full_name: json.fullName,
+                    short_name: json.shortName,
+                    academic_degree: json.academicDegree,
+                    total_credits: json.totalCredits,
+                    id: json.programmeId,
+                    duration: json.duration,
+                    createdBy: json.createdBy,
+                    timestamp: json.timestamp,
+                    votes: json.votes,
+                    progError: undefined,
+                    courseError: undefined,
+                    courses: courses
+                  })
+                return resp.json()
+              })
+              .then(userProgramme => 
+                this.setState({
+                  full_name: json.fullName,
+                  short_name: json.shortName,
+                  academic_degree: json.academicDegree,
+                  total_credits: json.totalCredits,
+                  id: json.programmeId,
+                  duration: json.duration,
+                  createdBy: json.createdBy,
+                  timestamp: json.timestamp,
+                  votes: json.votes,
+                  progError: undefined,
+                  courseError: undefined,
+                  courses: courses,
+                  canBeFollowed: (userProgramme.programmeId !== json.programmeId),
+                  userFollowing: (userProgramme.programmeId === json.programmeId)
+                })
+              )}
           )
           .catch(err => this.setState({courseError: err}))
       })
@@ -291,6 +340,44 @@ export default class extends React.Component {
           progError: error
         })
       })
+  }
+
+  unFollowProgramme () {
+    const options = {
+      method: 'DELETE',
+      body: JSON.stringify(data),
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Authorization': 'Basic ' + cookies.get('auth')
+
+      }
+    }
+    fetch('http://localhost:8080/user/programme', options)
+      .then(resp => {
+        if (resp.status >= 400)
+      })
+      .then(_=>this.setState({unFollowProgrammeFlag: false}))
+  }
+
+  followProgramme () {
+    const data = {
+      'programme_id': this.state.programmeId
+    }
+    const options = {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + cookies.get('auth')
+
+      }
+    }
+    fetch('http://localhost:8080/user/programme', options)
+      .then(resp => {
+        if (resp.status >= 400)
+      })
+      .then(_=>this.setState({followProgrammeFlag: false}))
   }
 
   componentDidUpdate () {
@@ -302,6 +389,10 @@ export default class extends React.Component {
       this.fetchOtherCourses()
     } else if (this.state.addCourse) {
       this.addCourseToProgramme()
+    } else if (this.state.unFollowProgrammeFlag) {
+      this.unFollowProgramme()
+    } else if (this.state.followProgrammeFlag) {
+      this.followProgramme()
     }
   }
 }

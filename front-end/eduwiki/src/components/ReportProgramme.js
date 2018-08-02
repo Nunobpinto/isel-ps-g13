@@ -1,6 +1,8 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
 import {Input, Form, Button} from 'antd'
+import Cookies from 'universal-cookie'
+const cookies = new Cookies()
 
 export default class extends React.Component {
   constructor (props) {
@@ -72,7 +74,8 @@ export default class extends React.Component {
         method: 'POST',
         headers: {
           'Access-Control-Allow-Origin': '*',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': 'Basic ' + cookies.get('auth')
         },
         body: JSON.stringify(data)
       }

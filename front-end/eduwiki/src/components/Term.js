@@ -2,6 +2,8 @@ import React from 'react'
 import fetch from 'isomorphic-fetch'
 import {Layout, Menu, Card, Col, Row} from 'antd'
 import Exams from './Exams'
+import Cookies from 'universal-cookie'
+const cookies = new Cookies()
 
 const {Content} = Layout
 
@@ -91,7 +93,10 @@ export default class extends React.Component {
   fetchExams (courseId, termId) {
     const uri = `http://localhost:8080/courses/${courseId}/terms/${termId}/exams`
     const header = {
-      headers: { 'Access-Control-Allow-Origin': '*' }
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Authorization': 'Basic ' + cookies.get('auth')
+      }
     }
     fetch(uri, header)
       .then(resp => {
@@ -121,7 +126,10 @@ export default class extends React.Component {
   fetchWorkAssignments (courseId, termId) {
     const uri = `http://localhost:8080/courses/${courseId}/terms/${termId}/workAssignments`
     const header = {
-      headers: { 'Access-Control-Allow-Origin': '*' }
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Authorization': 'Basic ' + cookies.get('auth')
+      }
     }
     fetch(uri, header)
       .then(resp => {

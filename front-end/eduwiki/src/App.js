@@ -19,6 +19,8 @@ export default () => (
         <Route exact path='/programmes/:id' render={props => <Programme {...props} />} />
         <Route exact path='/courses' render={props => <Courses {...props} />} />
         <Route exact path='/courses/:id' render={props => <Course {...props} />} />
+        <Route exact path='/classes' render={props => <Courses {...props} />} />
+        <Route exact path='/classes/:id' render={props => <Course {...props} />} />
       </Switch>
     </BrowserRouter>
   </div>

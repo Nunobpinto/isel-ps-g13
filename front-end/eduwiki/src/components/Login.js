@@ -72,11 +72,12 @@ class LoginForm extends React.Component {
       </div>
     )
   }
+
   componentDidUpdate () {
     if (this.state.redirect) {
-      message.warning('Authentication not implemented yet')
-      cookies.set('auth', 'idi', {maxAge: 9999})
-      this.setState({redirect: false})
+      const credentials = Buffer.from(this.state.username + ':' + this.state.password).toString('base64')
+      cookies.set('auth', credentials, {maxAge: 9999})
+      this.props.history.push('/')
     }
   }
 }

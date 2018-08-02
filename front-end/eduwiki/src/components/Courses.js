@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom'
 import IconText from './IconText'
 import Layout from './Layout'
 import { Button, Input, Form, List, Card } from 'antd'
+import Cookies from 'universal-cookie'
+const cookies = new Cookies()
 
 export default class extends React.Component {
   constructor (props) {
@@ -134,7 +136,7 @@ export default class extends React.Component {
                 name='stagedNameFilter'
                 placeholder='Search name'
                 onChange={this.filterStagedByName}
-                
+
               />
               <List id='staged-list'
                 grid={{ gutter: 50, column: 2 }}
@@ -176,7 +178,10 @@ export default class extends React.Component {
   componentDidMount () {
     const uri = 'http://localhost:8080/courses/'
     const header = {
-      headers: { 'Access-Control-Allow-Origin': '*' }
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Authorization': 'Basic ' + cookies.get('auth')
+      }
     }
     fetch(uri, header)
       .then(resp => {
@@ -231,7 +236,8 @@ export default class extends React.Component {
       method: 'POST',
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + cookies.get('auth')
       },
       body: JSON.stringify(data)
     }

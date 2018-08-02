@@ -60,7 +60,6 @@ dependencies {
 	compile("org.jetbrains.kotlin:kotlin-reflect")
 	compile('io.springfox:springfox-swagger2:2.7.0')
 	compile('io.springfox:springfox-swagger-ui:2.7.0')
-	compile('com.googlecode.siren4j:siren4j:2.1.0')
 	compile group: 'org.springframework', name: 'spring-context-support', version: '5.0.1.RELEASE'
 	compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.0.3.RELEASE'
 	runtime('org.postgresql:postgresql')

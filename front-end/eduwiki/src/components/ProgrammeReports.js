@@ -2,6 +2,8 @@ import React from 'react'
 import fetch from 'isomorphic-fetch'
 import { List } from 'antd'
 import IconText from './IconText'
+import Cookies from 'universal-cookie'
+const cookies = new Cookies()
 
 export default class extends React.Component {
   constructor (props) {
@@ -63,7 +65,10 @@ export default class extends React.Component {
   componentDidMount () {
     const url = 'http://localhost:8080/programmes/' + this.state.progID + '/reports'
     const options = {
-      headers: { 'Access-Control-Allow-Origin': '*' }
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Authorization': 'Basic ' + cookies.get('auth') 
+      }
     }
     fetch(url, options)
       .then(resp => {
@@ -88,7 +93,8 @@ export default class extends React.Component {
       method: 'POST',
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + cookies.get('auth')
       },
       body: JSON.stringify(voteInput)
     }
@@ -121,7 +127,8 @@ export default class extends React.Component {
       method: 'POST',
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + cookies.get('auth')
       },
       body: JSON.stringify(voteInput)
     }
