@@ -1,21 +1,14 @@
 package isel.leic.ps.eduWikiAPI.domain.outputModel.single
 
-import com.google.code.siren4j.annotations.Siren4JEntity
-import com.google.code.siren4j.annotations.Siren4JProperty
-import com.google.code.siren4j.resource.BaseResource
+import com.fasterxml.jackson.annotation.JsonProperty
+import java.sql.Timestamp
 import java.time.LocalDate
-
-@Siren4JEntity(
-        name = "work_items",
-        suppressClassProperty = true,
-        uri = "/api/courses/{courseId}/terms/{termId}/workitems/{workItemId}",
-        links = []
-)
+import java.time.LocalDateTime
 
 class WorkAssignmentOutputModel(
         val workAssignmentId: Int = 0,
         val version: Int = 0,
-        @Siren4JProperty(name = "created_by")
+        @JsonProperty("createdBy")
         val username: String = "",
         val supplement: String = "",
         val dueDate: LocalDate = LocalDate.now(),
@@ -23,5 +16,6 @@ class WorkAssignmentOutputModel(
         val lateDelivery: Boolean = false,
         val multipleDeliveries: Boolean = false,
         val requiresReport: Boolean = false,
-        val votes: Int = 0
-) : BaseResource()
+        val votes: Int = 0,
+        val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
+)
