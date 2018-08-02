@@ -182,7 +182,7 @@ export default class extends React.Component {
         }
         const ct = resp.headers.get('content-type') || ''
         if (ct === 'application/json' || ct.startsWith('application/json;')) {
-          return resp.json().then(json => [resp, json])
+          return resp.json()
         }
         throw new Error(`unexpected content type ${ct}`)
       })
@@ -267,7 +267,9 @@ export default class extends React.Component {
     }
     fetch('http://localhost:8080/user/courses/' + this.state.courseId, options)
       .then(resp => {
-        if (resp.status >= 400)
+        if (resp.status >= 400){
+
+        }
       })
       .then(_=>this.setState({unFollowCourseFlag: false}))
   }

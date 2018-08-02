@@ -65,7 +65,7 @@ class UserServiceImpl : UserService {
 
     override fun getCoursesOfUser(username: String): List<Course> = jdbi.inTransaction<List<Course>, Exception> {
         val userDao = it.attach(UserDAOJdbi::class.java)
-        val courseDAO = it.attach(CourseDAOImpl::class.java)
+        val courseDAO = it.attach(CourseDAOJdbi::class.java)
         val coursesIds = userDao.getCoursesOfUser(username)
         coursesIds.map {
             courseDAO.getSpecificCourse(it).get()
@@ -75,7 +75,7 @@ class UserServiceImpl : UserService {
     override fun getClassesOfUser(username: String): List<Class> =
             jdbi.inTransaction<List<Class>, NotFoundException> {
                 val userDao = it.attach(UserDAOJdbi::class.java)
-                val classDAO = it.attach(ClassDAOImpl::class.java)
+                val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val courseClasses = userDao.getClassesOfUser(username)
                 courseClasses.map {
                     classDAO.getSpecificClass(it.courseId).get()

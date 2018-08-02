@@ -1,8 +1,28 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
-import {Card, Col, Row, Upload, Button, Icon} from 'antd'
+import {Card, Col, Row, Upload, Button, Icon, message} from 'antd'
 import Cookies from 'universal-cookie'
 const cookies = new Cookies()
+
+const uploadProps = {
+  name: 'file',
+  action: '//jsonplaceholder.typicode.com/posts/',
+  headers: {
+    'Access-Control-Allow-Origin': '*',
+    'Content-Type': 'application/json',
+    'Authorization': 'Basic ' + cookies.get('auth')
+  },
+  onChange(info) {
+    if (info.file.status !== 'uploading') {
+      console.log(info.file, info.fileList);
+    }
+    if (info.file.status === 'done') {
+      message.success(`${info.file.name} file uploaded successfully`);
+    } else if (info.file.status === 'error') {
+      message.error(`${info.file.name} file upload failed.`);
+    }
+  },
+}
 
 export default class extends React.Component {
   constructor (props) {
@@ -112,7 +132,7 @@ export default class extends React.Component {
             </Row>
           </div>
         ))}
-        <Upload>
+        <Upload {...uploadProps}>
           <Button>
             <Icon type='upload' /> Click to Upload An Exam
           </Button>

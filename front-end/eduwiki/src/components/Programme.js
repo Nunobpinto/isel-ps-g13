@@ -345,7 +345,7 @@ export default class extends React.Component {
   unFollowProgramme () {
     const options = {
       method: 'DELETE',
-      body: JSON.stringify(data),
+      
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Authorization': 'Basic ' + cookies.get('auth')
@@ -354,7 +354,7 @@ export default class extends React.Component {
     }
     fetch('http://localhost:8080/user/programme', options)
       .then(resp => {
-        if (resp.status >= 400)
+        if (resp.status >= 400){}
       })
       .then(_=>this.setState({unFollowProgrammeFlag: false}))
   }
@@ -375,7 +375,7 @@ export default class extends React.Component {
     }
     fetch('http://localhost:8080/user/programme', options)
       .then(resp => {
-        if (resp.status >= 400)
+        if (resp.status >= 400){}
       })
       .then(_=>this.setState({followProgrammeFlag: false}))
   }
