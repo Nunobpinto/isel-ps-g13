@@ -1,4 +1,4 @@
-package isel.leic.ps.eduWikiAPI.domain.inputModel.reports
+package isel.leic.ps.eduWikiAPI.domain.inputModel
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
