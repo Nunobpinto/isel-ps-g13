@@ -1,4 +1,4 @@
-package isel.leic.ps.eduWikiAPI.domain.outputModel.single
+package isel.leic.ps.eduWikiAPI.domain.outputModel
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.sql.Timestamp

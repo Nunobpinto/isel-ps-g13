@@ -1,18 +1,13 @@
-package isel.leic.ps.eduWikiAPI.domain.model.report;
+package isel.leic.ps.eduWikiAPI.domain.outputModel.reports;
 
-import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.sql.Timestamp
 import java.time.LocalDateTime
 
-data class UserReport(
-        @ColumnName("report_id")
+data class UserReportOutputModel(
         val reportId: Int = 0,
-        @ColumnName("user_username")
         val username: String = "",
         val reason: String = "",
-        @ColumnName("reported_by")
         val reportedBy: String = "",
-        @ColumnName("time_stamp")
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 )
 

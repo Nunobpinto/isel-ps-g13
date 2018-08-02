@@ -1,4 +1,4 @@
-package isel.leic.ps.eduWikiAPI.domain.model.report
+package isel.leic.ps.eduWikiAPI.domain.outputModel.reports
 
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_FULL_NAME
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_ID
@@ -11,19 +11,12 @@ import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.sql.Timestamp
 import java.time.LocalDateTime
 
-data class CourseReport(
-        @ColumnName(COURSE_REPORT_ID)
+data class CourseReportOutputModel(
         val reportId: Int = -1,
-        @ColumnName(COURSE_ID)
         val courseId: Int = 0,
-        @ColumnName(COURSE_FULL_NAME)
         val fullName: String? = null,
-        @ColumnName(COURSE_SHORT_NAME)
         val shortName: String? = null,
-        @ColumnName(COURSE_REPORTED_BY)
         val reportedBy: String = "",
-        @ColumnName(COURSE_VOTES)
         val votes: Int = 0,
-        @ColumnName(COURSE_TIMESTAMP)
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 )

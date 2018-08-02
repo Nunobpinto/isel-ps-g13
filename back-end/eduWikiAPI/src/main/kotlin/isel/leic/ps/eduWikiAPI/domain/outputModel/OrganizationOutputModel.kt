@@ -1,4 +1,4 @@
-package isel.leic.ps.eduWikiAPI.domain.outputModel.single
+package isel.leic.ps.eduWikiAPI.domain.outputModel
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.sql.Timestamp
@@ -13,5 +13,6 @@ data class OrganizationOutputModel (
         val shortName: String = "",
         val address: String = "",
         val contact: String = "",
+        val votes: Int = 0,
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 )

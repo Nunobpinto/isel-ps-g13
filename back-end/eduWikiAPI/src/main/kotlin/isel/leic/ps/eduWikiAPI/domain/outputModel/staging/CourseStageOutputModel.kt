@@ -5,7 +5,7 @@ import java.sql.Timestamp
 import java.time.LocalDateTime
 
 
-data class CourseOutputModel(
+data class CourseStageOutputModel(
         val stagedId: Int = 0,
         val organizationId: Int = 0,
         val version: Int = 0,

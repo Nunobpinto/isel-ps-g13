@@ -5,7 +5,7 @@ import java.sql.Timestamp
 import java.time.Duration
 import java.time.LocalDateTime
 
-class ProgrammeOutputModel(
+class ProgrammeStageOutputModel(
         val stagedId: Int = 0,
         val version: Int = 0,
         @JsonProperty("createdBy")

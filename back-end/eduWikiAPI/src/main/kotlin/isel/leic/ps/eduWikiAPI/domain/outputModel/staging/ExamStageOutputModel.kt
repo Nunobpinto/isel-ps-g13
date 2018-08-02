@@ -6,7 +6,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 
-data class ExamOutputModel (
+data class ExamStageOutputModel (
         val stagedId: Int = 0,
         val version: Int = 0,
         @JsonProperty("createdBy")

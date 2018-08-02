@@ -1,4 +1,4 @@
-package isel.leic.ps.eduWikiAPI.domain.model.version
+package isel.leic.ps.eduWikiAPI.domain.outputModel.version
 
 import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_BEGINS
 import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_CREATED_BY
@@ -15,21 +15,13 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-data class LectureVersion (
-        @ColumnName(LECTURE_VERSION)
+data class LectureVersionOutputModel (
         val version: Int = 1,
-        @ColumnName(LECTURE_ID)
         val lectureId: Int = 0,
-        @ColumnName(LECTURE_CREATED_BY)
         val createdBy: String = "",
-        @ColumnName(LECTURE_WEEK_DAY)
         val weekDay: DayOfWeek = DayOfWeek.MONDAY,
-        @ColumnName(LECTURE_BEGINS)
         val begins: LocalDate = LocalDate.now(),
-        @ColumnName(LECTURE_DURATION)
         val duration: Duration = Duration.ZERO,
-        @ColumnName(LECTURE_LOCATION)
         val location: String = "",
-        @ColumnName(LECTURE_TIMESTAMP)
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 )

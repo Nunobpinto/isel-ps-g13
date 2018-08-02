@@ -1,11 +1,11 @@
-package isel.leic.ps.eduWikiAPI.domain.outputModel.single
+package isel.leic.ps.eduWikiAPI.domain.outputModel
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.sql.Timestamp
 import java.time.LocalDateTime
 
 data class CourseProgrammeOutputModel (
-        val classId: Int = 0,
+        val courseId: Int = 0,
         val organizationId: Int = 0,
         val programmeId: Int = 0,
         val version: Int = 0,
@@ -13,7 +13,7 @@ data class CourseProgrammeOutputModel (
         val username: String = "",
         val fullName: String = "",
         val shortName: String = "",
-        val lecturedTermId: Int = 0,
+        val lecturedTerm: String = "",
         val optional: Boolean = false,
         val credits: Int = 0,
         val votes: Int = 0,

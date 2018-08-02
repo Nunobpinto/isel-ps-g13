@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.sql.Timestamp
 import java.time.LocalDateTime
 
-data class ClassOutputModel(
+data class ClassStageOutputModel(
         val stagedId: Int = 0,
         val version: Int = 0,
         @JsonProperty("createdBy")

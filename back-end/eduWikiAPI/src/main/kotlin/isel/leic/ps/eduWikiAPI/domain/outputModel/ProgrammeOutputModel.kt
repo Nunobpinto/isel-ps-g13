@@ -1,11 +1,11 @@
-package isel.leic.ps.eduWikiAPI.domain.outputModel.single
+package isel.leic.ps.eduWikiAPI.domain.outputModel
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.sql.Timestamp
 import java.time.Duration
 import java.time.LocalDateTime
 
-class ProgrammeOutputModel(
+data class ProgrammeOutputModel(
         val programmeId: Int = 0,
         val version: Int = 0,
         @JsonProperty("createdBy")
@@ -14,7 +14,7 @@ class ProgrammeOutputModel(
         val shortName: String = "",
         val academicDegree: String = "",
         val totalCredits: Int = 0,
-        val duration: Duration = Duration.ZERO,
+        val duration: Int = 0,
         val votes: Int = 0,
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 )

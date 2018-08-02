@@ -5,7 +5,7 @@ import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-data class HomeworkOutputModel (
+data class HomeworkStageOutputModel (
         val stagedId: Int = 0,
         val version: Int = 0,
         @JsonProperty( "createdBy")

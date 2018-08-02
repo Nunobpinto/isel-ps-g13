@@ -7,7 +7,7 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-data class LectureOutputModel (
+data class LectureStageOutputModel (
     val stagedId: Int = 0,
     val version: Int = 0,
     @JsonProperty("createdBy")

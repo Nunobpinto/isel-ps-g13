@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.sql.Timestamp
 import java.time.LocalDateTime
 
-data class CourseProgrammeOutputModel (
+data class CourseProgrammeStageOutputModel (
         val stagedId: Int = 0,
         val programmeId: Int = 0,
         val organizationId: Int = 0,
