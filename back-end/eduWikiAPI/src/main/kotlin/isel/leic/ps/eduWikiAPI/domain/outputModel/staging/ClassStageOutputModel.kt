@@ -9,8 +9,9 @@ data class ClassStageOutputModel(
         val version: Int = 0,
         @JsonProperty("createdBy")
         val username: String = "",
-        val fullName: String = "",
+        val className: String = "",
         val lecturedTerm: String = "",
+        val termId: Int = 0,
         val votes: Int = 0,
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 )

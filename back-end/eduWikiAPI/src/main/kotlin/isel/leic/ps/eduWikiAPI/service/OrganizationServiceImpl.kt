@@ -9,6 +9,10 @@ import isel.leic.ps.eduWikiAPI.domain.model.report.OrganizationReport
 import isel.leic.ps.eduWikiAPI.domain.model.version.OrganizationVersion
 import isel.leic.ps.eduWikiAPI.service.interfaces.OrganizationService
 import isel.leic.ps.eduWikiAPI.domain.mappers.*
+import isel.leic.ps.eduWikiAPI.domain.outputModel.OrganizationOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.OrganizationReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.version.OrganizationVersionOutputModel
+import isel.leic.ps.eduWikiAPI.exceptions.NotFoundException
 import isel.leic.ps.eduWikiAPI.repository.OrganizationDAOJdbi
 import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,22 +29,30 @@ class OrganizationServiceImpl : OrganizationService {
      * Organization Methods
      */
 
-    override fun getSpecificOrganization(organizationId: Int): Optional<Organization> =
-            jdbi.withExtension<Optional<Organization>, OrganizationDAOJdbi, Exception>(OrganizationDAOJdbi::class.java) {
-                it.getSpecificOrganization(organizationId)
+    override fun getSpecificOrganization(organizationId: Int): OrganizationOutputModel =
+            jdbi.withExtension<OrganizationOutputModel, OrganizationDAOJdbi, Exception>(OrganizationDAOJdbi::class.java) {
+                toOrganizationOutputModel(
+                        it.getSpecificOrganization(organizationId)
+                                .orElseThrow {
+                                    NotFoundException(
+                                            msg = "No organization found",
+                                            action = "Try other ID"
+                                    )
+                                }
+                )
             }
 
-    override fun getAllOrganizations(): List<Organization> =
-            jdbi.withExtension<List<Organization>, OrganizationDAOJdbi, Exception>(OrganizationDAOJdbi::class.java) {
-                it.getAllOrganizations()
+    override fun getAllOrganizations(): List<OrganizationOutputModel> =
+            jdbi.withExtension<List<OrganizationOutputModel>, OrganizationDAOJdbi, Exception>(OrganizationDAOJdbi::class.java) {
+                it.getAllOrganizations().map { toOrganizationOutputModel(it) }
             }
 
-    override fun createOrganization(organizationInputModel: OrganizationInputModel): Organization =
-            jdbi.inTransaction<Organization, Exception> {
+    override fun createOrganization(organizationInputModel: OrganizationInputModel): OrganizationOutputModel =
+            jdbi.inTransaction<OrganizationOutputModel, Exception> {
                 val organizationDAO = it.attach(OrganizationDAOJdbi::class.java)
                 val organization = organizationDAO.createOrganization(toOrganization(organizationInputModel))
                 organizationDAO.createOrganizationVersion(toOrganizationVersion(organization))
-                organization
+                toOrganizationOutputModel(organization)
             }
 
     override fun deleteOrganization(organizationId: Int): Int =
@@ -53,8 +65,8 @@ class OrganizationServiceImpl : OrganizationService {
                 it.deleteAllOrganizations()
             }
 
-    override fun updateOrganization(organizationId: Int, organizationInputModel: OrganizationInputModel): Organization =
-            jdbi.inTransaction<Organization, Exception> {
+    override fun updateOrganization(organizationId: Int, organizationInputModel: OrganizationInputModel): OrganizationOutputModel =
+            jdbi.inTransaction<OrganizationOutputModel, Exception> {
                 val organizationDAO = it.attach(OrganizationDAOJdbi::class.java)
                 val prevOrganization = organizationDAO.getSpecificOrganization(organizationId).get()
                 val organization = Organization(
@@ -68,30 +80,38 @@ class OrganizationServiceImpl : OrganizationService {
                 )
                 val updatedOrganization = organizationDAO.updateOrganization(organization)
                 organizationDAO.createOrganizationVersion(toOrganizationVersion(updatedOrganization))
-                updatedOrganization
+                toOrganizationOutputModel(updatedOrganization)
             }
 
     override fun voteOnOrganization(organizationId: Int, vote: VoteInputModel): Int =
             jdbi.inTransaction<Int, Exception> {
                 val organizationDAO = it.attach(OrganizationDAOJdbi::class.java)
                 var votes = organizationDAO.getVotesOnOrganization(organizationId)
-                votes = if(Vote.valueOf(vote.vote) == Vote.Down) --votes else ++votes
+                votes = if (Vote.valueOf(vote.vote) == Vote.Down) --votes else ++votes
                 organizationDAO.updateVotesOnOrganization(organizationId, votes)
             }
 
-    override fun getAllReportsOnOrganization(organizationId: Int): List<OrganizationReport> =
-            jdbi.withExtension<List<OrganizationReport>, OrganizationDAOJdbi, Exception>(OrganizationDAOJdbi::class.java) {
-                it.getAllReportsOnOrganization(organizationId)
+    override fun getAllReportsOnOrganization(organizationId: Int): List<OrganizationReportOutputModel> =
+            jdbi.withExtension<List<OrganizationReportOutputModel>, OrganizationDAOJdbi, Exception>(OrganizationDAOJdbi::class.java) {
+                it.getAllReportsOnOrganization(organizationId).map { toOrganizationReportOutputModel(it) }
             }
 
-    override fun getSpecificReportOnOrganization(organizationId: Int, reportId: Int): Optional<OrganizationReport> =
-            jdbi.withExtension<Optional<OrganizationReport>, OrganizationDAOJdbi, Exception>(OrganizationDAOJdbi::class.java) {
-                it.getSpecificReportOnOrganization(organizationId, reportId)
+    override fun getSpecificReportOnOrganization(organizationId: Int, reportId: Int): OrganizationReportOutputModel =
+            jdbi.withExtension<OrganizationReportOutputModel, OrganizationDAOJdbi, Exception>(OrganizationDAOJdbi::class.java) {
+                toOrganizationReportOutputModel(
+                        it.getSpecificReportOnOrganization(organizationId, reportId)
+                                .orElseThrow {
+                                    NotFoundException(
+                                            msg = "No report found for this organization",
+                                            action = "Try other report ID"
+                                    )
+                                }
+                )
             }
 
-    override fun reportOrganization(organizationId: Int, input: OrganizationReportInputModel): OrganizationReport =
-            jdbi.withExtension<OrganizationReport, OrganizationDAOJdbi, Exception>(OrganizationDAOJdbi::class.java) {
-                it.reportOrganization(toOrganizationReport(organizationId, input))
+    override fun reportOrganization(organizationId: Int, input: OrganizationReportInputModel): OrganizationReportOutputModel =
+            jdbi.withExtension<OrganizationReportOutputModel, OrganizationDAOJdbi, Exception>(OrganizationDAOJdbi::class.java) {
+                toOrganizationReportOutputModel(it.reportOrganization(toOrganizationReport(organizationId, input)))
             }
 
     override fun deleteAllReportsOnOrganization(organizationId: Int): Int =
@@ -108,18 +128,26 @@ class OrganizationServiceImpl : OrganizationService {
             jdbi.inTransaction<Int, Exception> {
                 val organizationDAO = it.attach(OrganizationDAOJdbi::class.java)
                 var votes = organizationDAO.getVotesOnOrganizationReport(organizationId, reportId)
-                votes = if(Vote.valueOf(vote.vote) == Vote.Down) --votes else ++votes
+                votes = if (Vote.valueOf(vote.vote) == Vote.Down) --votes else ++votes
                 organizationDAO.updateVotesOnOrganizationReport(organizationId, reportId, votes)
             }
 
-    override fun getAllVersionsOfOrganization(organizationId: Int): List<OrganizationVersion> =
-            jdbi.withExtension<List<OrganizationVersion>, OrganizationDAOJdbi, Exception>(OrganizationDAOJdbi::class.java) {
-                it.getAllVersionsOfOrganization(organizationId)
+    override fun getAllVersionsOfOrganization(organizationId: Int): List<OrganizationVersionOutputModel> =
+            jdbi.withExtension<List<OrganizationVersionOutputModel>, OrganizationDAOJdbi, Exception>(OrganizationDAOJdbi::class.java) {
+                it.getAllVersionsOfOrganization(organizationId).map { toOrganizationVersionOutputModel(it) }
             }
 
-    override fun getSpecificVersionOfOrganization(organizationId: Int, version: Int): Optional<OrganizationVersion> =
-            jdbi.withExtension<Optional<OrganizationVersion>, OrganizationDAOJdbi, Exception>(OrganizationDAOJdbi::class.java) {
-                it.getSpecificVersionOfOrganization(organizationId, version)
+    override fun getSpecificVersionOfOrganization(organizationId: Int, version: Int): OrganizationVersionOutputModel =
+            jdbi.withExtension<OrganizationVersionOutputModel, OrganizationDAOJdbi, Exception>(OrganizationDAOJdbi::class.java) {
+                toOrganizationVersionOutputModel(
+                        it.getSpecificVersionOfOrganization(organizationId, version)
+                                .orElseThrow {
+                                    NotFoundException(
+                                            msg = "No version found for this organization",
+                                            action = "Try another version number"
+                                    )
+                                }
+                )
             }
 
     override fun deleteAllVersionsOfOrganization(organizationId: Int): Int =
@@ -132,8 +160,8 @@ class OrganizationServiceImpl : OrganizationService {
                 it.deleteSpecificVersionOfOrganization(organizationId, version)
             }
 
-    override fun updateReportedOrganization(organizationId: Int, reportId: Int): Organization =
-            jdbi.inTransaction<Organization, Exception> {
+    override fun updateReportedOrganization(organizationId: Int, reportId: Int): OrganizationOutputModel =
+            jdbi.inTransaction<OrganizationOutputModel, Exception> {
                 val organizationDAO = it.attach(OrganizationDAOJdbi::class.java)
                 val prevorganization = organizationDAO.getSpecificOrganization(organizationId).get()
                 val report = organizationDAO.getSpecificReportOnOrganization(organizationId, reportId).get()
@@ -150,6 +178,6 @@ class OrganizationServiceImpl : OrganizationService {
                 val updatedOrganization = organizationDAO.updateOrganization(prevorganization)
                 organizationDAO.createOrganizationVersion(toOrganizationVersion(updatedOrganization))
                 organizationDAO.deleteReportOnOrganization(organizationId, reportId)
-                updatedOrganization
+                toOrganizationOutputModel(updatedOrganization)
             }
 }

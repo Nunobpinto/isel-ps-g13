@@ -177,4 +177,23 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
                 HttpStatus.NOT_FOUND)
     }
 
+    @ExceptionHandler(value = [(UnknownDataException::class)])
+    fun handleUnknownDataException(
+            ex: UnknownDataException,
+            request: WebRequest
+    ): ResponseEntity<ErrorOutputModel> {
+        val httpHeaders = HttpHeaders()
+        httpHeaders.contentType = MediaType.APPLICATION_PROBLEM_JSON_UTF8
+        return ResponseEntity(
+                ErrorOutputModel(
+                        title = "Error in database",
+                        detail = ex.msg,
+                        status = 500,
+                        type = "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
+                ),
+                httpHeaders,
+                HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+
 }

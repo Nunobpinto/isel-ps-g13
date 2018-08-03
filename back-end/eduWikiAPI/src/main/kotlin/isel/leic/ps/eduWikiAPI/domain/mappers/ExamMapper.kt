@@ -6,6 +6,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.Exam
 import isel.leic.ps.eduWikiAPI.domain.model.report.ExamReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ExamStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.ExamVersion
+import isel.leic.ps.eduWikiAPI.domain.outputModel.ExamOutputModel
 
 fun toExam(input: ExamInputModel) = Exam(
         createdBy = input.createdBy,
@@ -52,4 +53,17 @@ fun stagedToExam(stage: ExamStage) = Exam(
         type = stage.type,
         phase = stage.phase,
         location = stage.location
+)
+
+fun toExamOutputModel(exam: Exam) = ExamOutputModel(
+        examId = exam.examId,
+        version = exam.version,
+        votes = exam.votes,
+        username = exam.createdBy,
+        location = exam.location,
+        dueDate = exam.dueDate,
+        type = exam.type,
+        phase = exam.phase,
+        //sheet = exam.sheet,
+        timestamp = exam.timestamp
 )

@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.domain.model
 
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.COURSE_CLASS_ID
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 import isel.leic.ps.eduWikiAPI.repository.UserDAOJdbi.Companion.USER_USERNAME
 import isel.leic.ps.eduWikiAPI.repository.UserDAOJdbi.Companion.COURSE_ID
@@ -11,8 +12,6 @@ data class UserCourseClass(
         val username: String = "",
         @ColumnName(COURSE_ID)
         val courseId: Int = 0,
-        @ColumnName(CLASS_ID)
-        val classId: Int? = null,
-        @ColumnName(TERM_ID)
-        val termId: Int? = null
+        @ColumnName(COURSE_CLASS_ID)
+        val courseClassId: Int? = null
 )

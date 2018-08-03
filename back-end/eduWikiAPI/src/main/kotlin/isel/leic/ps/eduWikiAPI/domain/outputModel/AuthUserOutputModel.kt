@@ -1,4 +1,4 @@
-package isel.leic.ps.eduWikiAPI.domain.outputModel.single
+package isel.leic.ps.eduWikiAPI.domain.outputModel
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.sql.Timestamp
@@ -11,8 +11,6 @@ data class AuthUserOutputModel (
         val familyName: String = "",
         val personalEmail: String = "",
         val organizationEmail: String = "",
-        val gender: String = "",
-        val version: Int = 0,
         @JsonProperty("privilege")
         val userPrivilege: String = "",
         @JsonProperty("reputation")

@@ -13,6 +13,15 @@ import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseProgrammeVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.ProgrammeVersion
+import isel.leic.ps.eduWikiAPI.domain.outputModel.CourseProgrammeOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.ProgrammeOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.CourseProgrammeReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.ProgrammeReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.CourseProgrammeStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.ProgrammeStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.version.CourseProgrammeVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.version.ProgrammeVersionOutputModel
+import isel.leic.ps.eduWikiAPI.exceptions.NotFoundException
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi
 import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOJdbi
 import isel.leic.ps.eduWikiAPI.service.interfaces.ProgrammeService
@@ -31,47 +40,59 @@ class ProgrammeServiceImpl : ProgrammeService {
      * Programme Methods
      */
 
-    override fun getAllProgrammes(): List<Programme> =
-            jdbi.withExtension<List<Programme>, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
-                it.getAllProgrammes()
+    override fun getAllProgrammes(): List<ProgrammeOutputModel> =
+            jdbi.withExtension<List<ProgrammeOutputModel>, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
+                it.getAllProgrammes().map { toProgrammeOutput(it) }
             }
 
-    override fun getSpecificProgramme(programmeId: Int): Optional<Programme> =
-            jdbi.withExtension<Optional<Programme>, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
-                it.getSpecificProgramme(programmeId)
+    override fun getSpecificProgramme(programmeId: Int): ProgrammeOutputModel =
+            jdbi.withExtension<ProgrammeOutputModel, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
+                toProgrammeOutput(it.getSpecificProgramme(programmeId).orElseThrow {
+                    isel.leic.ps.eduWikiAPI.exceptions.NotFoundException(
+                            msg = "No Programme Found",
+                            action = "Try with other id"
+                    )
+                })
             }
 
-    override fun createProgramme(inputProgramme: ProgrammeInputModel): Programme =
-            jdbi.inTransaction<Programme, Exception> {
+    override fun createProgramme(inputProgramme: ProgrammeInputModel): ProgrammeOutputModel =
+            jdbi.inTransaction<ProgrammeOutputModel, Exception> {
                 val programmeDAO = it.attach(ProgrammeDAOJdbi::class.java)
                 val programme = programmeDAO.createProgramme(toProgramme(inputProgramme))
                 programmeDAO.createProgrammeVersion(toProgrammeVersion(programme))
-                programme
+                toProgrammeOutput(programme)
             }
 
-    override fun createStagingProgramme(inputProgramme: ProgrammeInputModel): ProgrammeStage =
-            jdbi.withExtension<ProgrammeStage, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
-                it.createStagingProgramme(toProgrammeStage(inputProgramme))
+    override fun createStagingProgramme(inputProgramme: ProgrammeInputModel): ProgrammeStageOutputModel =
+            jdbi.withExtension<ProgrammeStageOutputModel, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
+                toProgrammeStageOutputModel(it.createStagingProgramme(toProgrammeStage(inputProgramme)))
             }
 
-    override fun getSpecificStageEntryOfProgramme(stageId: Int): Optional<ProgrammeStage> =
-            jdbi.withExtension<Optional<ProgrammeStage>, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
-                it.getSpecificStageEntryOfProgramme(stageId)
+    override fun getSpecificStageEntryOfProgramme(stageId: Int): ProgrammeStageOutputModel =
+            jdbi.withExtension<ProgrammeStageOutputModel, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
+                toProgrammeStageOutputModel(
+                        it.getSpecificStageEntryOfProgramme(stageId).orElseThrow {
+                            isel.leic.ps.eduWikiAPI.exceptions.NotFoundException(
+                                    msg = "No Programme Staged Found",
+                                    action = "Try with other id"
+                            )
+                        }
+                )
             }
 
-    override fun createProgrammeFromStaged(stageId: Int): Programme =
-            jdbi.inTransaction<Programme, Exception> {
+    override fun createProgrammeFromStaged(stageId: Int): ProgrammeOutputModel =
+            jdbi.inTransaction<ProgrammeOutputModel, Exception> {
                 val programmeDAO = it.attach(ProgrammeDAOJdbi::class.java)
                 val programme = stagedToProgramme(programmeDAO.getSpecificStageEntryOfProgramme(stageId).get())
                 val createdProgramme = programmeDAO.createProgramme(programme)
                 programmeDAO.deleteSpecificStagedProgramme(stageId)
                 programmeDAO.createProgrammeVersion(toProgrammeVersion(programme))
-                createdProgramme
+                toProgrammeOutput(createdProgramme)
             }
 
-    override fun getAllProgrammeStageEntries(): List<ProgrammeStage> =
-            jdbi.withExtension<List<ProgrammeStage>, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
-                it.getAllProgrammeStageEntries()
+    override fun getAllProgrammeStageEntries(): List<ProgrammeStageOutputModel> =
+            jdbi.withExtension<List<ProgrammeStageOutputModel>, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
+                it.getAllProgrammeStageEntries().map { toProgrammeStageOutputModel(it) }
             }
 
     override fun voteOnStagedProgramme(stageId: Int, vote: VoteInputModel): Int =
@@ -82,28 +103,33 @@ class ProgrammeServiceImpl : ProgrammeService {
                 programmeDAO.updateVotesOnStagedProgramme(stageId, votes)
             }
 
-    override fun getAllReportsOfSpecificProgramme(programmeId: Int): List<ProgrammeReport> =
-            jdbi.withExtension<List<ProgrammeReport>, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
-                it.getAllReportsOfSpecificProgramme(programmeId)
+    override fun getAllReportsOfSpecificProgramme(programmeId: Int): List<ProgrammeReportOutputModel> =
+            jdbi.withExtension<List<ProgrammeReportOutputModel>, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
+                it.getAllReportsOfSpecificProgramme(programmeId).map { toProgrammeReportOutputModel(it) }
             }
 
-    override fun getSpecificReportOfProgramme(programmeId: Int, reportId: Int): Optional<ProgrammeReport> =
-            jdbi.withExtension<Optional<ProgrammeReport>, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
-                it.getSpecificReportOfProgramme(programmeId, reportId)
+    override fun getSpecificReportOfProgramme(programmeId: Int, reportId: Int): ProgrammeReportOutputModel =
+            jdbi.withExtension<ProgrammeReportOutputModel, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
+                toProgrammeReportOutputModel(it.getSpecificReportOfProgramme(programmeId, reportId).orElseThrow {
+                    NotFoundException(
+                            msg = "No report found",
+                            action = "Try with other id"
+                    )
+                })
             }
 
-    override fun getAllCoursesOnSpecificProgramme(programmeId: Int): List<Course> =
-            jdbi.withExtension<List<Course>, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                it.getAllCoursesOnSpecificProgramme(programmeId)
+    override fun getAllCoursesOnSpecificProgramme(programmeId: Int): List<CourseProgrammeOutputModel> =
+            jdbi.withExtension<List<CourseProgrammeOutputModel>, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
+                it.getAllCoursesOnSpecificProgramme(programmeId).map { toCourseProgrammeOutputModel(it) }
             }
 
-    override fun addCourseToProgramme(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel): Course =
-            jdbi.inTransaction<Course, Exception> {
+    override fun addCourseToProgramme(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel): CourseProgrammeOutputModel =
+            jdbi.inTransaction<CourseProgrammeOutputModel, Exception> {
                 val courseDAO = it.attach(CourseDAOJdbi::class.java)
                 val course = toCourseProgramme(inputCourseProgramme)
                 val res = courseDAO.addCourseToProgramme(programmeId, course)
                 courseDAO.createCourseProgrammeVersion(toCourseProgrammeVersion(course))
-                res
+                toCourseProgrammeOutputModel(res)
             }
 
     override fun voteOnProgramme(programmeId: Int, vote: VoteInputModel): Int =
@@ -114,21 +140,21 @@ class ProgrammeServiceImpl : ProgrammeService {
                 programmeDAO.updateVotesOnProgramme(programmeId, votes)
             }
 
-    override fun reportProgramme(programmeId: Int, inputProgrammeReport: ProgrammeReportInputModel): ProgrammeReport =
-            jdbi.withExtension<ProgrammeReport, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
-                it.reportProgramme(
+    override fun reportProgramme(programmeId: Int, inputProgrammeReport: ProgrammeReportInputModel): ProgrammeReportOutputModel =
+            jdbi.withExtension<ProgrammeReportOutputModel, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
+                toProgrammeReportOutputModel(it.reportProgramme(
                         programmeId,
                         toProgrammeReport(programmeId, inputProgrammeReport)
-                )
+                ))
             }
 
-    override fun reportSpecificCourseOnProgramme(programmeId: Int, courseId: Int, inputCourseReport: CourseProgrammeReportInputModel): CourseProgrammeReport =
-            jdbi.withExtension<CourseProgrammeReport, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                it.reportSpecificCourseOnProgramme(
+    override fun reportSpecificCourseOnProgramme(programmeId: Int, courseId: Int, inputCourseReport: CourseProgrammeReportInputModel): CourseProgrammeReportOutputModel =
+            jdbi.withExtension<CourseProgrammeReportOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
+                toCourseProgrammeReportOutputModel(it.reportSpecificCourseOnProgramme(
                         programmeId,
                         courseId,
                         toCourseProgrammeReport(programmeId, courseId, inputCourseReport)
-                )
+                ))
             }
 
     override fun voteOnReportedProgramme(programmeId: Int, reportId: Int, vote: VoteInputModel): Int =
@@ -139,8 +165,8 @@ class ProgrammeServiceImpl : ProgrammeService {
                 programmeDAO.updateVotesOnReportedProgramme(programmeId, reportId, votes)
             }
 
-    override fun updateProgrammeFromReport(programmeId: Int, reportId: Int): Programme =
-            jdbi.inTransaction<Programme, Exception> {
+    override fun updateProgrammeFromReport(programmeId: Int, reportId: Int): ProgrammeOutputModel =
+            jdbi.inTransaction<ProgrammeOutputModel, Exception> {
                 val programmeDAO = it.attach(ProgrammeDAOJdbi::class.java)
                 val programme = programmeDAO.getSpecificProgramme(programmeId).get()
                 val report = programmeDAO.getSpecificReportOfProgramme(programmeId, reportId).get()
@@ -157,7 +183,7 @@ class ProgrammeServiceImpl : ProgrammeService {
                 val res = programmeDAO.updateProgramme(programmeId, updatedProgramme)
                 programmeDAO.createProgrammeVersion(toProgrammeVersion(updatedProgramme))
                 programmeDAO.deleteSpecificReportOnProgramme(programmeId, reportId)
-                res
+                toProgrammeOutput(res)
             }
 
     override fun deleteAllProgrammes(): Int =
@@ -190,8 +216,8 @@ class ProgrammeServiceImpl : ProgrammeService {
                 it.deleteSpecificReportOnProgramme(programmeId, reportId)
             }
 
-    override fun partialUpdateOnProgramme(programmeId: Int, inputProgramme: ProgrammeInputModel): Programme =
-            jdbi.inTransaction<Programme, Exception> {
+    override fun partialUpdateOnProgramme(programmeId: Int, inputProgramme: ProgrammeInputModel): ProgrammeOutputModel =
+            jdbi.inTransaction<ProgrammeOutputModel, Exception> {
                 val programmeDAO = it.attach(ProgrammeDAOJdbi::class.java)
                 val programme = programmeDAO.getSpecificProgramme(programmeId).get()
                 val updatedProgramme = Programme(
@@ -206,17 +232,24 @@ class ProgrammeServiceImpl : ProgrammeService {
                 )
                 val res = programmeDAO.updateProgramme(programmeId, updatedProgramme)
                 programmeDAO.createProgrammeVersion(toProgrammeVersion(updatedProgramme))
-                res
+                toProgrammeOutput(res)
             }
 
-    override fun getAllVersionsOfProgramme(programmeId: Int): List<ProgrammeVersion> =
-            jdbi.withExtension<List<ProgrammeVersion>, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
-                it.getAllVersionsOfProgramme(programmeId)
+    override fun getAllVersionsOfProgramme(programmeId: Int): List<ProgrammeVersionOutputModel> =
+            jdbi.withExtension<List<ProgrammeVersionOutputModel>, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
+                it.getAllVersionsOfProgramme(programmeId).map { toProgrammeVersionOutputModel(it) }
             }
 
-    override fun getSpecificVersionOfProgramme(programmeId: Int, version: Int): Optional<ProgrammeVersion> =
-            jdbi.withExtension<Optional<ProgrammeVersion>, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
-                it.getSpecificVersionOfProgramme(programmeId, version)
+    override fun getSpecificVersionOfProgramme(programmeId: Int, version: Int): ProgrammeVersionOutputModel =
+            jdbi.withExtension<ProgrammeVersionOutputModel, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
+                toProgrammeVersionOutputModel(
+                        it.getSpecificVersionOfProgramme(programmeId, version)
+                                .orElseThrow {
+                                    NotFoundException(
+                                            msg = "No version found",
+                                            action = "Try other version"
+                                    )
+                                })
             }
 
     override fun deleteAllProgrammeVersions(programmeId: Int): Int =
@@ -229,29 +262,54 @@ class ProgrammeServiceImpl : ProgrammeService {
                 it.deleteSpecificProgrammeVersion(programmeId, version)
             }
 
-    override fun getSpecificCourseOfProgramme(programmeId: Int, courseId: Int): Optional<Course> =
-            jdbi.withExtension<Optional<Course>, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                it.getSpecificCourseOfProgramme(programmeId, courseId)
+    override fun getSpecificCourseOfProgramme(programmeId: Int, courseId: Int): CourseProgrammeOutputModel =
+            jdbi.withExtension<CourseProgrammeOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
+                toCourseProgrammeOutputModel(
+                        it.getSpecificCourseOfProgramme(programmeId, courseId)
+                                .orElseThrow {
+                                    NotFoundException(
+                                            msg = "No course with thid id in this programme",
+                                            action = "Add course to this programme"
+                                    )
+                                }
+                )
             }
 
-    override fun getAllVersionsOfCourseOnProgramme(programmeId: Int, courseId: Int): List<CourseProgrammeVersion> =
-            jdbi.withExtension<List<CourseProgrammeVersion>, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                it.getAllVersionsOfCourseOnProgramme(programmeId, courseId)
+    override fun getAllVersionsOfCourseOnProgramme(programmeId: Int, courseId: Int): List<CourseProgrammeVersionOutputModel> =
+            jdbi.withExtension<List<CourseProgrammeVersionOutputModel>, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
+                it.getAllVersionsOfCourseOnProgramme(programmeId, courseId).map { toCourseProgrammeVersionOutput(it) }
             }
 
-    override fun getSpecificVersionOfCourseOnProgramme(programmeId: Int, courseId: Int, version: Int): Optional<CourseProgrammeVersion> =
-            jdbi.withExtension<Optional<CourseProgrammeVersion>, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                it.getSpecificVersionOfCourseOnProgramme(programmeId, courseId, version)
+    override fun getSpecificVersionOfCourseOnProgramme(programmeId: Int, courseId: Int, version: Int): CourseProgrammeVersionOutputModel =
+            jdbi.withExtension<CourseProgrammeVersionOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
+                toCourseProgrammeVersionOutput(
+                        it.getSpecificVersionOfCourseOnProgramme(programmeId, courseId, version)
+                                .orElseThrow {
+                                    NotFoundException(
+                                            msg = "No version of course with thid id in this programme",
+                                            action = "Search other version"
+                                    )
+                                }
+                )
             }
 
-    override fun getAllReportsOfCourseOnProgramme(programmeId: Int, courseId: Int): List<CourseProgrammeReport> =
-            jdbi.withExtension<List<CourseProgrammeReport>, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
+    override fun getAllReportsOfCourseOnProgramme(programmeId: Int, courseId: Int): List<CourseProgrammeReportOutputModel> =
+            jdbi.withExtension<List<CourseProgrammeReportOutputModel>, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
                 it.getAllReportsOfCourseOnProgramme(programmeId, courseId)
+                        .map { toCourseProgrammeReportOutputModel(it) }
             }
 
-    override fun getSpecificReportOfCourseOnProgramme(programmeId: Int, courseId: Int, reportId: Int): Optional<CourseProgrammeReport> =
-            jdbi.withExtension<Optional<CourseProgrammeReport>, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                it.getSpecificReportOfCourseProgramme(programmeId, courseId, reportId)
+    override fun getSpecificReportOfCourseOnProgramme(programmeId: Int, courseId: Int, reportId: Int): CourseProgrammeReportOutputModel =
+            jdbi.withExtension<CourseProgrammeReportOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
+                toCourseProgrammeReportOutputModel(
+                        it.getSpecificReportOfCourseProgramme(programmeId, courseId, reportId)
+                                .orElseThrow {
+                                    NotFoundException(
+                                            msg = "No report of course with thid id in this programme",
+                                            action = "Search other report"
+                                    )
+                                }
+                )
             }
 
     override fun voteOnCourseProgramme(programmeId: Int, courseId: Int, vote: VoteInputModel): Int =
@@ -262,20 +320,22 @@ class ProgrammeServiceImpl : ProgrammeService {
                 courseDAO.updateVotesOnCourseProgramme(programmeId, courseId, votes)
             }
 
-    override fun createStagingCourseOnProgramme(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel): CourseProgrammeStage =
-            jdbi.withExtension<CourseProgrammeStage, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                it.createStagingCourseOfProgramme(toCourseProgrammeStage(programmeId, inputCourseProgramme))
+    override fun createStagingCourseOnProgramme(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel): CourseProgrammeStageOutputModel =
+            jdbi.withExtension<CourseProgrammeStageOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
+                toCourseProgrammeStageOutputModel(
+                        it.createStagingCourseOfProgramme(toCourseProgrammeStage(programmeId, inputCourseProgramme))
+                )
             }
 
-    override fun createCourseProgrammeFromStaged(programmeId: Int, stageId: Int): Course =
-            jdbi.inTransaction<Course, Exception> {
+    override fun createCourseProgrammeFromStaged(programmeId: Int, stageId: Int): CourseProgrammeOutputModel =
+            jdbi.inTransaction<CourseProgrammeOutputModel, Exception> {
                 val courseDAO = it.attach(CourseDAOJdbi::class.java)
                 val courseProgrammeStage = courseDAO.getSpecificStagedCourseProgramme(programmeId, stageId).get()
                 val courseProgramme = stagedToCourseProgramme(programmeId, courseProgrammeStage)
                 val res = courseDAO.addCourseToProgramme(programmeId, courseProgramme)
                 courseDAO.deleteStagedCourseProgramme(programmeId)
                 courseDAO.createCourseProgrammeVersion(toCourseProgrammeVersion(courseProgramme))
-                res
+                toCourseProgrammeOutputModel(res)
             }
 
     override fun voteOnStagedCourseProgramme(programmeId: Int, stageId: Int, vote: VoteInputModel): Int =
@@ -286,8 +346,8 @@ class ProgrammeServiceImpl : ProgrammeService {
                 courseDAO.updateVotesOnStagedCourseProgramme(programmeId, stageId, votes)
             }
 
-    override fun updateCourseProgrammeFromReport(programmeId: Int, courseId: Int, reportId: Int): Course =
-            jdbi.inTransaction<Course, Exception> {
+    override fun updateCourseProgrammeFromReport(programmeId: Int, courseId: Int, reportId: Int): CourseProgrammeOutputModel =
+            jdbi.inTransaction<CourseProgrammeOutputModel, Exception> {
                 val courseDAO = it.attach(CourseDAOJdbi::class.java)
                 val course = courseDAO.getSpecificCourseOfProgramme(programmeId, courseId).get()
                 val report = courseDAO.getSpecificReportOfCourseProgramme(
@@ -307,7 +367,7 @@ class ProgrammeServiceImpl : ProgrammeService {
                 val res = courseDAO.updateCourseProgramme(programmeId, courseId, updatedCourse)
                 courseDAO.createCourseProgrammeVersion(toCourseProgrammeVersion(updatedCourse))
                 courseDAO.deleteReportOnCourseProgramme(programmeId, courseId, reportId)
-                res
+                toCourseProgrammeOutputModel(res)
             }
 
     override fun voteOnReportedCourseProgramme(programmeId: Int, courseId: Int, reportId: Int, vote: VoteInputModel): Int =
@@ -318,14 +378,22 @@ class ProgrammeServiceImpl : ProgrammeService {
                 courseDAO.updateVotesOnReportedCourseProgramme(programmeId, courseId, reportId, votes)
             }
 
-    override fun getAllCourseStageEntriesOfSpecificProgramme(programmeId: Int): List<CourseProgrammeStage> =
-            jdbi.withExtension<List<CourseProgrammeStage>, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                it.getAllCourseStageEntriesOfSpecificProgramme(programmeId)
+    override fun getAllCourseStageEntriesOfSpecificProgramme(programmeId: Int): List<CourseProgrammeStageOutputModel> =
+            jdbi.withExtension<List<CourseProgrammeStageOutputModel>, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
+                it.getAllCourseStageEntriesOfSpecificProgramme(programmeId).map { toCourseProgrammeStageOutputModel(it) }
             }
 
-    override fun getSpecificStagedCourseOfProgramme(programmeId: Int, stageId: Int): Optional<CourseProgrammeStage> =
-            jdbi.withExtension<Optional<CourseProgrammeStage>, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                it.getSpecificStagedCourseProgramme(programmeId, stageId)
+    override fun getSpecificStagedCourseOfProgramme(programmeId: Int, stageId: Int): CourseProgrammeStageOutputModel =
+            jdbi.withExtension<CourseProgrammeStageOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
+                toCourseProgrammeStageOutputModel(
+                        it.getSpecificStagedCourseProgramme(programmeId, stageId)
+                                .orElseThrow {
+                                    NotFoundException(
+                                            msg = "No staged version of course with thid id in this programme",
+                                            action = "Search other staged version"
+                                    )
+                                }
+                )
             }
 
     override fun deleteSpecificCourseProgramme(programmeId: Int, courseId: Int): Int =

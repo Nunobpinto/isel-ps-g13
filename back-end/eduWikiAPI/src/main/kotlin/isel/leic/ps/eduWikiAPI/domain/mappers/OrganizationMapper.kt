@@ -5,6 +5,9 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.OrganizationReportInput
 import isel.leic.ps.eduWikiAPI.domain.model.Organization
 import isel.leic.ps.eduWikiAPI.domain.model.report.OrganizationReport
 import isel.leic.ps.eduWikiAPI.domain.model.version.OrganizationVersion
+import isel.leic.ps.eduWikiAPI.domain.outputModel.OrganizationOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.OrganizationReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.version.OrganizationVersionOutputModel
 
 fun toOrganization(organizationInputModel: OrganizationInputModel) = Organization(
         fullName = organizationInputModel.fullName,
@@ -32,4 +35,38 @@ fun toOrganizationVersion(organization: Organization) = OrganizationVersion(
         contact = organization.contact,
         address = organization.address,
         timestamp = organization.timestamp
+)
+
+fun toOrganizationOutputModel(organization: Organization) = OrganizationOutputModel(
+        organizationId = organization.organizationId,
+        version = organization.version,
+        votes = organization.votes,
+        contact = organization.contact,
+        address = organization.address,
+        fullName = organization.fullName,
+        timestamp = organization.timestamp,
+        username = organization.createdBy,
+        shortName = organization.shortName
+)
+
+fun toOrganizationReportOutputModel(organizationReport: OrganizationReport) = OrganizationReportOutputModel(
+        fullName = organizationReport.fullName,
+        shortName = organizationReport.shortName,
+        address = organizationReport.address,
+        contact = organizationReport.contact,
+        reportedBy = organizationReport.reportedBy,
+        organizationId = organizationReport.organizationId,
+        reportId = organizationReport.reportId,
+        votes = organizationReport.votes
+)
+
+fun toOrganizationVersionOutputModel(organizationVersion: OrganizationVersion) = OrganizationVersionOutputModel(
+        version = organizationVersion.version,
+        organizationId = organizationVersion.organizationId,
+        createdBy = organizationVersion.createdBy,
+        fullName = organizationVersion.fullName,
+        shortName = organizationVersion.shortName,
+        address = organizationVersion.address,
+        contact = organizationVersion.contact,
+        timestamp = organizationVersion.timestamp
 )

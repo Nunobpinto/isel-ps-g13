@@ -104,17 +104,17 @@ interface ClassDAO {
     /**
      * Courses On Class queries
      */
-    fun getAllCoursesOfClass(classId: Int): List<Course>
+    fun getAllCoursesOfClass(classId: Int): List<CourseClass>
 
-    fun getSpecificCourseOfClass(classId: Int, courseId: Int): Optional<Course>
+    fun getSpecificCourseOfClass(classId: Int, courseId: Int): Optional<CourseClass>
 
     fun deleteAllCoursesInClass(classId: Int): Int
 
     fun deleteSpecificCourseInClass(classId: Int, courseId: Int): Int
 
-    fun getAllReportsOfCourseInClass(classId: Int, courseId: Int): List<CourseClassReport>
+    fun getAllReportsOfCourseInClass(courseClassId: Int): List<CourseClassReport>
 
-    fun getSpecificReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int): Optional<CourseClassReport>
+    fun getSpecificReportOfCourseInClass(reportId: Int): Optional<CourseClassReport>
 
     fun deleteAllCourseReportsInClass(classId: Int, courseId: Int): Int
 
@@ -155,5 +155,7 @@ interface ClassDAO {
     fun getStagedCourseClassVotes(classId: Int, stageId: Int): Int
 
     fun updateStagedCourseClassVotes(classId: Int, stageId: Int, votes: Int): Int
+
+    fun getCourseCLassFromId(courseClassId: Int?): CourseClass
 
 }
