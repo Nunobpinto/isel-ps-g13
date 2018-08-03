@@ -372,10 +372,11 @@ class CourseController {
 
     @PostMapping("/{courseId}/terms/{termId}/work-assignments")
     fun createWorkAssignmentOnCourseInTerm(
+            @RequestParam sheet: MultipartFile,
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            @RequestBody inputWorkAssignment: WorkAssignmentInputModel
-    ) = courseService.createWorkAssignmentOnCourseInTerm(courseId, termId, inputWorkAssignment)
+            @RequestBody workAssignmentInputModel: WorkAssignmentInputModel
+    ) = courseService.createWorkAssignmentOnCourseInTerm(sheet, courseId, termId, workAssignmentInputModel)
 
     @PostMapping("/{courseId}/terms/{termId}/work-assignments/{workAssignmentId}/vote")
     fun voteOnWorkAssignment(@PathVariable courseId: Int,

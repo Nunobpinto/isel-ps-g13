@@ -599,7 +599,7 @@ interface CourseDAOJdbi : CourseDAO {
                     "$COURSE_MISC_UNIT_TERM_ID, " +
                     "$COURSE_MISC_UNIT_TYPE " +
                     ") " +
-                    "values(:courseId, :termId, :miscType:)"
+                    "values(:courseId, :termId, :miscType::course_misc_unit_type)"
     )
     @GetGeneratedKeys
     override fun createStagingCourseMiscUnit(courseId: Int, termId: Int, miscType: String): CourseMiscUnitStage
