@@ -2,7 +2,7 @@ package isel.leic.ps.eduWikiAPI.domain.inputModel.reports
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-class CourseProgrammeReportInputModel(  //TODO report course in programme
+class CourseProgrammeReportInputModel(
         @JsonProperty("course_id")
         val courseId: Int = 0,
         @JsonProperty("programme_id")
@@ -12,5 +12,7 @@ class CourseProgrammeReportInputModel(  //TODO report course in programme
         val optional: Boolean? = null,
         val credits: Int? = null,
         @JsonProperty("reported_by")
-        val reportedBy: String = ""
+        val reportedBy: String = "",
+        @JsonProperty("to_delete")
+        val deleteFlag: Boolean = false
 )

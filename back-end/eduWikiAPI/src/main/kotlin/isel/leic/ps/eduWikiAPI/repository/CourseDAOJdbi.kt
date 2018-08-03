@@ -71,6 +71,7 @@ interface CourseDAOJdbi : CourseDAO {
         const val COURSE_PROGRAMME_CREATED_BY = "created_by"
         const val COURSE_PROGRAMME_REPORTED_BY = "reported_by"
         const val COURSE_PROGRAMME_REPORT_ID = "course_programme_report_id"
+        const val COURSE_PROGRAMME_DELETE_FLAG = "to_delete"
         // COURSE_TERM
         const val COURSE_TERM_TERM_ID = "term_id"
         const val COURSE_TERM_COURSE_ID = "course_id"
@@ -337,11 +338,13 @@ interface CourseDAOJdbi : CourseDAO {
                     "$COURSE_PROGRAMME_CREDITS, " +
                     "$COURSE_PROGRAMME_TIMESTAMP, " +
                     "$COURSE_PROGRAMME_REPORTED_BY, " +
+                    "$COURSE_PROGRAMME_DELETE_FLAG, " +
                     "$COURSE_PROGRAMME_VOTES " +
                     ") " +
                     "VALUES (:courseId, :programmeId, :courseProgrammeReport.lecturedTerm, " +
                     ":courseProgrammeReport.optional, :courseProgrammeReport.credits, :courseProgrammeReport.timestamp, " +
-                    ":courseProgrammeReport.reportedBy, :courseProgrammeReport.votes)"
+                    ":courseProgrammeReport.reportedBy, :courseProgrammeReport.deleteFlag, " +
+                    ":courseProgrammeReport.votes)"
     )
     @GetGeneratedKeys
     override fun reportSpecificCourseOnProgramme(
@@ -401,13 +404,13 @@ interface CourseDAOJdbi : CourseDAO {
 
     @SqlUpdate(
             "UPDATE $COURSE_PROGRAMME_TABLE SET " +
-                    "$COURSE_PROGRAMME_VERSION = :version, " +
-                    "$COURSE_PROGRAMME_CREATED_BY = :createdBy, " +
-                    "$COURSE_PROGRAMME_LECTURED_TERM = :lecturedTerm, " +
-                    "$COURSE_PROGRAMME_OPTIONAL = :optional, " +
-                    "$COURSE_PROGRAMME_VOTES = :votes, " +
-                    "$COURSE_PROGRAMME_TIMESTAMP = :timestamp, " +
-                    "$COURSE_PROGRAMME_CREDITS = :credits " +
+                    "$COURSE_PROGRAMME_VERSION = :course.version, " +
+                    "$COURSE_PROGRAMME_CREATED_BY = :course.createdBy, " +
+                    "$COURSE_PROGRAMME_LECTURED_TERM = :course.lecturedTerm, " +
+                    "$COURSE_PROGRAMME_OPTIONAL = :course.optional, " +
+                    "$COURSE_PROGRAMME_VOTES = :course.votes, " +
+                    "$COURSE_PROGRAMME_TIMESTAMP = :course.timestamp, " +
+                    "$COURSE_PROGRAMME_CREDITS = :course.credits " +
                     "WHERE $COURSE_PROGRAMME_COURSE_ID = :courseId " +
                     "AND $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId"
     )
@@ -476,7 +479,7 @@ interface CourseDAOJdbi : CourseDAO {
     )
     override fun getSpecificVersionOfCourseOnProgramme(programmeId: Int, courseId: Int, version: Int): Optional<CourseProgrammeVersion>
 
-    @SqlQuery(
+    @SqlUpdate(
             "INSERT INTO $COURSE_PROGRAMME_VERSION_TABLE (" +
                     "$COURSE_PROGRAMME_COURSE_ID, " +
                     "$COURSE_PROGRAMME_PROGRAMME_ID, " +
@@ -485,10 +488,10 @@ interface CourseDAOJdbi : CourseDAO {
                     "$COURSE_PROGRAMME_OPTIONAL, " +
                     "$COURSE_PROGRAMME_CREDITS, " +
                     "$COURSE_PROGRAMME_CREATED_BY, " +
-                    "$COURSE_PROGRAMME_TIMESTAMP," +
+                    COURSE_PROGRAMME_TIMESTAMP +
                     ")" +
-                    "VALUES (:courseProgrammeVersion.courseId, :courseProgrammeVersion.progId, :courseProgrammeVersion.version, " +
-                    ":courseProgrammeVersion.lectured, :courseProgrammeVersion.optional, :courseProgrammeVersion.credits, " +
+                    "VALUES (:courseProgrammeVersion.courseId, :courseProgrammeVersion.programmeId, :courseProgrammeVersion.version, " +
+                    ":courseProgrammeVersion.lecturedTerm, :courseProgrammeVersion.optional, :courseProgrammeVersion.credits, " +
                     ":courseProgrammeVersion.createdBy, :courseProgrammeVersion.timestamp)"
     )
     @GetGeneratedKeys
@@ -511,9 +514,9 @@ interface CourseDAOJdbi : CourseDAO {
 
     @SqlUpdate(
             "DELETE FROM $COURSE_PROGRAMME_REPORT_TABLE " +
-                    "WHERE $COURSE_PROGRAMME_REPORT_ID = :reportId" +
+                    "WHERE $COURSE_PROGRAMME_REPORT_ID = :reportId " +
                     "AND $COURSE_PROGRAMME_COURSE_ID = :courseId " +
-                    "AND $COURSE_PROGRAMME_PROGRAMME_ID = programmeId"
+                    "AND $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId"
     )
     override fun deleteReportOnCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int
 
@@ -550,7 +553,7 @@ interface CourseDAOJdbi : CourseDAO {
     @SqlUpdate(
             "DELETE FROM $COURSE_PROGRAMME_STAGE_TABLE " +
                     "WHERE $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId " +
-                    "AND $COURSE_PROGRAMME_COURSE_ID = :courseId" +
+                    "AND $COURSE_PROGRAMME_COURSE_ID = :courseId " +
                     "AND $COURSE_PROGRAMME_STAGE_ID = :stageId"
     )
     override fun deleteSpecificStagedCourseProgramme(programmeId: Int, courseId: Int, stageId: Int): Int

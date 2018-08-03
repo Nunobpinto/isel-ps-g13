@@ -26,7 +26,8 @@ fun toCourseProgrammeReport(programmeId: Int, courseId: Int, inputCourseReport: 
         reportedBy = inputCourseReport.reportedBy,
         lecturedTerm = inputCourseReport.lecturedTerm,
         optional = inputCourseReport.optional,
-        credits = inputCourseReport.credits
+        credits = inputCourseReport.credits,
+        deleteFlag = inputCourseReport.deleteFlag
 )
 
 fun toCourseProgrammeStage(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel) = CourseProgrammeStage(
@@ -81,7 +82,8 @@ fun toCourseProgrammeReportOutputModel(courseProgrammeReport: CourseProgrammeRep
         credits = courseProgrammeReport.credits,
         timestamp =courseProgrammeReport.timestamp,
         reportedBy = courseProgrammeReport.reportedBy,
-        votes = courseProgrammeReport.votes
+        votes = courseProgrammeReport.votes,
+        deleteFlag = courseProgrammeReport.deleteFlag
 )
 
 fun toCourseProgrammeVersionOutput(courseProgrammeVersion: CourseProgrammeVersion) = CourseProgrammeVersionOutputModel(

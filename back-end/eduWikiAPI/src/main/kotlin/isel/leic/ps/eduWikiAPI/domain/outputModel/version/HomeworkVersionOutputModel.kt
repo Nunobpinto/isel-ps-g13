@@ -21,7 +21,6 @@ data class HomeworkVersionOutputModel(
         val homeworkId: Int = 0,
         val sheet: String = "",
         val dueDate: LocalDate = LocalDate.now(),
-        val createdBy: String = "",
         val lateDelivery: Boolean = false,
         val multipleDeliveries: Boolean = false,
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())

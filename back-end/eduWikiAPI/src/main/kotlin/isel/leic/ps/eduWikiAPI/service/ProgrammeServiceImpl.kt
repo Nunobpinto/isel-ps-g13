@@ -364,10 +364,17 @@ class ProgrammeServiceImpl : ProgrammeService {
                         optional = report.optional ?: course.optional,
                         credits = report.credits ?: course.credits
                 )
-                val res = courseDAO.updateCourseProgramme(programmeId, courseId, updatedCourse)
-                courseDAO.createCourseProgrammeVersion(toCourseProgrammeVersion(updatedCourse))
+
                 courseDAO.deleteReportOnCourseProgramme(programmeId, courseId, reportId)
-                toCourseProgrammeOutputModel(res)
+                if(report.deleteFlag){
+                    courseDAO.deleteSpecificCourseProgramme(programmeId, courseId)
+                    toCourseProgrammeOutputModel(course)
+                }
+                else{
+                    val res = courseDAO.updateCourseProgramme(programmeId, courseId, updatedCourse)
+                    courseDAO.createCourseProgrammeVersion(toCourseProgrammeVersion(updatedCourse))
+                    toCourseProgrammeOutputModel(res)
+                }
             }
 
     override fun voteOnReportedCourseProgramme(programmeId: Int, courseId: Int, reportId: Int, vote: VoteInputModel): Int =

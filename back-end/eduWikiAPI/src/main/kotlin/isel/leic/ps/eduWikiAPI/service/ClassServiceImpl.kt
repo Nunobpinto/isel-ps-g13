@@ -405,13 +405,13 @@ class ClassServiceImpl : ClassService {
                         classId = courseClassReportInputModel.classId ?: courseClass.classId,
                         courseId = courseClassReportInputModel.courseId ?: courseClass.courseId,
                         termId = courseClassReportInputModel.termId ?: courseClass.termId,
-                        reportedBy = courseClassReportInputModel.reportedBy
+                        reportedBy = courseClassReportInputModel.reportedBy,
+                        deleltePermanently = courseClassReportInputModel.deletePermanently
                 )
                 val report = classDAO.reportCourseInClass(courseClassReport)
                 toCourseClassReportOutputModel(report)
             }
 
-    //TODO Testar
     override fun updateCourseInClassFromReport(classId: Int, courseId: Int, reportId: Int): CourseClassOutputModel =
             jdbi.inTransaction<CourseClassOutputModel, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
@@ -426,9 +426,8 @@ class ClassServiceImpl : ClassService {
                         classId = courseClassReport.classId ?: courseClass.courseId,
                         termId = courseClassReport.termId ?: courseClass.termId
                 )
-                val res = classDAO.updateCourseClass(updatedCourseClass)
                 classDAO.deleteSpecificReportOnCourseClass(courseClass.courseClassId, reportId)
-
+                classDAO.deleteSpecificCourseInClass(classId, courseId)
                 val klass = classDAO.getSpecificClass(classId)
                         .orElseThrow {
                             NotFoundException(
@@ -438,7 +437,16 @@ class ClassServiceImpl : ClassService {
                         }
                 val term = getTerm(termDAOJdbi, klass.termId)
                 val course = getCourse(courseDAOJdbi, courseId)
-                toCourseClassOutputModel(course, klass, res, term)
+                if (!courseClassReport.deleltePermanently) {
+                    toCourseClassOutputModel(
+                            course,
+                            klass,
+                            classDAO.addCourseToClass(updatedCourseClass),
+                            term
+                    )
+                } else toCourseClassOutputModel(course, klass, courseClass, term)
+
+
             }
 
     override fun voteOnReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int, vote: VoteInputModel): Int =
@@ -1052,10 +1060,10 @@ class ClassServiceImpl : ClassService {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 toHomeworkVersionOutputModel(
                         homeworkDAO.getSpecificVersionOfHomeworkOfCourseInClass(
-                        classDAO.getCourseClassId(classId, courseId),
-                        homeworkId,
-                        version
-                ).orElseThrow {
+                                classDAO.getCourseClassId(classId, courseId),
+                                homeworkId,
+                                version
+                        ).orElseThrow {
                             NotFoundException(
                                     msg = "No version found",
                                     action = "Try with other version number"

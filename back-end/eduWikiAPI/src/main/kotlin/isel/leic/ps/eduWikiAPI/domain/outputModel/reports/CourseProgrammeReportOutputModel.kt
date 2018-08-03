@@ -12,5 +12,6 @@ data class CourseProgrammeReportOutputModel (
         val credits: Int? = null,
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now()),
         val reportedBy: String = "",
-        val votes: Int = 0
+        val votes: Int = 0,
+        val deleteFlag: Boolean = false
 )

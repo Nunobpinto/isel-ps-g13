@@ -2,6 +2,7 @@ package isel.leic.ps.eduWikiAPI.domain.model.report
 
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_PROGRAMME_COURSE_ID
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_PROGRAMME_CREDITS
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_PROGRAMME_DELETE_FLAG
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_PROGRAMME_LECTURED_TERM
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_PROGRAMME_OPTIONAL
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_PROGRAMME_PROGRAMME_ID
@@ -31,5 +32,7 @@ data class CourseProgrammeReport (
         @ColumnName(COURSE_PROGRAMME_REPORTED_BY)
         val reportedBy: String = "",
         @ColumnName(COURSE_PROGRAMME_VOTES)
-        val votes: Int = 0
+        val votes: Int = 0,
+        @ColumnName(COURSE_PROGRAMME_DELETE_FLAG)
+        val deleteFlag: Boolean
 )

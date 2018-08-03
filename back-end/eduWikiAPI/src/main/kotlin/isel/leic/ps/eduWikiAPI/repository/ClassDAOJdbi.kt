@@ -75,6 +75,7 @@ interface ClassDAOJdbi : ClassDAO {
         const val COURSE_CLASS_COURSE_ID = "course_id"
         const val COURSE_CLASS_STAGE_ID = "course_class_stage_id"
         const val COURSE_CLASS_CREATED_BY = "created_by"
+        const val COURSE_CLASS_DELETE_FLAG = "delete_permanently"
     }
 
     @SqlQuery(
@@ -456,10 +457,12 @@ interface ClassDAOJdbi : ClassDAO {
                     "$COURSE_CLASS_TERM_ID, " +
                     "$COURSE_CLASS_REPORTED_BY, " +
                     "$COURSE_CLASS_VOTES, " +
-                    "$COURSE_CLASS_TIMESTAMP " +
+                    "$COURSE_CLASS_TIMESTAMP, " +
+                    "$COURSE_CLASS_DELETE_FLAG" +
                     ") " +
                     "VALUES(:courseClassReport.courseClassId, :courseClassReport.courseId, :courseClassReport.classId, " +
-                    ":courseClassReport.termId, :courseClassReport.reportedBy, :courseClassReport.votes, :courseClassReport.timestamp)"
+                    ":courseClassReport.termId, :courseClassReport.reportedBy, :courseClassReport.votes, :courseClassReport.timestamp," +
+                    ":courseClassReport.deleltePermanently)"
     )
     @GetGeneratedKeys
     override fun reportCourseInClass(courseClassReport: CourseClassReport): CourseClassReport

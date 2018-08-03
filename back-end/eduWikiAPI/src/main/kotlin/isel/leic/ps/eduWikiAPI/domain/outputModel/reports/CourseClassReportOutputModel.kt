@@ -11,5 +11,6 @@ data class CourseClassReportOutputModel(
         val courseId: Int? = null,
         val termId: Int? = null,
         val reportedBy: String = "",
-        val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
+        val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now()),
+        val deletePermanently: Boolean = false
 )

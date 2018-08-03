@@ -38,7 +38,8 @@ fun toCourseClassReportOutputModel(courseClassReport: CourseClassReport) = Cours
         courseId = courseClassReport.courseId,
         reportedBy = courseClassReport.reportedBy,
         votes = courseClassReport.votes,
-        timestamp = courseClassReport.timestamp
+        timestamp = courseClassReport.timestamp,
+        deletePermanently = courseClassReport.deleltePermanently
 )
 
 fun toCourseClassStageOutputModel(courseClassStage: CourseClassStage) = CourseClassStageOutputModel(

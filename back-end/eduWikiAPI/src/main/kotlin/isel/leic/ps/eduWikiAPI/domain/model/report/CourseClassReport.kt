@@ -2,6 +2,7 @@ package isel.leic.ps.eduWikiAPI.domain.model.report
 
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.COURSE_CLASS_CLASS_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.COURSE_CLASS_COURSE_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.COURSE_CLASS_DELETE_FLAG
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.COURSE_CLASS_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.COURSE_CLASS_REPORTED_BY
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.COURSE_CLASS_REPORT_ID
@@ -28,5 +29,7 @@ data class CourseClassReport(
         @ColumnName(COURSE_CLASS_REPORTED_BY)
         val reportedBy: String = "",
         @ColumnName(COURSE_CLASS_TIMESTAMP)
-        val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
+        val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now()),
+        @ColumnName(COURSE_CLASS_DELETE_FLAG)
+        val deleltePermanently: Boolean = false
 )
