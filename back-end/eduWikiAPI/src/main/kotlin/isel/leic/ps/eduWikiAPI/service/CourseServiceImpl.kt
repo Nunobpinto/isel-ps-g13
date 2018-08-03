@@ -277,9 +277,9 @@ class CourseServiceImpl : CourseService {
     ): Exam {
         val exam = jdbi.inTransaction<Exam, Exception> {
             val examDAO = it.attach(ExamDAOJdbi::class.java)
-            val fileDAO = it.attach(ResourceDAOJdbi::class.java)
+            val resourceDAO = it.attach(ResourceDAOJdbi::class.java)
             val createdExam = examDAO.createExamOnCourseInTerm(courseId, termId, toExam(inputExam))
-            fileDAO.createResourceValidatorEntry(createdExam.sheetId, 0)
+            resourceDAO.createResourceValidatorEntry(createdExam.sheetId, 0)
             examDAO.createExamVersion(toExamVersion(createdExam))
             createdExam
         }
@@ -322,7 +322,12 @@ class CourseServiceImpl : CourseService {
                 res
             }
 
-    override fun createStagingExam(sheet: MultipartFile, courseId: Int, termId: Int, examInputModel: ExamInputModel): ExamStage {
+    override fun createStagingExam(
+            sheet: MultipartFile,
+            courseId: Int,
+            termId: Int,
+            examInputModel: ExamInputModel
+    ): ExamStage {
         val examStaged = jdbi.inTransaction<ExamStage, Exception> {
             val examDAO = it.attach(ExamDAOJdbi::class.java)
             val resourceDAO = it.attach(ResourceDAOJdbi::class.java)
@@ -330,13 +335,14 @@ class CourseServiceImpl : CourseService {
             resourceDAO.createResourceValidatorEntry(stagingExam.sheetId, 0)
             stagingExam
         }
-        //storageService.storeResource(examStaged.stageId, EXAM_TABLE, examStaged.sheetId, sheet)
+        storageService.storeResource(examStaged.sheetId, sheet)
         return examStaged
     }
 
     override fun createExamFromStaged(courseId: Int, termId: Int, stageId: Int): Exam =
             jdbi.inTransaction<Exam, Exception> {
                 val examDAO = it.attach(ExamDAOJdbi::class.java)
+                val resourceDAO = it.attach(ResourceDAOJdbi::class.java)
                 val examStage = examDAO.getExamSpecificStageEntry(stageId).get()
                 val exam = examDAO.createExamOnCourseInTerm(courseId, termId, stagedToExam(examStage))
                 examDAO.createExamVersion(toExamVersion(exam))
@@ -353,20 +359,27 @@ class CourseServiceImpl : CourseService {
             }
 
     override fun createWorkAssignmentOnCourseInTerm(
+            sheet: MultipartFile,
             courseId: Int,
             termId: Int,
             inputWorkAssignment: WorkAssignmentInputModel
-    ): WorkAssignment =
-            jdbi.inTransaction<WorkAssignment, Exception> {
-                val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
-                val workAssignment = workAssignmentDAO.createWorkAssignmentOnCourseInTerm(
-                        courseId,
-                        termId,
-                        toWorkAssignment(inputWorkAssignment)
-                )
-                workAssignmentDAO.createWorkAssignmentVersion(toWorkAssignmentVersion(workAssignment))
-                workAssignment
-            }
+    ): WorkAssignment {
+        val workAssignment = jdbi.inTransaction<WorkAssignment, Exception> {
+            val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
+            val resourceDAO = it.attach(ResourceDAOJdbi::class.java)
+            val createdWorkAssignment = workAssignmentDAO.createWorkAssignmentOnCourseInTerm(
+                    courseId,
+                    termId,
+                    toWorkAssignment(inputWorkAssignment)
+            )
+            resourceDAO.createResourceValidatorEntry(createdWorkAssignment.sheetId, 0)
+            workAssignmentDAO.createWorkAssignmentVersion(toWorkAssignmentVersion(createdWorkAssignment))
+            createdWorkAssignment
+        }
+        storageService.storeResource(workAssignment.sheetId, sheet)
+        return workAssignment
+    }
+
 
     override fun addReportToWorkAssignmentOnCourseInTerm(
             workAssignmentId: Int,
@@ -417,8 +430,8 @@ class CourseServiceImpl : CourseService {
                         workAssignmentId = workAssignmentId,
                         version = workAssignment.version.inc(),
                         createdBy = report.reportedBy,
-                        sheet = report.sheet ?: workAssignment.sheet,
-                        supplement = report.supplement ?: workAssignment.supplement,
+                        sheetId = report.sheetId,
+                        supplementId = report.supplementId,
                         dueDate = report.dueDate ?: workAssignment.dueDate,
                         individual = report.individual ?: workAssignment.individual,
                         lateDelivery = report.lateDelivery ?: workAssignment.lateDelivery,

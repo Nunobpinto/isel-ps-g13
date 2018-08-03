@@ -128,7 +128,7 @@ interface ExamDAOJdbi : ExamDAO {
                     "$EXAM_TIMESTAMP " +
                     ") " +
                     "values(:courseMiscUnitStageId, :examStage.sheetId, :examStage.dueDate, " +
-                    ":examStage.type, :examStage.phase, :examStage.location, " +
+                    ":examStage.type::exam_type, :examStage.phase, :examStage.location, " +
                     ":examStage.createdBy, :examStage.votes, :examStage.timestamp)"
     )
     @GetGeneratedKeys
@@ -140,7 +140,7 @@ interface ExamDAOJdbi : ExamDAO {
         if (!courseDAO.getSpecificTermOfCourse(courseId, termId).isPresent) {
             courseDAO.createCourseTerm(courseId, termId, Timestamp.valueOf(LocalDateTime.now()))
         }
-        val courseMiscUnitStage = courseDAO.createStagingCourseMiscUnit(courseId, termId, "Exam")
+        val courseMiscUnitStage = courseDAO.createStagingCourseMiscUnit(courseId, termId, "Exam/Test")
         return createStagingExam(courseMiscUnitStage.stageId, examStage)
     }
 

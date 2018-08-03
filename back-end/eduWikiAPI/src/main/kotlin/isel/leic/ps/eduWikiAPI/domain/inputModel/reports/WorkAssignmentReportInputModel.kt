@@ -2,12 +2,13 @@ package isel.leic.ps.eduWikiAPI.domain.inputModel.reports
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDate
+import java.util.*
 
 class WorkAssignmentReportInputModel (
         @JsonProperty("work_assignment_id")
         val workAssignmentId: Int = 0,
-        val sheet: String? = null,
-        val supplement: String? = null,
+        val sheetId: UUID = UUID.randomUUID(),
+        val supplementId: UUID = UUID.randomUUID(),
         @JsonProperty("due_date")
         val dueDate: LocalDate? = null,
         val individual: Boolean? = null,

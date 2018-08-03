@@ -9,8 +9,8 @@ import isel.leic.ps.eduWikiAPI.domain.model.version.WorkAssignmentVersion
 
 fun toWorkAssignment(input: WorkAssignmentInputModel) = WorkAssignment(
         createdBy = input.createdBy,
-        sheet = input.sheet,
-        supplement = input.supplement,
+        sheetId = input.sheetId,
+        supplementId = input.supplementId,
         dueDate = input.dueDate,
         individual = input.individual,
         lateDelivery = input.lateDelivery,
@@ -21,8 +21,8 @@ fun toWorkAssignment(input: WorkAssignmentInputModel) = WorkAssignment(
 fun toWorkAssignmentVersion(workAssignment: WorkAssignment) = WorkAssignmentVersion(
         workAssignmentId = workAssignment.workAssignmentId,
         version = workAssignment.version,
-        sheet = workAssignment.sheet,
-        supplement = workAssignment.supplement,
+        sheetId = workAssignment.sheetId,
+        supplementId = workAssignment.supplementId,
         dueDate = workAssignment.dueDate,
         individual = workAssignment.individual,
         lateDelivery = workAssignment.lateDelivery,
@@ -34,8 +34,8 @@ fun toWorkAssignmentVersion(workAssignment: WorkAssignment) = WorkAssignmentVers
 
 fun toWorkAssignmentReport(workAssignmentId: Int, inputWorkAssignmentReport: WorkAssignmentReportInputModel) = WorkAssignmentReport(
         workAssignmentId = workAssignmentId,
-        sheet = inputWorkAssignmentReport.sheet,
-        supplement = inputWorkAssignmentReport.supplement,
+        sheetId = inputWorkAssignmentReport.sheetId,
+        supplementId = inputWorkAssignmentReport.supplementId,
         dueDate = inputWorkAssignmentReport.dueDate,
         individual = inputWorkAssignmentReport.individual,
         lateDelivery = inputWorkAssignmentReport.lateDelivery,
@@ -45,8 +45,8 @@ fun toWorkAssignmentReport(workAssignmentId: Int, inputWorkAssignmentReport: Wor
 )
 
 fun toStageWorkAssignment(inputWorkAssignment: WorkAssignmentInputModel) = WorkAssignmentStage(
-        sheet = inputWorkAssignment.sheet,
-        supplement = inputWorkAssignment.supplement,
+        sheetId = inputWorkAssignment.sheetId,
+        supplementId = inputWorkAssignment.supplementId,
         dueDate = inputWorkAssignment.dueDate,
         individual = inputWorkAssignment.individual,
         lateDelivery = inputWorkAssignment.lateDelivery,
@@ -57,8 +57,8 @@ fun toStageWorkAssignment(inputWorkAssignment: WorkAssignmentInputModel) = WorkA
 
 fun stagedToWorkAssignment(stage: WorkAssignmentStage) = WorkAssignment(
         createdBy = stage.createdBy,
-        sheet = stage.sheet,
-        supplement = stage.supplement,
+        sheetId = stage.sheetId,
+        supplementId = stage.supplementId,
         dueDate = stage.dueDate,
         individual = stage.individual,
         lateDelivery = stage.lateDelivery,
