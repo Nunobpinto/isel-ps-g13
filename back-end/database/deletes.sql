@@ -86,7 +86,7 @@ delete from class_misc_unit;
 
 delete from course_misc_unit;
 
-delete from student_course_class;
+delete from user_course_class;
 
 delete from reputation;
 
@@ -104,4 +104,4 @@ delete from course;
 
 delete from organization;
 
-delete from student;
+delete from user;

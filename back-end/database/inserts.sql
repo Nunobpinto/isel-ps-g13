@@ -280,14 +280,14 @@ insert into reputation_log (reputation_log_action, reputation_log_given_by, repu
 
 -- Student Course Class
 
-insert into user_course_class (user_username, course_id, class_id, term_id)
-  values ('ze', 3, 3, 2);
+insert into user_course_class (user_username, course_id, course_class_id)
+  values ('ze', 3, 3);
 
-insert into user_course_class (user_username, course_id, class_id, term_id)
-  values ('ze', 2, 3, 2);
+insert into user_course_class (user_username, course_id, course_class_id)
+  values ('ze', 2, 3);
 
-insert into user_course_class (user_username, course_id, class_id, term_id)
-  values ('bruno', 1, 1, 1);
+insert into user_course_class (user_username, course_id, course_class_id)
+  values ('bruno', 1, 1);
 
 -- Student Programme
 

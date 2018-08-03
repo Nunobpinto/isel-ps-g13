@@ -228,9 +228,7 @@ CREATE TABLE IF NOT EXISTS reputation_log (
 CREATE TABLE IF NOT EXISTS user_course_class (
   user_username VARCHAR(20) REFERENCES user_account ON DELETE CASCADE,
   course_id INTEGER REFERENCES course ON DELETE CASCADE,
-  class_id INTEGER,
-  term_id INTEGER,
-  FOREIGN KEY (class_id, term_id) REFERENCES class (class_id, term_id) ON DELETE SET NULL,
+  course_class_id INTEGER REFERENCES course_class ON DELETE SET NULL,
   PRIMARY KEY (user_username, course_id)
 );
 
@@ -425,6 +423,7 @@ CREATE TABLE IF NOT EXISTS course_programme_report (
 	course_lectured_term varchar(50),
 	course_optional BOOLEAN,
 	course_credits INTEGER,
+	to_delete BOOLEAN,
 	time_stamp timestamp NOT NULL,
 	reported_by VARCHAR(20) NOT NULL,
 	votes INTEGER DEFAULT 0,
@@ -461,6 +460,7 @@ CREATE TABLE IF NOT EXISTS course_class_report (
   course_id INTEGER,
   class_id INTEGER,
   term_id INTEGER,
+  delete_permanently BOOLEAN,
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
