@@ -6,8 +6,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
-import java.sql.Timestamp
-import java.time.LocalDateTime
+import isel.leic.ps.eduWikiAPI.domain.outputModel.CourseOutputModel
 
 fun toCourse(input: CourseInputModel) = Course(
         organizationId = input.organizationId,
@@ -45,4 +44,15 @@ fun toCourseVersion(course: Course) = CourseVersion(
         shortName = course.shortName,
         createdBy = course.createdBy,
         timestamp = course.timestamp
+)
+
+fun toCourseOutputModel(course: Course) = CourseOutputModel(
+        courseId = course.courseId,
+        organizationId = course.organizationId,
+        version = course.version,
+        votes = course.votes,
+        timestamp = course.timestamp,
+        fullName = course.fullName,
+        shortName = course.shortName,
+        username = course.createdBy
 )

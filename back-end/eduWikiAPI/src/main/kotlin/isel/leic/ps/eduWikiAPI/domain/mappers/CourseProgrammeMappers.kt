@@ -6,8 +6,10 @@ import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseProgrammeVersion
-import java.sql.Timestamp
-import java.time.LocalDateTime
+import isel.leic.ps.eduWikiAPI.domain.outputModel.CourseProgrammeOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.CourseProgrammeReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.CourseProgrammeStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.version.CourseProgrammeVersionOutputModel
 
 fun toCourseProgramme(input: CourseProgrammeInputModel) = Course(
         courseId = input.courseId,
@@ -53,4 +55,54 @@ fun toCourseProgrammeVersion(course: Course) = CourseProgrammeVersion(
         credits = course.credits,
         timestamp = course.timestamp,
         createdBy = course.createdBy
+)
+
+fun toCourseProgrammeOutputModel(course: Course) = CourseProgrammeOutputModel(
+        courseId = course.courseId,
+        organizationId = course.organizationId,
+        version = course.version,
+        votes = course.votes,
+        timestamp = course.timestamp,
+        fullName = course.fullName,
+        shortName = course.shortName,
+        username = course.createdBy,
+        programmeId = course.programmeId,
+        optional = course.optional,
+        credits = course.credits,
+        lecturedTerm = course.lecturedTerm
+)
+
+fun toCourseProgrammeReportOutputModel(courseProgrammeReport: CourseProgrammeReport) = CourseProgrammeReportOutputModel(
+        reportId = courseProgrammeReport.reportId,
+        courseId = courseProgrammeReport.courseId,
+        programmeId = courseProgrammeReport.programmeId,
+        lecturedTerm = courseProgrammeReport.lecturedTerm,
+        optional = courseProgrammeReport.optional,
+        credits = courseProgrammeReport.credits,
+        timestamp =courseProgrammeReport.timestamp,
+        reportedBy = courseProgrammeReport.reportedBy,
+        votes = courseProgrammeReport.votes
+)
+
+fun toCourseProgrammeVersionOutput(courseProgrammeVersion: CourseProgrammeVersion) = CourseProgrammeVersionOutputModel(
+        courseId = courseProgrammeVersion.courseId,
+        version = courseProgrammeVersion.version,
+        programmeId = courseProgrammeVersion.programmeId,
+        lecturedTerm = courseProgrammeVersion.lecturedTerm,
+        optional = courseProgrammeVersion.optional,
+        credits = courseProgrammeVersion.credits,
+        timestamp =courseProgrammeVersion.timestamp,
+        createdBy = courseProgrammeVersion.createdBy
+)
+
+fun toCourseProgrammeStageOutputModel(courseProgrammeStage: CourseProgrammeStage) = CourseProgrammeStageOutputModel(
+        stagedId = courseProgrammeStage.stageId,
+        courseId = courseProgrammeStage.courseId,
+        votes = courseProgrammeStage.votes,
+        timestamp = courseProgrammeStage.timestamp,
+        username = courseProgrammeStage.createdBy,
+        programmeId = courseProgrammeStage.programmeId,
+        optional = courseProgrammeStage.optional,
+        credits = courseProgrammeStage.credits,
+        lecturedTerm = courseProgrammeStage.lecturedTerm
 )

@@ -18,11 +18,27 @@ import isel.leic.ps.eduWikiAPI.domain.model.staging.LectureStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.ClassVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.HomeworkVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.LectureVersion
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi
-import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi
-import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi
+import isel.leic.ps.eduWikiAPI.domain.outputModel.ClassOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.CourseClassOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.HomeworkOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.LectureOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.ClassReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.CourseClassReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.HomeworkReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.LectureReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.ClassStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.CourseClassStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.HomeworkStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.LectureStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.version.ClassVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.version.HomeworkVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.version.LectureVersionOutputModel
+import isel.leic.ps.eduWikiAPI.exceptions.NotFoundException
+import isel.leic.ps.eduWikiAPI.exceptions.UnknownDataException
+import isel.leic.ps.eduWikiAPI.repository.*
 import isel.leic.ps.eduWikiAPI.service.interfaces.ClassService
 import org.jdbi.v3.core.Jdbi
+import org.jdbi.v3.sqlobject.kotlin.attach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
@@ -37,22 +53,51 @@ class ClassServiceImpl : ClassService {
      * Class Methods
      */
 
-    override fun getAllClasses(): List<Class> =
-            jdbi.withExtension<List<Class>, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
-                it.getAllClasses()
+    fun getTerm(termDAOJdbi: TermDAOJdbi, termId: Int): Term = termDAOJdbi.getTerm(termId)
+            .orElseThrow {
+                UnknownDataException(
+                        msg = "Can't find term with id $termId",
+                        action = "Try Again Later"
+                )
             }
 
-    override fun getSpecificClass(classId: Int): Optional<Class> =
-            jdbi.withExtension<Optional<Class>, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
-                it.getSpecificClass(classId)
+    fun getCourse(courseDAOJdbi: CourseDAOJdbi, courseId: Int): Course = courseDAOJdbi.getSpecificCourse(courseId)
+            .orElseThrow {
+                UnknownDataException(
+                        msg = "Can't find course with id $courseId",
+                        action = "Try Again Later"
+                )
             }
 
-    override fun createClass(input: ClassInputModel): Class =
-            jdbi.inTransaction<Class, Exception> {
+    override fun getAllClasses(): List<ClassOutputModel> =
+            jdbi.inTransaction<List<ClassOutputModel>, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
+                val termDAOJdbi = it.attach(TermDAOJdbi::class.java)
+                val classes = classDAO.getAllClasses()
+                classes.map { toClassOutputModel(it, getTerm(termDAOJdbi, it.termId)) }
+            }
+
+    override fun getSpecificClass(classId: Int): ClassOutputModel =
+            jdbi.inTransaction<ClassOutputModel, Exception> {
+                val classDAO = it.attach(ClassDAOJdbi::class.java)
+                val termDAOJdbi = it.attach(TermDAOJdbi::class.java)
+                val klass = classDAO.getSpecificClass(classId)
+                        .orElseThrow {
+                            NotFoundException(
+                                    msg = "No class found with id $classId",
+                                    action = "Try other ID"
+                            )
+                        }
+                toClassOutputModel(klass, getTerm(termDAOJdbi, klass.termId))
+            }
+
+    override fun createClass(input: ClassInputModel): ClassOutputModel =
+            jdbi.inTransaction<ClassOutputModel, Exception> {
+                val classDAO = it.attach(ClassDAOJdbi::class.java)
+                val termDAOJdbi = it.attach(TermDAOJdbi::class.java)
                 val klass = classDAO.createClass(toClass(input))
                 classDAO.createClassVersion(toClassVersion(klass))
-                klass
+                toClassOutputModel(klass, getTerm(termDAOJdbi, klass.termId))
             }
 
     override fun voteOnClass(classId: Int, vote: VoteInputModel): Int =
@@ -63,10 +108,16 @@ class ClassServiceImpl : ClassService {
                 classDAO.updateClassVotes(classId, votes)
             }
 
-    override fun partialUpdateOnClass(classId: Int, input: ClassInputModel): Class =
-            jdbi.inTransaction<Class, Exception> {
+    override fun partialUpdateOnClass(classId: Int, input: ClassInputModel): ClassOutputModel =
+            jdbi.inTransaction<ClassOutputModel, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
-                val klass = classDAO.getSpecificClass(classId).get()
+                val klass = classDAO.getSpecificClass(classId).orElseThrow {
+                    NotFoundException(
+                            msg = "No class found with id $classId",
+                            action = "Try other ID"
+                    )
+                }
+                val termDAOJdbi = it.attach(TermDAOJdbi::class.java)
                 val updatedClass = Class(
                         classId = classId,
                         version = klass.version.inc(),
@@ -75,7 +126,7 @@ class ClassServiceImpl : ClassService {
                 )
                 val res = classDAO.updateClass(updatedClass)
                 classDAO.createClassVersion(toClassVersion(updatedClass))
-                res
+                toClassOutputModel(res, getTerm(termDAOJdbi, res.termId))
             }
 
     override fun deleteSpecificClass(classId: Int): Int =
@@ -83,19 +134,27 @@ class ClassServiceImpl : ClassService {
                 it.deleteSpecificClass(classId)
             }
 
-    override fun getAllReportsOfClass(classId: Int): List<ClassReport> =
-            jdbi.withExtension<List<ClassReport>, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
-                it.getAllReportsFromClass(classId)
+    override fun getAllReportsOfClass(classId: Int): List<ClassReportOutputModel> =
+            jdbi.withExtension<List<ClassReportOutputModel>, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
+                it.getAllReportsFromClass(classId).map { toClassReportOutputModel(it) }
             }
 
-    override fun getSpecificReportOfClass(classId: Int, reportId: Int): Optional<ClassReport> =
-            jdbi.withExtension<Optional<ClassReport>, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
-                it.getSpecificReportFromClass(classId, reportId)
+    override fun getSpecificReportOfClass(classId: Int, reportId: Int): ClassReportOutputModel =
+            jdbi.withExtension<ClassReportOutputModel, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
+                toClassReportOutputModel(
+                        it.getSpecificReportFromClass(classId, reportId)
+                                .orElseThrow {
+                                    NotFoundException(
+                                            msg = "No report found",
+                                            action = "Try other report Id"
+                                    )
+                                }
+                )
             }
 
-    override fun reportClass(classId: Int, report: ClassReportInputModel): ClassReport =
-            jdbi.withExtension<ClassReport, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
-                it.reportClass(classId, toClassReport(classId, report))
+    override fun reportClass(classId: Int, report: ClassReportInputModel): ClassReportOutputModel =
+            jdbi.withExtension<ClassReportOutputModel, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
+                toClassReportOutputModel(it.reportClass(classId, toClassReport(classId, report)))
             }
 
     override fun voteOnReportClass(classId: Int, reportId: Int, vote: VoteInputModel): Int =
@@ -106,9 +165,10 @@ class ClassServiceImpl : ClassService {
                 classDAO.updateReportedClassVotes(classId, reportId, votes)
             }
 
-    override fun updateClassFromReport(classId: Int, reportId: Int): Class =
-            jdbi.inTransaction<Class, Exception> {
+    override fun updateClassFromReport(classId: Int, reportId: Int): ClassOutputModel =
+            jdbi.inTransaction<ClassOutputModel, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
+                val termDAOJdbi = it.attach(TermDAOJdbi::class.java)
                 val klass = classDAO.getSpecificClass(classId).get()
                 val report = classDAO.getSpecificReportFromClass(classId, reportId).get()
                 val updatedClass = Class(
@@ -121,7 +181,7 @@ class ClassServiceImpl : ClassService {
                 val res = classDAO.updateClass(updatedClass)
                 classDAO.createClassVersion(toClassVersion(updatedClass))
                 classDAO.deleteSpecificReportInClass(classId, reportId)
-                res
+                toClassOutputModel(res, termDAOJdbi.getTerm(res.termId).get())
             }
 
     override fun deleteAllReportsInClass(classId: Int): Int =
@@ -134,29 +194,46 @@ class ClassServiceImpl : ClassService {
                 it.deleteSpecificReportInClass(classId, reportId)
             }
 
-    override fun getAllStagedClasses(): List<ClassStage> =
-            jdbi.withExtension<List<ClassStage>, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
-                it.getAllStagedClasses()
-            }
-
-    override fun getSpecificStagedClass(stageId: Int): Optional<ClassStage> =
-            jdbi.withExtension<Optional<ClassStage>, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
-                it.getSpecificStagedClass(stageId)
-            }
-
-    override fun createStagingClass(classStage: ClassStage): ClassStage =
-            jdbi.withExtension<ClassStage, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
-                it.createStagedClass(classStage)
-            }
-
-    override fun createClassFromStaged(stageId: Int): Class =
-            jdbi.inTransaction<Class, Exception> {
+    override fun getAllStagedClasses(): List<ClassStageOutputModel> =
+            jdbi.inTransaction<List<ClassStageOutputModel>, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
+                val termDAOJdbi = it.attach(TermDAOJdbi::class.java)
+                classDAO.getAllStagedClasses().map {
+                    toClassStagedOutputModel(it, getTerm(termDAOJdbi, it.termId))
+                }
+            }
+
+    override fun getSpecificStagedClass(stageId: Int): ClassStageOutputModel =
+            jdbi.inTransaction<ClassStageOutputModel, Exception> {
+                val classDAO = it.attach(ClassDAOJdbi::class.java)
+                val termDAOJdbi = it.attach(TermDAOJdbi::class.java)
+                val classStage = classDAO.getSpecificStagedClass(stageId)
+                        .orElseThrow {
+                            NotFoundException(
+                                    msg = "No class staged found",
+                                    action = "Try other id"
+                            )
+                        }
+                toClassStagedOutputModel(classStage, getTerm(termDAOJdbi, classStage.termId))
+            }
+
+    override fun createStagingClass(classStage: ClassStage): ClassStageOutputModel =
+            jdbi.inTransaction<ClassStageOutputModel, Exception> {
+                val classDAO = it.attach(ClassDAOJdbi::class.java)
+                val termDAOJdbi = it.attach(TermDAOJdbi::class.java)
+                val res = classDAO.createStagedClass(classStage)
+                toClassStagedOutputModel(res, getTerm(termDAOJdbi, res.termId))
+            }
+
+    override fun createClassFromStaged(stageId: Int): ClassOutputModel =
+            jdbi.inTransaction<ClassOutputModel, Exception> {
+                val classDAO = it.attach(ClassDAOJdbi::class.java)
+                val termDAOJdbi = it.attach(TermDAOJdbi::class.java)
                 val classStaged = classDAO.getSpecificStagedClass(stageId).get()
                 val createdClass = classDAO.createClass(stagedToClass(classStaged))
                 classDAO.deleteSpecificStagedClass(stageId)
                 classDAO.createClassVersion(toClassVersion(createdClass))
-                createdClass
+                toClassOutputModel(createdClass, getTerm(termDAOJdbi, createdClass.termId))
             }
 
     override fun voteOnStagedClass(stageId: Int, vote: VoteInputModel): Int =
@@ -177,14 +254,27 @@ class ClassServiceImpl : ClassService {
                 it.deleteSpecificStagedClass(stageId)
             }
 
-    override fun getAllVersionsOfClass(classId: Int): List<ClassVersion> =
-            jdbi.withExtension<List<ClassVersion>, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
-                it.getAllVersionsOfSpecificClass(classId)
+    override fun getAllVersionsOfClass(classId: Int): List<ClassVersionOutputModel> =
+            jdbi.inTransaction<List<ClassVersionOutputModel>, Exception> {
+                val classDAO = it.attach(ClassDAOJdbi::class.java)
+                val termDAOJdbi = it.attach(TermDAOJdbi::class.java)
+                classDAO.getAllVersionsOfSpecificClass(classId).map {
+                    toClassVersionOutputModel(it, getTerm(termDAOJdbi, it.termId))
+                }
             }
 
-    override fun getSpecificVersionOfClass(classId: Int, versionId: Int): Optional<ClassVersion> =
-            jdbi.withExtension<Optional<ClassVersion>, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
-                it.getVersionOfSpecificClass(classId, versionId)
+    override fun getSpecificVersionOfClass(classId: Int, versionId: Int): ClassVersionOutputModel =
+            jdbi.inTransaction<ClassVersionOutputModel, Exception> {
+                val classDAO = it.attach(ClassDAOJdbi::class.java)
+                val termDAOJdbi = it.attach(TermDAOJdbi::class.java)
+                val classVersion = classDAO.getVersionOfSpecificClass(classId, versionId)
+                        .orElseThrow {
+                            NotFoundException(
+                                    msg = "No version found",
+                                    action = "Try with other version number"
+                            )
+                        }
+                toClassVersionOutputModel(classVersion, getTerm(termDAOJdbi, classVersion.termId))
             }
 
     override fun deleteAllVersionsOfClass(courseId: Int): Int =
@@ -197,27 +287,70 @@ class ClassServiceImpl : ClassService {
                 it.deleteSpecificVersionOfClass(courseId, versionId)
             }
 
-    override fun getAllCoursesOfClass(classId: Int): List<Course> =
-            jdbi.withExtension<List<Course>, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
-                it.getAllCoursesOfClass(classId)
-            }
-
-    override fun getSpecificCourseOfClass(classId: Int, courseId: Int): Optional<Course> =
-            jdbi.withExtension<Optional<Course>, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
-                it.getSpecificCourseOfClass(classId, courseId)
-            }
-
-    override fun addCourseToClass(classId: Int, courseId: Int, courseClassInputModel: CourseClassInputModel): CourseClass =
-            jdbi.inTransaction<CourseClass, Exception> {
+    /**
+     * Course Class
+     */
+    override fun getAllCoursesOfClass(classId: Int): List<CourseClassOutputModel> =
+            jdbi.inTransaction<List<CourseClassOutputModel>, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
-                val termId = classDAO.getTermIdFromSpecificClass(classId)
+                val courseDAOJdbi = it.attach(CourseDAOJdbi::class.java)
+                val termDAOJdbi = it.attach(TermDAOJdbi::class.java)
+                val klass = classDAO.getSpecificClass(classId).orElseThrow {
+                    NotFoundException(
+                            msg = "No class found with this id",
+                            action = "Try other id"
+                    )
+                }
+                classDAO.getAllCoursesOfClass(classId).map {
+                    toCourseClassOutputModel(getCourse(courseDAOJdbi, it.courseId), klass, it, getTerm(termDAOJdbi, it.termId))
+                }
+
+            }
+
+    override fun getSpecificCourseOfClass(classId: Int, courseId: Int): CourseClassOutputModel =
+            jdbi.inTransaction<CourseClassOutputModel, Exception> {
+                val classDAO = it.attach(ClassDAOJdbi::class.java)
+                val courseDAOJdbi = it.attach(CourseDAOJdbi::class.java)
+                val termDAOJdbi = it.attach(TermDAOJdbi::class.java)
+                val klass = classDAO.getSpecificClass(classId).orElseThrow {
+                    NotFoundException(
+                            msg = "No class found with this id",
+                            action = "Try other id"
+                    )
+                }
+                val courseClass = classDAO.getSpecificCourseOfClass(classId, courseId)
+                        .orElseThrow {
+                            NotFoundException(
+                                    msg = "No course found with this id for this class",
+                                    action = "Try other courseId"
+                            )
+                        }
+                val course = getCourse(courseDAOJdbi, courseId)
+                toCourseClassOutputModel(course, klass, courseClass, getTerm(termDAOJdbi, courseClass.termId))
+            }
+
+    override fun addCourseToClass(classId: Int, courseId: Int, courseClassInputModel: CourseClassInputModel): CourseClassOutputModel =
+            jdbi.inTransaction<CourseClassOutputModel, Exception> {
+                val classDAO = it.attach(ClassDAOJdbi::class.java)
+                val courseDAOJdbi = it.attach(CourseDAOJdbi::class.java)
+                val termDAOJdbi = it.attach(TermDAOJdbi::class.java)
+                val klass = classDAO.getSpecificClass(classId)
+                        .orElseThrow {
+                            NotFoundException(
+                                    msg = "No class found",
+                                    action = "Try other id"
+                            )
+                        }
+                val term = getTerm(termDAOJdbi, klass.termId)
                 val courseClass = CourseClass(
                         courseId = courseId,
                         classId = classId,
-                        termId = termId,
+                        termId = term.termId,
                         createdBy = courseClassInputModel.createdBy
                 )
-                classDAO.addCourseToClass(courseClass)
+                val created = classDAO.addCourseToClass(courseClass)
+                val course = getCourse(courseDAOJdbi, courseId)
+                toCourseClassOutputModel(course, klass, created, term)
             }
 
     override fun voteOnCourseInClass(classId: Int, courseId: Int, vote: VoteInputModel): Int =
@@ -238,20 +371,35 @@ class ClassServiceImpl : ClassService {
                 it.deleteSpecificCourseInClass(classId, courseId)
             }
 
-    override fun getAllReportsOfCourseInClass(classId: Int, courseId: Int): List<CourseClassReport> =
-            jdbi.withExtension<List<CourseClassReport>, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
-                it.getAllReportsOfCourseInClass(classId, courseId)
+    override fun getAllReportsOfCourseInClass(classId: Int, courseId: Int): List<CourseClassReportOutputModel> =
+            jdbi.inTransaction<List<CourseClassReportOutputModel>, Exception> {
+                val classDAOJdbi = it.attach(ClassDAOJdbi::class.java)
+                val courseClass = classDAOJdbi.getCourseClass(classId, courseId).get()
+                classDAOJdbi.getAllReportsOfCourseInClass(courseClass.courseClassId).map { toCourseClassReportOutputModel(it) }
             }
 
-    override fun getSpecificReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int): Optional<CourseClassReport> =
-            jdbi.withExtension<Optional<CourseClassReport>, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
-                it.getSpecificReportOfCourseInClass(classId, courseId, reportId)
+    override fun getSpecificReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int): CourseClassReportOutputModel =
+            jdbi.withExtension<CourseClassReportOutputModel, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
+                toCourseClassReportOutputModel(
+                        it.getSpecificReportOfCourseInClass(reportId)
+                                .orElseThrow {
+                                    NotFoundException(
+                                            msg = "No report found",
+                                            action = "Try with other report ID"
+                                    )
+                                }
+                )
             }
 
-    override fun reportCourseInClass(classId: Int, courseId: Int, courseClassReportInputModel: CourseClassReportInputModel): CourseClassReport =
-            jdbi.inTransaction<CourseClassReport, Exception> {
+    override fun reportCourseInClass(classId: Int, courseId: Int, courseClassReportInputModel: CourseClassReportInputModel): CourseClassReportOutputModel =
+            jdbi.inTransaction<CourseClassReportOutputModel, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
-                val courseClass = classDAO.getCourseClass(classId, courseId).get()
+                val courseClass = classDAO.getCourseClass(classId, courseId).orElseThrow {
+                    NotFoundException(
+                            msg = "No courseClass found",
+                            action = "Try with other courseClass ID"
+                    )
+                }
                 val courseClassReport = CourseClassReport(
                         courseClassId = courseClass.courseClassId,
                         classId = courseClassReportInputModel.classId ?: courseClass.classId,
@@ -259,13 +407,17 @@ class ClassServiceImpl : ClassService {
                         termId = courseClassReportInputModel.termId ?: courseClass.termId,
                         reportedBy = courseClassReportInputModel.reportedBy
                 )
-                classDAO.reportCourseInClass(courseClassReport)
+                val report = classDAO.reportCourseInClass(courseClassReport)
+                toCourseClassReportOutputModel(report)
             }
 
-    override fun updateCourseInClassFromReport(classId: Int, courseId: Int, reportId: Int): CourseClass =
-            jdbi.inTransaction<CourseClass, Exception> {
+    //TODO Testar
+    override fun updateCourseInClassFromReport(classId: Int, courseId: Int, reportId: Int): CourseClassOutputModel =
+            jdbi.inTransaction<CourseClassOutputModel, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
-                val courseClassReport = classDAO.getSpecificReportOfCourseInClass(classId, courseId, reportId).get()
+                val courseDAOJdbi = it.attach(CourseDAOJdbi::class.java)
+                val termDAOJdbi = it.attach(TermDAOJdbi::class.java)
+                val courseClassReport = classDAO.getSpecificReportOfCourseInClass(reportId).get()
                 val courseClass = classDAO.getCourseClass(classId, courseId).get()
                 val updatedCourseClass = CourseClass(
                         courseClassId = courseClass.courseClassId,
@@ -276,7 +428,17 @@ class ClassServiceImpl : ClassService {
                 )
                 val res = classDAO.updateCourseClass(updatedCourseClass)
                 classDAO.deleteSpecificReportOnCourseClass(courseClass.courseClassId, reportId)
-                res
+
+                val klass = classDAO.getSpecificClass(classId)
+                        .orElseThrow {
+                            NotFoundException(
+                                    msg = "No class found",
+                                    action = "Try other id"
+                            )
+                        }
+                val term = getTerm(termDAOJdbi, klass.termId)
+                val course = getCourse(courseDAOJdbi, courseId)
+                toCourseClassOutputModel(course, klass, res, term)
             }
 
     override fun voteOnReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int, vote: VoteInputModel): Int =
@@ -297,18 +459,23 @@ class ClassServiceImpl : ClassService {
                 it.deleteSpecificCourseReportInClass(classId, courseId, reportId)
             }
 
-    override fun getStageEntriesOfCoursesInClass(classId: Int): List<CourseClassStage> =
-            jdbi.withExtension<List<CourseClassStage>, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
-                it.getStageEntriesOfCoursesInClass(classId)
+    override fun getStageEntriesOfCoursesInClass(classId: Int): List<CourseClassStageOutputModel> =
+            jdbi.withExtension<List<CourseClassStageOutputModel>, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
+                it.getStageEntriesOfCoursesInClass(classId).map { toCourseClassStageOutputModel(it) }
             }
 
-    override fun getSpecificStagedCourseInClass(classId: Int, stageId: Int): Optional<CourseClassStage> =
-            jdbi.withExtension<Optional<CourseClassStage>, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
-                it.getSpecificStagedCourseInClass(classId, stageId)
+    override fun getSpecificStagedCourseInClass(classId: Int, stageId: Int): CourseClassStageOutputModel =
+            jdbi.withExtension<CourseClassStageOutputModel, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
+                toCourseClassStageOutputModel(it.getSpecificStagedCourseInClass(classId, stageId).orElseThrow {
+                    NotFoundException(
+                            msg = "No staged course class",
+                            action = "Try other staged id"
+                    )
+                })
             }
 
-    override fun createStagingCourseInClass(classId: Int, courseId: Int, courseClassInputModel: CourseClassInputModel): CourseClassStage =
-            jdbi.inTransaction<CourseClassStage, Exception> {
+    override fun createStagingCourseInClass(classId: Int, courseId: Int, courseClassInputModel: CourseClassInputModel): CourseClassStageOutputModel =
+            jdbi.inTransaction<CourseClassStageOutputModel, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val termId = classDAO.getTermIdFromSpecificClass(classId)
                 val courseClassStage = CourseClassStage(
@@ -317,16 +484,22 @@ class ClassServiceImpl : ClassService {
                         termId = termId,
                         createdBy = courseClassInputModel.createdBy
                 )
-                classDAO.createStagingCourseInClass(courseClassStage)
+                toCourseClassStageOutputModel(classDAO.createStagingCourseInClass(courseClassStage))
             }
 
-    override fun addCourseInClassFromStaged(classId: Int, stageId: Int): CourseClass =
+    override fun addCourseInClassFromStaged(classId: Int, stageId: Int): CourseClassOutputModel =
     //TODO classID no usage
-            jdbi.inTransaction<CourseClass, Exception> {
+            jdbi.inTransaction<CourseClassOutputModel, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
+                val courseDAOJdbi = it.attach(CourseDAOJdbi::class.java)
+                val termDAOJdbi = it.attach(TermDAOJdbi::class.java)
                 val courseClassStage = classDAO.getCourseClassStage(stageId).get()
                 val courseClass = stagedToCourseClass(courseClassStage)
-                classDAO.addCourseToClass(courseClass)
+                val created = classDAO.addCourseToClass(courseClass)
+                val klass = classDAO.getSpecificClass(classId).get()
+                val term = getTerm(termDAOJdbi, klass.termId)
+                val course = courseDAOJdbi.getSpecificCourse(created.classId).get()
+                toCourseClassOutputModel(course, klass, created, term)
             }
 
     override fun voteOnStagedCourseInClass(classId: Int, stageId: Int, vote: VoteInputModel): Int =
@@ -351,22 +524,30 @@ class ClassServiceImpl : ClassService {
      * Lectures Methods
      */
 
-    override fun getAllLecturesFromCourseInClass(classId: Int, courseId: Int): List<Lecture> =
-            jdbi.inTransaction<List<Lecture>, Exception> {
+    override fun getAllLecturesFromCourseInClass(classId: Int, courseId: Int): List<LectureOutputModel> =
+            jdbi.inTransaction<List<LectureOutputModel>, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val lectureDAO = it.attach(LectureDAOJdbi::class.java)
-                lectureDAO.getAllLecturesFromCourseInClass(classDAO.getCourseClassId(classId, courseId))
+                lectureDAO.getAllLecturesFromCourseInClass(classDAO.getCourseClassId(classId, courseId)).map { toLectureOutputModel(it) }
             }
 
-    override fun getSpecificLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int): Optional<Lecture> =
-            jdbi.inTransaction<Optional<Lecture>, Exception> {
+    override fun getSpecificLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int): LectureOutputModel =
+            jdbi.inTransaction<LectureOutputModel, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val lectureDAO = it.attach(LectureDAOJdbi::class.java)
-                lectureDAO.getSpecificLectureFromCourseInClass(classDAO.getCourseClassId(classId, courseId), lectureId)
+                toLectureOutputModel(
+                        lectureDAO.getSpecificLectureFromCourseInClass(classDAO.getCourseClassId(classId, courseId), lectureId)
+                                .orElseThrow {
+                                    NotFoundException(
+                                            msg = "No Lecture found",
+                                            action = "Try another id"
+                                    )
+                                }
+                )
             }
 
-    override fun createLectureOnCourseInClass(classId: Int, courseId: Int, lectureInputModel: LectureInputModel): Lecture =
-            jdbi.inTransaction<Lecture, Exception> {
+    override fun createLectureOnCourseInClass(classId: Int, courseId: Int, lectureInputModel: LectureInputModel): LectureOutputModel =
+            jdbi.inTransaction<LectureOutputModel, Exception> {
                 val lectureDAO = it.attach(LectureDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val lecture = lectureDAO.createLectureOnCourseInClass(
@@ -374,7 +555,7 @@ class ClassServiceImpl : ClassService {
                         toLecture(lectureInputModel)
                 )
                 lectureDAO.createLectureVersion(toLectureVersion(lecture))
-                lecture
+                toLectureOutputModel(lecture)
             }
 
     override fun voteOnLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int, vote: VoteInputModel): Int =
@@ -401,24 +582,25 @@ class ClassServiceImpl : ClassService {
                 lectureDAO.deleteSpecificLectureOfCourseInClass(classDAO.getCourseClassId(classId, courseId), lectureId)
             }
 
-    override fun getAllReportsOfLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int): List<LectureReport> =
-            jdbi.inTransaction<List<LectureReport>, Exception> {
+    override fun getAllReportsOfLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int): List<LectureReportOutputModel> =
+            jdbi.inTransaction<List<LectureReportOutputModel>, Exception> {
                 val lectureDAO = it.attach(LectureDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 lectureDAO.getAllReportsOfLectureFromCourseInClass(
                         classDAO.getCourseClassId(classId, courseId),
                         lectureId
-                )
+                ).map { toLectureReportOutputModel(it) }
             }
 
-    override fun getSpecificReportOfLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int, reportId: Int): Optional<LectureReport> =
-            jdbi.inTransaction<Optional<LectureReport>, Exception> {
+    override fun getSpecificReportOfLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int, reportId: Int): LectureReportOutputModel =
+            jdbi.inTransaction<LectureReportOutputModel, Exception> {
                 val lectureDAO = it.attach(LectureDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
-                lectureDAO.getSpecificReportOfLectureFromCourseInClass(
+                toLectureReportOutputModel(lectureDAO.getSpecificReportOfLectureFromCourseInClass(
                         classDAO.getCourseClassId(classId, courseId),
                         lectureId,
                         reportId
+                ).orElseThrow { NotFoundException(msg = "No report found", action = "Try other report id") }
                 )
             }
 
@@ -458,8 +640,8 @@ class ClassServiceImpl : ClassService {
                 lectureDAO.updateVotesOnReportedLecture(lectureId, reportId, votes)
             }
 
-    override fun updateLectureFromReport(classId: Int, courseId: Int, lectureId: Int, reportId: Int): Lecture =
-            jdbi.inTransaction<Lecture, Exception> {
+    override fun updateLectureFromReport(classId: Int, courseId: Int, lectureId: Int, reportId: Int): LectureOutputModel =
+            jdbi.inTransaction<LectureOutputModel, Exception> {
                 val lectureDAO = it.attach(LectureDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val courseClassId = classDAO.getCourseClassId(classId, courseId)
@@ -481,34 +663,41 @@ class ClassServiceImpl : ClassService {
                 val res = lectureDAO.updateLecture(updatedLecture)
                 lectureDAO.createLectureVersion(toLectureVersion(updatedLecture))
                 lectureDAO.deleteSpecificReportOnLectureOfCourseInClass(courseClassId, lectureId, reportId)
-                res
+                toLectureOutputModel(res)
             }
 
-    override fun getAllStagedLecturesOfCourseInClass(classId: Int, courseId: Int): List<LectureStage> =
-            jdbi.inTransaction<List<LectureStage>, Exception> {
+    override fun getAllStagedLecturesOfCourseInClass(classId: Int, courseId: Int): List<LectureStageOutputModel> =
+            jdbi.inTransaction<List<LectureStageOutputModel>, Exception> {
                 val lectureDAO = it.attach(LectureDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
-                lectureDAO.getAllStagedLecturesOfCourseInClass(classDAO.getCourseClassId(classId, courseId))
+                lectureDAO.getAllStagedLecturesOfCourseInClass(classDAO.getCourseClassId(classId, courseId)).map {
+                    toLectureStageOutputModel(it)
+                }
             }
 
-    override fun getSpecificStagedLectureOfCourseInClass(classId: Int, courseId: Int, stageId: Int): Optional<LectureStage> =
-            jdbi.inTransaction<Optional<LectureStage>, Exception> {
+    override fun getSpecificStagedLectureOfCourseInClass(classId: Int, courseId: Int, stageId: Int): LectureStageOutputModel =
+            jdbi.inTransaction<LectureStageOutputModel, Exception> {
                 val lectureDAO = it.attach(LectureDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
-                lectureDAO.getSpecificStagedLectureOfCourseInClass(
+                toLectureStageOutputModel(lectureDAO.getSpecificStagedLectureOfCourseInClass(
                         classDAO.getCourseClassId(classId, courseId),
                         stageId
-                )
+                ).orElseThrow {
+                    NotFoundException(
+                            msg = "No staged lecture found",
+                            action = "Try with other id"
+                    )
+                })
             }
 
-    override fun createStagingLectureOfCourseInClass(classId: Int, courseId: Int, lectureInputModel: LectureInputModel): LectureStage =
-            jdbi.inTransaction<LectureStage, Exception> {
+    override fun createStagingLectureOfCourseInClass(classId: Int, courseId: Int, lectureInputModel: LectureInputModel): LectureStageOutputModel =
+            jdbi.inTransaction<LectureStageOutputModel, Exception> {
                 val lectureDAO = it.attach(LectureDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
-                lectureDAO.createStagingLectureOnCourseInClass(
+                toLectureStageOutputModel(lectureDAO.createStagingLectureOnCourseInClass(
                         classDAO.getCourseClassId(classId, courseId),
                         toLectureStage(lectureInputModel)
-                )
+                ))
             }
 
     override fun deleteAllStagedLecturesOfCourseInClass(classId: Int, courseId: Int): Int =
@@ -539,8 +728,8 @@ class ClassServiceImpl : ClassService {
                 lectureDAO.updateVotesOnStagedLecture(stageId, votes)
             }
 
-    override fun createLectureFromStaged(classId: Int, courseId: Int, stageId: Int): Lecture =
-            jdbi.inTransaction<Lecture, Exception> {
+    override fun createLectureFromStaged(classId: Int, courseId: Int, stageId: Int): LectureOutputModel =
+            jdbi.inTransaction<LectureOutputModel, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val lectureDAO = it.attach(LectureDAOJdbi::class.java)
                 val courseClassId = classDAO.getCourseClassId(classId, courseId)
@@ -551,28 +740,33 @@ class ClassServiceImpl : ClassService {
                 val createdLecture = lectureDAO.createLectureOnCourseInClass(courseClassId, stagedToLecture(stagedLecture))
                 lectureDAO.deleteSpecificStagedLectureOfCourseInClass(courseClassId, stageId)
                 lectureDAO.createLectureVersion(toLectureVersion(createdLecture))
-                createdLecture
+                toLectureOutputModel(createdLecture)
             }
 
-    override fun getAllVersionsOfLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int): List<LectureVersion> =
-            jdbi.inTransaction<List<LectureVersion>, Exception> {
+    override fun getAllVersionsOfLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int): List<LectureVersionOutputModel> =
+            jdbi.inTransaction<List<LectureVersionOutputModel>, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val lectureDAO = it.attach(LectureDAOJdbi::class.java)
                 lectureDAO.getAllVersionsOfLectureOfCourseInclass(
                         classDAO.getCourseClassId(classId, courseId),
                         lectureId
-                )
+                ).map { toLectureVersionOutputModel(it) }
             }
 
-    override fun getSpecificVersionOfLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int, version: Int): Optional<LectureVersion> =
-            jdbi.inTransaction<Optional<LectureVersion>, Exception> {
+    override fun getSpecificVersionOfLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int, version: Int): LectureVersionOutputModel =
+            jdbi.inTransaction<LectureVersionOutputModel, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val lectureDAO = it.attach(LectureDAOJdbi::class.java)
-                lectureDAO.getSpecificVersionOfLectureOfCourseInClass(
+                toLectureVersionOutputModel(lectureDAO.getSpecificVersionOfLectureOfCourseInClass(
                         classDAO.getCourseClassId(classId, courseId),
                         lectureId,
                         version
-                )
+                ).orElseThrow {
+                    NotFoundException(
+                            msg = "No version for this lecture",
+                            action = "Try with other version number"
+                    )
+                })
             }
 
     override fun deleteAllVersionsOfLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int): Int =
@@ -600,27 +794,32 @@ class ClassServiceImpl : ClassService {
      * Homeworks Methods
      */
 
-    override fun getAllHomeworksOfCourseInClass(classId: Int, courseId: Int): List<Homework> =
-            jdbi.inTransaction<List<Homework>, Exception> {
+    override fun getAllHomeworksOfCourseInClass(classId: Int, courseId: Int): List<HomeworkOutputModel> =
+            jdbi.inTransaction<List<HomeworkOutputModel>, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val homeworkDAO = it.attach(HomeworkDAOJdbi::class.java)
                 homeworkDAO.getAllHomeworksFromCourseInClass(
                         classDAO.getCourseClassId(classId, courseId)
-                )
+                ).map { toHomeworkOutputModel(it) }
             }
 
-    override fun getSpecificHomeworkFromSpecificCourseInClass(classId: Int, courseId: Int, homeworkId: Int): Optional<Homework> =
-            jdbi.inTransaction<Optional<Homework>, Exception> {
+    override fun getSpecificHomeworkFromSpecificCourseInClass(classId: Int, courseId: Int, homeworkId: Int): HomeworkOutputModel =
+            jdbi.inTransaction<HomeworkOutputModel, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val homeworkDAO = it.attach(HomeworkDAOJdbi::class.java)
-                homeworkDAO.getSpecificHomeworkFromSpecificCourseInClass(
+                toHomeworkOutputModel(homeworkDAO.getSpecificHomeworkFromSpecificCourseInClass(
                         classDAO.getCourseClassId(classId, courseId),
                         homeworkId
-                )
+                ).orElseThrow {
+                    NotFoundException(
+                            msg = "No homework found",
+                            action = "Try other homework id"
+                    )
+                })
             }
 
-    override fun createHomeworkOnCourseInClass(classId: Int, courseId: Int, homeworkInputModel: HomeworkInputModel): Homework =
-            jdbi.inTransaction<Homework, Exception> {
+    override fun createHomeworkOnCourseInClass(classId: Int, courseId: Int, homeworkInputModel: HomeworkInputModel): HomeworkOutputModel =
+            jdbi.inTransaction<HomeworkOutputModel, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val homeworkDAO = it.attach(HomeworkDAOJdbi::class.java)
                 val homework = homeworkDAO.createHomeworkOnCourseInClass(
@@ -628,7 +827,7 @@ class ClassServiceImpl : ClassService {
                         toHomework(homeworkInputModel)
                 )
                 homeworkDAO.createHomeworkVersion(toHomeworkVersion(homework))
-                homework
+                toHomeworkOutputModel(homework)
             }
 
     override fun voteOnHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, vote: VoteInputModel): Int =
@@ -662,36 +861,41 @@ class ClassServiceImpl : ClassService {
                 )
             }
 
-    override fun getAllStagedHomeworksOfCourseInClass(classId: Int, courseId: Int): List<HomeworkStage> =
-            jdbi.inTransaction<List<HomeworkStage>, Exception> {
+    override fun getAllStagedHomeworksOfCourseInClass(classId: Int, courseId: Int): List<HomeworkStageOutputModel> =
+            jdbi.inTransaction<List<HomeworkStageOutputModel>, Exception> {
                 val homeworkDAO = it.attach(HomeworkDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 homeworkDAO.getAllStagedHomeworksOfCourseInClass(
                         classDAO.getCourseClassId(classId, courseId)
-                )
+                ).map { toHomeworkStagedOutputModel(it) }
             }
 
-    override fun getSpecificStagedHomeworkOfCourseInClass(classId: Int, courseId: Int, stageId: Int): Optional<HomeworkStage> =
-            jdbi.inTransaction<Optional<HomeworkStage>, Exception> {
+    override fun getSpecificStagedHomeworkOfCourseInClass(classId: Int, courseId: Int, stageId: Int): HomeworkStageOutputModel =
+            jdbi.inTransaction<HomeworkStageOutputModel, Exception> {
                 val homeworkDAO = it.attach(HomeworkDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
-                homeworkDAO.getSpecificStagedHomeworkOfCourseInClass(
+                toHomeworkStagedOutputModel(homeworkDAO.getSpecificStagedHomeworkOfCourseInClass(
                         classDAO.getCourseClassId(classId, courseId),
                         stageId
-                )
+                ).orElseThrow {
+                    NotFoundException(
+                            msg = "No staged homework",
+                            action = "Try with other stage id"
+                    )
+                })
             }
 
-    override fun createStagingHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkInputModel: HomeworkInputModel): HomeworkStage =
-            jdbi.inTransaction<HomeworkStage, Exception> {
+    override fun createStagingHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkInputModel: HomeworkInputModel): HomeworkStageOutputModel =
+            jdbi.inTransaction<HomeworkStageOutputModel, Exception> {
                 val homeworkDAO = it.attach(HomeworkDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
-                homeworkDAO.createStagingHomeworkOnCourseInClass(
+                toHomeworkStagedOutputModel(homeworkDAO.createStagingHomeworkOnCourseInClass(
                         classDAO.getCourseClassId(classId, courseId),
-                        toHomeworkStage(homeworkInputModel))
+                        toHomeworkStage(homeworkInputModel)))
             }
 
-    override fun createHomeworkFromStaged(classId: Int, courseId: Int, stageId: Int): Homework =
-            jdbi.inTransaction<Homework, Exception> {
+    override fun createHomeworkFromStaged(classId: Int, courseId: Int, stageId: Int): HomeworkOutputModel =
+            jdbi.inTransaction<HomeworkOutputModel, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val homeworkDAO = it.attach(HomeworkDAOJdbi::class.java)
                 val courseClassId = classDAO.getCourseClassId(classId, courseId)
@@ -702,7 +906,7 @@ class ClassServiceImpl : ClassService {
                 val createdHomework = homeworkDAO.createHomeworkOnCourseInClass(courseClassId, stagedToHomework(stagedHomework))
                 homeworkDAO.deleteSpecificStagedHomeworkOfCourseInClass(courseClassId, stageId)
                 homeworkDAO.createHomeworkVersion(toHomeworkVersion(createdHomework))
-                createdHomework
+                toHomeworkOutputModel(createdHomework)
             }
 
     override fun voteOnStagedHomeworkOfCourseInClass(classId: Int, courseId: Int, stageId: Int, vote: VoteInputModel): Int =
@@ -736,24 +940,31 @@ class ClassServiceImpl : ClassService {
                 )
             }
 
-    override fun getAllReportsOfHomeworkFromCourseInClass(classId: Int, courseId: Int, homeWorkId: Int): List<HomeworkReport> =
-            jdbi.inTransaction<List<HomeworkReport>, Exception> {
+    override fun getAllReportsOfHomeworkFromCourseInClass(classId: Int, courseId: Int, homeWorkId: Int): List<HomeworkReportOutputModel> =
+            jdbi.inTransaction<List<HomeworkReportOutputModel>, Exception> {
                 val homeworkDAO = it.attach(HomeworkDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 homeworkDAO.getAllReportsOfHomeworkFromCourseInClass(
                         classDAO.getCourseClassId(classId, courseId),
                         homeWorkId
-                )
+                ).map { toHomeworkReportOutputModel(it) }
             }
 
-    override fun getSpecificReportOfHomeworkFromCourseInClass(classId: Int, courseId: Int, homeworkId: Int, reportId: Int): Optional<HomeworkReport> =
-            jdbi.inTransaction<Optional<HomeworkReport>, Exception> {
+    override fun getSpecificReportOfHomeworkFromCourseInClass(classId: Int, courseId: Int, homeworkId: Int, reportId: Int): HomeworkReportOutputModel =
+            jdbi.inTransaction<HomeworkReportOutputModel, Exception> {
                 val homeworkDAO = it.attach(HomeworkDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
-                homeworkDAO.getSpecificReportOfHomeworkFromCourseInClass(
-                        classDAO.getCourseClassId(classId, courseId),
-                        homeworkId,
-                        reportId
+                toHomeworkReportOutputModel(
+                        homeworkDAO.getSpecificReportOfHomeworkFromCourseInClass(
+                                classDAO.getCourseClassId(classId, courseId),
+                                homeworkId,
+                                reportId
+                        ).orElseThrow {
+                            NotFoundException(
+                                    msg = "No report found",
+                                    action = "Try with other report id"
+                            )
+                        }
                 )
             }
 
@@ -762,13 +973,15 @@ class ClassServiceImpl : ClassService {
             courseId: Int,
             homeworkId: Int,
             homeworkReportInputModel: HomeworkReportInputModel
-    ): HomeworkReport =
-            jdbi.withExtension<HomeworkReport, HomeworkDAOJdbi, Exception>(HomeworkDAOJdbi::class.java) {
-                it.createReportOnHomework(toHomeworkReport(homeworkReportInputModel))
+    ): HomeworkReportOutputModel =
+            jdbi.withExtension<HomeworkReportOutputModel, HomeworkDAOJdbi, Exception>(HomeworkDAOJdbi::class.java) {
+                toHomeworkReportOutputModel(
+                        it.createReportOnHomework(toHomeworkReport(homeworkReportInputModel))
+                )
             }
 
-    override fun updateHomeworkFromReport(classId: Int, courseId: Int, homeworkId: Int, reportId: Int): Homework =
-            jdbi.inTransaction<Homework, Exception> {
+    override fun updateHomeworkFromReport(classId: Int, courseId: Int, homeworkId: Int, reportId: Int): HomeworkOutputModel =
+            jdbi.inTransaction<HomeworkOutputModel, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val homeworkDAO = it.attach(HomeworkDAOJdbi::class.java)
                 val courseClassId = classDAO.getCourseClassId(classId, courseId)
@@ -790,7 +1003,7 @@ class ClassServiceImpl : ClassService {
                 val res = homeworkDAO.updateHomeWork(updatedHomework)
                 homeworkDAO.createHomeworkVersion(toHomeworkVersion(updatedHomework))
                 homeworkDAO.deleteSpecificReportOnHomeworkOfCourseInClass(courseClassId, homeworkId, reportId)
-                res
+                toHomeworkOutputModel(res)
             }
 
     override fun voteOnReportOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, reportId: Int, vote: VoteInputModel): Int =
@@ -823,25 +1036,31 @@ class ClassServiceImpl : ClassService {
                 )
             }
 
-    override fun getAllVersionsOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int): List<HomeworkVersion> =
-            jdbi.inTransaction<List<HomeworkVersion>, Exception> {
+    override fun getAllVersionsOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int): List<HomeworkVersionOutputModel> =
+            jdbi.inTransaction<List<HomeworkVersionOutputModel>, Exception> {
                 val homeworkDAO = it.attach(HomeworkDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 homeworkDAO.getAllVersionsOfHomeworkOfCourseInclass(
                         classDAO.getCourseClassId(classId, courseId),
                         homeworkId
-                )
+                ).map { toHomeworkVersionOutputModel(it) }
             }
 
-    override fun getSpecificVersionOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, version: Int): Optional<HomeworkVersion> =
-            jdbi.inTransaction<Optional<HomeworkVersion>, Exception> {
+    override fun getSpecificVersionOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, version: Int): HomeworkVersionOutputModel =
+            jdbi.inTransaction<HomeworkVersionOutputModel, Exception> {
                 val homeworkDAO = it.attach(HomeworkDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
-                homeworkDAO.getSpecificVersionOfHomeworkOfCourseInClass(
+                toHomeworkVersionOutputModel(
+                        homeworkDAO.getSpecificVersionOfHomeworkOfCourseInClass(
                         classDAO.getCourseClassId(classId, courseId),
                         homeworkId,
                         version
-                )
+                ).orElseThrow {
+                            NotFoundException(
+                                    msg = "No version found",
+                                    action = "Try with other version number"
+                            )
+                        })
             }
 
     override fun deleteAllVersionsOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int): Int =
@@ -864,5 +1083,4 @@ class ClassServiceImpl : ClassService {
                         version
                 )
             }
-
 }

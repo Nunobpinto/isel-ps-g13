@@ -4,6 +4,8 @@ import isel.leic.ps.eduWikiAPI.domain.model.User
 import isel.leic.ps.eduWikiAPI.domain.model.UserCourseClass
 import isel.leic.ps.eduWikiAPI.domain.model.UserProgramme
 import isel.leic.ps.eduWikiAPI.domain.model.report.UserReport
+import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.UserReportOutputModel
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.COURSE_CLASS_ID
 import isel.leic.ps.eduWikiAPI.repository.interfaces.UserDAO
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys
 import org.jdbi.v3.sqlobject.statement.SqlQuery
@@ -32,6 +34,7 @@ interface UserDAOJdbi : UserDAO {
         const val REASON = "reason"
         const val REPORTED_BY = "reported_by"
         const val TIMESTAMP = "time_stamp"
+        const val REPORT_ID = "report_id"
 
     }
 
@@ -67,24 +70,19 @@ interface UserDAOJdbi : UserDAO {
 
     @SqlUpdate("INSERT INTO $USER_COURSE_CLASS_TABLE (" +
             "$USER_USERNAME," +
-            "$COURSE_ID," +
-            "$CLASS_ID," +
-            TERM_ID +
+            COURSE_CLASS_ID +
             ") VALUES ( " +
             ":userCourseClass.username," +
             ":userCourseClass.courseId," +
-            ":userCourseClass.classId," +
-            ":userCourseClass.termId " +
-            ")")
+            ":userCourseClass.courseClassId)")
     @GetGeneratedKeys
     override fun addCourseToUser(userCourseClass: UserCourseClass): UserCourseClass
 
     @SqlUpdate("Update $USER_COURSE_CLASS_TABLE" +
-            " SET $CLASS_ID = :userCourseClass.classId, " +
-            "$TERM_ID = :userCourseClass.termId " +
+            " SET $COURSE_CLASS_ID = :userCourseClass.courseClassId " +
             "WHERE $USER_USERNAME = :userCourseClass.username " +
-            "AND " + "$COURSE_ID = :userCourseClass.courseId"
-            )
+            "AND $COURSE_ID = :userCourseClass.courseId"
+    )
     @GetGeneratedKeys
     override fun addClassToUser(userCourseClass: UserCourseClass): UserCourseClass
 
@@ -135,4 +133,25 @@ interface UserDAOJdbi : UserDAO {
 
     @SqlUpdate("DELETE FROM $USER_TABLE WHERE $USER_USERNAME = :username")
     override fun deleteUser(username: String): Int
+
+    @SqlUpdate("DELETE FROM $USER_REPORT_TABLE WHERE $USER_USERNAME = :username AND $REPORT_ID = :reportId")
+    override fun deleteSpecificReportOfUser(username: String, reportId: Int): Int
+
+    @SqlQuery("SELECT * FROM $USER_REPORT_TABLE WHERE $USER_USERNAME = :username")
+    override fun getAllReportsOfUser(username: String): List<UserReport>
+
+    @SqlQuery("SELECT * FROM $USER_REPORT_TABLE WHERE $USER_USERNAME = :username AND $REPORT_ID = :reportId")
+    override fun getSpecficReportOfUser(username: String, reportId: Int): UserReport
+
+    @SqlUpdate("Update $USER_COURSE_CLASS_TABLE" +
+            " SET $COURSE_CLASS_ID = NULL " +
+            "WHERE $USER_USERNAME = :username.username")
+    override fun deleteAllClassesOfUser(username: String): Int
+
+    @SqlUpdate("Update $USER_COURSE_CLASS_TABLE" +
+            " SET $COURSE_CLASS_ID = NULL " +
+            "WHERE $USER_USERNAME = :username.username " +
+            "AND $COURSE_CLASS_ID = :courseClassId"
+    )
+    override fun deleteSpecificClassOfUser(username: String, courseClassId: Int): Int
 }

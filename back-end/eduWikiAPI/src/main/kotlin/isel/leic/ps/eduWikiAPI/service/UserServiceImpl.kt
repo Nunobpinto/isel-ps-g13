@@ -10,9 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import isel.leic.ps.eduWikiAPI.domain.mappers.*
 import isel.leic.ps.eduWikiAPI.domain.model.*
-import isel.leic.ps.eduWikiAPI.domain.model.report.UserReport
+import isel.leic.ps.eduWikiAPI.domain.outputModel.*
+import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.UserReportOutputModel
 import isel.leic.ps.eduWikiAPI.exceptions.BadRequestException
 import isel.leic.ps.eduWikiAPI.exceptions.NotFoundException
+import isel.leic.ps.eduWikiAPI.exceptions.UnknownDataException
 import isel.leic.ps.eduWikiAPI.repository.*
 import java.util.regex.Pattern
 
@@ -22,9 +24,22 @@ class UserServiceImpl : UserService {
     @Autowired
     lateinit var jdbi: Jdbi
 
-    override fun getAuthenticatedUser(username: String): User =
-            jdbi.withExtension<User, UserDAOJdbi,Exception>(UserDAOJdbi::class.java) {
-                it.getUser(username).get()
+    override fun getAuthenticatedUser(username: String): AuthUserOutputModel =
+            jdbi.withExtension<AuthUserOutputModel, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
+                toAuthUserOutputModel(it.getUser(username).get())
+            }
+
+    override fun getUser(username: String): UserOutputModel =
+            jdbi.withExtension<UserOutputModel, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
+                toUserOutputModel(
+                        it.getUser(username)
+                                .orElseThrow {
+                                    NotFoundException(
+                                            msg = "Can't find User",
+                                            action = "Check username again or try again later"
+                                    )
+                                }
+                )
             }
 
     fun isEmailValid(email: String): Boolean {
@@ -38,13 +53,13 @@ class UserServiceImpl : UserService {
         ).matcher(email).matches()
     }
 
-    override fun saveUser(inputUser: UserInputModel): User {
+    override fun saveUser(inputUser: UserInputModel): AuthUserOutputModel {
         val user = toUser(inputUser)
         val valid = isEmailValid(user.organizationEmail)
         if (!valid) {
             throw BadRequestException(msg = "invalid organization email", action = "Get an actual organization email")
         }
-        return jdbi.inTransaction<User, Exception> {
+        return jdbi.inTransaction<AuthUserOutputModel, Exception> {
             val userDao = it.attach(UserDAOJdbi::class.java)
             val repDao = it.attach(ReputationDAOJdbi::class.java)
             val user1 = userDao.createUser(user)
@@ -54,7 +69,7 @@ class UserServiceImpl : UserService {
                     username = user1.username
             )
             repDao.saveNewUser(reputation)
-            user1
+            toAuthUserOutputModel(user1)
         }
     }
 
@@ -63,54 +78,79 @@ class UserServiceImpl : UserService {
                 it.deleteUser(username)
             }
 
-    override fun getCoursesOfUser(username: String): List<Course> = jdbi.inTransaction<List<Course>, Exception> {
-        val userDao = it.attach(UserDAOJdbi::class.java)
-        val courseDAO = it.attach(CourseDAOJdbi::class.java)
-        val coursesIds = userDao.getCoursesOfUser(username)
-        coursesIds.map {
-            courseDAO.getSpecificCourse(it).get()
-        }
-    }
-
-    override fun getClassesOfUser(username: String): List<Class> =
-            jdbi.inTransaction<List<Class>, NotFoundException> {
+    override fun getCoursesOfUser(username: String): List<CourseOutputModel> =
+            jdbi.inTransaction<List<CourseOutputModel>, Exception> {
                 val userDao = it.attach(UserDAOJdbi::class.java)
-                val classDAO = it.attach(ClassDAOJdbi::class.java)
-                val courseClasses = userDao.getClassesOfUser(username)
-                courseClasses.map {
-                    classDAO.getSpecificClass(it.courseId).get()
+                val courseDAO = it.attach(CourseDAOJdbi::class.java)
+                val coursesIds = userDao.getCoursesOfUser(username)
+                coursesIds.map {
+                    toCourseOutputModel(courseDAO.getSpecificCourse(it).get())
                 }
             }
 
-    override fun getProgrammeOfUser(username: String): Programme =
-            jdbi.inTransaction<Programme, Exception> {
+    override fun getClassesOfUser(username: String): List<ClassOutputModel> =
+            jdbi.inTransaction<List<ClassOutputModel>, NotFoundException> {
+                val userDao = it.attach(UserDAOJdbi::class.java)
+                val classDAO = it.attach(ClassDAOJdbi::class.java)
+                val termDAO = it.attach(TermDAOJdbi::class.java)
+                val courseClasses = userDao.getClassesOfUser(username)
+                courseClasses.map {
+                    val courseClass = classDAO.getCourseCLassFromId(it.courseClassId)
+                    val term = termDAO.getTerm(courseClass.termId).get()
+                    toClassOutputModel(classDAO.getSpecificClass(it.courseId).get(), term)
+                }
+            }
+
+    override fun getProgrammeOfUser(username: String): ProgrammeOutputModel =
+            jdbi.inTransaction<ProgrammeOutputModel, Exception> {
                 val userDao = it.attach(UserDAOJdbi::class.java)
                 val programmeDAO = it.attach(ProgrammeDAOJdbi::class.java)
                 val programmeId = userDao.getProgrammeOfUser(username)
-                programmeDAO.getSpecificProgramme(programmeId).get()
+                toProgrammeOutput(
+                        programmeDAO.getSpecificProgramme(programmeId)
+                                .orElseThrow {
+                                    UnknownDataException(
+                                            msg = "Something happened when accessing your programme",
+                                            action = "Try Again Later"
+                                    )
+                                }
+                )
             }
 
-    override fun addProgrammeToUSer(username: String, input: UserProgrammeInputModel): UserProgramme =
-            jdbi.withExtension<UserProgramme, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
-                it.addProgrammeToUser(username, input.programmeId)
+    override fun addProgrammeToUSer(username: String, input: UserProgrammeInputModel): ProgrammeOutputModel =
+            jdbi.inTransaction<ProgrammeOutputModel, Exception> {
+                val userDAOJdbi = it.attach(UserDAOJdbi::class.java)
+                val programmeDAOJdbi = it.attach(ProgrammeDAOJdbi::class.java)
+                val added = userDAOJdbi.addProgrammeToUser(username, input.programmeId)
+                toProgrammeOutput(
+                        programmeDAOJdbi.getSpecificProgramme(added.programmeId)
+                                .orElseThrow {
+                                    UnknownDataException(
+                                            msg = "Can't add programme, maybe you are already following other programme",
+                                            action = "Check if you're following other programme, or try again later"
+
+                                    )
+                                }
+                )
             }
 
-    override fun addCourseToUser(username: String, input: UserCourseClassInputModel): UserCourseClass {
+    override fun addCourseToUser(username: String, input: UserCourseClassInputModel): UserCourseOutputModel {
         val userCourseClass = toUserCourseClass(username, input)
-        return jdbi.withExtension<UserCourseClass, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
-            it.addCourseToUser(userCourseClass)
+        return jdbi.withExtension<UserCourseOutputModel, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
+            toUserCourseOutputModel(it.addCourseToUser(userCourseClass))
         }
     }
 
-    override fun addClassToUser(username: String, input: UserCourseClassInputModel): UserCourseClass {
+    override fun addClassToUser(username: String, input: UserCourseClassInputModel): UserCourseClassOutputModel {
         val userCourseClass = toUserCourseClass(username, input)
-        return jdbi.withExtension<UserCourseClass, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
-            it.addClassToUser(userCourseClass)
+        return jdbi.withExtension<UserCourseClassOutputModel, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
+            toUserCourseClassOutputModel(it.addClassToUser(userCourseClass))
         }
     }
 
-    override fun updateUser(input: UserInputModel): User {
-        return  jdbi.inTransaction<User, Exception> {
+    //TODO Support changes of password ???????
+    override fun updateUser(input: UserInputModel): AuthUserOutputModel {
+        return jdbi.inTransaction<AuthUserOutputModel, Exception> {
             val userDao = it.attach(UserDAOJdbi::class.java)
             val current = userDao.getUser(input.username).get()
             val newUser = User(
@@ -121,7 +161,7 @@ class UserServiceImpl : UserService {
                     personalEmail = input.personalEmail ?: current.personalEmail
 
             )
-            userDao.updateUser(newUser)
+            toAuthUserOutputModel(userDao.updateUser(newUser))
         }
     }
 
@@ -140,19 +180,40 @@ class UserServiceImpl : UserService {
                 it.deleteSpecificCourseOfUser(username, courseId)
             }
 
-    override fun reportUser(username: String, reportedBy: String, reportInput: UserReportInputModel): UserReport {
+    override fun reportUser(username: String, reportedBy: String, reportInput: UserReportInputModel): UserReportOutputModel {
         val report = toUserReport(username, reportedBy, reportInput)
-        return jdbi.withExtension<UserReport, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
-            it.reportUser(report)
+        return jdbi.withExtension<UserReportOutputModel, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
+            toUserReportOutput(it.reportUser(report))
         }
     }
 
-    override fun deleteAllClassesOfUser(username: String?): Int {
-        TODO("How to Delete Classes ???")
+    override fun deleteAllClassesOfUser(username: String): Int =
+        jdbi.withExtension<Int, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
+            it.deleteAllClassesOfUser(username)
+        }
+
+    override fun deleteSpecificClassOfUser(username: String, courseClassId: Int): Int =
+        jdbi.withExtension<Int, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
+            it.deleteSpecificClassOfUser(username, courseClassId)
+        }
+
+    override fun approveReport(username: String, reportId: Int): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun deleteSpecificClassOfUser(name: String?, classId: Int): Int {
-        TODO("Delete classes on specific term ???") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getAllReportsOfUser(username: String): List<UserReportOutputModel> =
+            jdbi.withExtension<List<UserReportOutputModel>, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
+                it.getAllReportsOfUser(username).map { toUserReportOutput(it) }
+            }
+
+    override fun getSpecificReportOfUser(username: String, reportId: Int): UserReportOutputModel =
+            jdbi.withExtension<UserReportOutputModel, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
+                toUserReportOutput(it.getSpecficReportOfUser(username, reportId))
+            }
+
+    override fun deleteReportOnUser(username: String, reportId: Int): Int =
+            jdbi.withExtension<Int, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
+                it.deleteSpecificReportOfUser(username, reportId)
+            }
 
 }

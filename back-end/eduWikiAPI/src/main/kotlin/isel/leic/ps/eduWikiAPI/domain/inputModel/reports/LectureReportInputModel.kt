@@ -10,7 +10,7 @@ class LectureReportInputModel (
         val lectureId: Int = 0,
         val weekday: DayOfWeek? = null,
         val begins: LocalDate? = null,
-        val duration: Duration? = null,
+        val duration: Long? = null,
         val location: String? = null,
         @JsonProperty("reported_by")
         val reportedBy: String = ""
