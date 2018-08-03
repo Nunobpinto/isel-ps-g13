@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS work_assignment (
   work_assignment_id INTEGER REFERENCES course_misc_unit ON DELETE CASCADE,
   work_assignment_version INTEGER NOT NULL DEFAULT 1,
   created_by VARCHAR(20) NOT NULL,
-  sheet VARCHAR(100) NOT NULL,
+  sheet_id UUID NOT NULL,
   supplement VARCHAR(100),
   due_date date NOT NULL,
   individual BOOLEAN NOT NULL,
@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS exam (
   exam_id INTEGER REFERENCES course_misc_unit ON DELETE CASCADE,
   exam_version INTEGER NOT NULL DEFAULT 1,
   created_by VARCHAR(20) NOT NULL,
-  sheet VARCHAR(100) NOT NULL,
+  sheet_id UUID NOT NULL,
   due_date date NOT NULL,
   exam_type exam_type NOT NULL,
   phase VARCHAR(30) NOT NULL,
@@ -173,7 +173,7 @@ CREATE TABLE IF NOT EXISTS homework (
   homework_id INTEGER REFERENCES class_misc_unit ON DELETE CASCADE,
   homework_version INTEGER NOT NULL DEFAULT 1,  
   created_by VARCHAR(20),
-  sheet VARCHAR(100),
+  sheet_id UUID NOT NULL,
   due_date DATE,
   late_delivery BOOLEAN,
   multiple_deliveries BOOLEAN,
@@ -240,6 +240,21 @@ CREATE TABLE IF NOT EXISTS user_programme (
   PRIMARY KEY (user_username)
 );
 
+CREATE TABLE IF NOT EXISTS resource (
+   sheet_id UUID NOT NULL,
+	byte_sequence bytea NOT NULL,
+   content_type VARCHAR(30) NOT NULL,
+   original_filename VARCHAR(50),
+   size BIGINT,
+   PRIMARY KEY(sheet_id)
+);
+
+CREATE TABLE IF NOT EXISTS resource_validator (
+	sheet_id UUID NOT NULL,
+	valid INTEGER DEFAULT -1,
+	PRIMARY KEY(sheet_id)
+);
+
 --------------------------
 -- Create Stage Tables
 --------------------------
@@ -303,13 +318,6 @@ CREATE TABLE IF NOT EXISTS course_class_stage (
   PRIMARY KEY (course_class_stage_id)
 );
 
--- not sure how staging course specific misc units are going to be staged, it might be through references to this table
--- CREATE TABLE IF NOT EXISTS course_term_stage (
---   course_id INTEGER REFERENCES course,
---   term_id INTEGER REFERENCES term,
---   PRIMARY KEY (course_id, term_id)
--- );
-
 CREATE TABLE IF NOT EXISTS course_misc_unit_stage (
   course_misc_unit_stage_id SERIAL,
   course_id INTEGER,
@@ -329,7 +337,7 @@ CREATE TABLE IF NOT EXISTS class_misc_unit_stage (
 
 CREATE TABLE IF NOT EXISTS work_assignment_stage (
   work_assignment_stage_id INTEGER REFERENCES course_misc_unit_stage ON DELETE CASCADE,
-  sheet VARCHAR(100) NOT NULL,
+  sheet_id UUID NOT NULL,
   supplement VARCHAR(100) NOT NULL,
   due_date date NOT NULL,
   individual BOOLEAN NOT NULL,
@@ -344,7 +352,7 @@ CREATE TABLE IF NOT EXISTS work_assignment_stage (
 
 CREATE TABLE IF NOT EXISTS exam_stage (
   exam_stage_id INTEGER REFERENCES course_misc_unit_stage ON DELETE CASCADE,
-  sheet VARCHAR(100) NOT NULL,
+  sheet_id UUID NOT NULL,
   due_date date NOT NULL,
   exam_type  exam_type NOT NULL,
   phase VARCHAR(30) NOT NULL,
@@ -369,7 +377,7 @@ CREATE TABLE IF NOT EXISTS lecture_stage (
 
 CREATE TABLE IF NOT EXISTS homework_stage (
   homework_stage_id INTEGER REFERENCES class_misc_unit_stage ON DELETE CASCADE,
-  sheet VARCHAR(100) NOT NULL,
+  sheet_id UUID NOT NULL,
   due_date DATE NOT NULL,
   late_delivery BOOLEAN NOT NULL,
   multiple_deliveries BOOLEAN NOT NULL,
@@ -462,7 +470,7 @@ CREATE TABLE IF NOT EXISTS course_class_report (
 CREATE TABLE IF NOT EXISTS work_assignment_report (
   work_assignment_report_id SERIAL,
   work_assignment_id INTEGER REFERENCES course_misc_unit ON DELETE CASCADE,
-  sheet VARCHAR(100),
+  sheet_id UUID,
   supplement VARCHAR(100),
   due_date date,
   individual BOOLEAN,
@@ -478,7 +486,7 @@ CREATE TABLE IF NOT EXISTS work_assignment_report (
 CREATE TABLE IF NOT EXISTS exam_report (
   exam_report_id SERIAL,
   exam_id INTEGER REFERENCES course_misc_unit ON DELETE CASCADE,
-  sheet VARCHAR(100),
+  sheet_id UUID,
   due_date date,
   exam_type exam_type,
   phase VARCHAR(30),
@@ -505,7 +513,7 @@ CREATE TABLE IF NOT EXISTS lecture_report (
 CREATE TABLE IF NOT EXISTS homework_report (
   homework_report_id SERIAL,
   homework_id INTEGER REFERENCES class_misc_unit ON DELETE CASCADE,
-  sheet VARCHAR(100),
+  sheet_id UUID,
   due_date DATE,
   late_delivery BOOLEAN,
   multiple_deliveries BOOLEAN,
@@ -590,7 +598,7 @@ CREATE TABLE IF NOT EXISTS class_version (
 CREATE TABLE IF NOT EXISTS work_assignment_version (
 	work_assignment_id INTEGER,
 	work_assignment_version INTEGER,
-	sheet VARCHAR(100) NOT NULL,
+	sheet_id VARCHAR(100) NOT NULL,
    supplement VARCHAR(100) NOT NULL,
    due_date date NOT NULL,
    individual BOOLEAN NOT NULL,
@@ -605,7 +613,7 @@ CREATE TABLE IF NOT EXISTS work_assignment_version (
 CREATE TABLE IF NOT EXISTS exam_version (
     exam_id INTEGER,
     exam_version INTEGER,
-    sheet VARCHAR(100) NOT NULL,
+    sheet_id UUID NOT NULL,
     due_date date NOT NULL,
     exam_type exam_type NOT NULL,
     phase VARCHAR(30) NOT NULL,
@@ -630,7 +638,7 @@ CREATE TABLE IF NOT EXISTS lecture_version (
 CREATE TABLE IF NOT EXISTS homework_version (
   homework_id INTEGER,
   homework_version INTEGER,
-  sheet VARCHAR(100) NOT NULL,
+  sheet_id UUID NOT NULL,
   due_date DATE NOT NULL,
   created_by VARCHAR(20) NOT NULL,
   late_delivery BOOLEAN NOT NULL,

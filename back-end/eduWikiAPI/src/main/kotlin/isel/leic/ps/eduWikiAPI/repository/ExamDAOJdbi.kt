@@ -32,7 +32,7 @@ interface ExamDAOJdbi : ExamDAO {
         const val EXAM_ID = "exam_id"
         const val EXAM_VERSION = "exam_version"
         const val EXAM_VERSION_ID = "exam_id"
-        const val EXAM_SHEET = "sheet"
+        const val EXAM_SHEET_ID = "sheet_id"
         const val EXAM_DUE_DATE = "due_date"
         const val EXAM_TYPE = "exam_type"
         const val EXAM_PHASE = "phase"
@@ -55,7 +55,7 @@ interface ExamDAOJdbi : ExamDAO {
             "update $EXAM_TABLE SET " +
                     "$EXAM_VERSION = :exam.version, " +
                     "$EXAM_CREATED_BY = :exam.createdBy, " +
-                    "$EXAM_SHEET = :exam.sheet, " +
+                    "$EXAM_SHEET_ID = :exam.sheetId, " +
                     "$EXAM_DUE_DATE = :exam.dueDate, " +
                     "$EXAM_TYPE = :exam.type, " +
                     "$EXAM_PHASE = :exam.phase, " +
@@ -73,7 +73,7 @@ interface ExamDAOJdbi : ExamDAO {
                     "$EXAM_ID, " +
                     "$EXAM_VERSION, " +
                     "$EXAM_CREATED_BY, " +
-                    "$EXAM_SHEET, " +
+                    "$EXAM_SHEET_ID, " +
                     "$EXAM_DUE_DATE, " +
                     "$EXAM_TYPE, " +
                     "$EXAM_PHASE, " +
@@ -82,7 +82,7 @@ interface ExamDAOJdbi : ExamDAO {
                     "$EXAM_TIMESTAMP " +
                     ") " +
                     "VALUES(:courseMiscUnitId, :exam.version, :exam.createdBy, " +
-                    ":exam.sheet, :exam.dueDate, :exam.type, " +
+                    ":exam.sheetId, :exam.dueDate, :exam.type::exam_type, " +
                     ":exam.phase, :exam.location, :exam.votes, :exam.timestamp)"
     )
     @GetGeneratedKeys
@@ -94,7 +94,7 @@ interface ExamDAOJdbi : ExamDAO {
         if (!courseDAO.getSpecificTermOfCourse(courseId, termId).isPresent) {
             courseDAO.createCourseTerm(courseId, termId, Timestamp.valueOf(LocalDateTime.now()))
         }
-        val courseMiscUnit = courseDAO.createCourseMiscUnit(courseId, termId, "Exam")
+        val courseMiscUnit = courseDAO.createCourseMiscUnit(courseId, termId, "Exam/Test")
         return createExam(courseMiscUnit.courseMiscUnitId, exam)
     }
 
@@ -118,7 +118,7 @@ interface ExamDAOJdbi : ExamDAO {
     @SqlUpdate(
             "INSERT INTO $EXAM_STAGE_TABLE ( " +
                     "$EXAM_STAGE_ID, " +
-                    "$EXAM_SHEET, " +
+                    "$EXAM_SHEET_ID, " +
                     "$EXAM_DUE_DATE, " +
                     "$EXAM_TYPE, " +
                     "$EXAM_PHASE, " +
@@ -127,7 +127,7 @@ interface ExamDAOJdbi : ExamDAO {
                     "$EXAM_VOTES, " +
                     "$EXAM_TIMESTAMP " +
                     ") " +
-                    "values(:courseMiscUnitStageId, :examStage.sheet, :examStage.dueDate, " +
+                    "values(:courseMiscUnitStageId, :examStage.sheetId, :examStage.dueDate, " +
                     ":examStage.type, :examStage.phase, :examStage.location, " +
                     ":examStage.createdBy, :examStage.votes, :examStage.timestamp)"
     )
@@ -179,7 +179,7 @@ interface ExamDAOJdbi : ExamDAO {
             "INSERT INTO $EXAM_VERSION_TABLE ( " +
                     "$EXAM_VERSION_ID, " +
                     "$EXAM_VERSION, " +
-                    "$EXAM_SHEET, " +
+                    "$EXAM_SHEET_ID, " +
                     "$EXAM_DUE_DATE, " +
                     "$EXAM_TYPE, " +
                     "$EXAM_PHASE, " +
@@ -187,8 +187,8 @@ interface ExamDAOJdbi : ExamDAO {
                     "$EXAM_CREATED_BY, " +
                     "$EXAM_TIMESTAMP " +
                     ") " +
-                    "VALUES(:examVersion.examId, :examVersion.version, :examVersion.sheet, " +
-                    ":examVersion.dueDate, :examVersion.type, :examVersion.phase, " +
+                    "VALUES(:examVersion.examId, :examVersion.version, :examVersion.sheetId, " +
+                    ":examVersion.dueDate, :examVersion.type::exam_type, :examVersion.phase, " +
                     ":examVersion.location, :examVersion.createdBy, :examVersion.timestamp)"
     )
     @GetGeneratedKeys
@@ -197,7 +197,7 @@ interface ExamDAOJdbi : ExamDAO {
     @SqlUpdate(
             "INSERT INTO $EXAM_REPORT_TABLE ( " +
                     "$EXAM_ID, " +
-                    "$EXAM_SHEET, " +
+                    "$EXAM_SHEET_ID, " +
                     "$EXAM_DUE_DATE, " +
                     "$EXAM_TYPE, " +
                     "$EXAM_PHASE, " +
@@ -206,7 +206,7 @@ interface ExamDAOJdbi : ExamDAO {
                     "$EXAM_VOTES, " +
                     "$EXAM_TIMESTAMP " +
                     ") " +
-                    "VALUES(:examReport.examId, :examReport.sheet, :examReport.dueDate, " +
+                    "VALUES(:examReport.examId, :examReport.sheetId, :examReport.dueDate, " +
                     ":examReport.type, :examReport.phase, :examReport.location, " +
                     ":examReport.reportedBy, :examReport.votes, :examReport.timestamp)"
     )
@@ -230,7 +230,7 @@ interface ExamDAOJdbi : ExamDAO {
             "SELECT E.$EXAM_ID, " +
                     "E.$EXAM_VERSION, " +
                     "E.$EXAM_CREATED_BY, " +
-                    "E.$EXAM_SHEET, " +
+                    "E.$EXAM_SHEET_ID, " +
                     "E.$EXAM_DUE_DATE, " +
                     "E.$EXAM_TYPE, " +
                     "E.$EXAM_PHASE, " +
@@ -249,7 +249,7 @@ interface ExamDAOJdbi : ExamDAO {
             "SELECT E.$EXAM_ID, " +
                     "E:$EXAM_VERSION, " +
                     "E.$EXAM_CREATED_BY " +
-                    "E.$EXAM_SHEET, " +
+                    "E.$EXAM_SHEET_ID, " +
                     "E.$EXAM_DUE_DATE, " +
                     "E.$EXAM_TYPE, " +
                     "E.$EXAM_PHASE, " +
@@ -267,7 +267,7 @@ interface ExamDAOJdbi : ExamDAO {
 
     @SqlQuery(
             "SELECT E.$EXAM_STAGE_ID, " +
-                    "E.$EXAM_SHEET, " +
+                    "E.$EXAM_SHEET_ID, " +
                     "E.$EXAM_DUE_DATE, " +
                     "E.$EXAM_TYPE, " +
                     "E.$EXAM_PHASE " +
@@ -285,7 +285,7 @@ interface ExamDAOJdbi : ExamDAO {
 
     @SqlQuery(
             "SELECT E.$EXAM_STAGE_ID, " +
-                    "E.$EXAM_SHEET, " +
+                    "E.$EXAM_SHEET_ID, " +
                     "E.$EXAM_DUE_DATE, " +
                     "E.$EXAM_TYPE, " +
                     "E.$EXAM_PHASE, " +

@@ -1,8 +1,8 @@
 package isel.leic.ps.eduWikiAPI.service
 
+import isel.leic.ps.eduWikiAPI.domain.inputModel.UserCourseClassInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserProgrammeInputModel
-import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.UserCourseClassInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.UserReportInputModel
 import isel.leic.ps.eduWikiAPI.service.interfaces.UserService
 import org.jdbi.v3.core.Jdbi

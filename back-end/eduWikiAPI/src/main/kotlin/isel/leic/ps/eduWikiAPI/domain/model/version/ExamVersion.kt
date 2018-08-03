@@ -5,7 +5,7 @@ import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_DUE_DATE
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_ID
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_LOCATION
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_PHASE
-import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_SHEET
+import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_SHEET_ID
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_TYPE
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_VERSION
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_TIMESTAMP
@@ -13,14 +13,15 @@ import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
 
 data class ExamVersion (
         @ColumnName(EXAM_VERSION)
         val version: Int = 1,
         @ColumnName(EXAM_ID)
         val examId: Int = 0,
-        @ColumnName(EXAM_SHEET)
-        val sheet: String = "", //TODO
+        @ColumnName(EXAM_SHEET_ID)
+        val sheetId: UUID = UUID.randomUUID(),
         @ColumnName(EXAM_DUE_DATE)
         val dueDate: LocalDate = LocalDate.now(),
         @ColumnName(EXAM_TYPE)

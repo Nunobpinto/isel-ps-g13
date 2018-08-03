@@ -76,6 +76,12 @@ Drop Table IF EXISTS homework_version;
 -- Drop Main Tables
 --------------------------
 
+Drop Table IF EXISTS resource_validator;  
+
+Drop Table IF EXISTS confirm;
+
+Drop Table IF EXISTS resource;
+
 Drop Table IF EXISTS course_programme;
 
 Drop Table IF EXISTS work_assignment;

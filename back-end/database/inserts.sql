@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 -- Organization Insert
 insert into organization (created_by, organization_full_name, organization_short_name, organization_address, organization_contact, time_stamp)
     values ('ze','Instituto Superior de Engenharia de Lisboa','ISEL','Rua Emídio Navarro','218 317 000',current_timestamp);
@@ -114,58 +116,58 @@ insert into course_term (course_id, term_id, time_stamp)
 insert into course_misc_unit (misc_type, course_id, term_id)
     values ('Work Assignment', 1, 1);
 
-insert into work_assignment (work_assignment_id, created_by, sheet, supplement, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
-    values (1,'ze','Exemplo-PI','Apoio',current_date,false ,true ,true ,false ,current_timestamp);
+insert into work_assignment (work_assignment_id, created_by, sheet_id, supplement, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
+    values (1,'ze', gen_random_uuid(),'Apoio',current_date,false ,true ,true ,false ,current_timestamp);
 
-insert into work_assignment_version (work_assignment_id, work_assignment_version, created_by, sheet, supplement, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
-    values (1, 1, 'ze','Exemplo-PI','Apoio',current_date,false ,true ,true ,false ,current_timestamp);
+insert into work_assignment_version (work_assignment_id, work_assignment_version, created_by, sheet_id, supplement, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
+    values (1, 1, 'ze', gen_random_uuid(),'Apoio',current_date,false ,true ,true ,false ,current_timestamp);
 
 insert into course_misc_unit (misc_type, course_id, term_id)
     values ('Work Assignment', 1, 2);
 
-insert into work_assignment (work_assignment_id, created_by, sheet, supplement, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
-    values (2,'ze','Exemplo-PI-2','Apoio',current_date,false ,true ,true ,false ,current_timestamp);
+insert into work_assignment (work_assignment_id, created_by, sheet_id, supplement, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
+    values (2,'ze', gen_random_uuid(), 'Apoio', current_date,false ,true ,true ,false ,current_timestamp);
 
-insert into work_assignment_version (work_assignment_id, work_assignment_version, created_by, sheet, supplement, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
-    values (2, 1, 'ze','Exemplo-PI-2','Apoio',current_date,false ,true ,true ,false ,current_timestamp);
+insert into work_assignment_version (work_assignment_id, work_assignment_version, created_by, sheet_id, supplement, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
+    values (2, 1, 'ze', gen_random_uuid(),'Apoio',current_date,false ,true ,true ,false ,current_timestamp);
 
 insert into course_misc_unit (misc_type, course_id, term_id)
     values ('Work Assignment', 3, 2);
 
-insert into work_assignment (work_assignment_id, created_by, sheet, supplement, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
-    values (3,'ze','Exemplo-MAV','Apoio',current_date,false ,true ,true ,false ,current_timestamp);
+insert into work_assignment (work_assignment_id, created_by, sheet_id, supplement, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
+    values (3,'ze', gen_random_uuid(),'Apoio',current_date,false ,true ,true ,false ,current_timestamp);
 
-insert into work_assignment_version (work_assignment_id, work_assignment_version, created_by, sheet, supplement, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
-    values (3, 1, 'ze','Exemplo-MAV','Apoio',current_date,false ,true ,true ,false ,current_timestamp);
+insert into work_assignment_version (work_assignment_id, work_assignment_version, created_by, sheet_id, supplement, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
+    values (3, 1, 'ze', gen_random_uuid(),'Apoio',current_date,false ,true ,true ,false ,current_timestamp);
 
 -- Exam Insert
 
 insert into course_misc_unit (misc_type, course_id, term_id)
     values ('Exam/Test', 1, 1);
 
-insert into exam (exam_id, created_by, sheet, due_date, exam_type, phase, location, time_stamp)
-    values (4, 'ze', '1ºexame de PI 1718v',current_date,'Exam', '1ª','A.2.14',current_timestamp);
+insert into exam (exam_id, created_by, sheet_id, due_date, exam_type, phase, location, time_stamp)
+    values (4, 'ze', gen_random_uuid() ,current_date,'Exam', '1ª','A.2.14',current_timestamp);
 
-insert into exam_version (exam_id, exam_version, created_by, sheet, due_date, exam_type, phase, location, time_stamp)
-    values (4, 1, 'ze', '1ºexame de PI 1718v',current_date,'Exam', '1ª','A.2.14',current_timestamp);
+insert into exam_version (exam_id, exam_version, created_by, sheet_id, due_date, exam_type, phase, location, time_stamp)
+    values (4, 1, 'ze', gen_random_uuid() ,current_date,'Exam', '1ª','A.2.14',current_timestamp);
 
 insert into course_misc_unit (misc_type, course_id, term_id)
     values ('Exam/Test', 2, 1);
 
-insert into exam (exam_id, created_by, sheet, due_date, exam_type, phase, location, time_stamp)
-    values (5, 'ze', '1ºteste de RCP 1718v',current_date,'Test', '1ª','A.2.14',current_timestamp);
+insert into exam (exam_id, created_by, sheet_id, due_date, exam_type, phase, location, time_stamp)
+    values (5, 'ze', gen_random_uuid() ,current_date,'Test', '1ª','A.2.14',current_timestamp);
 
-insert into exam_version (exam_id, exam_version, created_by, sheet, due_date, exam_type, phase, location, time_stamp)
-    values (5, 1, 'ze', '1ºteste de RCP 1718v',current_date,'Test', '1ª','A.2.14',current_timestamp);
+insert into exam_version (exam_id, exam_version, created_by, sheet_id, due_date, exam_type, phase, location, time_stamp)
+    values (5, 1, 'ze', gen_random_uuid(),current_date,'Test', '1ª','A.2.14',current_timestamp);
 
 insert into course_misc_unit (misc_type, course_id, term_id)
     values ('Exam/Test', 2, 2);
 
-insert into exam (exam_id, created_by, sheet, due_date, exam_type, phase, location, time_stamp)
-    values (6, 'ze', '2ºexame de RCP 1718i',current_date,'Exam', '2ª','A.2.14',current_timestamp);
+insert into exam (exam_id, created_by, sheet_id, due_date, exam_type, phase, location, time_stamp)
+    values (6, 'ze', gen_random_uuid() ,current_date,'Exam', '2ª','A.2.14',current_timestamp);
 
-insert into exam_version (exam_id, exam_version, created_by, sheet, due_date, exam_type, phase, location, time_stamp)
-    values (6, 1, 'ze', '2ºexame de RCP 1718i',current_date,'Exam', '2ª','A.2.14',current_timestamp);
+insert into exam_version (exam_id, exam_version, created_by, sheet_id, due_date, exam_type, phase, location, time_stamp)
+    values (6, 1, 'ze', gen_random_uuid(),current_date,'Exam', '2ª','A.2.14',current_timestamp);
 
 -- Course-class Insert
 
@@ -212,29 +214,29 @@ insert into lecture_version (lecture_id, lecture_version, created_by, weekday, b
 insert into class_misc_unit (class_misc_unit_id, misc_type, course_class_id)
     values (4, 'Homework', 1);
 
-insert into homework (homework_id, created_by, sheet, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (4,'bruno','Fazer router', current_date, true, true, current_timestamp );
+insert into homework (homework_id, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
+    values (4,'bruno',gen_random_uuid(), current_date, true, true, current_timestamp );
 
-insert into homework_version (homework_id, homework_version, created_by, sheet, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (4, 1, 'bruno','Fazer router', current_date, true, true, current_timestamp );
+insert into homework_version (homework_id, homework_version, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
+    values (4, 1, 'bruno',gen_random_uuid(), current_date, true, true, current_timestamp );
 
 insert into class_misc_unit (class_misc_unit_id, misc_type, course_class_id)
     values (5, 'Homework', 2);
 
-insert into homework (homework_id, created_by, sheet, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (5, 'ze', 'Criar switchs e routers nos nós',current_date, false , true , current_timestamp);
+insert into homework (homework_id, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
+    values (5, 'ze', gen_random_uuid(),current_date, false , true , current_timestamp);
 
-insert into homework_version (homework_id, homework_version, created_by, sheet, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (5, 1, 'ze', 'Criar switchs e routers nos nós',current_date, false , true , current_timestamp);
+insert into homework_version (homework_id, homework_version, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
+    values (5, 1, 'ze', gen_random_uuid(),current_date, false , true , current_timestamp);
 
 insert into class_misc_unit (class_misc_unit_id, misc_type, course_class_id)
     values (6, 'Homework', 1);
 
-insert into homework(homework_id, created_by, sheet, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (6, 'ze','Desenhar modelo do boneco', current_date, true , true , current_timestamp);
+insert into homework(homework_id, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
+    values (6, 'ze',gen_random_uuid(), current_date, true , true , current_timestamp);
 
-insert into homework_version (homework_id, homework_version, created_by, sheet, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (6, 1, 'ze','Desenhar modelo do boneco', current_date, true , true , current_timestamp);
+insert into homework_version (homework_id, homework_version, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
+    values (6, 1, 'ze',gen_random_uuid(), current_date, true , true , current_timestamp);
 
 -- Student Insert
 

@@ -19,14 +19,13 @@ import isel.leic.ps.eduWikiAPI.domain.model.version.ClassVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.ExamVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.WorkAssignmentVersion
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi
-import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi
-import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOJdbi
+import isel.leic.ps.eduWikiAPI.repository.*
 import isel.leic.ps.eduWikiAPI.service.interfaces.CourseService
+import isel.leic.ps.eduWikiAPI.service.interfaces.ResourceStorageService
 import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 import java.util.*
 
 @Service
@@ -34,6 +33,9 @@ class CourseServiceImpl : CourseService {
 
     @Autowired
     lateinit var jdbi: Jdbi
+
+    @Autowired
+    lateinit var storageService: ResourceStorageService
 
     /**
      * Course Methods
@@ -267,13 +269,24 @@ class CourseServiceImpl : CourseService {
                 courseDAO.updateVotesOnStagedCourse(stageId, votes)
             }
 
-    override fun createExamOnCourseInTerm(courseId: Int, termId: Int, inputExam: ExamInputModel): Exam =
-            jdbi.inTransaction<Exam, Exception> {
-                val examDAO = it.attach(ExamDAOJdbi::class.java)
-                val exam = examDAO.createExamOnCourseInTerm(courseId, termId, toExam(inputExam))
-                examDAO.createExamVersion(toExamVersion(exam))
-                exam
-            }
+    override fun createExamOnCourseInTerm(
+            sheet: MultipartFile,
+            courseId: Int,
+            termId: Int,
+            inputExam: ExamInputModel
+    ): Exam {
+        val exam = jdbi.inTransaction<Exam, Exception> {
+            val examDAO = it.attach(ExamDAOJdbi::class.java)
+            val fileDAO = it.attach(ResourceDAOJdbi::class.java)
+            val createdExam = examDAO.createExamOnCourseInTerm(courseId, termId, toExam(inputExam))
+            fileDAO.createResourceValidatorEntry(createdExam.sheetId, 0)
+            examDAO.createExamVersion(toExamVersion(createdExam))
+            createdExam
+        }
+        storageService.storeResource(exam.sheetId, sheet)
+        return exam
+    }
+
 
     override fun addReportToExamOnCourseInTerm(examId: Int, inputExamReport: ExamReportInputModel): ExamReport =
             jdbi.withExtension<ExamReport, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
@@ -297,7 +310,7 @@ class CourseServiceImpl : CourseService {
                         examId = exam.examId,
                         version = exam.version.inc(),
                         createdBy = report.reportedBy,
-                        sheet = report.sheet ?: exam.sheet,
+                        sheetId = report.sheetId ?: exam.sheetId,
                         dueDate = report.dueDate ?: exam.dueDate,
                         type = report.type ?: exam.type,
                         phase = report.phase ?: exam.phase,
@@ -309,10 +322,17 @@ class CourseServiceImpl : CourseService {
                 res
             }
 
-    override fun createStagingExam(courseId: Int, termId: Int, inputExam: ExamInputModel): ExamStage =
-            jdbi.withExtension<ExamStage, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
-                it.createStagingExamOnCourseInTerm(courseId, termId, toStageExam(inputExam))
-            }
+    override fun createStagingExam(sheet: MultipartFile, courseId: Int, termId: Int, examInputModel: ExamInputModel): ExamStage {
+        val examStaged = jdbi.inTransaction<ExamStage, Exception> {
+            val examDAO = it.attach(ExamDAOJdbi::class.java)
+            val resourceDAO = it.attach(ResourceDAOJdbi::class.java)
+            val stagingExam = examDAO.createStagingExamOnCourseInTerm(courseId, termId, toStageExam(examInputModel))
+            resourceDAO.createResourceValidatorEntry(stagingExam.sheetId, 0)
+            stagingExam
+        }
+        //storageService.storeResource(examStaged.stageId, EXAM_TABLE, examStaged.sheetId, sheet)
+        return examStaged
+    }
 
     override fun createExamFromStaged(courseId: Int, termId: Int, stageId: Int): Exam =
             jdbi.inTransaction<Exam, Exception> {

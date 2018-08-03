@@ -33,7 +33,7 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
         const val WORK_ASSIGNMENT_STAGE_ID = "work_assignment_stage_id"
         const val WORK_ASSIGNMENT_ID = "work_assignment_id"
         const val WORK_ASSIGNMENT_VERSION = "work_assignment_version"
-        const val WORK_ASSIGNMENT_SHEET = "sheet"
+        const val WORK_ASSIGNMENT_SHEET = "sheetId"
         const val WORK_ASSIGNMENT_SUPPLEMENT = "supplement"
         const val WORK_ASSIGNMENT_DUE_DATE = "due_date"
         const val WORK_ASSIGNMENT_INDIVIDUAL = "individual"
@@ -83,7 +83,7 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
             "UPDATE $WORK_ASSIGNMENT_TABLE SET " +
                     "$WORK_ASSIGNMENT_VERSION = :workAssignment.version, " +
                     "$WORK_ASSIGNMENT_CREATED_BY = :workAssignment.createdBy, " +
-                    "$WORK_ASSIGNMENT_SHEET = :workAssignment.sheet, " +
+                    "$WORK_ASSIGNMENT_SHEET = :workAssignment.sheetId, " +
                     "$WORK_ASSIGNMENT_SUPPLEMENT = :workAssignment.supplement, " +
                     "$WORK_ASSIGNMENT_DUE_DATE = :workAssignment.dueDate, " +
                     "$WORK_ASSIGNMENT_INDIVIDUAL = :workAssignment.individual, " +
@@ -245,7 +245,7 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
                     "$WORK_ASSIGNMENT_VOTES, " +
                     "$WORK_ASSIGNMENT_TIMESTAMP) " +
                     "VALUES(:courseMiscUnitId, :workAssignment.version, :workAssignment.createdBy, " +
-                    ":workAssignment.sheet, :workAssignment.supplement, :workAssignment.dueDate," +
+                    ":workAssignment.sheetId, :workAssignment.supplement, :workAssignment.dueDate," +
                     ":workAssignment.individual, :workAssignment.lateDelivery, :workAssignment.multipleDeliveries, " +
                     ":workAssignment.requiresReport, :workAssignment.votes, :workAssignment.timestamp)"
     )
@@ -275,7 +275,7 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
                     "$WORK_ASSIGNMENT_REPORTED_BY, " +
                     "$WORK_ASSIGNMENT_VOTES, " +
                     "$WORK_ASSIGNMENT_TIMESTAMP) " +
-                    "VALUES(:workAssignmentId, :workAssignmentReport.sheet, :workAssignmentReport.supplement, " +
+                    "VALUES(:workAssignmentId, :workAssignmentReport.sheetId, :workAssignmentReport.supplement, " +
                     ":workAssignmentReport.dueDate, :workAssignmentReport.individual, :workAssignmentReport.lateDelivery, " +
                     ":workAssignmentReport.multipleDeliveries, :workAssignmentReport.requiresReport, " +
                     ":workAssignmentReport.reportedBy, :workAssignmentReport.votes, :workAssignmentReport.timestamp)"
@@ -317,7 +317,7 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
                     "$WORK_ASSIGNMENT_TIMESTAMP " +
                     ") " +
                     "VALUES (:workAssignmentVersion.workAssignmentId, :workAssignmentVersion.version, " +
-                    ":workAssignmentVersion.sheet, :workAssignmentVersion.supplement, " +
+                    ":workAssignmentVersion.sheetId, :workAssignmentVersion.supplement, " +
                     ":workAssignmentVersion.dueDate, :workAssignmentVersion.individual, " +
                     ":workAssignmentVersion.lateDelivery, :workAssignmentVersion.multipleDeliveries, " +
                     ":workAssignmentVersion.requiresReport, :workAssignmentVersion.createdBy, :workAssignmentVersion.timestamp)"
@@ -338,7 +338,7 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
                     "$WORK_ASSIGNMENT_CREATED_BY, " +
                     "$WORK_ASSIGNMENT_VOTES, " +
                     "$WORK_ASSIGNMENT_TIMESTAMP) " +
-                    "VALUES(:stageId, :workAssignmentStage.sheet, :workAssignmentStage.supplement, :workAssignmentStage.dueDate," +
+                    "VALUES(:stageId, :workAssignmentStage.sheetId, :workAssignmentStage.supplement, :workAssignmentStage.dueDate," +
                     ":workAssignmentStage.individual, :workAssignmentStage.lateDelivery, " +
                     ":workAssignmentStage.multipleDeliveries, :workAssignmentStage.requiresReport, " +
                     ":workAssignmentStage.createdBy, :workAssignmentStage.votes, :workAssignmentStage.timestamp)"

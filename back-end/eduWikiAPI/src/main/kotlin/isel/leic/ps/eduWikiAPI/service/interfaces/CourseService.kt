@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.service.interfaces
 
+import com.sun.org.apache.xpath.internal.operations.Mult
 import isel.leic.ps.eduWikiAPI.domain.inputModel.CourseInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.ExamInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
@@ -18,6 +19,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.version.ClassVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.ExamVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.WorkAssignmentVersion
+import org.springframework.web.multipart.MultipartFile
 import java.util.*
 
 interface CourseService {
@@ -50,7 +52,7 @@ interface CourseService {
 
     fun createCourseFromStaged(stageId: Int): Course
 
-    fun createExamOnCourseInTerm(courseId: Int, termId: Int, inputExam: ExamInputModel): Exam
+    fun createExamOnCourseInTerm(sheet: MultipartFile, courseId: Int, termId: Int, inputExam: ExamInputModel): Exam
 
     fun createExamFromStaged(courseId: Int, termId: Int, stageId: Int): Exam
 
@@ -96,7 +98,7 @@ interface CourseService {
 
     fun createStagingCourse(inputCourse: CourseInputModel): CourseStage
 
-    fun createStagingExam(courseId: Int, termId: Int, inputExam: ExamInputModel): ExamStage
+    fun createStagingExam(sheet: MultipartFile, courseId: Int, termId: Int, examInputModel: ExamInputModel): ExamStage
 
     fun createStagingWorkAssignment(courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): WorkAssignmentStage
 

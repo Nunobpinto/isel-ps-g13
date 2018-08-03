@@ -8,6 +8,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
 import isel.leic.ps.eduWikiAPI.service.interfaces.CourseService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/courses")
@@ -175,10 +176,11 @@ class CourseController {
 
     @PostMapping("/{courseId}/terms/{termId}/exams")
     fun createExamOnCourseInTerm(
+            @RequestParam sheet: MultipartFile,
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            @RequestBody exam: ExamInputModel
-    ) = courseService.createExamOnCourseInTerm(courseId, termId, exam)
+            examInputModel: ExamInputModel //TODO check if @RequestBody does work too
+    ) = courseService.createExamOnCourseInTerm(sheet, courseId, termId, examInputModel)
 
     @PostMapping("/{courseId}/terms/{termId}/exams/{examId}/vote")
     fun voteOnExam(
@@ -315,10 +317,11 @@ class CourseController {
 
     @PostMapping("/{courseId}/terms/{termId}/exams/stage")
     fun createStagingExam(
+            @RequestParam sheet: MultipartFile,
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            @RequestBody inputExam: ExamInputModel
-    ) = courseService.createStagingExam(courseId, termId, inputExam)
+            @RequestBody examInputModel: ExamInputModel
+    ) = courseService.createStagingExam(sheet, courseId, termId, examInputModel)
 
     @PostMapping("/{courseId}/terms/{termId}/exams/stage/{stageId}")
     fun createExamFromStaged(

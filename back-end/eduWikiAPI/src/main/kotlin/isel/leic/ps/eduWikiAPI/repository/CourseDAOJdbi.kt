@@ -577,7 +577,7 @@ interface CourseDAOJdbi : CourseDAO {
                     "$COURSE_MISC_UNIT_COURSE_ID, " +
                     "$COURSE_MISC_UNIT_TERM_ID " +
                     ") " +
-                    "values(:miscType, :courseId, :termId)"
+                    "values(:miscType::course_misc_unit_type, :courseId, :termId)"
     )
     @GetGeneratedKeys
     override fun createCourseMiscUnit(courseId: Int, termId: Int, miscType: String): CourseMiscUnit
@@ -623,7 +623,7 @@ interface CourseDAOJdbi : CourseDAO {
             "DELETE FROM $COURSE_MISC_UNIT_STAGE_TABLE " +
                     "WHERE $COURSE_MISC_UNIT_COURSE_ID = :courseId " +
                     "AND $COURSE_MISC_UNIT_TERM_ID = :termId " +
-                    "AND $COURSE_MISC_UNIT_TYPE  = miscType"
+                    "AND $COURSE_MISC_UNIT_TYPE  = :miscType"
     )
     override fun deleteAllStagedCourseMiscUnitsFromTypeOfCourseInTerm(courseId: Int, termId: Int, miscType: String): Int
 

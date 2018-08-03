@@ -2,11 +2,12 @@ package isel.leic.ps.eduWikiAPI.domain.inputModel.reports
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDate
+import java.util.*
 
 class ExamReportInputModel(
         @JsonProperty("exam_id")
         val examId: Int = 0,
-        val sheet: String? = null,
+        val sheetId: UUID? = null,
         @JsonProperty("due_date")
         val dueDate: LocalDate? = null,
         @JsonProperty("exam_type")
