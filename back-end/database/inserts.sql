@@ -240,22 +240,26 @@ insert into homework_version (homework_id, homework_version, created_by, sheet_i
 
 -- Student Insert
 
-insert into user_account (user_username, user_password, user_given_name, user_family_name, user_personal_email, user_organization_email)
-    values ('ze', 1234, 'José', 'Antunes', 'ze@gmail.com', 'ze@isel.pt');
+insert into user_account (user_username, user_password, user_given_name, user_family_name, user_confirmed, user_personal_email, user_organization_email)
+    values ('ze', 1234, 'José', 'Antunes', true, 'ze@gmail.com', 'ze@isel.pt');
 
-insert into user_account (user_username, user_password, user_given_name, user_family_name, user_personal_email, user_organization_email)
-    values ('bruno', 1234, 'Bruno', 'Filipe', 'bruno@gmail.com', 'bruno@isel.pt');
+insert into user_account (user_username, user_password, user_given_name, user_family_name, user_confirmed, user_personal_email, user_organization_email)
+    values ('bruno', 1234, 'Bruno', 'Filipe', true, 'bruno@gmail.com', 'bruno@isel.pt');
 
-insert into user_account (user_username, user_password, user_given_name, user_family_name, user_personal_email, user_organization_email)
-    values ('jg', 1234, 'João', 'Gameiro', 'jg@gmail.com', 'jg@isel.pt');
+insert into user_account (user_username, user_password, user_given_name, user_family_name, user_confirmed, user_personal_email, user_organization_email)
+    values ('jg', 1234, 'João', 'Gameiro', true, 'jg@gmail.com', 'jg@isel.pt');
+
 
 -- Reputation Roles
 
 insert into reputation_role (reputation_role_id, max_points, min_points, hierarchy_level)
-  values ('ROLE_BEGINNER', 1, 50, 1);
+  values ('ROLE_BEGINNER', 50, 1, 1);
 
 insert into reputation_role (reputation_role_id, max_points, min_points, hierarchy_level)
-  values ('ROLE_ADMIN', 51, 100, 2);
+  values ('ROLE_ADMIN', 100, 51, 2);
+  
+insert into reputation_role (reputation_role_id, max_points, min_points, hierarchy_level)
+  values ('ROLE_UNCONFIRMED', -1, -1, -1);
 
 -- Reputation Matcher
 

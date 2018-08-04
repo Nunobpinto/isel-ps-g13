@@ -2,6 +2,8 @@
 -- Drop Report Tables
 --------------------------
 
+DROP TABLE IF EXISTS validation_token;
+
 Drop Table IF EXISTS organization_report;
 
 Drop Table IF EXISTS programme_report;

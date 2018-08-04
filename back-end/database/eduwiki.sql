@@ -18,6 +18,14 @@
 -- Create Main Tables
 --------------------------
 
+CREATE TABLE IF NOT EXISTS validation_token (
+	token_id SERIAL,
+	token UUID NOT NULL,
+	validation_date TIMESTAMP NOT NULL,
+	PRIMARY KEY (token_id)
+);
+
+
 CREATE TABLE IF NOT EXISTS organization (
   organization_id SERIAL,
   organization_version INTEGER NOT NULL DEFAULT 1,
@@ -187,6 +195,7 @@ CREATE TABLE IF NOT EXISTS user_account (
   user_password VARCHAR(50),
   user_given_name VARCHAR(15) NOT NULL,
   user_family_name VARCHAR(15) NOT NULL,
+  user_confirmed BOOLEAN NOT NULL,
   user_personal_email varchar(35) UNIQUE NOT NULL,
   user_organization_email varchar(35) UNIQUE NOT NULL,
   PRIMARY KEY (user_username)
