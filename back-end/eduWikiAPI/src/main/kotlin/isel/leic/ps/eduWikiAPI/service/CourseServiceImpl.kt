@@ -118,7 +118,7 @@ class CourseServiceImpl : CourseService {
 
     override fun getSpecificWorkAssignmentFromSpecificTermOfCourse(workAssignmentId: Int, courseId: Int, termId: Int): Optional<WorkAssignment> =
             jdbi.withExtension<Optional<WorkAssignment>, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
-                it.getSpecificWorkAssignment(workAssignmentId, courseId, termId)
+                it.getSpecificWorkAssignmentOfCourseInTerm(workAssignmentId, courseId, termId)
             }
 
     override fun getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignmentStage> =
@@ -274,18 +274,14 @@ class CourseServiceImpl : CourseService {
             courseId: Int,
             termId: Int,
             inputExam: ExamInputModel
-    ): Exam {
-        val exam = jdbi.inTransaction<Exam, Exception> {
-            val examDAO = it.attach(ExamDAOJdbi::class.java)
-            val resourceDAO = it.attach(ResourceDAOJdbi::class.java)
-            val createdExam = examDAO.createExamOnCourseInTerm(courseId, termId, toExam(inputExam))
-            resourceDAO.createResourceValidatorEntry(createdExam.sheetId, 0)
-            examDAO.createExamVersion(toExamVersion(createdExam))
-            createdExam
-        }
-        storageService.storeResource(exam.sheetId, sheet)
-        return exam
-    }
+    ): Exam =
+            jdbi.inTransaction<Exam, Exception> {
+                val examDAO = it.attach(ExamDAOJdbi::class.java)
+                val createdExam = examDAO.createExamOnCourseInTerm(courseId, termId, toExam(inputExam))
+                examDAO.createExamVersion(toExamVersion(createdExam))
+                storageService.storeResource(createdExam.sheetId, sheet)
+                createdExam
+            }
 
 
     override fun addReportToExamOnCourseInTerm(examId: Int, inputExamReport: ExamReportInputModel): ExamReport =
@@ -327,26 +323,20 @@ class CourseServiceImpl : CourseService {
             courseId: Int,
             termId: Int,
             examInputModel: ExamInputModel
-    ): ExamStage {
-        val examStaged = jdbi.inTransaction<ExamStage, Exception> {
-            val examDAO = it.attach(ExamDAOJdbi::class.java)
-            val resourceDAO = it.attach(ResourceDAOJdbi::class.java)
-            val stagingExam = examDAO.createStagingExamOnCourseInTerm(courseId, termId, toStageExam(examInputModel))
-            resourceDAO.createResourceValidatorEntry(stagingExam.sheetId, 0)
-            stagingExam
-        }
-        storageService.storeResource(examStaged.sheetId, sheet)
-        return examStaged
+    ): ExamStage = jdbi.inTransaction<ExamStage, Exception> {
+        val examDAO = it.attach(ExamDAOJdbi::class.java)
+        val stagingExam = examDAO.createStagingExamOnCourseInTerm(courseId, termId, toStageExam(examInputModel))
+        storageService.storeResource(stagingExam.sheetId, sheet)
+        stagingExam
     }
 
     override fun createExamFromStaged(courseId: Int, termId: Int, stageId: Int): Exam =
             jdbi.inTransaction<Exam, Exception> {
                 val examDAO = it.attach(ExamDAOJdbi::class.java)
-                val resourceDAO = it.attach(ResourceDAOJdbi::class.java)
                 val examStage = examDAO.getExamSpecificStageEntry(stageId).get()
                 val exam = examDAO.createExamOnCourseInTerm(courseId, termId, stagedToExam(examStage))
                 examDAO.createExamVersion(toExamVersion(exam))
-                examDAO.deleteStagedExam(stageId)
+                examDAO.deleteSpecificStagedExamOfCourseInTerm(courseId, termId, stageId)
                 exam
             }
 
@@ -363,23 +353,17 @@ class CourseServiceImpl : CourseService {
             courseId: Int,
             termId: Int,
             inputWorkAssignment: WorkAssignmentInputModel
-    ): WorkAssignment {
-        val workAssignment = jdbi.inTransaction<WorkAssignment, Exception> {
-            val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
-            val resourceDAO = it.attach(ResourceDAOJdbi::class.java)
-            val createdWorkAssignment = workAssignmentDAO.createWorkAssignmentOnCourseInTerm(
-                    courseId,
-                    termId,
-                    toWorkAssignment(inputWorkAssignment)
-            )
-            resourceDAO.createResourceValidatorEntry(createdWorkAssignment.sheetId, 0)
-            workAssignmentDAO.createWorkAssignmentVersion(toWorkAssignmentVersion(createdWorkAssignment))
-            createdWorkAssignment
-        }
-        storageService.storeResource(workAssignment.sheetId, sheet)
-        return workAssignment
+    ): WorkAssignment = jdbi.inTransaction<WorkAssignment, Exception> {
+        val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
+        val createdWorkAssignment = workAssignmentDAO.createWorkAssignmentOnCourseInTerm(
+                courseId,
+                termId,
+                toWorkAssignment(inputWorkAssignment)
+        )
+        workAssignmentDAO.createWorkAssignmentVersion(toWorkAssignmentVersion(createdWorkAssignment))
+        storageService.storeResource(createdWorkAssignment.sheetId, sheet)
+        createdWorkAssignment
     }
-
 
     override fun addReportToWorkAssignmentOnCourseInTerm(
             workAssignmentId: Int,
@@ -424,7 +408,7 @@ class CourseServiceImpl : CourseService {
     ): WorkAssignment =
             jdbi.inTransaction<WorkAssignment, Exception> {
                 val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
-                val workAssignment = workAssignmentDAO.getSpecificWorkAssignment(workAssignmentId, courseId, termId).get()
+                val workAssignment = workAssignmentDAO.getSpecificWorkAssignmentOfCourseInTerm(workAssignmentId, courseId, termId).get()
                 val report = workAssignmentDAO.getSpecificReportOfWorkAssignment(workAssignmentId, reportId).get()
                 val updatedWorkAssignment = WorkAssignment(
                         workAssignmentId = workAssignmentId,
@@ -445,14 +429,20 @@ class CourseServiceImpl : CourseService {
             }
 
     override fun createStagingWorkAssignment(
+            sheet: MultipartFile,
             courseId: Int,
             termId: Int,
             inputWorkAssignment: WorkAssignmentInputModel
-    ): WorkAssignmentStage =
-            jdbi.inTransaction<WorkAssignmentStage, Exception> {
-                val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
-                workAssignmentDAO.createStagingWorkAssingment(courseId, termId, toStageWorkAssignment(inputWorkAssignment))
-            }
+    ): WorkAssignmentStage = jdbi.inTransaction<WorkAssignmentStage, Exception> {
+        val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
+        val stagingWorkAssignment = workAssignmentDAO.createStagingWorkAssingment(
+                courseId,
+                termId,
+                toStageWorkAssignment(inputWorkAssignment)
+        )
+        storageService.storeResource(stagingWorkAssignment.sheetId, sheet)
+        stagingWorkAssignment
+    }
 
     override fun createWorkAssignmentFromStaged(courseId: Int, termId: Int, stageId: Int): WorkAssignment =
             jdbi.inTransaction<WorkAssignment, Exception> {
@@ -464,7 +454,7 @@ class CourseServiceImpl : CourseService {
                         stagedToWorkAssignment(workAssignmentStage)
                 )
                 workAssignmentDAO.createWorkAssignmentVersion(toWorkAssignmentVersion(workAssignment))
-                workAssignmentDAO.deleteSpecificStagedWorkAssignment(stageId)
+                workAssignmentDAO.deleteSpecificStagedWorkAssignmentOfCourseInTerm(courseId, termId, stageId)
                 workAssignment
             }
 
@@ -517,23 +507,35 @@ class CourseServiceImpl : CourseService {
             }
 
     override fun deleteAllExamsOfCourseInTerm(courseId: Int, termId: Int): Int =
-            jdbi.withExtension<Int, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
-                it.deleteAllExamsOfCourseInTerm(courseId, termId)
+            jdbi.inTransaction<Int, Exception> {
+                val examDAO = it.attach(ExamDAOJdbi::class.java)
+                val exams = examDAO.getAllExamsFromSpecificTermOfCourse(courseId, termId)
+                storageService.batchDeleteResource(exams.map(Exam::sheetId))
+                examDAO.deleteAllExamsOfCourseInTerm(courseId, termId)
             }
 
     override fun deleteSpecificExamOfCourseInTerm(courseId: Int, termId: Int, examId: Int): Int =
-            jdbi.withExtension<Int, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
-                it.deleteSpecificExamOfCourseInTerm(examId)
+            jdbi.inTransaction<Int, Exception> {
+                val examDAO = it.attach(ExamDAOJdbi::class.java)
+                val exam = examDAO.getSpecificExamFromSpecificTermOfCourse(courseId, termId, examId).get()
+                storageService.deleteSpecificResource(exam.sheetId)
+                examDAO.deleteSpecificExamOfCourseInTerm(examId)
             }
 
     override fun deleteAllStagedExamsOfCourseInTerm(courseId: Int, termId: Int): Int =
-            jdbi.withExtension<Int, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
-                it.deleteAllStagedExamsOfCourseInTerm(courseId, termId)
+            jdbi.inTransaction<Int, Exception> {
+                val examDAO = it.attach(ExamDAOJdbi::class.java)
+                val exams = examDAO.getAllExamsFromSpecificTermOfCourse(courseId, termId)
+                storageService.batchDeleteResource(exams.map(Exam::sheetId))
+                examDAO.deleteAllStagedExamsOfCourseInTerm(courseId, termId)
             }
 
-    override fun deleteStagedExam(stageId: Int): Int =
-            jdbi.withExtension<Int, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
-                it.deleteStagedExam(stageId)
+    override fun deleteSpecificStagedExamOfCourseInTerm(courseId: Int, termId: Int, stageId: Int): Int =
+            jdbi.inTransaction<Int, Exception> {
+                val examDAO = it.attach(ExamDAOJdbi::class.java)
+                val stagedExam = examDAO.getStageEntryFromExamOnSpecificTermOfCourse(courseId, termId, stageId).get()
+                storageService.deleteSpecificResource(stagedExam.sheetId)
+                examDAO.deleteSpecificStagedExamOfCourseInTerm(courseId, termId, stageId)
             }
 
     override fun deleteAllReportsOnExam(examId: Int): Int =
@@ -547,23 +549,35 @@ class CourseServiceImpl : CourseService {
             }
 
     override fun deleteAllWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int =
-            jdbi.withExtension<Int, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
-                it.deleteAllWorkAssignmentsOfCourseInTerm(courseId, termId)
+            jdbi.inTransaction<Int, Exception> {
+                val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
+                val workAssignments = workAssignmentDAO.getAllWorkAssignmentsFromSpecificTermOfCourse(courseId, termId)
+                storageService.batchDeleteResource(workAssignments.map(WorkAssignment::sheetId))
+                workAssignmentDAO.deleteAllWorkAssignmentsOfCourseInTerm(courseId, termId)
             }
 
-    override fun deleteSpecificWorkAssignment(workAssignmentId: Int): Int =
-            jdbi.withExtension<Int, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
-                it.deleteSpecificWorkAssignment(workAssignmentId)
+    override fun deleteSpecificWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, workAssignmentId: Int): Int =
+            jdbi.inTransaction<Int, Exception> {
+                val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
+                val workAssignment = workAssignmentDAO.getSpecificWorkAssignmentOfCourseInTerm(workAssignmentId, courseId, termId).get()
+                storageService.deleteSpecificResource(workAssignment.sheetId)
+                workAssignmentDAO.deleteSpecificWorkAssignment(workAssignmentId)
             }
 
     override fun deleteAllStagedWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int =
-            jdbi.withExtension<Int, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
-                it.deleteAllStagedWorkAssignmentsOfCourseInTerm(courseId, termId)
+            jdbi.inTransaction<Int, Exception> {
+                val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
+                val workAssignments = workAssignmentDAO.getAllWorkAssignmentsFromSpecificTermOfCourse(courseId, termId)
+                storageService.batchDeleteResource(workAssignments.map(WorkAssignment::sheetId))
+                workAssignmentDAO.deleteAllStagedWorkAssignmentsOfCourseInTerm(courseId, termId)
             }
 
-    override fun deleteSpecificStagedWorkAssignment(stageId: Int): Int =
-            jdbi.withExtension<Int, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
-                it.deleteSpecificStagedWorkAssignment(stageId)
+    override fun deleteSpecificStagedWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, stageId: Int): Int =
+            jdbi.inTransaction<Int, Exception> {
+                val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
+                val stagedWorkAssignment = workAssignmentDAO.getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId, termId, stageId).get()
+                storageService.deleteSpecificResource(stagedWorkAssignment.sheetId)
+                workAssignmentDAO.deleteSpecificStagedWorkAssignmentOfCourseInTerm(courseId, termId, stageId)
             }
 
     override fun deleteAllReportsOnWorkAssignment(workAssignmentId: Int): Int =

@@ -339,11 +339,11 @@ interface ExamDAOJdbi : ExamDAO {
     )
     override fun getExamSpecificStageEntry(stageId: Int): Optional<ExamStage>
 
-    override fun deleteStagedExam(stageId: Int): Int =
-            createCourseDAO().deleteSpecificStagedCourseMiscUnitEntry(stageId)
+    override fun deleteSpecificStagedExamOfCourseInTerm(courseId: Int, termId: Int, stageId: Int): Int =
+            createCourseDAO().deleteSpecificStagedCourseMiscUnitEntry(courseId, termId, stageId)
 
     override fun deleteAllExamsOfCourseInTerm(courseId: Int, termId: Int): Int =
-            createCourseDAO().deleteAllCourseMiscUnitsFromTypeOfCourseInTerm(courseId, termId, "Exam")
+            createCourseDAO().deleteAllCourseMiscUnitsFromTypeOfCourseInTerm(courseId, termId, "Exam/Test")
 
     override fun deleteAllStagedExamsOfCourseInTerm(courseId: Int, termId: Int): Int =
             createCourseDAO().deleteAllStagedCourseMiscUnitsFromTypeOfCourseInTerm(courseId, termId, "Exam")

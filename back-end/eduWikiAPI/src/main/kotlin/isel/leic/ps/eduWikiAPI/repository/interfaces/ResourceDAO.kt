@@ -7,16 +7,18 @@ import java.util.*
 interface ResourceDAO {
 
     fun storeResource(
-            sheetId: UUID,
+            uuId: UUID,
             byteSequence: ByteArray,
             contentType: String,
             originalFilename: String,
             size: Long
     ): Resource
 
-    fun getResource(sheetId: UUID): Optional<Resource>
+    fun getResource(uuId: UUID): Optional<Resource>
 
    // fun confirm(examId: Int)
 
-    fun createResourceValidatorEntry(sheetId: UUID, valid: Int)
+    fun batchDeleteResources(uuIds: List<UUID>): IntArray
+
+    fun deleteSpecificResource(uuId: UUID): Int
 }

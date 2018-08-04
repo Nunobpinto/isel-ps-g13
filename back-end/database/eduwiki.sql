@@ -239,19 +239,20 @@ CREATE TABLE IF NOT EXISTS user_programme (
 );
 
 CREATE TABLE IF NOT EXISTS resource (
-   sheet_id UUID NOT NULL,
+   uuid UUID NOT NULL,
 	byte_sequence bytea NOT NULL,
-   content_type VARCHAR(30) NOT NULL,
+   content_type VARCHAR(100) NOT NULL,
    original_filename VARCHAR(50),
    size BIGINT,
    PRIMARY KEY(sheet_id)
 );
 
+/*
 CREATE TABLE IF NOT EXISTS resource_validator (
 	sheet_id UUID NOT NULL,
 	valid INTEGER DEFAULT -1,
 	PRIMARY KEY(sheet_id)
-);
+);*/
 
 --------------------------
 -- Create Stage Tables

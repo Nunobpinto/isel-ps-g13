@@ -93,7 +93,7 @@ interface CourseDAO {
 
     fun deleteAllStagedCourseMiscUnitsFromTypeOfCourseInTerm(courseId: Int, termId: Int, miscType: String ): Int
 
-    fun deleteSpecificStagedCourseMiscUnitEntry(stageId: Int): Int
+    fun deleteSpecificStagedCourseMiscUnitEntry(courseId: Int, termId: Int, stageId: Int): Int
 
     fun getVotesOnStagedCourseProgramme(programmeId: Int, stageId: Int): Int
 

@@ -43,7 +43,7 @@ interface ExamDAO {
 
     fun getStageEntryFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): Optional<ExamStage>
 
-    fun deleteStagedExam(stageId: Int): Int
+    fun deleteSpecificStagedExamOfCourseInTerm(courseId: Int, termId: Int, stageId: Int): Int
 
     fun deleteAllStagedExamsOfCourseInTerm(courseId: Int, termId: Int): Int
 

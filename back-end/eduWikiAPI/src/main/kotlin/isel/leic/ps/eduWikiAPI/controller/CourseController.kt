@@ -345,11 +345,11 @@ class CourseController {
     ) = courseService.deleteAllStagedExamsOfCourseInTerm(courseId, termId)
 
     @DeleteMapping("/{courseId}/terms/{termId}/exams/stage/{stageId}")
-    fun deleteStagedExam(
+    fun deleteStagedExamOfCourseInTerm(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable stageId: Int
-    ) = courseService.deleteStagedExam(stageId)
+    ) = courseService.deleteSpecificStagedExamOfCourseInTerm(courseId, termId, stageId)
 
     // ----- WORK ASSIGNMENT ------
 
@@ -396,7 +396,7 @@ class CourseController {
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable workAssignmentId: Int
-    ) = courseService.deleteSpecificWorkAssignment(workAssignmentId)
+    ) = courseService.deleteSpecificWorkAssignmentOfCourseInTerm(courseId, termId, workAssignmentId)
 
     // ----------------------------
     // Work Assignment Version Endpoints
@@ -510,10 +510,11 @@ class CourseController {
 
     @PostMapping("/{courseId}/terms/{termId}/work-assignments/stage")
     fun createStagingWorkAssignment(
+            @RequestParam sheet: MultipartFile,
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            @RequestBody inputWorkAssignment: WorkAssignmentInputModel
-    ) = courseService.createStagingWorkAssignment(courseId, termId, inputWorkAssignment)
+            @RequestBody workAssignmentInputModel: WorkAssignmentInputModel
+    ) = courseService.createStagingWorkAssignment(sheet, courseId, termId, workAssignmentInputModel)
 
     @PostMapping("/{courseId}/terms/{termId}/work-assignments/stage/{stageId}")
     fun createWorkAssignmentFromStaged(
@@ -541,6 +542,6 @@ class CourseController {
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable stageId: Int
-    ) = courseService.deleteSpecificStagedWorkAssignment(stageId)
+    ) = courseService.deleteSpecificStagedWorkAssignmentOfCourseInTerm(courseId, termId, stageId)
 
 }

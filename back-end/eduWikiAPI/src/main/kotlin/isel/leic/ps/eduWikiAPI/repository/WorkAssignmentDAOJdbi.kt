@@ -68,21 +68,21 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
                     "ON W.$WORK_ASSIGNMENT_ID = C.$COURSE_MISC_UNIT_ID " +
                     "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId " +
                     "AND C.$COURSE_MISC_UNIT_TERM_ID = :termId " +
-                    "AND W.$WORK_ASSIGNMENT_ID = :courseMiscUnitId"
+                    "AND W.$WORK_ASSIGNMENT_ID = :workAssignmentId"
     )
-    override fun getSpecificWorkAssignment(courseMiscUnitId: Int, courseId: Int, termId: Int): Optional<WorkAssignment>
+    override fun getSpecificWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, workAssignmentId: Int): Optional<WorkAssignment>
 
     @SqlQuery("SELECT * FROM $WORK_ASSIGNMENT_TABLE")
     override fun getAllWorkAssignment(): List<WorkAssignment>
 
-    override fun deleteSpecificWorkAssignment(courseMiscUnitId: Int): Int =
-            createCourseDAO().deleteSpecificCourseMiscUnitEntry(courseMiscUnitId)
+    override fun deleteSpecificWorkAssignment(workAssignmentId: Int): Int =
+            createCourseDAO().deleteSpecificCourseMiscUnitEntry(workAssignmentId)
 
     @SqlUpdate(
             "UPDATE $WORK_ASSIGNMENT_TABLE SET " +
                     "$WORK_ASSIGNMENT_VERSION = :workAssignment.version, " +
                     "$WORK_ASSIGNMENT_CREATED_BY = :workAssignment.createdBy, " +
-                    "$WORK_ASSIGNMENT_SHEET_ID = :workAssignment.sheetId, " +
+                    "$WORK_ASSIGNMENT_SHEET_ID = :workAssignment.uuId, " +
                     "$WORK_ASSIGNMENT_SUPPLEMENT = :workAssignment.supplementId, " +
                     "$WORK_ASSIGNMENT_DUE_DATE = :workAssignment.dueDate, " +
                     "$WORK_ASSIGNMENT_INDIVIDUAL = :workAssignment.individual, " +
@@ -116,8 +116,8 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
     @SqlQuery("SELECT * FROM $WORK_ASSIGNMENT_STAGE_TABLE")
     override fun getAllStagedWorkAssignments(): List<WorkAssignmentStage>
 
-    override fun deleteSpecificStagedWorkAssignment(stageId: Int): Int =
-            createCourseDAO().deleteSpecificStagedCourseMiscUnitEntry(stageId)
+    override fun deleteSpecificStagedWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, stageId: Int): Int =
+            createCourseDAO().deleteSpecificStagedCourseMiscUnitEntry(courseId, termId, stageId)
 
     @SqlQuery(
             "SELECT * FROM $WORK_ASSIGNMENT_VERSION_TABLE " +
@@ -244,7 +244,7 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
                     "$WORK_ASSIGNMENT_VOTES, " +
                     "$WORK_ASSIGNMENT_TIMESTAMP) " +
                     "VALUES(:courseMiscUnitId, :workAssignment.version, :workAssignment.createdBy, " +
-                    ":workAssignment.sheetId, :workAssignment.supplementId, :workAssignment.dueDate," +
+                    ":workAssignment.uuId, :workAssignment.supplementId, :workAssignment.dueDate," +
                     ":workAssignment.individual, :workAssignment.lateDelivery, :workAssignment.multipleDeliveries, " +
                     ":workAssignment.requiresReport, :workAssignment.votes, :workAssignment.timestamp)"
     )
@@ -274,7 +274,7 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
                     "$WORK_ASSIGNMENT_REPORTED_BY, " +
                     "$WORK_ASSIGNMENT_VOTES, " +
                     "$WORK_ASSIGNMENT_TIMESTAMP) " +
-                    "VALUES(:workAssignmentId, :workAssignmentReport.sheetId, :workAssignmentReport.supplementId, " +
+                    "VALUES(:workAssignmentId, :workAssignmentReport.uuId, :workAssignmentReport.supplementId, " +
                     ":workAssignmentReport.dueDate, :workAssignmentReport.individual, :workAssignmentReport.lateDelivery, " +
                     ":workAssignmentReport.multipleDeliveries, :workAssignmentReport.requiresReport, " +
                     ":workAssignmentReport.reportedBy, :workAssignmentReport.votes, :workAssignmentReport.timestamp)"
@@ -316,7 +316,7 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
                     "$WORK_ASSIGNMENT_TIMESTAMP " +
                     ") " +
                     "VALUES (:workAssignmentVersion.workAssignmentId, :workAssignmentVersion.version, " +
-                    ":workAssignmentVersion.sheetId, :workAssignmentVersion.supplementId, " +
+                    ":workAssignmentVersion.uuId, :workAssignmentVersion.supplementId, " +
                     ":workAssignmentVersion.dueDate, :workAssignmentVersion.individual, " +
                     ":workAssignmentVersion.lateDelivery, :workAssignmentVersion.multipleDeliveries, " +
                     ":workAssignmentVersion.requiresReport, :workAssignmentVersion.createdBy, :workAssignmentVersion.timestamp)"
@@ -337,7 +337,7 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
                     "$WORK_ASSIGNMENT_CREATED_BY, " +
                     "$WORK_ASSIGNMENT_VOTES, " +
                     "$WORK_ASSIGNMENT_TIMESTAMP) " +
-                    "VALUES(:stageId, :workAssignmentStage.sheetId, :workAssignmentStage.supplementId, :workAssignmentStage.dueDate," +
+                    "VALUES(:stageId, :workAssignmentStage.uuId, :workAssignmentStage.supplementId, :workAssignmentStage.dueDate," +
                     ":workAssignmentStage.individual, :workAssignmentStage.lateDelivery, " +
                     ":workAssignmentStage.multipleDeliveries, :workAssignmentStage.requiresReport, " +
                     ":workAssignmentStage.createdBy, :workAssignmentStage.votes, :workAssignmentStage.timestamp)"

@@ -618,7 +618,7 @@ interface CourseDAOJdbi : CourseDAO {
             "DELETE FROM $COURSE_MISC_UNIT_TABLE " +
                     "WHERE $COURSE_MISC_UNIT_COURSE_ID = :courseId " +
                     "AND $COURSE_MISC_UNIT_TERM_ID = :termId " +
-                    "AND $COURSE_MISC_UNIT_TYPE = :miscType"
+                    "AND $COURSE_MISC_UNIT_TYPE = :miscType::course_misc_unit_type"
     )
     override fun deleteAllCourseMiscUnitsFromTypeOfCourseInTerm(courseId: Int, termId: Int, miscType: String): Int
 
@@ -626,14 +626,16 @@ interface CourseDAOJdbi : CourseDAO {
             "DELETE FROM $COURSE_MISC_UNIT_STAGE_TABLE " +
                     "WHERE $COURSE_MISC_UNIT_COURSE_ID = :courseId " +
                     "AND $COURSE_MISC_UNIT_TERM_ID = :termId " +
-                    "AND $COURSE_MISC_UNIT_TYPE  = :miscType"
+                    "AND $COURSE_MISC_UNIT_TYPE  = :miscType::course_misc_unit_type"
     )
     override fun deleteAllStagedCourseMiscUnitsFromTypeOfCourseInTerm(courseId: Int, termId: Int, miscType: String): Int
 
     @SqlUpdate(
             "DELETE FROM $COURSE_MISC_UNIT_STAGE_TABLE " +
-                    "WHERE $COURSE_MISC_UNIT_COURSE_ID = :stageId"
+                    "WHERE $COURSE_MISC_UNIT_COURSE_ID = :stageId " +
+                    "WHERE $COURSE_MISC_UNIT_COURSE_ID = :courseId " +
+                    "AND $COURSE_MISC_UNIT_TERM_ID = :termId "
     )
-    override fun deleteSpecificStagedCourseMiscUnitEntry(stageId: Int): Int
+    override fun deleteSpecificStagedCourseMiscUnitEntry(courseId: Int, termId: Int, stageId: Int): Int
 
 }

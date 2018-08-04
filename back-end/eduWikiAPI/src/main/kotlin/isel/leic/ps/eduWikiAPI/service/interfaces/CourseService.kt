@@ -78,7 +78,7 @@ interface CourseService {
 
     fun deleteAllWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int
 
-    fun deleteSpecificWorkAssignment(workAssignmentId: Int): Int
+    fun deleteSpecificWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, workAssignmentId: Int): Int
 
     /**
      * Stage entities queries
@@ -100,7 +100,7 @@ interface CourseService {
 
     fun createStagingExam(sheet: MultipartFile, courseId: Int, termId: Int, examInputModel: ExamInputModel): ExamStage
 
-    fun createStagingWorkAssignment(courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): WorkAssignmentStage
+    fun createStagingWorkAssignment(sheet: MultipartFile, courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): WorkAssignmentStage
 
     fun voteOnStagedCourse(stageId: Int, vote: VoteInputModel): Int
 
@@ -110,7 +110,7 @@ interface CourseService {
 
     fun deleteAllStagedWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int
 
-    fun deleteSpecificStagedWorkAssignment(stageId: Int): Int
+    fun deleteSpecificStagedWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, stageId: Int): Int
 
     fun deleteAllStagedCourses(): Int
 
@@ -118,7 +118,7 @@ interface CourseService {
 
     fun deleteAllStagedExamsOfCourseInTerm(courseId: Int, termId: Int): Int
 
-    fun deleteStagedExam(stageId: Int): Int
+    fun deleteSpecificStagedExamOfCourseInTerm(courseId: Int, termId: Int, stageId: Int): Int
 
     /**
      * Version entities queries

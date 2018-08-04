@@ -34,7 +34,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
         const val HOMEWORK_ID = "homework_id"
         const val HOMEWORK_STAGE_ID = "class_misc_unit_stage_id"
         const val HOMEWORK_REPORT_ID = "homework_report_id"
-        const val HOMEWORK_SHEET = "sheetId"
+        const val HOMEWORK_SHEET = "uuId"
         const val HOMEWORK_DUE_DATE = "due_date"
         const val HOMEWORK_LATE_DELIVERY = "late_delivery"
         const val HOMEWORK_MULTIPLE_DELIVERIES = "multipleDeliveries"
@@ -95,7 +95,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
                     "$HOMEWORK_TIMESTAMP " +
                     ") " +
                     "VALUES (:classMiscUnitId, :homework.version, :homework.createdBy, " +
-                    ":homework.sheetId, :homework.dueDate, :homework.lateDelivery, " +
+                    ":homework.uuId, :homework.dueDate, :homework.lateDelivery, " +
                     ":homework.multipleDeliveries, :homework.votes, :homework.timestamp)"
     )
     @GetGeneratedKeys
@@ -180,7 +180,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
                     "$HOMEWORK_VOTES," +
                     "$HOMEWORK_CREATED_BY " +
                     ") " +
-                    "VALUES(:stagedClassMiscUnitId, :homeworkStage.sheetId, :homeworkStage.dueDate, " +
+                    "VALUES(:stagedClassMiscUnitId, :homeworkStage.uuId, :homeworkStage.dueDate, " +
                     ":homeworkStage.lateDelivery, :homeworkStage.multipleDeliveries, :homeworkStage.timestamp, " +
                     ":homeworkStage.votes, :homeworkStage.createdBy)"
     )
@@ -208,7 +208,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
                     "$HOMEWORK_TIMESTAMP " +
                     ") " +
                     "VALUES (:homeworkVersion.homeworkId, :homeworkVersion.version, :homeworkVersion.createdBy, " +
-                    ":homeworkVersion.sheetId, :homeworkVersion.dueDate, :homeworkVersion.lateDelivery, " +
+                    ":homeworkVersion.uuId, :homeworkVersion.dueDate, :homeworkVersion.lateDelivery, " +
                     ":homeworkVersion.multipleDeliveries, :homeworkVersion.timestamp)"
     )
     @GetGeneratedKeys
@@ -280,7 +280,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
                     "$HOMEWORK_VOTES, " +
                     "$HOMEWORK_TIMESTAMP " +
                     ") " +
-                    "VALUES (:homeworkReport.homeworkId, :homeworkReport.sheetId, :homeworkReport.dueDate, " +
+                    "VALUES (:homeworkReport.homeworkId, :homeworkReport.uuId, :homeworkReport.dueDate, " +
                     ":homeworkReport.lateDelivery, :homeworkReport.multipleDeliveries, " +
                     ":homeworkReport.reportedBy, :homeworkReport.votes, :homeworkReport.timestamp)"
     )
@@ -291,7 +291,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
             "UPDATE $HOMEWORK_TABLE SET " +
                     "$HOMEWORK_VERSION = :homework.version, " +
                     "$HOMEWORK_CREATED_BY = :homework.createdBy, " +
-                    "$HOMEWORK_SHEET = :homework.sheetId, " +
+                    "$HOMEWORK_SHEET = :homework.uuId, " +
                     "$HOMEWORK_DUE_DATE = :homework.dueDate, " +
                     "$HOMEWORK_LATE_DELIVERY = :homework.lateDelivery, " +
                     "$HOMEWORK_MULTIPLE_DELIVERIES = :homework.multipleDeliveries, " +

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDate
 
 class ExamInputModel(
-        //val sheetId: String = "", //TODO
+        //val uuId: String = "", //TODO
         val dueDate: LocalDate = LocalDate.now(),
         val type: String = "",
         val phase: String = "",

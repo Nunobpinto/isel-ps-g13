@@ -6,8 +6,12 @@ import java.util.*
 
 interface ResourceStorageService {
 
-    fun storeResource(sheetId: UUID, sheet: MultipartFile): Resource
+    fun storeResource(uuId: UUID, sheet: MultipartFile): Resource
 
-    fun getResource(sheetId: UUID): Resource
+    fun getResource(uuId: UUID): Resource
+
+    fun batchDeleteResource(uuIds: List<UUID>): IntArray
+
+    fun deleteSpecificResource(uuid: UUID): Int
 
 }
