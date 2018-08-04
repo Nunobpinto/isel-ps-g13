@@ -244,7 +244,7 @@ CREATE TABLE IF NOT EXISTS resource (
    content_type VARCHAR(100) NOT NULL,
    original_filename VARCHAR(50),
    size BIGINT,
-   PRIMARY KEY(sheet_id)
+   PRIMARY KEY(uuid)
 );
 
 /*
