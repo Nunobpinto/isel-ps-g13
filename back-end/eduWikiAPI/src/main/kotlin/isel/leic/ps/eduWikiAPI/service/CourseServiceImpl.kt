@@ -628,15 +628,19 @@ class CourseServiceImpl : CourseService {
     override fun deleteAllStagedExamsOfCourseInTerm(courseId: Int, termId: Int): Int =
             jdbi.inTransaction<Int, Exception> {
                 val examDAO = it.attach(ExamDAOJdbi::class.java)
-                val exams = examDAO.getAllExamsFromSpecificTermOfCourse(courseId, termId)
-                storageService.batchDeleteResource(exams.map(Exam::sheetId))
+                val stagedExams = examDAO.getStageEntriesFromExamOnSpecificTermOfCourse(courseId, termId)
+                storageService.batchDeleteResource(stagedExams.map(ExamStage::sheetId))
                 examDAO.deleteAllStagedExamsOfCourseInTerm(courseId, termId)
             }
 
     override fun deleteSpecificStagedExamOfCourseInTerm(courseId: Int, termId: Int, stageId: Int): Int =
             jdbi.inTransaction<Int, Exception> {
                 val examDAO = it.attach(ExamDAOJdbi::class.java)
-                val stagedExam = examDAO.getStageEntryFromExamOnSpecificTermOfCourse(courseId, termId, stageId).get()
+                val stagedExam = examDAO.getStageEntryFromExamOnSpecificTermOfCourse(
+                        courseId,
+                        termId,
+                        stageId
+                ).get()
                 storageService.deleteSpecificResource(stagedExam.sheetId)
                 examDAO.deleteSpecificStagedExamOfCourseInTerm(courseId, termId, stageId)
             }
@@ -670,8 +674,8 @@ class CourseServiceImpl : CourseService {
     override fun deleteAllStagedWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int =
             jdbi.inTransaction<Int, Exception> {
                 val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
-                val workAssignments = workAssignmentDAO.getAllWorkAssignmentsFromSpecificTermOfCourse(courseId, termId)
-                storageService.batchDeleteResource(workAssignments.map(WorkAssignment::sheetId))
+                val workAssignments = workAssignmentDAO.getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(courseId, termId)
+                storageService.batchDeleteResource(workAssignments.map(WorkAssignmentStage::sheetId))
                 workAssignmentDAO.deleteAllStagedWorkAssignmentsOfCourseInTerm(courseId, termId)
             }
 

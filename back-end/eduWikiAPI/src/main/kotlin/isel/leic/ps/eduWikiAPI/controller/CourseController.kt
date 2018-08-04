@@ -320,7 +320,7 @@ class CourseController {
             @RequestParam sheet: MultipartFile,
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            @RequestBody examInputModel: ExamInputModel
+            examInputModel: ExamInputModel
     ) = courseService.createStagingExam(sheet, courseId, termId, examInputModel)
 
     @PostMapping("/{courseId}/terms/{termId}/exams/stage/{stageId}")
@@ -375,7 +375,7 @@ class CourseController {
             @RequestParam sheet: MultipartFile,
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            @RequestBody workAssignmentInputModel: WorkAssignmentInputModel
+            workAssignmentInputModel: WorkAssignmentInputModel
     ) = courseService.createWorkAssignmentOnCourseInTerm(sheet, courseId, termId, workAssignmentInputModel)
 
     @PostMapping("/{courseId}/terms/{termId}/work-assignments/{workAssignmentId}/vote")
@@ -513,7 +513,7 @@ class CourseController {
             @RequestParam sheet: MultipartFile,
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            @RequestBody workAssignmentInputModel: WorkAssignmentInputModel
+            workAssignmentInputModel: WorkAssignmentInputModel
     ) = courseService.createStagingWorkAssignment(sheet, courseId, termId, workAssignmentInputModel)
 
     @PostMapping("/{courseId}/terms/{termId}/work-assignments/stage/{stageId}")

@@ -5,7 +5,7 @@ import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_DUE
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_ID
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_LATE_DELIVERY
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_MULTIPLE_DELIVERIES
-import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_SHEET
+import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_SHEET_ID
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_TIMESTAMP
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_VERSION
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_VOTES
@@ -13,6 +13,7 @@ import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
 
 data class Homework (
         @ColumnName(HOMEWORK_ID)
@@ -23,8 +24,8 @@ data class Homework (
         val votes: Int = 0,
         @ColumnName(HOMEWORK_CREATED_BY)
         val createdBy: String = "",
-        @ColumnName(HOMEWORK_SHEET)
-        val sheet: String = "",
+        @ColumnName(HOMEWORK_SHEET_ID)
+        val sheetId: UUID = UUID.randomUUID(),
         @ColumnName(HOMEWORK_DUE_DATE)
         val dueDate: LocalDate = LocalDate.now(),
         @ColumnName(HOMEWORK_LATE_DELIVERY)

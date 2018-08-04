@@ -458,7 +458,7 @@ interface ClassDAOJdbi : ClassDAO {
                     "$COURSE_CLASS_REPORTED_BY, " +
                     "$COURSE_CLASS_VOTES, " +
                     "$COURSE_CLASS_TIMESTAMP, " +
-                    "$COURSE_CLASS_DELETE_FLAG" +
+                    "$COURSE_CLASS_DELETE_FLAG " +
                     ") " +
                     "VALUES(:courseClassReport.courseClassId, :courseClassReport.courseId, :courseClassReport.classId, " +
                     ":courseClassReport.termId, :courseClassReport.reportedBy, :courseClassReport.votes, :courseClassReport.timestamp," +
@@ -532,7 +532,7 @@ interface ClassDAOJdbi : ClassDAO {
                     "$CLASS_MISC_UNIT_TYPE, " +
                     "$CLASS_MISC_UNIT_COURSE_CLASS_ID " +
                     ") " +
-                    "VALUES (:miscType, :courseClassId)"
+                    "VALUES (:miscType::class_misc_unit_type, :courseClassId)"
     )
     @GetGeneratedKeys
     override fun createClassMiscUnit(courseClassId: Int, miscType: String): ClassMiscUnit
@@ -542,7 +542,7 @@ interface ClassDAOJdbi : ClassDAO {
                     "$CLASS_MISC_UNIT_TYPE, " +
                     "$CLASS_MISC_UNIT_COURSE_CLASS_ID " +
                     ") " +
-                    "VALUES(:miscType, :courseClassId)"
+                    "VALUES(:miscType::class_misc_unit_type, :courseClassId)"
     )
     @GetGeneratedKeys
     override fun createStagingClassMiscUnit(courseClassId: Int, s: String): ClassMiscUnitStage
@@ -550,7 +550,7 @@ interface ClassDAOJdbi : ClassDAO {
     @SqlUpdate(
             "DELETE FROM $CLASS_MISC_UNIT_STAGE_TABLE " +
                     "WHERE $CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
-                    "AND $CLASS_MISC_UNIT_TYPE = :miscType"
+                    "AND $CLASS_MISC_UNIT_TYPE = :miscType::class_misc_unit_type"
     )
     override fun deleteAllStagedClassMiscUnitsFromTypeOfCourseInClass(courseClassId: Int, miscType: String): Int
 
@@ -558,21 +558,21 @@ interface ClassDAOJdbi : ClassDAO {
             "DELETE FROM $CLASS_MISC_UNIT_STAGE_TABLE " +
                     "WHERE $CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
                     "AND $CLASS_MISC_UNIT_STAGE_ID = :stageId " +
-                    "AND $CLASS_MISC_UNIT_TYPE = :miscType"
+                    "AND $CLASS_MISC_UNIT_TYPE = :miscType::class_misc_unit_type"
     )
     override fun deleteSpecificStagedClassMiscUnitFromTypeOfCourseInClass(courseClassId: Int, stageId: Int, miscType: String): Int
 
     @SqlUpdate(
             "DELETE FROM $CLASS_MISC_UNIT_TABLE " +
                     "WHERE $CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
-                    "AND $CLASS_MISC_UNIT_TYPE = :miscType"
+                    "AND $CLASS_MISC_UNIT_TYPE = :miscType::class_misc_unit_type"
     )
     override fun deleteAllClassMiscUnitsFromTypeOfCourseInClass(courseClassId: Int, miscType: String): Int
 
     @SqlUpdate(
             "DELETE FROM $CLASS_MISC_UNIT_TABLE " +
                     "WHERE $CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
-                    "AND $CLASS_MISC_UNIT_TYPE = :miscType " +
+                    "AND $CLASS_MISC_UNIT_TYPE = :miscType::class_misc_unit_type " +
                     "AND $CLASS_MISC_UNIT_ID = :classMiscUnitId"
     )
     override fun deleteSpecificClassMiscUnitFromTypeOnCourseInClass(courseClassId: Int, classMiscUnitId: Int, miscType: String): Int

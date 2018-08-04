@@ -13,7 +13,7 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.version.HomeworkVersionOutputM
 
 fun toHomework(homeworkInputModel: HomeworkInputModel) = Homework(
         createdBy = homeworkInputModel.createdBy,
-        sheet = homeworkInputModel.sheet,
+        sheetId = homeworkInputModel.sheetId,
         dueDate = homeworkInputModel.dueDate,
         lateDelivery = homeworkInputModel.lateDelivery,
         multipleDeliveries = homeworkInputModel.multipleDeliveries
@@ -21,7 +21,7 @@ fun toHomework(homeworkInputModel: HomeworkInputModel) = Homework(
 
 fun toHomeworkStage(homeworkInputModel: HomeworkInputModel) = HomeworkStage(
         createdBy = homeworkInputModel.createdBy,
-        sheet = homeworkInputModel.sheet,
+        sheetId = homeworkInputModel.sheetId,
         dueDate = homeworkInputModel.dueDate,
         lateDelivery = homeworkInputModel.lateDelivery,
         multipleDeliveries = homeworkInputModel.multipleDeliveries
@@ -29,7 +29,7 @@ fun toHomeworkStage(homeworkInputModel: HomeworkInputModel) = HomeworkStage(
 
 fun stagedToHomework(stagedHomework: HomeworkStage) = Homework(
         createdBy = stagedHomework.createdBy,
-        sheet = stagedHomework.sheet,
+        sheetId = stagedHomework.sheetId,
         dueDate = stagedHomework.dueDate,
         lateDelivery = stagedHomework.lateDelivery,
         multipleDeliveries = stagedHomework.multipleDeliveries
@@ -39,7 +39,7 @@ fun toHomeworkVersion(homework: Homework) = HomeworkVersion(
         version = homework.version,
         homeworkId = homework.homeworkId,
         createdBy = homework.createdBy,
-        sheet = homework.sheet,
+        sheetId = homework.sheetId,
         dueDate = homework.dueDate,
         lateDelivery = homework.lateDelivery,
         multipleDeliveries = homework.multipleDeliveries,
@@ -48,7 +48,7 @@ fun toHomeworkVersion(homework: Homework) = HomeworkVersion(
 
 fun toHomeworkReport(homeworkReportInputModel: HomeworkReportInputModel) =  HomeworkReport(
         homeworkId = homeworkReportInputModel.homeworkId,
-        sheet = homeworkReportInputModel.sheet,
+        sheetId = homeworkReportInputModel.sheetId,
         dueDate = homeworkReportInputModel.dueDate,
         lateDelivery = homeworkReportInputModel.lateDelivery,
         multipleDeliveries = homeworkReportInputModel.multipleDeliveries,
@@ -57,7 +57,7 @@ fun toHomeworkReport(homeworkReportInputModel: HomeworkReportInputModel) =  Home
 
 fun toHomeworkOutputModel(homework: Homework) = HomeworkOutputModel(
         username = homework.createdBy,
-        sheet = homework.sheet,
+        sheetId = homework.sheetId,
         dueDate = homework.dueDate,
         lateDelivery = homework.lateDelivery,
         multipleDeliveries = homework.multipleDeliveries,
@@ -68,7 +68,7 @@ fun toHomeworkOutputModel(homework: Homework) = HomeworkOutputModel(
 
 fun toHomeworkVersionOutputModel(homeworkVersion: HomeworkVersion) = HomeworkVersionOutputModel(
         username = homeworkVersion.createdBy,
-        sheet = homeworkVersion.sheet,
+        sheetId = homeworkVersion.sheetId,
         dueDate = homeworkVersion.dueDate,
         lateDelivery = homeworkVersion.lateDelivery,
         multipleDeliveries = homeworkVersion.multipleDeliveries,
@@ -78,7 +78,7 @@ fun toHomeworkVersionOutputModel(homeworkVersion: HomeworkVersion) = HomeworkVer
 
 fun toHomeworkStagedOutputModel(homeworkStage: HomeworkStage) = HomeworkStageOutputModel(
         username = homeworkStage.createdBy,
-        sheet = homeworkStage.sheet,
+        sheetId = homeworkStage.sheetId,
         dueDate = homeworkStage.dueDate,
         lateDelivery = homeworkStage.lateDelivery,
         multipleDeliveries = homeworkStage.multipleDeliveries,
@@ -87,7 +87,7 @@ fun toHomeworkStagedOutputModel(homeworkStage: HomeworkStage) = HomeworkStageOut
 )
 
 fun toHomeworkReportOutputModel(homeworkReport: HomeworkReport) = HomeworkReportOutputModel(
-        sheet = homeworkReport.sheet,
+        sheetId = homeworkReport.sheetId,
         dueDate = homeworkReport.dueDate,
         lateDelivery = homeworkReport.lateDelivery,
         multipleDeliveries = homeworkReport.multipleDeliveries,

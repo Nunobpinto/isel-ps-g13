@@ -29,6 +29,7 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.LectureStageOutputMode
 import isel.leic.ps.eduWikiAPI.domain.outputModel.version.ClassVersionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.version.HomeworkVersionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.version.LectureVersionOutputModel
+import org.springframework.web.multipart.MultipartFile
 import java.util.*
 
 interface ClassService {
@@ -208,7 +209,7 @@ interface ClassService {
 
     fun getSpecificHomeworkFromSpecificCourseInClass(classId: Int, courseId: Int, homeworkId: Int): HomeworkOutputModel
 
-    fun createHomeworkOnCourseInClass(classId: Int, courseId: Int, homeworkInputModel: HomeworkInputModel): HomeworkOutputModel
+    fun createHomeworkOnCourseInClass(sheet: MultipartFile, classId: Int, courseId: Int, homeworkInputModel: HomeworkInputModel): HomeworkOutputModel
 
     fun voteOnHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, vote: VoteInputModel): Int
 
@@ -223,7 +224,7 @@ interface ClassService {
 
     fun getSpecificStagedHomeworkOfCourseInClass(classId: Int, courseId: Int, stageId: Int): HomeworkStageOutputModel
 
-    fun createStagingHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkInputModel: HomeworkInputModel): HomeworkStageOutputModel
+    fun createStagingHomeworkOnCourseInClass(sheet: MultipartFile, classId: Int, courseId: Int, homeworkInputModel: HomeworkInputModel): HomeworkStageOutputModel
 
     fun createHomeworkFromStaged(classId: Int, courseId: Int, stageId: Int): HomeworkOutputModel
 

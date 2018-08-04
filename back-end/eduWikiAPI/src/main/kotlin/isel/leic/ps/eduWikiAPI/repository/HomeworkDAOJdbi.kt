@@ -1,8 +1,6 @@
 package isel.leic.ps.eduWikiAPI.repository
 
-import isel.leic.ps.eduWikiAPI.domain.model.ClassMiscUnit
 import isel.leic.ps.eduWikiAPI.domain.model.Homework
-import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.domain.model.report.HomeworkReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.HomeworkStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.HomeworkVersion
@@ -34,7 +32,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
         const val HOMEWORK_ID = "homework_id"
         const val HOMEWORK_STAGE_ID = "class_misc_unit_stage_id"
         const val HOMEWORK_REPORT_ID = "homework_report_id"
-        const val HOMEWORK_SHEET = "uuId"
+        const val HOMEWORK_SHEET_ID = "uuId"
         const val HOMEWORK_DUE_DATE = "due_date"
         const val HOMEWORK_LATE_DELIVERY = "late_delivery"
         const val HOMEWORK_MULTIPLE_DELIVERIES = "multipleDeliveries"
@@ -51,7 +49,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
             "SELECT H.$HOMEWORK_ID, " +
                     "H.$HOMEWORK_VERSION, " +
                     "H.$HOMEWORK_CREATED_BY, " +
-                    "H.$HOMEWORK_SHEET, " +
+                    "H.$HOMEWORK_SHEET_ID, " +
                     "H.$HOMEWORK_DUE_DATE, " +
                     "H.$HOMEWORK_LATE_DELIVERY, " +
                     "H.$HOMEWORK_MULTIPLE_DELIVERIES, " +
@@ -68,7 +66,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
             "SELECT H.$HOMEWORK_ID, " +
                     "H.$HOMEWORK_VERSION, " +
                     "H.$HOMEWORK_CREATED_BY, " +
-                    "H.$HOMEWORK_SHEET, " +
+                    "H.$HOMEWORK_SHEET_ID, " +
                     "H.$HOMEWORK_DUE_DATE, " +
                     "H.$HOMEWORK_LATE_DELIVERY, " +
                     "H.$HOMEWORK_MULTIPLE_DELIVERIES, " +
@@ -87,7 +85,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
                     "$HOMEWORK_ID, " +
                     "$HOMEWORK_VERSION, " +
                     "$HOMEWORK_CREATED_BY, " +
-                    "$HOMEWORK_SHEET, " +
+                    "$HOMEWORK_SHEET_ID, " +
                     "$HOMEWORK_DUE_DATE, " +
                     "$HOMEWORK_LATE_DELIVERY, " +
                     "$HOMEWORK_MULTIPLE_DELIVERIES, " +
@@ -95,7 +93,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
                     "$HOMEWORK_TIMESTAMP " +
                     ") " +
                     "VALUES (:classMiscUnitId, :homework.version, :homework.createdBy, " +
-                    ":homework.uuId, :homework.dueDate, :homework.lateDelivery, " +
+                    ":homework.sheetId, :homework.dueDate, :homework.lateDelivery, " +
                     ":homework.multipleDeliveries, :homework.votes, :homework.timestamp)"
     )
     @GetGeneratedKeys
@@ -113,7 +111,6 @@ interface HomeworkDAOJdbi : HomeworkDAO {
                     "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +
                     "ON H.$HOMEWORK_ID = C.$CLASS_MISC_UNIT_ID " +
                     "WHERE C.$COURSE_CLASS_ID = :courseClassId " +
-                    "AND C.$CLASS_MISC_UNIT_TYPE = :miscType " +
                     "AND L.$HOMEWORK_ID = :homeworkId"
     )
     override fun getVotesOnHomework(courseClassId: Int, homeworkId: Int): Int
@@ -138,7 +135,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
 
     @SqlQuery(
             "SELECT H.$HOMEWORK_STAGE_ID, " +
-                    "H.$HOMEWORK_SHEET, " +
+                    "H.$HOMEWORK_SHEET_ID, " +
                     "H.$HOMEWORK_DUE_DATE, " +
                     "H.$HOMEWORK_LATE_DELIVERY, " +
                     "H.$HOMEWORK_MULTIPLE_DELIVERIES, " +
@@ -154,7 +151,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
 
     @SqlQuery(
             "SELECT H.$HOMEWORK_STAGE_ID, " +
-                    "H.$HOMEWORK_SHEET, " +
+                    "H.$HOMEWORK_SHEET_ID, " +
                     "H.$HOMEWORK_DUE_DATE, " +
                     "H.$HOMEWORK_LATE_DELIVERY, " +
                     "H.$HOMEWORK_MULTIPLE_DELIVERIES, " +
@@ -172,7 +169,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
     @SqlQuery(
             "INSERT INTO $HOMEWORK_STAGE_TABLE ( " +
                     "$HOMEWORK_STAGE_ID, " +
-                    "$HOMEWORK_SHEET, " +
+                    "$HOMEWORK_SHEET_ID, " +
                     "$HOMEWORK_DUE_DATE, " +
                     "$HOMEWORK_LATE_DELIVERY, " +
                     "$HOMEWORK_MULTIPLE_DELIVERIES, " +
@@ -180,7 +177,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
                     "$HOMEWORK_VOTES," +
                     "$HOMEWORK_CREATED_BY " +
                     ") " +
-                    "VALUES(:stagedClassMiscUnitId, :homeworkStage.uuId, :homeworkStage.dueDate, " +
+                    "VALUES(:stagedClassMiscUnitId, :homeworkStage.sheetId, :homeworkStage.dueDate, " +
                     ":homeworkStage.lateDelivery, :homeworkStage.multipleDeliveries, :homeworkStage.timestamp, " +
                     ":homeworkStage.votes, :homeworkStage.createdBy)"
     )
@@ -201,14 +198,14 @@ interface HomeworkDAOJdbi : HomeworkDAO {
                     "$HOMEWORK_ID, " +
                     "$HOMEWORK_VERSION, " +
                     "$HOMEWORK_CREATED_BY, " +
-                    "$HOMEWORK_SHEET, " +
+                    "$HOMEWORK_SHEET_ID, " +
                     "$HOMEWORK_DUE_DATE, " +
                     "$HOMEWORK_LATE_DELIVERY, " +
                     "$HOMEWORK_MULTIPLE_DELIVERIES, " +
                     "$HOMEWORK_TIMESTAMP " +
                     ") " +
                     "VALUES (:homeworkVersion.homeworkId, :homeworkVersion.version, :homeworkVersion.createdBy, " +
-                    ":homeworkVersion.uuId, :homeworkVersion.dueDate, :homeworkVersion.lateDelivery, " +
+                    ":homeworkVersion.sheetId, :homeworkVersion.dueDate, :homeworkVersion.lateDelivery, " +
                     ":homeworkVersion.multipleDeliveries, :homeworkVersion.timestamp)"
     )
     @GetGeneratedKeys
@@ -235,7 +232,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
     @SqlQuery(
             "SELECT H.$HOMEWORK_REPORT_ID, " +
                     "H.$HOMEWORK_ID, " +
-                    "H.$HOMEWORK_SHEET, " +
+                    "H.$HOMEWORK_SHEET_ID, " +
                     "H.$HOMEWORK_DUE_DATE, " +
                     "H.$HOMEWORK_LATE_DELIVERY, " +
                     "H.$HOMEWORK_MULTIPLE_DELIVERIES, " +
@@ -253,7 +250,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
     @SqlQuery(
             "SELECT H.$HOMEWORK_REPORT_ID, " +
                     "H.$HOMEWORK_ID, " +
-                    "H.$HOMEWORK_SHEET, " +
+                    "H.$HOMEWORK_SHEET_ID, " +
                     "H.$HOMEWORK_DUE_DATE, " +
                     "H.$HOMEWORK_LATE_DELIVERY, " +
                     "H.$HOMEWORK_MULTIPLE_DELIVERIES, " +
@@ -272,7 +269,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
     @SqlUpdate(
             "INSERT INTO $HOMEWORK_REPORT_TABLE ( " +
                     "$HOMEWORK_ID, " +
-                    "$HOMEWORK_SHEET, " +
+                    "$HOMEWORK_SHEET_ID, " +
                     "$HOMEWORK_DUE_DATE, " +
                     "$HOMEWORK_LATE_DELIVERY, " +
                     "$HOMEWORK_MULTIPLE_DELIVERIES, " +
@@ -291,7 +288,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
             "UPDATE $HOMEWORK_TABLE SET " +
                     "$HOMEWORK_VERSION = :homework.version, " +
                     "$HOMEWORK_CREATED_BY = :homework.createdBy, " +
-                    "$HOMEWORK_SHEET = :homework.uuId, " +
+                    "$HOMEWORK_SHEET_ID = :homework.uuId, " +
                     "$HOMEWORK_DUE_DATE = :homework.dueDate, " +
                     "$HOMEWORK_LATE_DELIVERY = :homework.lateDelivery, " +
                     "$HOMEWORK_MULTIPLE_DELIVERIES = :homework.multipleDeliveries, " +
@@ -341,7 +338,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
             "SELECT H.$HOMEWORK_ID, " +
                     "H.$HOMEWORK_VERSION, " +
                     "H.$HOMEWORK_CREATED_BY, " +
-                    "H.$HOMEWORK_SHEET, " +
+                    "H.$HOMEWORK_SHEET_ID, " +
                     "H.$HOMEWORK_DUE_DATE, " +
                     "H.$HOMEWORK_LATE_DELIVERY, " +
                     "H.$HOMEWORK_TIMESTAMP, " +
@@ -358,7 +355,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
             "SELECT H.$HOMEWORK_ID, " +
                     "H.$HOMEWORK_VERSION, " +
                     "H.$HOMEWORK_CREATED_BY, " +
-                    "H.$HOMEWORK_SHEET, " +
+                    "H.$HOMEWORK_SHEET_ID, " +
                     "H.$HOMEWORK_DUE_DATE, " +
                     "H.$HOMEWORK_LATE_DELIVERY, " +
                     "H.$HOMEWORK_TIMESTAMP, " +

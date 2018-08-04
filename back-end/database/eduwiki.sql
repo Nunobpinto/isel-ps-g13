@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS work_assignment (
   work_assignment_version INTEGER NOT NULL DEFAULT 1,
   created_by VARCHAR(20) NOT NULL,
   sheet_id UUID NOT NULL,
-  supplement VARCHAR(100),
+  supplement_id UUID,
   due_date date NOT NULL,
   individual BOOLEAN NOT NULL,
   late_delivery BOOLEAN NOT NULL,
@@ -247,13 +247,6 @@ CREATE TABLE IF NOT EXISTS resource (
    PRIMARY KEY(uuid)
 );
 
-/*
-CREATE TABLE IF NOT EXISTS resource_validator (
-	sheet_id UUID NOT NULL,
-	valid INTEGER DEFAULT -1,
-	PRIMARY KEY(sheet_id)
-);*/
-
 --------------------------
 -- Create Stage Tables
 --------------------------
@@ -337,7 +330,7 @@ CREATE TABLE IF NOT EXISTS class_misc_unit_stage (
 CREATE TABLE IF NOT EXISTS work_assignment_stage (
   work_assignment_stage_id INTEGER REFERENCES course_misc_unit_stage ON DELETE CASCADE,
   sheet_id UUID NOT NULL,
-  supplement VARCHAR(100) NOT NULL,
+  supplement_id UUID NOT NULL,
   due_date date NOT NULL,
   individual BOOLEAN NOT NULL,
   late_delivery BOOLEAN NOT NULL,
@@ -472,7 +465,7 @@ CREATE TABLE IF NOT EXISTS work_assignment_report (
   work_assignment_report_id SERIAL,
   work_assignment_id INTEGER REFERENCES course_misc_unit ON DELETE CASCADE,
   sheet_id UUID,
-  supplement VARCHAR(100),
+  supplement_id UUID,
   due_date date,
   individual BOOLEAN,
   late_delivery BOOLEAN,
@@ -599,8 +592,8 @@ CREATE TABLE IF NOT EXISTS class_version (
 CREATE TABLE IF NOT EXISTS work_assignment_version (
 	work_assignment_id INTEGER,
 	work_assignment_version INTEGER,
-	sheet_id VARCHAR(100) NOT NULL,
-   supplement VARCHAR(100) NOT NULL,
+	sheet_id UUID NOT NULL,
+   supplement_id UUID NOT NULL,
    due_date date NOT NULL,
    individual BOOLEAN NOT NULL,
    late_delivery BOOLEAN NOT NULL,

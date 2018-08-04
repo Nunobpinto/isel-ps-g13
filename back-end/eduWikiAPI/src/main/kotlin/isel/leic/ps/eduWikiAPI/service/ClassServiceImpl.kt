@@ -7,17 +7,11 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.HomeworkReportInputMode
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.LectureReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.mappers.*
 import isel.leic.ps.eduWikiAPI.domain.model.*
-import isel.leic.ps.eduWikiAPI.domain.model.report.ClassReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseClassReport
-import isel.leic.ps.eduWikiAPI.domain.model.report.HomeworkReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.LectureReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ClassStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseClassStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.HomeworkStage
-import isel.leic.ps.eduWikiAPI.domain.model.staging.LectureStage
-import isel.leic.ps.eduWikiAPI.domain.model.version.ClassVersion
-import isel.leic.ps.eduWikiAPI.domain.model.version.HomeworkVersion
-import isel.leic.ps.eduWikiAPI.domain.model.version.LectureVersion
 import isel.leic.ps.eduWikiAPI.domain.outputModel.ClassOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.CourseClassOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.HomeworkOutputModel
@@ -37,17 +31,20 @@ import isel.leic.ps.eduWikiAPI.exceptions.NotFoundException
 import isel.leic.ps.eduWikiAPI.exceptions.UnknownDataException
 import isel.leic.ps.eduWikiAPI.repository.*
 import isel.leic.ps.eduWikiAPI.service.interfaces.ClassService
+import isel.leic.ps.eduWikiAPI.service.interfaces.ResourceStorageService
 import org.jdbi.v3.core.Jdbi
-import org.jdbi.v3.sqlobject.kotlin.attach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.util.*
+import org.springframework.web.multipart.MultipartFile
 
 @Service
 class ClassServiceImpl : ClassService {
 
     @Autowired
     lateinit var jdbi: Jdbi
+
+    @Autowired
+    lateinit var storageService: ResourceStorageService
 
     /**
      * Class Methods
@@ -826,17 +823,22 @@ class ClassServiceImpl : ClassService {
                 })
             }
 
-    override fun createHomeworkOnCourseInClass(classId: Int, courseId: Int, homeworkInputModel: HomeworkInputModel): HomeworkOutputModel =
-            jdbi.inTransaction<HomeworkOutputModel, Exception> {
-                val classDAO = it.attach(ClassDAOJdbi::class.java)
-                val homeworkDAO = it.attach(HomeworkDAOJdbi::class.java)
-                val homework = homeworkDAO.createHomeworkOnCourseInClass(
-                        classDAO.getCourseClassId(classId, courseId),
-                        toHomework(homeworkInputModel)
-                )
-                homeworkDAO.createHomeworkVersion(toHomeworkVersion(homework))
-                toHomeworkOutputModel(homework)
-            }
+    override fun createHomeworkOnCourseInClass(
+            sheet: MultipartFile,
+            classId: Int,
+            courseId: Int,
+            homeworkInputModel: HomeworkInputModel
+    ): HomeworkOutputModel = jdbi.inTransaction<HomeworkOutputModel, Exception> {
+        val classDAO = it.attach(ClassDAOJdbi::class.java)
+        val homeworkDAO = it.attach(HomeworkDAOJdbi::class.java)
+        val createdHomework = homeworkDAO.createHomeworkOnCourseInClass(
+                classDAO.getCourseClassId(classId, courseId),
+                toHomework(homeworkInputModel)
+        )
+        homeworkDAO.createHomeworkVersion(toHomeworkVersion(createdHomework))
+        storageService.storeResource(createdHomework.sheetId, sheet)
+        toHomeworkOutputModel(createdHomework)
+    }
 
     override fun voteOnHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, vote: VoteInputModel): Int =
             jdbi.inTransaction<Int, Exception> {
@@ -854,19 +856,25 @@ class ClassServiceImpl : ClassService {
             jdbi.inTransaction<Int, Exception> {
                 val homeworkDAO = it.attach(HomeworkDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
-                homeworkDAO.deleteAllHomeworksOfCourseInClass(
-                        classDAO.getCourseClassId(classId, courseId)
-                )
+                val courseClassId = classDAO.getCourseClassId(classId, courseId)
+                val homeworks = homeworkDAO.getAllHomeworksFromCourseInClass(courseClassId)
+                storageService.batchDeleteResource(homeworks.map(Homework::sheetId))
+                homeworkDAO.deleteAllHomeworksOfCourseInClass(courseClassId)
+                homeworkDAO.deleteAllHomeworksOfCourseInClass(courseClassId)
             }
 
     override fun deleteSpecificHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int): Int =
             jdbi.inTransaction<Int, Exception> {
                 val homeworkDAO = it.attach(HomeworkDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
+                val courseClassId = classDAO.getCourseClassId(classId, courseId)
+                val homework = homeworkDAO.getSpecificHomeworkFromSpecificCourseInClass(courseClassId, homeworkId).get()
+                storageService.deleteSpecificResource(homework.sheetId)
                 homeworkDAO.deleteSpecificHomeworkOfCourseInClass(
-                        classDAO.getCourseClassId(classId, courseId),
+                        courseClassId,
                         homeworkId
                 )
+                homeworkDAO.deleteSpecificHomeworkOfCourseInClass(courseClassId, homeworkId)
             }
 
     override fun getAllStagedHomeworksOfCourseInClass(classId: Int, courseId: Int): List<HomeworkStageOutputModel> =
@@ -893,13 +901,16 @@ class ClassServiceImpl : ClassService {
                 })
             }
 
-    override fun createStagingHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkInputModel: HomeworkInputModel): HomeworkStageOutputModel =
+    override fun createStagingHomeworkOnCourseInClass(sheet: MultipartFile, classId: Int, courseId: Int, homeworkInputModel: HomeworkInputModel): HomeworkStageOutputModel =
             jdbi.inTransaction<HomeworkStageOutputModel, Exception> {
                 val homeworkDAO = it.attach(HomeworkDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
-                toHomeworkStagedOutputModel(homeworkDAO.createStagingHomeworkOnCourseInClass(
+                val stagingHomework = homeworkDAO.createStagingHomeworkOnCourseInClass(
                         classDAO.getCourseClassId(classId, courseId),
-                        toHomeworkStage(homeworkInputModel)))
+                        toHomeworkStage(homeworkInputModel)
+                )
+                storageService.storeResource(stagingHomework.sheetId, sheet)
+                toHomeworkStagedOutputModel(stagingHomework)
             }
 
     override fun createHomeworkFromStaged(classId: Int, courseId: Int, stageId: Int): HomeworkOutputModel =
@@ -933,19 +944,32 @@ class ClassServiceImpl : ClassService {
             jdbi.inTransaction<Int, Exception> {
                 val homeworkDAO = it.attach(HomeworkDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
-                homeworkDAO.deleteAllStagedHomeworksOfCourseInClass(
-                        classDAO.getCourseClassId(classId, courseId)
+                val courseClassId = classDAO.getCourseClassId(classId, courseId)
+                val homeworks = homeworkDAO.getAllStagedHomeworksOfCourseInClass(
+                       courseClassId
                 )
+                storageService.batchDeleteResource(homeworks.map(HomeworkStage::sheetId))
+                homeworkDAO.deleteAllStagedHomeworksOfCourseInClass(
+                        courseClassId
+                )
+                homeworkDAO.deleteAllStagedHomeworksOfCourseInClass(courseClassId)
             }
 
     override fun deleteSpecificStagedHomeworkOfCourseInClass(classId: Int, courseId: Int, stageId: Int): Int =
             jdbi.inTransaction<Int, Exception> {
                 val homeworkDAO = it.attach(HomeworkDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
+                val courseClassId = classDAO.getCourseClassId(classId, courseId)
+                val stagedHomework = homeworkDAO.getSpecificStagedHomeworkOfCourseInClass(
+                        courseClassId,
+                        stageId
+                ).get()
+                storageService.deleteSpecificResource(stagedHomework.sheetId)
                 homeworkDAO.deleteSpecificStagedHomeworkOfCourseInClass(
-                        classDAO.getCourseClassId(classId, courseId),
+                        courseClassId,
                         stageId
                 )
+                homeworkDAO.deleteSpecificStagedHomeworkOfCourseInClass(courseClassId, stageId)
             }
 
     override fun getAllReportsOfHomeworkFromCourseInClass(classId: Int, courseId: Int, homeWorkId: Int): List<HomeworkReportOutputModel> =
@@ -1003,7 +1027,7 @@ class ClassServiceImpl : ClassService {
                         homeworkId = homeworkId,
                         createdBy = homeworkReport.reportedBy,
                         version = homework.version.inc(),
-                        sheet = homeworkReport.sheet ?: homework.sheet,
+                        sheetId = homeworkReport.sheetId ?: homework.sheetId,
                         dueDate = homeworkReport.dueDate ?: homework.dueDate,
                         lateDelivery = homeworkReport.lateDelivery ?: homework.lateDelivery,
                         multipleDeliveries = homeworkReport.multipleDeliveries ?: homework.multipleDeliveries

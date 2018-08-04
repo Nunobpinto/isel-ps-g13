@@ -9,6 +9,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.staging.ClassStage
 import isel.leic.ps.eduWikiAPI.service.interfaces.ClassService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/classes")
@@ -35,8 +36,8 @@ class ClassController {
     @PostMapping("/{classId}/vote")
     fun voteOnClass(
             @PathVariable classId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = classService.voteOnClass(classId, vote)
+            @RequestBody inputVote: VoteInputModel
+    ) = classService.voteOnClass(classId, inputVote)
 
     @PatchMapping("/{classId}")
     fun partialUpdateOnClass(
@@ -70,8 +71,8 @@ class ClassController {
     fun voteOnReportedClass(
             @PathVariable classId: Int,
             @PathVariable reportId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = classService.voteOnReportClass(classId, reportId, vote)
+            @RequestBody inputVote: VoteInputModel
+    ) = classService.voteOnReportClass(classId, reportId, inputVote)
 
     @PostMapping("/{classId}/reports/{reportId}")
     fun updateReportedClass(
@@ -107,8 +108,8 @@ class ClassController {
     @PostMapping("/stage/{stageId}/vote")
     fun voteOnStagedClass(
             @PathVariable stageId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = classService.voteOnStagedClass(stageId, vote)
+            @RequestBody inputVote: VoteInputModel
+    ) = classService.voteOnStagedClass(stageId, inputVote)
 
     @DeleteMapping("/stage")
     fun deleteAllStagedClasses() = classService.deleteAllStagedClasses()
@@ -159,8 +160,8 @@ class ClassController {
     fun voteOnCourseInClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = classService.voteOnCourseInClass(classId, courseId, vote)
+            @RequestBody inputVote: VoteInputModel
+    ) = classService.voteOnCourseInClass(classId, courseId, inputVote)
 
     @DeleteMapping("/{classId}/courses")
     fun deleteCourseInClass(@PathVariable classId: Int) = classService.deleteAllCoursesInClass(classId)
@@ -207,8 +208,8 @@ class ClassController {
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
             @PathVariable reportId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = classService.voteOnReportOfCourseInClass(classId, courseId, reportId, vote)
+            @RequestBody inputVote: VoteInputModel
+    ) = classService.voteOnReportOfCourseInClass(classId, courseId, reportId, inputVote)
 
     @DeleteMapping("/{classId}/courses/{courseId}/reports")
     fun deleteAllCourseReportsInClass(
@@ -256,8 +257,8 @@ class ClassController {
     fun voteOnStagedCourseInClassFromStage(
             @PathVariable classId: Int,
             @PathVariable stageId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = classService.voteOnStagedCourseInClass(classId, stageId, vote)
+            @RequestBody inputVote: VoteInputModel
+    ) = classService.voteOnStagedCourseInClass(classId, stageId, inputVote)
 
     @DeleteMapping("/{classId}/courses/stage")
     fun deleteStageEntriesOfCourseInSpecificClass(
@@ -300,8 +301,8 @@ class ClassController {
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
             @PathVariable lectureId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = classService.voteOnLectureOfCourseInClass(classId, courseId, lectureId, vote)
+            @RequestBody inputVote: VoteInputModel
+    ) = classService.voteOnLectureOfCourseInClass(classId, courseId, lectureId, inputVote)
 
     @DeleteMapping("/{classId}/courses/{courseId}/lectures")
     fun deleteAllLecturesOfCourseInClass(
@@ -364,8 +365,8 @@ class ClassController {
             @PathVariable courseId: Int,
             @PathVariable lectureId: Int,
             @PathVariable reportId: Int,
-            @PathVariable vote: VoteInputModel
-    ) = classService.voteOnReportOfLectureOfCourseInClass(classId, courseId, lectureId, reportId, vote)
+            @PathVariable inputVote: VoteInputModel
+    ) = classService.voteOnReportOfLectureOfCourseInClass(classId, courseId, lectureId, reportId, inputVote)
 
     @PostMapping("/{classId}/courses/{courseId}/lectures/{lectureId}/reports/{reportId}")
     fun updateLectureFromReport(
@@ -417,8 +418,8 @@ class ClassController {
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
             @PathVariable stageId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = classService.voteOnStagedLectureOfCourseInClass(classId, courseId, stageId, vote) //TODO here
+            @RequestBody inputVote: VoteInputModel
+    ) = classService.voteOnStagedLectureOfCourseInClass(classId, courseId, stageId, inputVote) //TODO here
 
     @PostMapping("/{classId}/courses/{courseId}/lectures/stage/{stageId}")
     fun createLectureFromStaged(
@@ -480,18 +481,19 @@ class ClassController {
 
     @PostMapping("/{classId}/courses/{courseId}/homeworks")
     fun createHomeworkOnCourseInClass(
+            @RequestParam sheet: MultipartFile,
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
-            @RequestBody homeworkInputModel: HomeworkInputModel
-    ) = classService.createHomeworkOnCourseInClass(classId, courseId, homeworkInputModel)
+            homeworkInputModel: HomeworkInputModel
+    ) = classService.createHomeworkOnCourseInClass(sheet, classId, courseId, homeworkInputModel)
 
     @PostMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}/vote")
     fun voteOnHomeworkOfCourseInClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
             @PathVariable homeworkId: Int,
-            @RequestBody voteInputModel: VoteInputModel
-    ) = classService.voteOnHomeworkOfCourseInClass(classId, courseId, homeworkId, voteInputModel)
+            @RequestBody inputVote: VoteInputModel
+    ) = classService.voteOnHomeworkOfCourseInClass(classId, courseId, homeworkId, inputVote)
 
     @DeleteMapping("/{classId}/courses/{courseId}/homeworks")
     fun deleteAllHomeworksOfCourseInClass(
@@ -525,11 +527,12 @@ class ClassController {
     ) = classService.getSpecificStagedHomeworkOfCourseInClass(classId, courseId, stageId)
 
     @PostMapping("/{classId}/courses/{courseId}/homeworks/stage")
-    fun createStagingHomeworkOfCourseInClass(
+    fun createStagingHomeworkOnCourseInClass(
+            @PathVariable sheet: MultipartFile,
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
-            @RequestBody homeworkInputModel: HomeworkInputModel
-    ) = classService.createStagingHomeworkOfCourseInClass(classId, courseId, homeworkInputModel)
+            homeworkInputModel: HomeworkInputModel
+    ) = classService.createStagingHomeworkOnCourseInClass(sheet, classId, courseId, homeworkInputModel)
 
     @PostMapping("/{classId}/courses/{courseId}/homeworks/stage/{stageId}")
     fun createHomeworkFromStaged(
@@ -543,8 +546,8 @@ class ClassController {
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
             @PathVariable stageId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = classService.voteOnStagedHomeworkOfCourseInClass(classId, courseId, stageId, vote)
+            @RequestBody inputVote: VoteInputModel
+    ) = classService.voteOnStagedHomeworkOfCourseInClass(classId, courseId, stageId, inputVote)
 
     @DeleteMapping("/{classId}/courses/{courseId}/homeworks/stage")
     fun deleteAllStagedHomeworksOfCourseInClass(
@@ -600,8 +603,8 @@ class ClassController {
             @PathVariable courseId: Int,
             @PathVariable homeworkId: Int,
             @PathVariable reportId: Int,
-            @RequestBody vote: VoteInputModel
-    ) = classService.voteOnReportOfHomeworkOfCourseInClass(classId, courseId, homeworkId, reportId, vote)
+            @RequestBody inputVote: VoteInputModel
+    ) = classService.voteOnReportOfHomeworkOfCourseInClass(classId, courseId, homeworkId, reportId, inputVote)
 
     @DeleteMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}/reports")
     fun deleteAllReportsOnHomeworkOfCourseInClass(
