@@ -16,8 +16,6 @@ interface ResourceDAO {
 
     fun getResource(uuId: UUID): Optional<Resource>
 
-   // fun confirm(examId: Int)
-
     fun batchDeleteResources(uuIds: List<UUID>): IntArray
 
     fun deleteSpecificResource(uuId: UUID): Int

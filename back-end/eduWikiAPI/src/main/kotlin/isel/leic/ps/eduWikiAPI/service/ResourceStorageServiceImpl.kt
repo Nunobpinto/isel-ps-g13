@@ -26,7 +26,6 @@ class ResourceStorageServiceImpl : ResourceStorageService{
                         sheet.originalFilename!!,
                         sheet.size
                 )
-                //TODO confirm(exam.examId)
             }
 
     override fun getResource(uuId: UUID): Resource =
