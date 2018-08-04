@@ -164,10 +164,10 @@ class ClassController {
     ) = classService.voteOnCourseInClass(classId, courseId, inputVote)
 
     @DeleteMapping("/{classId}/courses")
-    fun deleteCourseInClass(@PathVariable classId: Int) = classService.deleteAllCoursesInClass(classId)
+    fun deleteAllCoursesInClass(@PathVariable classId: Int) = classService.deleteAllCoursesInClass(classId)
 
     @DeleteMapping("/{classId}/courses/{courseId}")
-    fun deleteCourseInClass(
+    fun deleteSpecificCourseInClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int
     ) = classService.deleteSpecificCourseInClass(classId, courseId)

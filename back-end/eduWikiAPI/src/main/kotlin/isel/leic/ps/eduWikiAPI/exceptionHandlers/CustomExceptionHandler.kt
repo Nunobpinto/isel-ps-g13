@@ -195,5 +195,23 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
                 HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
+    @ExceptionHandler(value = [(ExceededValidationException::class)])
+    fun handleExceededValidationException(
+            ex: ExceededValidationException,
+            request: WebRequest
+    ): ResponseEntity<ErrorOutputModel> {
+        val httpHeaders = HttpHeaders()
+        httpHeaders.contentType = MediaType.APPLICATION_PROBLEM_JSON_UTF8
+        return ResponseEntity(
+                ErrorOutputModel(
+                        title = "Exceeded Validation Token Date",
+                        detail = "Exceeded Validation Token Date, please register again and confirm your email",
+                        status = 401,
+                        type = "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
+                ),
+                httpHeaders,
+                HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
 
 }

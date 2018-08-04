@@ -13,9 +13,14 @@ import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.UserReportOutputModel
 import isel.leic.ps.eduWikiAPI.exceptions.BadRequestException
+import isel.leic.ps.eduWikiAPI.exceptions.ExceededValidationException
 import isel.leic.ps.eduWikiAPI.exceptions.NotFoundException
 import isel.leic.ps.eduWikiAPI.exceptions.UnknownDataException
 import isel.leic.ps.eduWikiAPI.repository.*
+import org.springframework.context.ApplicationEventPublisher
+import java.sql.Timestamp
+import java.time.LocalDateTime
+import java.util.*
 import java.util.regex.Pattern
 
 @Service
@@ -23,6 +28,10 @@ class UserServiceImpl : UserService {
 
     @Autowired
     lateinit var jdbi: Jdbi
+
+    @Autowired
+    lateinit var eventPublisher: ApplicationEventPublisher
+
 
     override fun getAuthenticatedUser(username: String): AuthUserOutputModel =
             jdbi.withExtension<AuthUserOutputModel, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
@@ -64,12 +73,43 @@ class UserServiceImpl : UserService {
             val repDao = it.attach(ReputationDAOJdbi::class.java)
             val user1 = userDao.createUser(user)
             val reputation = Reputation(
-                    reputationPoints = 1,
-                    reputationRole = "ROLE_BEGINNER",
+                    reputationPoints = 0,
+                    reputationRole = "ROLE_UNCONFIRMED",
                     username = user1.username
             )
             repDao.saveNewUser(reputation)
+            eventPublisher.publishEvent(OnRegistrationEvent(user1))
             toAuthUserOutputModel(user1)
+        }
+    }
+
+    override fun confirmUser(username: String, token: UUID): AuthUserOutputModel {
+        return jdbi.inTransaction<AuthUserOutputModel, Exception> {
+            val userDao = it.attach(UserDAOJdbi::class.java)
+            val repDao = it.attach(ReputationDAOJdbi::class.java)
+            val tokenDAO = it.attach(TokenDAOJdbi::class.java)
+            val validationToken = tokenDAO.getToken(token)
+                    .orElseThrow {
+                        NotFoundException(
+                                msg = "Invalid token",
+                                action = "Verify if the token is the same as the one in the email we sent"
+                        )
+                    }
+            val currentTImestamp = Timestamp.valueOf(LocalDateTime.now())
+            tokenDAO.deleteToken(token)
+            if(currentTImestamp.after(validationToken.date)){
+                userDao.deleteUser(username)
+                throw ExceededValidationException()
+            }
+            val role = repDao.getRoleByHierarchyLevel(1)
+                    .orElseThrow {
+                        NotFoundException(
+                                msg = "No role found",
+                                action = "Try othr Hierarchy level"
+                        ) }
+            repDao.changeRole(username, role.minPoints, role.reputationRoleId)
+            val userChanged = userDao.confirmUser(username)
+            toAuthUserOutputModel(userChanged)
         }
     }
 
@@ -188,14 +228,14 @@ class UserServiceImpl : UserService {
     }
 
     override fun deleteAllClassesOfUser(username: String): Int =
-        jdbi.withExtension<Int, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
-            it.deleteAllClassesOfUser(username)
-        }
+            jdbi.withExtension<Int, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
+                it.deleteAllClassesOfUser(username)
+            }
 
     override fun deleteSpecificClassOfUser(username: String, courseClassId: Int): Int =
-        jdbi.withExtension<Int, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
-            it.deleteSpecificClassOfUser(username, courseClassId)
-        }
+            jdbi.withExtension<Int, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
+                it.deleteSpecificClassOfUser(username, courseClassId)
+            }
 
     override fun approveReport(username: String, reportId: Int): Int {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.

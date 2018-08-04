@@ -14,5 +14,9 @@ interface ReputationDAO {
 
     fun getReputationMatchers(): List<ReputationMatcher>
 
-    fun saveNewUser(reputation: Reputation) : Reputation
+    fun saveNewUser(reputation: Reputation): Reputation
+
+    fun getRoleByHierarchyLevel(level: Int): Optional<ReputationRole>
+
+    fun changeRole(username: String, reputationPoints: Int, role: String): Int
 }

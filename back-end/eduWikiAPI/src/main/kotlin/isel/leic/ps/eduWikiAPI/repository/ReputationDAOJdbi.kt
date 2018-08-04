@@ -51,7 +51,7 @@ interface ReputationDAOJdbi : ReputationDAO {
     @SqlQuery("SELECT * FROM $REPUTATION_MATCHER_TABLE")
     override fun getReputationMatchers(): List<ReputationMatcher>
 
-   @SqlUpdate(
+    @SqlUpdate(
             "INSERT INTO $REPUTATION_TABLE (" +
                     "$REPUTATION_POINTS," +
                     "$REPUTATION_ROLE," +
@@ -63,5 +63,14 @@ interface ReputationDAOJdbi : ReputationDAO {
                     ")")
     @GetGeneratedKeys
     override fun saveNewUser(reputation: Reputation): Reputation
+
+    @SqlQuery("SELECT * FROM $REPUTATION_ROLE_TABLE WHERE $REPUTATION_ROLE_HIERARCHY_LEVEL = :level")
+    override fun getRoleByHierarchyLevel(level: Int): Optional<ReputationRole>
+
+    @SqlUpdate("UPDATE $REPUTATION_TABLE " +
+                "SET $REPUTATION_ROLE = :role, " +
+                 "$REPUTATION_POINTS = :reputationPoints " +
+                "WHERE $REPUTATION_USER = :username")
+    override fun changeRole(username: String, reputationPoints: Int, role: String): Int
 
 }

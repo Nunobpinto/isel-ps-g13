@@ -35,6 +35,7 @@ interface UserDAOJdbi : UserDAO {
         const val REPORTED_BY = "reported_by"
         const val TIMESTAMP = "time_stamp"
         const val REPORT_ID = "report_id"
+        const val USER_CONFIRMED_FLAG = "user_confirmed"
 
     }
 
@@ -47,6 +48,7 @@ interface UserDAOJdbi : UserDAO {
             "$USER_GIVEN_NAME," +
             "$USER_FAMILY_NAME," +
             "$USER_PERSONAL_EMAIL," +
+            "$USER_CONFIRMED_FLAG," +
             USER_ORG_EMAIL +
             ") VALUES ( " +
             ":user.username," +
@@ -54,10 +56,17 @@ interface UserDAOJdbi : UserDAO {
             ":user.givenName," +
             ":user.familyName," +
             ":user.personalEmail," +
+            ":user.confirmed," +
             ":user.organizationEmail " +
             ")")
     @GetGeneratedKeys
     override fun createUser(user: User): User
+
+    @SqlUpdate("UPDATE $USER_TABLE " +
+            "SET $USER_CONFIRMED_FLAG = true " +
+            "WHERE $USER_USERNAME = :username")
+    @GetGeneratedKeys
+    override fun confirmUser(username: String): User
 
     @SqlQuery("SELECT $COURSE_ID FROM $USER_COURSE_CLASS_TABLE WHERE $USER_USERNAME = :username")
     override fun getCoursesOfUser(username: String): List<Int>

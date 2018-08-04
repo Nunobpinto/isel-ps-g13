@@ -6,6 +6,7 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.UserProgrammeInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.UserReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.UserReportOutputModel
+import java.util.*
 
 interface UserService {
 
@@ -51,4 +52,5 @@ interface UserService {
 
     fun deleteReportOnUser(username: String, reportId: Int): Int
 
+    fun confirmUser(username: String, token: UUID): AuthUserOutputModel
 }

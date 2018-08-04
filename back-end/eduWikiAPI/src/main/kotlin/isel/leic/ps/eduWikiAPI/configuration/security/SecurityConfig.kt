@@ -31,7 +31,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
     override fun configure(http: HttpSecurity) {
         http
                 .csrf().disable()
-                .httpBasic().realmName(REALM)
+                .httpBasic().realmName(REALM).authenticationEntryPoint(authenticationEntryPoint())
                 .and().cors()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         authorizationConfig.configureRequestAuthorizations(http)
@@ -47,6 +47,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
                 .antMatchers("/swagger-resources")
                 .antMatchers("/webjars/**")
                 .antMatchers("/users")
+                .antMatchers("/users/{username}/confirm/{token}")
     }
 
     @Bean
@@ -57,4 +58,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
         auth.setPasswordEncoder(BCryptPasswordEncoder())
         return auth
     }
+
+    @Bean
+    fun authenticationEntryPoint(): CustomBasicAuthenticationEntryPoint = CustomBasicAuthenticationEntryPoint()
 }

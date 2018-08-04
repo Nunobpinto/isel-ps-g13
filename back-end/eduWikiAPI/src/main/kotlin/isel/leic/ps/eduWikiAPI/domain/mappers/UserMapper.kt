@@ -15,7 +15,8 @@ fun toUser(inputModel: UserInputModel?) = User(
         givenName = inputModel.givenName!!,
         organizationEmail = inputModel.organizationEmail!!,
         password = inputModel.password!!,
-        personalEmail = inputModel.personalEmail!!
+        personalEmail = inputModel.personalEmail!!,
+        confirmed = false
 )
 
 fun toUserReport(username: String, reportedBy: String, reportInput: UserReportInputModel) = UserReport(
@@ -30,13 +31,11 @@ fun toAuthUserOutputModel(user: User) = AuthUserOutputModel(
         familyName = user.givenName,
         personalEmail = user.personalEmail,
         organizationEmail = user.organizationEmail,
-        userPrivilege = user.userPrivilege,
-        userReputation = user.userReputation
+        confirmed = user.confirmed
 )
 
 fun toUserOutputModel(user: User) = UserOutputModel(
-        username = user.username,
-        userReputation = user.userReputation
+        username = user.username
 )
 
 fun toUserReportOutput(userReport: UserReport) = UserReportOutputModel(

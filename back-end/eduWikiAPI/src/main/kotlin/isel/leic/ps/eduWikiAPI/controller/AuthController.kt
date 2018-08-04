@@ -8,6 +8,7 @@ import isel.leic.ps.eduWikiAPI.service.interfaces.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
+import java.util.*
 
 @RestController
 @RequestMapping("/users")
@@ -30,6 +31,10 @@ class AuthController {
             @PathVariable username: String,
             @PathVariable reportId: Int
     ) = userService.getSpecificReportOfUser(username, reportId)
+
+    @GetMapping("/{username}/confirm/{token}")
+    fun confirmUser(@PathVariable username: String, @PathVariable token: UUID)
+            = userService.confirmUser(username, token)
 
     @PostMapping
     fun registerUser(@RequestBody inputUser: UserInputModel) = userService.saveUser(inputUser)
