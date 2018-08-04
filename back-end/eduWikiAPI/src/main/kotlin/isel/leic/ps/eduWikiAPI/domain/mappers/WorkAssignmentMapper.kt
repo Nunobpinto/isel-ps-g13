@@ -6,6 +6,10 @@ import isel.leic.ps.eduWikiAPI.domain.model.WorkAssignment
 import isel.leic.ps.eduWikiAPI.domain.model.report.WorkAssignmentReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.WorkAssignmentVersion
+import isel.leic.ps.eduWikiAPI.domain.outputModel.WorkAssignmentOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.WorkAssignmentReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.WorkAssignmentStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.version.WorkAssignmentVersionOutputModel
 
 fun toWorkAssignment(input: WorkAssignmentInputModel) = WorkAssignment(
         createdBy = input.createdBy,
@@ -64,4 +68,62 @@ fun stagedToWorkAssignment(stage: WorkAssignmentStage) = WorkAssignment(
         lateDelivery = stage.lateDelivery,
         multipleDeliveries = stage.multipleDeliveries,
         requiresReport = stage.requiresReport
+)
+
+fun toWorkAssignmentOutputModel(workAssignment: WorkAssignment) = WorkAssignmentOutputModel(
+        workAssignmentId = workAssignment.workAssignmentId,
+        version = workAssignment.version,
+        votes = workAssignment.votes,
+        createdBy = workAssignment.createdBy,
+        sheetId = workAssignment.sheetId,
+        supplementId = workAssignment.supplementId,
+        dueDate = workAssignment.dueDate,
+        individual = workAssignment.individual,
+        lateDelivery = workAssignment.lateDelivery,
+        multipleDeliveries = workAssignment.multipleDeliveries,
+        requiresReport = workAssignment.requiresReport,
+        timestamp = workAssignment.timestamp
+)
+
+fun toWorkAssignmentStageOutputModel(workAssignmentStage: WorkAssignmentStage) = WorkAssignmentStageOutputModel(
+        stagedId = workAssignmentStage.stageId,
+        votes = workAssignmentStage.votes,
+        username = workAssignmentStage.createdBy,
+        sheetId = workAssignmentStage.sheetId,
+        supplementId = workAssignmentStage.supplementId,
+        dueDate = workAssignmentStage.dueDate,
+        individual = workAssignmentStage.individual,
+        lateDelivery = workAssignmentStage.lateDelivery,
+        multipleDeliveries = workAssignmentStage.multipleDeliveries,
+        requiresReport = workAssignmentStage.requiresReport,
+        timestamp = workAssignmentStage.timestamp
+)
+
+fun toWorkAssignmentReportOutputModel(workAssignmentReport: WorkAssignmentReport) = WorkAssignmentReportOutputModel(
+        workAssignmentId = workAssignmentReport.workAssignmentId,
+        reportId = workAssignmentReport.reportId,
+        votes = workAssignmentReport.votes,
+        reportedBy = workAssignmentReport.reportedBy,
+        sheetId = workAssignmentReport.sheetId,
+        supplementId = workAssignmentReport.supplementId,
+        dueDate = workAssignmentReport.dueDate,
+        individual = workAssignmentReport.individual,
+        lateDelivery = workAssignmentReport.lateDelivery,
+        multipleDeliveries = workAssignmentReport.multipleDeliveries,
+        requiresReport = workAssignmentReport.requiresReport,
+        timestamp = workAssignmentReport.timestamp
+)
+
+fun toWorkAssignmentVersionOutputModel(workAssignmentVersion: WorkAssignmentVersion) = WorkAssignmentVersionOutputModel(
+        workAssignmentId = workAssignmentVersion.workAssignmentId,
+        version = workAssignmentVersion.version,
+        createdBy = workAssignmentVersion.createdBy,
+        sheetId = workAssignmentVersion.sheetId,
+        supplementId = workAssignmentVersion.supplementId,
+        dueDate = workAssignmentVersion.dueDate,
+        individual = workAssignmentVersion.individual,
+        lateDelivery = workAssignmentVersion.lateDelivery,
+        multipleDeliveries = workAssignmentVersion.multipleDeliveries,
+        requiresReport = workAssignmentVersion.requiresReport,
+        timestamp = workAssignmentVersion.timestamp
 )

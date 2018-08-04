@@ -3,12 +3,13 @@ package isel.leic.ps.eduWikiAPI.domain.outputModel.version
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
 
 data class WorkAssignmentVersionOutputModel (
         val version: Int = 1,
         val workAssignmentId: Int = 0,
-        val sheet: String = "", //TODO
-        val supplement: String? = null, //TODO
+        val sheetId: UUID = UUID.randomUUID(),
+        val supplementId: UUID = UUID.randomUUID(),
         val dueDate: LocalDate = LocalDate.now(),
         val individual: Boolean = false,
         val lateDelivery: Boolean = false,

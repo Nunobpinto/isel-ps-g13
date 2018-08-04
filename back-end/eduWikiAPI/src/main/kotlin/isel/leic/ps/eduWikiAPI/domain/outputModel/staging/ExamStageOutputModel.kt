@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
 
 
 data class ExamStageOutputModel (
@@ -18,5 +19,6 @@ data class ExamStageOutputModel (
         val phase: String = "",
         val location: String = "",
         val votes: Int = 0,
-        val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
+        val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now()),
+        val sheetId: UUID = UUID.randomUUID()
 )

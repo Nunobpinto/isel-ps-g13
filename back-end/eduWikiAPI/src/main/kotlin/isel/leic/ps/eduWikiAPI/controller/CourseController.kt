@@ -76,7 +76,7 @@ class CourseController {
     // ----------------------------
 
     @GetMapping("/{courseId}/reports")
-    fun getAllReportsOnCourse(@PathVariable courseId: Int): List<CourseReport> = courseService.getAllReportsOnCourse(courseId)
+    fun getAllReportsOnCourse(@PathVariable courseId: Int) = courseService.getAllReportsOnCourse(courseId)
 
     @GetMapping("/{courseId}/reports/{reportId}")
     fun getSpecificReportOfCourse(

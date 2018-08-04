@@ -7,6 +7,9 @@ import isel.leic.ps.eduWikiAPI.domain.model.report.ExamReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ExamStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.ExamVersion
 import isel.leic.ps.eduWikiAPI.domain.outputModel.ExamOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.ExamReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.ExamStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.version.ExamVersionOutputModel
 
 fun toExam(input: ExamInputModel) = Exam(
         createdBy = input.createdBy,
@@ -59,11 +62,47 @@ fun toExamOutputModel(exam: Exam) = ExamOutputModel(
         examId = exam.examId,
         version = exam.version,
         votes = exam.votes,
-        username = exam.createdBy,
+        createdBy = exam.createdBy,
         location = exam.location,
         dueDate = exam.dueDate,
         type = exam.type,
         phase = exam.phase,
-        //sheet = exam.sheet,
+        sheetId = exam.sheetId,
         timestamp = exam.timestamp
+)
+
+fun toExamStageOutputModel(examStage: ExamStage) = ExamStageOutputModel(
+        stagedId = examStage.stageId,
+        votes = examStage.votes,
+        username = examStage.createdBy,
+        location = examStage.location,
+        dueDate = examStage.dueDate,
+        type = examStage.type,
+        phase = examStage.phase,
+        sheetId = examStage.sheetId,
+        timestamp = examStage.timestamp
+)
+
+fun toExamReportOutputModel(examReport: ExamReport) = ExamReportOutputModel(
+        examId = examReport.examId,
+        reportedBy = examReport.reportedBy,
+        votes = examReport.votes,
+        location = examReport.location,
+        dueDate = examReport.dueDate,
+        type = examReport.type,
+        phase = examReport.phase,
+        sheetId = examReport.sheetId,
+        timestamp = examReport.timestamp
+)
+
+fun toExamVersionOutputModel(examVersion: ExamVersion) = ExamVersionOutputModel(
+        examId = examVersion.examId,
+        version = examVersion.version,
+        createdBy = examVersion.createdBy,
+        location = examVersion.location,
+        dueDate = examVersion.dueDate,
+        type = examVersion.type,
+        phase = examVersion.phase,
+        sheetId = examVersion.sheetId,
+        timestamp = examVersion.timestamp
 )

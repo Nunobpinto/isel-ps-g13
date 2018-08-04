@@ -3,6 +3,7 @@ package isel.leic.ps.eduWikiAPI.domain.outputModel.version
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
 
 data class ExamVersionOutputModel (
         val version: Int = 1,
@@ -13,5 +14,6 @@ data class ExamVersionOutputModel (
         val phase: String = "",
         val location: String = "",
         val createdBy: String = "",
-        val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
+        val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now()),
+        val sheetId: UUID
 )

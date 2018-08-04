@@ -19,6 +19,19 @@ import isel.leic.ps.eduWikiAPI.domain.model.version.ClassVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.ExamVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.WorkAssignmentVersion
+import isel.leic.ps.eduWikiAPI.domain.outputModel.CourseOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.ExamOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.TermOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.WorkAssignmentOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.CourseReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.ExamReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.WorkAssignmentReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.CourseStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.ExamStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.WorkAssignmentStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.version.CourseVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.version.ExamVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.version.WorkAssignmentVersionOutputModel
 import org.springframework.web.multipart.MultipartFile
 import java.util.*
 
@@ -28,37 +41,33 @@ interface CourseService {
      * Main entities queries
      */
 
-    fun getAllCourses(): List<Course>
+    fun getAllCourses(): List<CourseOutputModel>
 
-    fun getSpecificCourse(courseId: Int): Optional<Course>
+    fun getSpecificCourse(courseId: Int): CourseOutputModel
 
-    fun getTermsOfCourse(courseId: Int): List<Term>
+    fun getTermsOfCourse(courseId: Int): List<TermOutputModel>
 
-    fun getSpecificTermOfCourse(courseId: Int, termId: Int): Optional<Term>
+    fun getSpecificTermOfCourse(courseId: Int, termId: Int): TermOutputModel
 
-    fun getAllExamsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<Exam>
+    fun getAllExamsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<ExamOutputModel>
 
-    fun getSpecificExamFromSpecificTermOfCourse(courseId: Int, termId: Int, examId: Int): Optional<Exam>
+    fun getSpecificExamFromSpecificTermOfCourse(courseId: Int, termId: Int, examId: Int): ExamOutputModel
 
-    fun getAllWorkAssignmentsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignment>
+    fun getAllWorkAssignmentsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignmentOutputModel>
 
-    fun getSpecificWorkAssignmentFromSpecificTermOfCourse(workAssignmentId: Int, courseId: Int, termId: Int): Optional<WorkAssignment>
+    fun getSpecificWorkAssignmentFromSpecificTermOfCourse(workAssignmentId: Int, courseId: Int, termId: Int): WorkAssignmentOutputModel
 
-    fun getAllClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class>
+    fun createCourse(inputCourse: CourseInputModel): CourseOutputModel
 
-    fun getClassOnSpecificTermOfCourse(courseId: Int, termId: Int, classId: Int): Optional<Class>
+    fun createCourseFromStaged(stageId: Int): CourseOutputModel
 
-    fun createCourse(inputCourse: CourseInputModel): Course
+    fun createExamOnCourseInTerm(sheet: MultipartFile, courseId: Int, termId: Int, inputExam: ExamInputModel): ExamOutputModel
 
-    fun createCourseFromStaged(stageId: Int): Course
+    fun createExamFromStaged(courseId: Int, termId: Int, stageId: Int): ExamOutputModel
 
-    fun createExamOnCourseInTerm(sheet: MultipartFile, courseId: Int, termId: Int, inputExam: ExamInputModel): Exam
+    fun createWorkAssignmentOnCourseInTerm(sheet: MultipartFile, courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): WorkAssignmentOutputModel
 
-    fun createExamFromStaged(courseId: Int, termId: Int, stageId: Int): Exam
-
-    fun createWorkAssignmentOnCourseInTerm(sheet: MultipartFile, courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): WorkAssignment
-
-    fun createWorkAssignmentFromStaged(courseId: Int, termId: Int, stageId: Int): WorkAssignment
+    fun createWorkAssignmentFromStaged(courseId: Int, termId: Int, stageId: Int): WorkAssignmentOutputModel
 
     fun voteOnCourse(courseId: Int, vote: VoteInputModel): Int
 
@@ -66,7 +75,7 @@ interface CourseService {
 
     fun voteOnWorkAssignment(workAssignmentId: Int, vote: VoteInputModel): Int
 
-    fun partialUpdateOnCourse(courseId: Int, inputCourse: CourseInputModel): Course
+    fun partialUpdateOnCourse(courseId: Int, inputCourse: CourseInputModel): CourseOutputModel
 
     fun deleteAllCourses(): Int
 
@@ -84,23 +93,23 @@ interface CourseService {
      * Stage entities queries
      */
 
-    fun getAllCourseStageEntries(): List<CourseStage>
+    fun getAllCourseStageEntries(): List<CourseStageOutputModel>
 
-    fun getCourseSpecificStageEntry(stageId: Int): Optional<CourseStage>
+    fun getCourseSpecificStageEntry(stageId: Int): CourseStageOutputModel
 
-    fun getStageEntriesFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int): List<ExamStage>
+    fun getStageEntriesFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int): List<ExamStageOutputModel>
 
-    fun getStageEntryFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): Optional<ExamStage>
+    fun getStageEntryFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): ExamStageOutputModel
 
-    fun getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignmentStage>
+    fun getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignmentStageOutputModel>
 
-    fun getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): Optional<WorkAssignmentStage>
+    fun getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): WorkAssignmentStageOutputModel
 
-    fun createStagingCourse(inputCourse: CourseInputModel): CourseStage
+    fun createStagingCourse(inputCourse: CourseInputModel): CourseStageOutputModel
 
-    fun createStagingExam(sheet: MultipartFile, courseId: Int, termId: Int, examInputModel: ExamInputModel): ExamStage
+    fun createStagingExam(sheet: MultipartFile, courseId: Int, termId: Int, examInputModel: ExamInputModel): ExamStageOutputModel
 
-    fun createStagingWorkAssignment(sheet: MultipartFile, courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): WorkAssignmentStage
+    fun createStagingWorkAssignment(sheet: MultipartFile, courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): WorkAssignmentStageOutputModel
 
     fun voteOnStagedCourse(stageId: Int, vote: VoteInputModel): Int
 
@@ -124,21 +133,17 @@ interface CourseService {
      * Version entities queries
      */
 
-    fun getAllVersionsOfSpecificCourse(courseId: Int): List<CourseVersion>
+    fun getAllVersionsOfSpecificCourse(courseId: Int): List<CourseVersionOutputModel>
 
-    fun getVersionOfSpecificCourse(courseId: Int, versionId: Int): Optional<CourseVersion>
+    fun getVersionOfSpecificCourse(courseId: Int, versionId: Int): CourseVersionOutputModel
 
-    fun getAllVersionsOfSpecificExam(examId: Int): List<ExamVersion>
+    fun getAllVersionsOfSpecificExam(examId: Int): List<ExamVersionOutputModel>
 
-    fun getVersionOfSpecificExam(examId: Int, versionId: Int): Optional<ExamVersion>
+    fun getVersionOfSpecificExam(examId: Int, versionId: Int): ExamVersionOutputModel
 
-    fun getAllVersionsOfSpecificWorkAssignment(workAssignmentId: Int): List<WorkAssignmentVersion>
+    fun getAllVersionsOfSpecificWorkAssignment(workAssignmentId: Int): List<WorkAssignmentVersionOutputModel>
 
-    fun getVersionOfSpecificWorkAssignment(workAssignmentId: Int, versionId: Int): Optional<WorkAssignmentVersion>
-
-    fun getAllVersionsOfSpecificClass(classId: Int): List<ClassVersion>
-
-    fun getVersionOfSpecificClass(classId: Int, versionId: Int): Optional<ClassVersion>
+    fun getVersionOfSpecificWorkAssignment(workAssignmentId: Int, versionId: Int): WorkAssignmentVersionOutputModel
 
     fun deleteAllVersionsOfCourse(courseId: Int): Int
 
@@ -156,19 +161,19 @@ interface CourseService {
      * Report entities queries
      */
 
-    fun getAllReportsOnCourse(courseId: Int): List<CourseReport>
+    fun getAllReportsOnCourse(courseId: Int): List<CourseReportOutputModel>
 
-    fun getSpecificReportOfCourse(courseId: Int, reportId: Int): Optional<CourseReport>
+    fun getSpecificReportOfCourse(courseId: Int, reportId: Int): CourseReportOutputModel
 
-    fun getAllReportsOnExamOnSpecificTermOfCourse(examId: Int): List<ExamReport>
+    fun getAllReportsOnExamOnSpecificTermOfCourse(examId: Int): List<ExamReportOutputModel>
 
-    fun getSpecificReportOnExamOnSpecificTermOfCourse(reportId: Int): Optional<ExamReport>
+    fun getSpecificReportOnExamOnSpecificTermOfCourse(reportId: Int): ExamReportOutputModel
 
-    fun getAllReportsOnWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): List<WorkAssignmentReport>
+    fun getAllReportsOnWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): List<WorkAssignmentReportOutputModel>
 
-    fun getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(workAssignmentId: Int, reportId: Int): Optional<WorkAssignmentReport>
+    fun getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(workAssignmentId: Int, reportId: Int): WorkAssignmentReportOutputModel
 
-    fun reportCourse(courseId: Int, inputCourseReport: CourseReportInputModel): CourseReport
+    fun reportCourse(courseId: Int, inputCourseReport: CourseReportInputModel): CourseReportOutputModel
 
     fun voteOnReportedCourse(reportId: Int, vote: VoteInputModel): Int
 
@@ -176,15 +181,15 @@ interface CourseService {
 
     fun voteOnReportedWorkAssignmentOnCourseInTerm(reportId: Int, vote: VoteInputModel): Int
 
-    fun updateReportedCourse(courseId: Int, reportId: Int) : Course
+    fun updateReportedCourse(courseId: Int, reportId: Int) : CourseOutputModel
 
-    fun updateReportedExam(examId: Int, reportId: Int, courseId: Int, termId: Int): Exam
+    fun updateReportedExam(examId: Int, reportId: Int, courseId: Int, termId: Int): ExamOutputModel
 
-    fun updateWorkAssignmentBasedOnReport(workAssignmentId: Int, reportId: Int, courseId: Int, termId: Int): WorkAssignment
+    fun updateWorkAssignmentBasedOnReport(workAssignmentId: Int, reportId: Int, courseId: Int, termId: Int): WorkAssignmentOutputModel
 
-    fun addReportToExamOnCourseInTerm(examId: Int, inputExamReport: ExamReportInputModel): ExamReport
+    fun addReportToExamOnCourseInTerm(examId: Int, inputExamReport: ExamReportInputModel): ExamReportOutputModel
 
-    fun addReportToWorkAssignmentOnCourseInTerm(workAssignmentId: Int, inputWorkAssignmentReport: WorkAssignmentReportInputModel): WorkAssignmentReport
+    fun addReportToWorkAssignmentOnCourseInTerm(workAssignmentId: Int, inputWorkAssignmentReport: WorkAssignmentReportInputModel): WorkAssignmentReportOutputModel
 
     fun deleteAllReportsOnCourse(courseId: Int): Int
 
