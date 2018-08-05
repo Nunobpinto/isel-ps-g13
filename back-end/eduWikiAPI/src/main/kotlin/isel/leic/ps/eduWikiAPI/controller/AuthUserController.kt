@@ -19,7 +19,7 @@ class AuthUserController {
      */
 
     @GetMapping
-    fun getAuthenticatedUser(principal: Principal) = userService.getAuthenticatedUser(principal.name).toString()
+    fun getAuthenticatedUser(principal: Principal) = userService.getAuthenticatedUser(principal.name)
 
     @GetMapping("/courses")
     fun getCoursesOfUser(principal: Principal) = userService.getCoursesOfUser(principal.name)

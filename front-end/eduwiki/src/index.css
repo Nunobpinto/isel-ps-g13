@@ -115,6 +115,7 @@ body {
 
 .container {
   margin: 5rem;
+  text-align: center;
 }
 
 .left-div {
@@ -139,4 +140,9 @@ body {
   top: 100px;
   left: 50%;
   display: block;
+}
+
+
+.login_form {
+  display: inline-block;
 }

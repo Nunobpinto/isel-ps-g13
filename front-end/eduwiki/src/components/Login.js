@@ -2,6 +2,7 @@ import React from 'react'
 import {Redirect, Link} from 'react-router-dom'
 import {message, Form, Input, Button, Icon} from 'antd'
 import Cookies from 'universal-cookie'
+import fetch from 'isomorphic-fetch'
 const cookies = new Cookies()
 
 class LoginForm extends React.Component {
@@ -13,6 +14,7 @@ class LoginForm extends React.Component {
       password: ''
     }
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.tryLogin = this.tryLogin.bind(this)
   }
 
   handleSubmit (e) {
@@ -34,7 +36,7 @@ class LoginForm extends React.Component {
     }
     const { getFieldDecorator } = this.props.form
     return (
-      <div>
+      <div className='login_form'>
         <Form onSubmit={this.handleSubmit} className='login-form' id='formItem' >
           <Form.Item>
             {getFieldDecorator('username', {
@@ -45,7 +47,7 @@ class LoginForm extends React.Component {
                 name='username'
                 placeholder='Username'
                 size='large'
-                value={this.state.username} />
+              />
             )}
           </Form.Item>
           <Form.Item>
@@ -56,8 +58,7 @@ class LoginForm extends React.Component {
                 prefix={<Icon type='lock' style={{ color: 'rgba(0,0,0,.25)' }} />}
                 type='password'
                 placeholder='Password'
-                size='large'
-                value={this.state.password} />
+                size='large' />
             )}
           </Form.Item>
           <Form.Item>
@@ -73,11 +74,39 @@ class LoginForm extends React.Component {
     )
   }
 
+  tryLogin (authCredentials) {
+    const options = {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Authorization': 'Basic ' + authCredentials
+      }
+    }
+    return new Promise((resolve, reject) => {
+      fetch('http://localhost:8080/user', options)
+        .then(resp => {
+          if (resp.status >= 400) {
+            return resp.json().then(error =>
+              reject(error)
+            )
+          }
+          return resolve(resp.json())
+        })
+        .catch(err => reject(err))
+    })
+  }
+
   componentDidUpdate () {
     if (this.state.redirect) {
       const credentials = Buffer.from(this.state.username + ':' + this.state.password).toString('base64')
-      cookies.set('auth', credentials, {maxAge: 9999})
-      this.props.history.push('/')
+      this.tryLogin(credentials)
+        .then(_ => {
+          cookies.set('auth', credentials, {maxAge: 9999})
+          this.props.history.push('/')
+        })
+        .catch(error => {
+          message.error(error.detail)
+          this.setState({redirect: false})
+        })
     }
   }
 }

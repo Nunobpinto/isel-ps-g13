@@ -17,8 +17,10 @@ export default (props) => {
   }
   return (
     <div>
-      <img alt='EduWiki Logo' id='home-logo' src='logo_color.png' />
-      <Login history={props.history} />
+      <div className='container'>
+        <img alt='EduWiki Logo' id='home-logo' src='logo_color.png' />
+        <Login history={props.history} />
+      </div>
       <h1>Current web pages</h1>
       <ul>
         <li>
