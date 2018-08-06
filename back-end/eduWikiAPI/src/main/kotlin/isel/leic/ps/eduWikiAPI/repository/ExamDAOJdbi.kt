@@ -68,7 +68,6 @@ interface ExamDAOJdbi : ExamDAO {
     override fun updateExam(examId: Int, exam: Exam): Exam
 
     @SqlUpdate(
-
             "INSERT INTO $EXAM_TABLE ( " +
                     "$EXAM_ID, " +
                     "$EXAM_VERSION, " +

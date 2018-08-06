@@ -78,7 +78,7 @@ interface OrganizationDAOJdbi : OrganizationDAO {
     @SqlQuery("SELECT $ORGANIZATION_VOTES FROM $ORGANIZATION_TABLE WHERE $ORGANIZATION_ID = :organizationId")
     override fun getVotesOnOrganization(organizationId: Int): Int
 
-    @SqlQuery("UPDATE  $ORGANIZATION_TABLE SET $ORGANIZATION_VOTES = :votes WHERE $ORGANIZATION_ID = :organizationId")
+    @SqlUpdate("UPDATE  $ORGANIZATION_TABLE SET $ORGANIZATION_VOTES = :votes WHERE $ORGANIZATION_ID = :organizationId")
     override fun updateVotesOnOrganization(organizationId: Int, votes: Int): Int
 
     @SqlUpdate(
@@ -113,7 +113,7 @@ interface OrganizationDAOJdbi : OrganizationDAO {
     @SqlQuery("SELECT $ORGANIZATION_VOTES FROM $ORGANIZATION_REPORT_TABLE WHERE $ORGANIZATION_REPORT_ID = :reportId AND $ORGANIZATION_ID = :organizationId")
     override fun getVotesOnOrganizationReport(organizationId: Int, reportId: Int): Int
 
-    @SqlQuery("UPDATE $ORGANIZATION_REPORT_TABLE SET $ORGANIZATION_VOTES = :votes WHERE $ORGANIZATION_REPORT_ID = :reportId AND $ORGANIZATION_ID = :organizationId")
+    @SqlUpdate("UPDATE $ORGANIZATION_REPORT_TABLE SET $ORGANIZATION_VOTES = :votes WHERE $ORGANIZATION_REPORT_ID = :reportId AND $ORGANIZATION_ID = :organizationId")
     override fun updateVotesOnOrganizationReport(organizationId: Int, reportId: Int, votes: Int): Int
 
     @SqlQuery("SELECT * FROM $ORGANIZATION_VERSION_TABLE WHERE $ORGANIZATION_ID = :organizationId")

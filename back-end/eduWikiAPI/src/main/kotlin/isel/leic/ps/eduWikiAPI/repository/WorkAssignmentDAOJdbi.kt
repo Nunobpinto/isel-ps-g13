@@ -101,7 +101,7 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
     )
     override fun getVotesOnWorkAssignment(workAssignmentId: Int): Int
 
-    @SqlQuery(
+    @SqlUpdate(
             "UPDATE $WORK_ASSIGNMENT_TABLE SET $WORK_ASSIGNMENT_VOTES = :votes" +
                     " WHERE $WORK_ASSIGNMENT_ID = :workAssignmentId"
     )
@@ -288,7 +288,7 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
     )
     override fun getVotesOnReportedWorkAssignment(reportId: Int): Int
 
-    @SqlQuery(
+    @SqlUpdate(
             "UPDATE $WORK_ASSIGNMENT_REPORT_TABLE SET $WORK_ASSIGNMENT_VOTES = :votes " +
                     "WHERE $WORK_ASSIGNMENT_REPORT_ID = :reportId"
     )
@@ -361,7 +361,7 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
     )
     override fun getVotesOnStagedWorkAssignment(stageId: Int): Int
 
-    @SqlQuery(
+    @SqlUpdate(
             "UPDATE $WORK_ASSIGNMENT_STAGE_TABLE SET $WORK_ASSIGNMENT_VOTES = :votes " +
                     "WHERE $WORK_ASSIGNMENT_STAGE_ID = :stageId"
     )

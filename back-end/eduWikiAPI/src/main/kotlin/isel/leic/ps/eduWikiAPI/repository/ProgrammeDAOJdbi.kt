@@ -84,7 +84,7 @@ interface ProgrammeDAOJdbi : ProgrammeDAO {
     @SqlQuery("SELECT $PROGRAMME_VOTES FROM $PROGRAMME_TABLE WHERE $PROGRAMME_ID = :programmeId")
     override fun getVotesOnProgramme(programmeId: Int): Int
 
-    @SqlQuery("UPDATE $PROGRAMME_TABLE SET $PROGRAMME_VOTES = :votes WHERE $PROGRAMME_ID = :programmeId")
+    @SqlUpdate("UPDATE $PROGRAMME_TABLE SET $PROGRAMME_VOTES = :votes WHERE $PROGRAMME_ID = :programmeId")
     override fun updateVotesOnProgramme(programmeId: Int, votes: Int): Int
 
     @SqlQuery("SELECT * FROM $PROGRAMME_STAGE_TABLE WHERE $PROGRAMME_STAGE_ID = :stageId")
@@ -96,7 +96,7 @@ interface ProgrammeDAOJdbi : ProgrammeDAO {
     @SqlUpdate("DELETE FROM $PROGRAMME_STAGE_TABLE")
     override fun deleteAllStagedProgrammes(): Int
 
-    @SqlQuery(
+    @SqlUpdate(
             "INSERT INTO $PROGRAMME_STAGE_TABLE (" +
                     "$PROGRAMME_FULL_NAME, " +
                     "$PROGRAMME_SHORT_NAME, " +

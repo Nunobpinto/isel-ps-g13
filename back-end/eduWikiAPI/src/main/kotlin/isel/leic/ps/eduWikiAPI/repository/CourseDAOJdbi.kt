@@ -313,7 +313,7 @@ interface CourseDAOJdbi : CourseDAO {
     )
     override fun getSpecificCourseOfProgramme(programmeId: Int, courseId: Int): Optional<Course>
 
-    @SqlQuery(
+    @SqlUpdate(
             "INSERT INTO $COURSE_PROGRAMME_TABLE ( " +
                     "$COURSE_PROGRAMME_COURSE_ID, " +
                     "$COURSE_PROGRAMME_PROGRAMME_ID, " +

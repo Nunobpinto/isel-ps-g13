@@ -233,7 +233,7 @@ interface ClassDAOJdbi : ClassDAO {
     )
     override fun getSpecificReportFromClass(classId: Int, reportId: Int): Optional<ClassReport>
 
-    @SqlQuery(
+    @SqlUpdate(
             "INSERT INTO $CLASS_REPORT_TABLE ( " +
                     "$CLASS_REPORT_ID, " +
                     "$CLASS_ID, " +

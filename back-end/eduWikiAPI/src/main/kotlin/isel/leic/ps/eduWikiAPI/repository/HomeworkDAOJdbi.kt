@@ -166,7 +166,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
     )
     override fun getSpecificStagedHomeworkOfCourseInClass(courseClassId: Int, stageId: Int): Optional<HomeworkStage>
 
-    @SqlQuery(
+    @SqlUpdate(
             "INSERT INTO $HOMEWORK_STAGE_TABLE ( " +
                     "$HOMEWORK_STAGE_ID, " +
                     "$HOMEWORK_SHEET_ID, " +
