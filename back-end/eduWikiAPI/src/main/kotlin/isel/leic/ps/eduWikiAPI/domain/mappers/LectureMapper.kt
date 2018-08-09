@@ -7,9 +7,13 @@ import isel.leic.ps.eduWikiAPI.domain.model.report.LectureReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.LectureStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.LectureVersion
 import isel.leic.ps.eduWikiAPI.domain.outputModel.LectureOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.LectureReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.LectureStageOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.version.LectureVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.LectureCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.LectureReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.LectureStageCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.LectureVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.LectureReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.LectureStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.LectureVersionOutputModel
 import java.time.Duration
 
 
@@ -52,7 +56,7 @@ fun toLectureReport(lectureReportInputModel: LectureReportInputModel) = LectureR
         lectureId = lectureReportInputModel.lectureId,
         weekDay = lectureReportInputModel.weekday,
         begins = lectureReportInputModel.begins,
-        duration = if(lectureReportInputModel.duration != null) Duration.ofMinutes(lectureReportInputModel.duration) else null,
+        duration = if (lectureReportInputModel.duration != null) Duration.ofMinutes(lectureReportInputModel.duration) else null,
         location = lectureReportInputModel.location,
         reportedBy = lectureReportInputModel.reportedBy
 )
@@ -101,3 +105,20 @@ fun toLectureVersionOutputModel(lectureVersion: LectureVersion) = LectureVersion
         timestamp = lectureVersion.timestamp,
         version = lectureVersion.version
 )
+
+fun toLectureCollectionOutputModel(lectureList: List<LectureOutputModel>) = LectureCollectionOutputModel(
+        lectureList = lectureList
+)
+
+fun toLectureReportCollectionOutputModel(lectureReportList: List<LectureReportOutputModel>) = LectureReportCollectionOutputModel(
+        lectureReportList = lectureReportList
+)
+
+fun toLectureStageCollectionOutputModel(lectureStageList: List<LectureStageOutputModel>) = LectureStageCollectionOutputModel(
+        lectureStageList = lectureStageList
+)
+
+fun toLectureVersionCollectionOutputModel(lectureVersionList: List<LectureVersionOutputModel>) = LectureVersionCollectionOutputModel(
+        lectureVersionList = lectureVersionList
+)
+

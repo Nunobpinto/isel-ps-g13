@@ -1,6 +1,5 @@
 package isel.leic.ps.eduWikiAPI.service.interfaces
 
-import com.sun.org.apache.xpath.internal.operations.Mult
 import isel.leic.ps.eduWikiAPI.domain.inputModel.CourseInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.ExamInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
@@ -8,32 +7,30 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.WorkAssignmentInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ExamReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.WorkAssignmentReportInputModel
-import isel.leic.ps.eduWikiAPI.domain.model.*
-import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
-import isel.leic.ps.eduWikiAPI.domain.model.report.ExamReport
-import isel.leic.ps.eduWikiAPI.domain.model.report.WorkAssignmentReport
-import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseStage
-import isel.leic.ps.eduWikiAPI.domain.model.staging.ExamStage
-import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
-import isel.leic.ps.eduWikiAPI.domain.model.version.ClassVersion
-import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
-import isel.leic.ps.eduWikiAPI.domain.model.version.ExamVersion
-import isel.leic.ps.eduWikiAPI.domain.model.version.WorkAssignmentVersion
 import isel.leic.ps.eduWikiAPI.domain.outputModel.CourseOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.ExamOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.TermOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.WorkAssignmentOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.CourseReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.ExamReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.WorkAssignmentReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.CourseStageOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.ExamStageOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.WorkAssignmentStageOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.version.CourseVersionOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.version.ExamVersionOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.version.WorkAssignmentVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ExamCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.WorkAssignmentCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.CourseReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.ExamReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.WorkAssignmentReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.CourseStageCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.CourseVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.ExamVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.WorkAssignmentVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.CourseReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.ExamReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.WorkAssignmentReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.CourseStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.ExamStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.WorkAssignmentStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.CourseVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.ExamVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.WorkAssignmentVersionOutputModel
 import org.springframework.web.multipart.MultipartFile
-import java.util.*
 
 interface CourseService {
 
@@ -41,7 +38,7 @@ interface CourseService {
      * Main entities queries
      */
 
-    fun getAllCourses(): List<CourseOutputModel>
+    fun getAllCourses(): CourseCollectionOutputModel
 
     fun getSpecificCourse(courseId: Int): CourseOutputModel
 
@@ -49,11 +46,11 @@ interface CourseService {
 
     fun getSpecificTermOfCourse(courseId: Int, termId: Int): TermOutputModel
 
-    fun getAllExamsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<ExamOutputModel>
+    fun getAllExamsFromSpecificTermOfCourse(courseId: Int, termId: Int): ExamCollectionOutputModel
 
     fun getSpecificExamFromSpecificTermOfCourse(courseId: Int, termId: Int, examId: Int): ExamOutputModel
 
-    fun getAllWorkAssignmentsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignmentOutputModel>
+    fun getAllWorkAssignmentsFromSpecificTermOfCourse(courseId: Int, termId: Int): WorkAssignmentCollectionOutputModel
 
     fun getSpecificWorkAssignmentFromSpecificTermOfCourse(workAssignmentId: Int, courseId: Int, termId: Int): WorkAssignmentOutputModel
 
@@ -93,7 +90,7 @@ interface CourseService {
      * Stage entities queries
      */
 
-    fun getAllCourseStageEntries(): List<CourseStageOutputModel>
+    fun getAllCourseStageEntries(): CourseStageCollectionOutputModel
 
     fun getCourseSpecificStageEntry(stageId: Int): CourseStageOutputModel
 
@@ -133,15 +130,15 @@ interface CourseService {
      * Version entities queries
      */
 
-    fun getAllVersionsOfSpecificCourse(courseId: Int): List<CourseVersionOutputModel>
+    fun getAllVersionsOfSpecificCourse(courseId: Int): CourseVersionCollectionOutputModel
 
     fun getVersionOfSpecificCourse(courseId: Int, versionId: Int): CourseVersionOutputModel
 
-    fun getAllVersionsOfSpecificExam(examId: Int): List<ExamVersionOutputModel>
+    fun getAllVersionsOfSpecificExam(examId: Int): ExamVersionCollectionOutputModel
 
     fun getVersionOfSpecificExam(examId: Int, versionId: Int): ExamVersionOutputModel
 
-    fun getAllVersionsOfSpecificWorkAssignment(workAssignmentId: Int): List<WorkAssignmentVersionOutputModel>
+    fun getAllVersionsOfSpecificWorkAssignment(workAssignmentId: Int): WorkAssignmentVersionCollectionOutputModel
 
     fun getVersionOfSpecificWorkAssignment(workAssignmentId: Int, versionId: Int): WorkAssignmentVersionOutputModel
 
@@ -161,15 +158,15 @@ interface CourseService {
      * Report entities queries
      */
 
-    fun getAllReportsOnCourse(courseId: Int): List<CourseReportOutputModel>
+    fun getAllReportsOnCourse(courseId: Int): CourseReportCollectionOutputModel
 
     fun getSpecificReportOfCourse(courseId: Int, reportId: Int): CourseReportOutputModel
 
-    fun getAllReportsOnExamOnSpecificTermOfCourse(examId: Int): List<ExamReportOutputModel>
+    fun getAllReportsOnExamOnSpecificTermOfCourse(examId: Int): ExamReportCollectionOutputModel
 
     fun getSpecificReportOnExamOnSpecificTermOfCourse(reportId: Int): ExamReportOutputModel
 
-    fun getAllReportsOnWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): List<WorkAssignmentReportOutputModel>
+    fun getAllReportsOnWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): WorkAssignmentReportCollectionOutputModel
 
     fun getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(workAssignmentId: Int, reportId: Int): WorkAssignmentReportOutputModel
 

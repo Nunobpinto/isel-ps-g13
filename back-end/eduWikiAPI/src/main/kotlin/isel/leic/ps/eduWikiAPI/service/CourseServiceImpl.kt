@@ -9,29 +9,31 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ExamReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.WorkAssignmentReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.mappers.*
 import isel.leic.ps.eduWikiAPI.domain.model.*
-import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
-import isel.leic.ps.eduWikiAPI.domain.model.report.ExamReport
-import isel.leic.ps.eduWikiAPI.domain.model.report.WorkAssignmentReport
-import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ExamStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
-import isel.leic.ps.eduWikiAPI.domain.model.version.ClassVersion
-import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
-import isel.leic.ps.eduWikiAPI.domain.model.version.ExamVersion
-import isel.leic.ps.eduWikiAPI.domain.model.version.WorkAssignmentVersion
 import isel.leic.ps.eduWikiAPI.domain.outputModel.CourseOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.ExamOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.TermOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.WorkAssignmentOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.CourseReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.ExamReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.WorkAssignmentReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.CourseStageOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.ExamStageOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.WorkAssignmentStageOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.version.CourseVersionOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.version.ExamVersionOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.version.WorkAssignmentVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ExamCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.WorkAssignmentCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.CourseReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.ExamReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.WorkAssignmentReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.CourseStageCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.CourseVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.ExamVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.WorkAssignmentVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.CourseReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.ExamReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.WorkAssignmentReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.CourseStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.ExamStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.WorkAssignmentStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.CourseVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.ExamVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.WorkAssignmentVersionOutputModel
 import isel.leic.ps.eduWikiAPI.exceptions.NotFoundException
 import isel.leic.ps.eduWikiAPI.repository.*
 import isel.leic.ps.eduWikiAPI.service.interfaces.CourseService
@@ -40,7 +42,6 @@ import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import java.util.*
 
 @Service
 class CourseServiceImpl : CourseService {
@@ -55,9 +56,10 @@ class CourseServiceImpl : CourseService {
      * Course Methods
      */
 
-    override fun getAllCourses(): List<CourseOutputModel> =
-            jdbi.withExtension<List<CourseOutputModel>, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                it.getAllCourses().map { toCourseOutputModel(it) }
+    override fun getAllCourses(): CourseCollectionOutputModel =
+            jdbi.withExtension<CourseCollectionOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
+                val courses = it.getAllCourses().map { toCourseOutputModel(it) }
+                toCourseCollectionOutputModel(courses)
             }
 
     override fun getSpecificCourse(courseId: Int): CourseOutputModel =
@@ -73,9 +75,10 @@ class CourseServiceImpl : CourseService {
                 )
             }
 
-    override fun getAllReportsOnCourse(courseId: Int): List<CourseReportOutputModel> =
-            jdbi.withExtension<List<CourseReportOutputModel>, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                it.getAllReportsOnCourse(courseId).map { toCourseReportOutputModel(it) }
+    override fun getAllReportsOnCourse(courseId: Int): CourseReportCollectionOutputModel =
+            jdbi.withExtension<CourseReportCollectionOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
+                val reports = it.getAllReportsOnCourse(courseId).map { toCourseReportOutputModel(it) }
+                toCourseReportCollectionOutputModel(reports)
             }
 
     override fun getSpecificReportOfCourse(courseId: Int, reportId: Int): CourseReportOutputModel =
@@ -91,9 +94,10 @@ class CourseServiceImpl : CourseService {
                 )
             }
 
-    override fun getAllCourseStageEntries(): List<CourseStageOutputModel> =
-            jdbi.withExtension<List<CourseStageOutputModel>, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                it.getAllCourseStageEntries().map { toCourseStageOutputModel(it) }
+    override fun getAllCourseStageEntries(): CourseStageCollectionOutputModel =
+            jdbi.withExtension<CourseStageCollectionOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
+                val stageEntries = it.getAllCourseStageEntries().map { toCourseStageOutputModel(it) }
+                toCourseStageCollectionOutputModel(stageEntries)
             }
 
     override fun getCourseSpecificStageEntry(stageId: Int): CourseStageOutputModel =
@@ -129,9 +133,10 @@ class CourseServiceImpl : CourseService {
                 )
             }
 
-    override fun getAllExamsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<ExamOutputModel> =
-            jdbi.withExtension<List<ExamOutputModel>, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
-                it.getAllExamsFromSpecificTermOfCourse(courseId, termId).map { toExamOutputModel(it) }
+    override fun getAllExamsFromSpecificTermOfCourse(courseId: Int, termId: Int): ExamCollectionOutputModel =
+            jdbi.withExtension<ExamCollectionOutputModel, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
+                val exams = it.getAllExamsFromSpecificTermOfCourse(courseId, termId).map { toExamOutputModel(it) }
+                toExamCollectionOutputModel(exams)
             }
 
     override fun getSpecificExamFromSpecificTermOfCourse(courseId: Int, termId: Int, examId: Int): ExamOutputModel =
@@ -165,9 +170,10 @@ class CourseServiceImpl : CourseService {
                 )
             }
 
-    override fun getAllReportsOnExamOnSpecificTermOfCourse(examId: Int): List<ExamReportOutputModel> =
-            jdbi.withExtension<List<ExamReportOutputModel>, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
-                it.getAllReportsOnExamOnSpecificTermOfCourse(examId).map { toExamReportOutputModel(it) }
+    override fun getAllReportsOnExamOnSpecificTermOfCourse(examId: Int): ExamReportCollectionOutputModel =
+            jdbi.withExtension<ExamReportCollectionOutputModel, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
+                val reports = it.getAllReportsOnExamOnSpecificTermOfCourse(examId).map { toExamReportOutputModel(it) }
+                toExamReportCollectionOutputModel(reports)
             }
 
     override fun getSpecificReportOnExamOnSpecificTermOfCourse(reportId: Int): ExamReportOutputModel =
@@ -183,9 +189,10 @@ class CourseServiceImpl : CourseService {
                 )
             }
 
-    override fun getAllWorkAssignmentsFromSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignmentOutputModel> =
-            jdbi.withExtension<List<WorkAssignmentOutputModel>, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
-                it.getAllWorkAssignmentsFromSpecificTermOfCourse(courseId, termId).map { toWorkAssignmentOutputModel(it) }
+    override fun getAllWorkAssignmentsFromSpecificTermOfCourse(courseId: Int, termId: Int): WorkAssignmentCollectionOutputModel =
+            jdbi.withExtension<WorkAssignmentCollectionOutputModel, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
+                val workAssignments = it.getAllWorkAssignmentsFromSpecificTermOfCourse(courseId, termId).map { toWorkAssignmentOutputModel(it) }
+                toWorkAssignmentCollectionOutputModel(workAssignments)
             }
 
     override fun getSpecificWorkAssignmentFromSpecificTermOfCourse(workAssignmentId: Int, courseId: Int, termId: Int): WorkAssignmentOutputModel =
@@ -219,9 +226,10 @@ class CourseServiceImpl : CourseService {
                 )
             }
 
-    override fun getAllReportsOnWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): List<WorkAssignmentReportOutputModel> =
-            jdbi.withExtension<List<WorkAssignmentReportOutputModel>, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
-                it.getAllReportsOnWorkUnitOnSpecificTermOfCourse(courseId, termId, workAssignmentId).map { toWorkAssignmentReportOutputModel(it) }
+    override fun getAllReportsOnWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): WorkAssignmentReportCollectionOutputModel =
+            jdbi.withExtension<WorkAssignmentReportCollectionOutputModel, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
+                val reports = it.getAllReportsOnWorkUnitOnSpecificTermOfCourse(courseId, termId, workAssignmentId).map { toWorkAssignmentReportOutputModel(it) }
+                toWorkAssignmentReportCollectionOutputModel(reports)
             }
 
     override fun getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(workAssignmentId: Int, reportId: Int): WorkAssignmentReportOutputModel =
@@ -554,9 +562,10 @@ class CourseServiceImpl : CourseService {
                 workAssignmentDAO.updateStagedWorkAssignmentVotes(stageId, votes)
             }
 
-    override fun getAllVersionsOfSpecificCourse(courseId: Int): List<CourseVersionOutputModel> =
-            jdbi.withExtension<List<CourseVersionOutputModel>, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                it.getAllVersionsOfSpecificCourse(courseId).map { toCourseVersionOutputModel(it) }
+    override fun getAllVersionsOfSpecificCourse(courseId: Int): CourseVersionCollectionOutputModel =
+            jdbi.withExtension<CourseVersionCollectionOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
+                val courseVersions = it.getAllVersionsOfSpecificCourse(courseId).map { toCourseVersionOutputModel(it) }
+                toCourseVersionCollectionOutputModel(courseVersions)
             }
 
     override fun getVersionOfSpecificCourse(courseId: Int, versionId: Int): CourseVersionOutputModel =
@@ -573,9 +582,10 @@ class CourseServiceImpl : CourseService {
                 )
             }
 
-    override fun getAllVersionsOfSpecificExam(examId: Int): List<ExamVersionOutputModel> =
-            jdbi.withExtension<List<ExamVersionOutputModel>, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
-                it.getAllVersionsOfSpecificExam(examId).map { toExamVersionOutputModel(it) }
+    override fun getAllVersionsOfSpecificExam(examId: Int): ExamVersionCollectionOutputModel =
+            jdbi.withExtension<ExamVersionCollectionOutputModel, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
+                val examVersions = it.getAllVersionsOfSpecificExam(examId).map { toExamVersionOutputModel(it) }
+                toExamVersionCollectionOutputModel(examVersions)
             }
 
     override fun getVersionOfSpecificExam(examId: Int, versionId: Int): ExamVersionOutputModel =
@@ -591,9 +601,10 @@ class CourseServiceImpl : CourseService {
                 )
             }
 
-    override fun getAllVersionsOfSpecificWorkAssignment(workAssignmentId: Int): List<WorkAssignmentVersionOutputModel> =
-            jdbi.withExtension<List<WorkAssignmentVersionOutputModel>, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
-                it.getAllVersionsOfSpecificWorkAssignment(workAssignmentId).map { toWorkAssignmentVersionOutputModel(it) }
+    override fun getAllVersionsOfSpecificWorkAssignment(workAssignmentId: Int): WorkAssignmentVersionCollectionOutputModel =
+            jdbi.withExtension<WorkAssignmentVersionCollectionOutputModel, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
+                val workAssignmentVersions = it.getAllVersionsOfSpecificWorkAssignment(workAssignmentId).map { toWorkAssignmentVersionOutputModel(it) }
+                toWorkAssignmentVersionCollectionOutputModel(workAssignmentVersions)
             }
 
     override fun getVersionOfSpecificWorkAssignment(workAssignmentId: Int, versionId: Int): WorkAssignmentVersionOutputModel =

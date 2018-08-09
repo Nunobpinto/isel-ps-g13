@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service
 import isel.leic.ps.eduWikiAPI.domain.mappers.*
 import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.*
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.UserReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.UserReportOutputModel
 import isel.leic.ps.eduWikiAPI.eventListeners.events.OnRegistrationEvent
 import isel.leic.ps.eduWikiAPI.exceptions.BadRequestException
 import isel.leic.ps.eduWikiAPI.exceptions.ExceededValidationException

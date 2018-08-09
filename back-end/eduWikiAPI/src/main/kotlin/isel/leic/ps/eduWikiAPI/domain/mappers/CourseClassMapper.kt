@@ -7,8 +7,11 @@ import isel.leic.ps.eduWikiAPI.domain.model.Term
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseClassReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseClassStage
 import isel.leic.ps.eduWikiAPI.domain.outputModel.CourseClassOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.CourseClassReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.CourseClassStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseClassCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.CourseClassReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.CourseClassStageCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.CourseClassReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.CourseClassStageOutputModel
 
 fun stagedToCourseClass(stage: CourseClassStage) = CourseClass(
         courseId = stage.courseId,
@@ -49,4 +52,16 @@ fun toCourseClassStageOutputModel(courseClassStage: CourseClassStage) = CourseCl
         timestamp = courseClassStage.timestamp,
         votes = courseClassStage.votes,
         username = courseClassStage.createdBy
+)
+
+fun toCourseClassCollectionOutputModel(courseClasseList: List<CourseClassOutputModel>) = CourseClassCollectionOutputModel(
+        courseClasseList = courseClasseList
+)
+
+fun toCourseClassReportCollectionOutputModel(courseClassReportList: List<CourseClassReportOutputModel>) = CourseClassReportCollectionOutputModel(
+        courseClassReportList = courseClassReportList
+)
+
+fun toCourseClassStageCollectionOutputModel(courseClassStageList: List<CourseClassStageOutputModel>) = CourseClassStageCollectionOutputModel(
+        courseClassStageList = courseClassStageList
 )

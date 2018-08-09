@@ -7,9 +7,13 @@ import isel.leic.ps.eduWikiAPI.domain.model.report.HomeworkReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.HomeworkStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.HomeworkVersion
 import isel.leic.ps.eduWikiAPI.domain.outputModel.HomeworkOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.HomeworkReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.HomeworkStageOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.version.HomeworkVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.HomeworkCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.HomeworkReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.HomeworkStageCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.HomeworkVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.HomeworkReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.HomeworkStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.HomeworkVersionOutputModel
 
 fun toHomework(homeworkInputModel: HomeworkInputModel) = Homework(
         createdBy = homeworkInputModel.createdBy,
@@ -95,4 +99,19 @@ fun toHomeworkReportOutputModel(homeworkReport: HomeworkReport) = HomeworkReport
         votes = homeworkReport.votes,
         reportId = homeworkReport.reportId,
         reportedBy = homeworkReport.reportedBy
+)
+
+fun toHomeworkCollectionOutputModel(homeworkList: List<HomeworkOutputModel>) = HomeworkCollectionOutputModel(
+        homeworkList = homeworkList
+)
+
+fun toHomeworkStageCollectionOutputModel(homeworkStageList: List<HomeworkStageOutputModel>) = HomeworkStageCollectionOutputModel(
+        homeworkStageList = homeworkStageList
+)
+
+fun toHomeworkReportCollectionOutputModel(homeworkReportList: List<HomeworkReportOutputModel>) = HomeworkReportCollectionOutputModel(
+        homeworkReportList = homeworkReportList
+)
+fun toHomeworkVersionCollectionOutputModel(homeworkVersionList: List<HomeworkVersionOutputModel>) = HomeworkVersionCollectionOutputModel(
+        homeworkVersionList = homeworkVersionList
 )

@@ -3,28 +3,26 @@ package isel.leic.ps.eduWikiAPI.service.interfaces
 import isel.leic.ps.eduWikiAPI.domain.inputModel.*
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseProgrammeReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ProgrammeReportInputModel
-import isel.leic.ps.eduWikiAPI.domain.model.Course
-import isel.leic.ps.eduWikiAPI.domain.model.Programme
-import isel.leic.ps.eduWikiAPI.domain.model.report.CourseProgrammeReport
-import isel.leic.ps.eduWikiAPI.domain.model.staging.ProgrammeStage
-import isel.leic.ps.eduWikiAPI.domain.model.report.ProgrammeReport
-import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseProgrammeStage
-import isel.leic.ps.eduWikiAPI.domain.model.version.CourseProgrammeVersion
-import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
-import isel.leic.ps.eduWikiAPI.domain.model.version.ProgrammeVersion
 import isel.leic.ps.eduWikiAPI.domain.outputModel.CourseProgrammeOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.ProgrammeOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.CourseProgrammeReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.ProgrammeReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.CourseProgrammeStageOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.ProgrammeStageOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.version.CourseProgrammeVersionOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.version.ProgrammeVersionOutputModel
-import java.util.*
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseProgrammeCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ProgrammeCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.CourseProgrammeReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.ProgrammeReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.CourseProgrammeStageCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.ProgrammeStageCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.CourseProgrammeVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.ProgrammeVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.CourseProgrammeReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.ProgrammeReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.CourseProgrammeStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.ProgrammeStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.CourseProgrammeVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.ProgrammeVersionOutputModel
 
 interface ProgrammeService {
 
-    fun getAllProgrammes(): List<ProgrammeOutputModel>
+    fun getAllProgrammes(): ProgrammeCollectionOutputModel
 
     fun getSpecificProgramme(programmeId: Int): ProgrammeOutputModel
 
@@ -36,13 +34,13 @@ interface ProgrammeService {
 
     fun createProgrammeFromStaged(stageId: Int): ProgrammeOutputModel
 
-    fun getAllProgrammeStageEntries() : List<ProgrammeStageOutputModel>
+    fun getAllProgrammeStageEntries() : ProgrammeStageCollectionOutputModel
 
-    fun getAllReportsOfSpecificProgramme(programmeId: Int): List<ProgrammeReportOutputModel>
+    fun getAllReportsOfSpecificProgramme(programmeId: Int): ProgrammeReportCollectionOutputModel
 
     fun getSpecificReportOfProgramme(programmeId: Int, reportId: Int): ProgrammeReportOutputModel
 
-    fun getAllCoursesOnSpecificProgramme(programmeId: Int): List<CourseProgrammeOutputModel>
+    fun getAllCoursesOnSpecificProgramme(programmeId: Int): CourseProgrammeCollectionOutputModel
 
     fun addCourseToProgramme(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel): CourseProgrammeOutputModel
 
@@ -70,7 +68,7 @@ interface ProgrammeService {
 
     fun partialUpdateOnProgramme(programmeId: Int, inputProgramme: ProgrammeInputModel): ProgrammeOutputModel
 
-    fun getAllVersionsOfProgramme(programmeId: Int): List<ProgrammeVersionOutputModel>
+    fun getAllVersionsOfProgramme(programmeId: Int): ProgrammeVersionCollectionOutputModel
 
     fun getSpecificVersionOfProgramme(programmeId: Int, version: Int): ProgrammeVersionOutputModel
 
@@ -82,11 +80,11 @@ interface ProgrammeService {
 
     fun getSpecificCourseOfProgramme(programmeId: Int, courseId: Int): CourseProgrammeOutputModel
 
-    fun getAllVersionsOfCourseOnProgramme(programmeId: Int, courseId: Int): List<CourseProgrammeVersionOutputModel>
+    fun getAllVersionsOfCourseOnProgramme(programmeId: Int, courseId: Int): CourseProgrammeVersionCollectionOutputModel
 
     fun getSpecificVersionOfCourseOnProgramme(programmeId: Int, courseId: Int, version: Int): CourseProgrammeVersionOutputModel
 
-    fun getAllReportsOfCourseOnProgramme(programmeId: Int, courseId: Int): List<CourseProgrammeReportOutputModel>
+    fun getAllReportsOfCourseOnProgramme(programmeId: Int, courseId: Int): CourseProgrammeReportCollectionOutputModel
 
     fun getSpecificReportOfCourseOnProgramme(programmeId: Int, courseId: Int, reportId: Int): CourseProgrammeReportOutputModel
 
@@ -100,7 +98,7 @@ interface ProgrammeService {
 
     fun voteOnReportedCourseProgramme(programmeId: Int, courseId: Int, reportId: Int, vote: VoteInputModel): Int
 
-    fun getAllCourseStageEntriesOfSpecificProgramme(programmeId: Int): List<CourseProgrammeStageOutputModel>
+    fun getAllCourseStageEntriesOfSpecificProgramme(programmeId: Int): CourseProgrammeStageCollectionOutputModel
 
     fun getSpecificStagedCourseOfProgramme(programmeId: Int, stageId: Int): CourseProgrammeStageOutputModel
 

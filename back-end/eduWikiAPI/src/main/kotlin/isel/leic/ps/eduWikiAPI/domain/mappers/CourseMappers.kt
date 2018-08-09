@@ -7,9 +7,13 @@ import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
 import isel.leic.ps.eduWikiAPI.domain.outputModel.CourseOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.CourseReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.CourseStageOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.version.CourseVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.CourseReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.CourseStageCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.CourseVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.CourseReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.CourseStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.CourseVersionOutputModel
 
 fun toCourse(input: CourseInputModel) = Course(
         organizationId = input.organizationId,
@@ -88,4 +92,20 @@ fun toCourseVersionOutputModel(courseVersion: CourseVersion) = CourseVersionOutp
         fullName = courseVersion.fullName,
         shortName = courseVersion.shortName,
         createdBy = courseVersion.createdBy
+)
+
+fun toCourseCollectionOutputModel(courseList: List<CourseOutputModel>) = CourseCollectionOutputModel(
+        courseList = courseList
+)
+
+fun toCourseReportCollectionOutputModel(courseReportList: List<CourseReportOutputModel>) = CourseReportCollectionOutputModel(
+        courseReportList = courseReportList
+)
+
+fun toCourseStageCollectionOutputModel(courseStageList: List<CourseStageOutputModel>) = CourseStageCollectionOutputModel(
+        courseStageList = courseStageList
+)
+
+fun toCourseVersionCollectionOutputModel(courseVersionList: List<CourseVersionOutputModel>) = CourseVersionCollectionOutputModel(
+        courseVersionList = courseVersionList
 )

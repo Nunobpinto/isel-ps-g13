@@ -5,19 +5,19 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.OrganizationReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Organization
 import isel.leic.ps.eduWikiAPI.domain.model.Vote
-import isel.leic.ps.eduWikiAPI.domain.model.report.OrganizationReport
-import isel.leic.ps.eduWikiAPI.domain.model.version.OrganizationVersion
 import isel.leic.ps.eduWikiAPI.service.interfaces.OrganizationService
 import isel.leic.ps.eduWikiAPI.domain.mappers.*
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.OrganizationCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.OrganizationOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.OrganizationReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.version.OrganizationVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.OrganizationReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.OrganizationVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.OrganizationReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.OrganizationVersionOutputModel
 import isel.leic.ps.eduWikiAPI.exceptions.NotFoundException
 import isel.leic.ps.eduWikiAPI.repository.OrganizationDAOJdbi
 import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.util.*
 
 @Service
 class OrganizationServiceImpl : OrganizationService {
@@ -42,9 +42,10 @@ class OrganizationServiceImpl : OrganizationService {
                 )
             }
 
-    override fun getAllOrganizations(): List<OrganizationOutputModel> =
-            jdbi.withExtension<List<OrganizationOutputModel>, OrganizationDAOJdbi, Exception>(OrganizationDAOJdbi::class.java) {
-                it.getAllOrganizations().map { toOrganizationOutputModel(it) }
+    override fun getAllOrganizations(): OrganizationCollectionOutputModel =
+            jdbi.withExtension<OrganizationCollectionOutputModel, OrganizationDAOJdbi, Exception>(OrganizationDAOJdbi::class.java) {
+                val organizations = it.getAllOrganizations().map { toOrganizationOutputModel(it) }
+                toOrganizationCollectionOutputModel(organizations)
             }
 
     override fun createOrganization(organizationInputModel: OrganizationInputModel): OrganizationOutputModel =
@@ -91,9 +92,10 @@ class OrganizationServiceImpl : OrganizationService {
                 organizationDAO.updateVotesOnOrganization(organizationId, votes)
             }
 
-    override fun getAllReportsOnOrganization(organizationId: Int): List<OrganizationReportOutputModel> =
-            jdbi.withExtension<List<OrganizationReportOutputModel>, OrganizationDAOJdbi, Exception>(OrganizationDAOJdbi::class.java) {
-                it.getAllReportsOnOrganization(organizationId).map { toOrganizationReportOutputModel(it) }
+    override fun getAllReportsOnOrganization(organizationId: Int): OrganizationReportCollectionOutputModel =
+            jdbi.withExtension<OrganizationReportCollectionOutputModel, OrganizationDAOJdbi, Exception>(OrganizationDAOJdbi::class.java) {
+                val reports = it.getAllReportsOnOrganization(organizationId).map { toOrganizationReportOutputModel(it) }
+                toOrganizationReportCollectionOutputModel(reports)
             }
 
     override fun getSpecificReportOnOrganization(organizationId: Int, reportId: Int): OrganizationReportOutputModel =
@@ -132,9 +134,10 @@ class OrganizationServiceImpl : OrganizationService {
                 organizationDAO.updateVotesOnOrganizationReport(organizationId, reportId, votes)
             }
 
-    override fun getAllVersionsOfOrganization(organizationId: Int): List<OrganizationVersionOutputModel> =
-            jdbi.withExtension<List<OrganizationVersionOutputModel>, OrganizationDAOJdbi, Exception>(OrganizationDAOJdbi::class.java) {
-                it.getAllVersionsOfOrganization(organizationId).map { toOrganizationVersionOutputModel(it) }
+    override fun getAllVersionsOfOrganization(organizationId: Int): OrganizationVersionCollectionOutputModel =
+            jdbi.withExtension<OrganizationVersionCollectionOutputModel, OrganizationDAOJdbi, Exception>(OrganizationDAOJdbi::class.java) {
+                val organizationVersions = it.getAllVersionsOfOrganization(organizationId).map { toOrganizationVersionOutputModel(it) }
+                toOrganizationVersionCollectionOutputModel(organizationVersions)
             }
 
     override fun getSpecificVersionOfOrganization(organizationId: Int, version: Int): OrganizationVersionOutputModel =

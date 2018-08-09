@@ -9,23 +9,20 @@ class AppController {
 
     companion object {
         const val ALL_PROGRAMMES = "ALL_PROGRAMMES"
-        val app = EduWikiApplication()
-    }
 
-    fun actionHandler(action: String, params: ProgrammeParametersContainer) {
-        return when (action) {
-            ALL_PROGRAMMES -> getAllProgrammes(params)
-            else -> throw UnsupportedOperationException("Action not supported!")
+        fun actionHandler(action: String, params: ProgrammeParametersContainer) {
+            return when (action) {
+                ALL_PROGRAMMES -> getAllProgrammes(params)
+                else -> throw UnsupportedOperationException("Action not supported!")
+            }
+        }
+
+        private fun getAllProgrammes(params: ProgrammeParametersContainer) {
+            params.app.remoteRepository.getAllProgrammes(
+                    params.app,
+                    { programme -> params.successCb(programme) },
+                    { error: VolleyError -> params.errorCb(AppException("An internet connection is required to access this functionality")) }
+            )
         }
     }
-
-    private fun getAllProgrammes(params: ProgrammeParametersContainer) {
-        app.remoteRepository.getAllProgrammes(
-                app,
-                { movies, _ -> params.successCb(Pair(movies, null)) },
-                { error: VolleyError -> params.errorCb(AppException("An internet connection is required to access this functionality")) }
-        )
-    }
-
-
 }

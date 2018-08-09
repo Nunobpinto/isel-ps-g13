@@ -5,7 +5,7 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.UserInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserProgrammeInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.UserReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.*
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.UserReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.UserReportOutputModel
 import java.util.*
 
 interface UserService {

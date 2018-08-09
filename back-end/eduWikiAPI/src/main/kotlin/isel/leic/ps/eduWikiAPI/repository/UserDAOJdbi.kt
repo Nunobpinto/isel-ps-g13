@@ -4,7 +4,6 @@ import isel.leic.ps.eduWikiAPI.domain.model.User
 import isel.leic.ps.eduWikiAPI.domain.model.UserCourseClass
 import isel.leic.ps.eduWikiAPI.domain.model.UserProgramme
 import isel.leic.ps.eduWikiAPI.domain.model.report.UserReport
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.UserReportOutputModel
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.COURSE_CLASS_ID
 import isel.leic.ps.eduWikiAPI.repository.interfaces.UserDAO
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys
