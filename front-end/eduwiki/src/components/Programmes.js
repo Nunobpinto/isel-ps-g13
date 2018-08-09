@@ -113,7 +113,7 @@ export default class extends React.Component {
                           onClick={() =>
                             this.setState({
                               voteUp: true,
-                              progID: item.id
+                              progID: item.programmeId
                             })}
                           text={item.votes}
                         />,
@@ -123,7 +123,7 @@ export default class extends React.Component {
                           onClick={() =>
                             this.setState({
                               voteDown: true,
-                              progID: item.id
+                              progID: item.programmeId
                             })}
                         />
                       ]}
@@ -165,7 +165,7 @@ export default class extends React.Component {
                       onClick={() =>
                         this.setState({
                           voteUpStaged: true,
-                          stageID: item.programmeId
+                          stageID: item.stageId
                         })}
                       text={item.votes}
                     />
@@ -175,7 +175,7 @@ export default class extends React.Component {
                       onClick={() =>
                         this.setState({
                           voteDownStaged: true,
-                          stageID: item.programmeId
+                          stageID: item.stageId
                         })}
                     />
                   </List.Item>
@@ -332,7 +332,7 @@ export default class extends React.Component {
         }
         this.setState(prevState => {
           let newArray = [...prevState.programmes]
-          const index = newArray.findIndex(programme => programme.id === progID)
+          const index = newArray.findIndex(programme => programme.programmeId === progID)
           newArray[index].votes = prevState.programmes[index].votes + 1
           return ({
             programmes: newArray,
@@ -365,7 +365,7 @@ export default class extends React.Component {
         }
         this.setState(prevState => {
           let newArray = [...prevState.programmes]
-          const index = newArray.findIndex(programme => programme.id === progID)
+          const index = newArray.findIndex(programme => programme.programmeId === progID)
           newArray[index].votes = prevState.programmes[index].votes - 1
           return ({
             programmes: newArray,
@@ -398,7 +398,7 @@ export default class extends React.Component {
         }
         this.setState(prevState => {
           let newArray = [...prevState.staged]
-          const index = newArray.findIndex(programme => programme.programmeId === stageID)
+          const index = newArray.findIndex(programme => programme.stageID === stageID)
           newArray[index].votes = prevState.staged[index].votes + 1
           return ({
             staged: newArray,
@@ -431,7 +431,7 @@ export default class extends React.Component {
         }
         this.setState(prevState => {
           let newArray = [...prevState.staged]
-          const index = newArray.findIndex(programme => programme.programmeId === stageID)
+          const index = newArray.findIndex(programme => programme.stageID === stageID)
           newArray[index].votes = prevState.staged[index].votes - 1
           return ({
             staged: newArray,

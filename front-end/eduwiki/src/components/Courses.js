@@ -147,6 +147,25 @@ export default class extends React.Component {
                       <p>Short Name : {item.shortName}</p>
                       <p>Created By : {item.createdBy}</p>
                     </Card>
+                    <IconText
+                      type='like-o'
+                      id='like_btn'
+                      onClick={() =>
+                        this.setState({
+                          voteUpStaged: true,
+                          stageID: item.stageId
+                        })}
+                      text={item.votes}
+                    />
+                    <IconText
+                      type='dislike-o'
+                      id='dislike_btn'
+                      onClick={() =>
+                        this.setState({
+                          voteDownStaged: true,
+                          stageID: item.stageId
+                        })}
+                    />
                   </List.Item>
                 )}
               />
@@ -264,19 +283,135 @@ export default class extends React.Component {
   }
 
   voteUp () {
-
+    const voteInput = {
+      vote: 'Up',
+      created_by: 'ze'
+    }
+    const courseId = this.state.courseID
+    const url = `http://localhost:8080/courses/${courseId}/vote`
+    const body = {
+      method: 'POST',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + cookies.get('auth')
+      },
+      body: JSON.stringify(voteInput)
+    }
+    fetch(url, body)
+      .then(resp => {
+        if (resp.status >= 400) {
+          throw new Error('Unable to access content')
+        }
+        this.setState(prevState => {
+          let newArray = [...prevState.courses]
+          const index = newArray.findIndex(course => course.courseId === courseId)
+          newArray[index].votes = prevState.courses[index].votes + 1
+          return ({
+            courses: newArray,
+            voteUp: false
+          })
+        })
+      })
   }
 
   voteDown () {
-
+    const voteInput = {
+      vote: 'Down',
+      created_by: 'ze'
+    }
+    const courseId = this.state.courseID
+    const url = `http://localhost:8080/courses/${courseId}/vote`
+    const body = {
+      method: 'POST',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + cookies.get('auth')
+      },
+      body: JSON.stringify(voteInput)
+    }
+    fetch(url, body)
+      .then(resp => {
+        if (resp.status >= 400) {
+          throw new Error('Unable to access content')
+        }
+        this.setState(prevState => {
+          let newArray = [...prevState.courses]
+          const index = newArray.findIndex(course => course.courseId === courseId)
+          newArray[index].votes = prevState.courses[index].votes - 1
+          return ({
+            courses: newArray,
+            voteDown: false
+          })
+        })
+      })
   }
 
   voteUpStaged () {
-
+    const voteInput = {
+      vote: 'Up',
+      created_by: 'ze'
+    }
+    const stageID = this.state.stageID
+    const url = `http://localhost:8080/courses/stage/${stageID}/vote`
+    const body = {
+      method: 'POST',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + cookies.get('auth')
+      },
+      body: JSON.stringify(voteInput)
+    }
+    fetch(url, body)
+      .then(resp => {
+        if (resp.status >= 400) {
+          throw new Error('Unable to access content')
+        }
+        this.setState(prevState => {
+          let newArray = [...prevState.staged]
+          const index = newArray.findIndex(course => course.stageId === stageID)
+          newArray[index].votes = prevState.staged[index].votes + 1
+          return ({
+            staged: newArray,
+            voteUpStaged: false
+          })
+        })
+      })
   }
 
   voteDownStaged () {
-
+    const voteInput = {
+      vote: 'Down',
+      created_by: 'ze'
+    }
+    const stageID = this.state.stageID
+    const url = `http://localhost:8080/courses/stage/${stageID}/vote`
+    const body = {
+      method: 'POST',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + cookies.get('auth')
+      },
+      body: JSON.stringify(voteInput)
+    }
+    fetch(url, body)
+      .then(resp => {
+        if (resp.status >= 400) {
+          throw new Error('Unable to access content')
+        }
+        this.setState(prevState => {
+          let newArray = [...prevState.staged]
+          const index = newArray.findIndex(course => course.stageId === stageID)
+          newArray[index].votes = prevState.staged[index].votes - 1
+          return ({
+            staged: newArray,
+            voteDownStaged: false
+          })
+        })
+      })
   }
 
   componentDidUpdate () {
