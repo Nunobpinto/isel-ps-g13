@@ -9,6 +9,7 @@ import Register from './components/Register'
 import Courses from './components/Courses'
 import Course from './components/Course'
 import Home from './components/Home'
+import Logout from './components/Logout'
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom'
 
 export default () => (
@@ -27,6 +28,7 @@ export default () => (
         <Route exact path='/programmes/:programmeId/versions/:version' component={ProgrammeVersion} />
         <Route exact path='/organization/:id/versions/:version' component={OrganizationVersion} />
         <Route exact path='/courses/:courseId/versions/:version' component={CourseVersion} />
+        <Route exact path='/logout' component={Logout} />
         <Redirect from='*' to='/' />
       </Switch>
     </BrowserRouter>
