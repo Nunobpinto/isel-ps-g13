@@ -8,9 +8,8 @@ import isel.ps.eduwikimobile.repository.IEduWikiRepository
 
 class EduWikiApplication : Application() {
 
-    @Volatile lateinit var requestQueue: RequestQueue
-    @Volatile lateinit var remoteRepository: IEduWikiRepository
-
+    lateinit var requestQueue: RequestQueue
+    lateinit var remoteRepository: IEduWikiRepository
 
     override fun onCreate() {
         super.onCreate()

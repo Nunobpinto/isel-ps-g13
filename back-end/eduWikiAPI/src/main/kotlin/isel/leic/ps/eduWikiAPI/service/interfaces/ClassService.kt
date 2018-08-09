@@ -5,38 +5,45 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ClassReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseClassReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.HomeworkReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.LectureReportInputModel
-import isel.leic.ps.eduWikiAPI.domain.model.*
-import isel.leic.ps.eduWikiAPI.domain.model.report.ClassReport
-import isel.leic.ps.eduWikiAPI.domain.model.report.CourseClassReport
-import isel.leic.ps.eduWikiAPI.domain.model.report.HomeworkReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.LectureReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.*
-import isel.leic.ps.eduWikiAPI.domain.model.version.ClassVersion
-import isel.leic.ps.eduWikiAPI.domain.model.version.HomeworkVersion
-import isel.leic.ps.eduWikiAPI.domain.model.version.LectureVersion
 import isel.leic.ps.eduWikiAPI.domain.outputModel.ClassOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.CourseClassOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.HomeworkOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.LectureOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.ClassReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.CourseClassReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.HomeworkReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.LectureReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.ClassStageOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.CourseClassStageOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.HomeworkStageOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.LectureStageOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.version.ClassVersionOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.version.HomeworkVersionOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.version.LectureVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ClassCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseClassCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.HomeworkCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.LectureCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.ClassReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.CourseClassReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.HomeworkReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.LectureReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.ClassStageCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.CourseClassStageCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.HomeworkStageCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.LectureStageCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.ClassVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.HomeworkVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.LectureVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.ClassReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.CourseClassReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.HomeworkReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.LectureReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.ClassStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.CourseClassStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.HomeworkStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.LectureStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.ClassVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.HomeworkVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.LectureVersionOutputModel
 import org.springframework.web.multipart.MultipartFile
-import java.util.*
 
 interface ClassService {
     /**
      * Class
      */
-    fun getAllClasses(): List<ClassOutputModel>
+    fun getAllClasses(): ClassCollectionOutputModel
 
     fun getSpecificClass(classId: Int): ClassOutputModel
 
@@ -51,7 +58,7 @@ interface ClassService {
     /**
      * Class Report
      */
-    fun getAllReportsOfClass(classId: Int): List<ClassReportOutputModel>
+    fun getAllReportsOfClass(classId: Int): ClassReportCollectionOutputModel
 
     fun getSpecificReportOfClass(classId: Int, reportId: Int): ClassReportOutputModel
 
@@ -68,7 +75,7 @@ interface ClassService {
     /**
      * Class Stage
      */
-    fun getAllStagedClasses(): List<ClassStageOutputModel>
+    fun getAllStagedClasses(): ClassStageCollectionOutputModel
 
     fun getSpecificStagedClass(stageId: Int): ClassStageOutputModel
 
@@ -85,7 +92,7 @@ interface ClassService {
     /**
      * Class version
      */
-    fun getAllVersionsOfClass(classId: Int): List<ClassVersionOutputModel>
+    fun getAllVersionsOfClass(classId: Int): ClassVersionCollectionOutputModel
 
     fun getSpecificVersionOfClass(classId: Int, versionId: Int): ClassVersionOutputModel
 
@@ -96,7 +103,7 @@ interface ClassService {
     /**
      * Course Class
      */
-    fun getAllCoursesOfClass(classId: Int): List<CourseClassOutputModel>
+    fun getAllCoursesOfClass(classId: Int): CourseClassCollectionOutputModel
 
     fun getSpecificCourseOfClass(classId: Int, courseId: Int): CourseClassOutputModel
 
@@ -111,7 +118,7 @@ interface ClassService {
     /**
      * Course Class Report
      */
-    fun getAllReportsOfCourseInClass(classId: Int, courseId: Int): List<CourseClassReportOutputModel>
+    fun getAllReportsOfCourseInClass(classId: Int, courseId: Int): CourseClassReportCollectionOutputModel
 
     fun getSpecificReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int): CourseClassReportOutputModel
 
@@ -128,7 +135,7 @@ interface ClassService {
     /**
      * Course Class Stage
      */
-    fun getStageEntriesOfCoursesInClass(classId: Int): List<CourseClassStageOutputModel>
+    fun getStageEntriesOfCoursesInClass(classId: Int): CourseClassStageCollectionOutputModel
 
     fun getSpecificStagedCourseInClass(classId: Int, stageId: Int): CourseClassStageOutputModel
     
@@ -145,7 +152,7 @@ interface ClassService {
     /**
      * Lectures Of Class
      */
-    fun getAllLecturesFromCourseInClass(classId: Int, courseId: Int): List<LectureOutputModel>
+    fun getAllLecturesFromCourseInClass(classId: Int, courseId: Int): LectureCollectionOutputModel
 
     fun getSpecificLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int): LectureOutputModel
 
@@ -160,7 +167,7 @@ interface ClassService {
     /**
      * Lecture Report
      */
-    fun getAllReportsOfLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int): List<LectureReportOutputModel>
+    fun getAllReportsOfLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int): LectureReportCollectionOutputModel
 
     fun getSpecificReportOfLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int, reportId: Int): LectureReportOutputModel
 
@@ -177,7 +184,7 @@ interface ClassService {
     /**
      * Lecture Stage
      */
-    fun getAllStagedLecturesOfCourseInClass(classId: Int, courseId: Int): List<LectureStageOutputModel>
+    fun getAllStagedLecturesOfCourseInClass(classId: Int, courseId: Int): LectureStageCollectionOutputModel
 
     fun getSpecificStagedLectureOfCourseInClass(classId: Int, courseId: Int, stageId: Int): LectureStageOutputModel
 
@@ -194,7 +201,7 @@ interface ClassService {
     /**
      * Lecture Version
      */
-    fun getAllVersionsOfLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int): List<LectureVersionOutputModel>
+    fun getAllVersionsOfLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int): LectureVersionCollectionOutputModel
 
     fun getSpecificVersionOfLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int, version: Int): LectureVersionOutputModel
 
@@ -205,7 +212,7 @@ interface ClassService {
     /**
      * Homework
      */
-    fun getAllHomeworksOfCourseInClass(classId: Int, courseId: Int): List<HomeworkOutputModel>
+    fun getAllHomeworksOfCourseInClass(classId: Int, courseId: Int): HomeworkCollectionOutputModel
 
     fun getSpecificHomeworkFromSpecificCourseInClass(classId: Int, courseId: Int, homeworkId: Int): HomeworkOutputModel
 
@@ -220,7 +227,7 @@ interface ClassService {
     /**
      * Homework Stage
      */
-    fun getAllStagedHomeworksOfCourseInClass(classId: Int, courseId: Int): List<HomeworkStageOutputModel>
+    fun getAllStagedHomeworksOfCourseInClass(classId: Int, courseId: Int): HomeworkStageCollectionOutputModel
 
     fun getSpecificStagedHomeworkOfCourseInClass(classId: Int, courseId: Int, stageId: Int): HomeworkStageOutputModel
 
@@ -237,7 +244,7 @@ interface ClassService {
     /**
      * Homework Report
      */
-    fun getAllReportsOfHomeworkFromCourseInClass(classId: Int, courseId: Int, homeWorkId: Int): List<HomeworkReportOutputModel>
+    fun getAllReportsOfHomeworkFromCourseInClass(classId: Int, courseId: Int, homeWorkId: Int): HomeworkReportCollectionOutputModel
 
     fun getSpecificReportOfHomeworkFromCourseInClass(classId: Int, courseId: Int, homeworkId: Int, reportId: Int): HomeworkReportOutputModel
 
@@ -254,7 +261,7 @@ interface ClassService {
     /**
      * Homework version
      */
-    fun getAllVersionsOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int): List<HomeworkVersionOutputModel>
+    fun getAllVersionsOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int): HomeworkVersionCollectionOutputModel
 
     fun getSpecificVersionOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, version: Int): HomeworkVersionOutputModel
 

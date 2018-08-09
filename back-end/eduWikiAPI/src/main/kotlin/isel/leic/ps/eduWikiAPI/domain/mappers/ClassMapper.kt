@@ -7,10 +7,14 @@ import isel.leic.ps.eduWikiAPI.domain.model.Term
 import isel.leic.ps.eduWikiAPI.domain.model.report.ClassReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ClassStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.ClassVersion
-import isel.leic.ps.eduWikiAPI.domain.outputModel.version.ClassVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.ClassVersionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.ClassOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.ClassReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.ClassStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ClassCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.ClassReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.ClassStageCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.ClassVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.ClassReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.ClassStageOutputModel
 import java.sql.Timestamp
 import java.time.LocalDateTime
 
@@ -82,4 +86,20 @@ fun toClassVersionOutputModel(classVersion: ClassVersion, term: Term) = ClassVer
         termId = classVersion.termId,
         lecturedTerm = term.shortName,
         timestamp = classVersion.timestamp
+)
+
+fun toClassCollectionOutputModel(classList: List<ClassOutputModel>) = ClassCollectionOutputModel(
+        classList = classList
+)
+
+fun toClassReportCollectionOutputModel(classReportList: List<ClassReportOutputModel>) = ClassReportCollectionOutputModel(
+        classReportList = classReportList
+)
+
+fun toClassStageCollectionOutputModel(classStageList: List<ClassStageOutputModel>) = ClassStageCollectionOutputModel(
+        classStageList = classStageList
+)
+
+fun toClassVersionCollectionOutputModel(classVersionList: List<ClassVersionOutputModel>) = ClassVersionCollectionOutputModel(
+        classVersionList = classVersionList
 )

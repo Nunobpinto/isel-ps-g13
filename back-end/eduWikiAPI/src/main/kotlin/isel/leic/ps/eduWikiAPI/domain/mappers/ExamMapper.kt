@@ -7,9 +7,12 @@ import isel.leic.ps.eduWikiAPI.domain.model.report.ExamReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ExamStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.ExamVersion
 import isel.leic.ps.eduWikiAPI.domain.outputModel.ExamOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.ExamReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.ExamStageOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.version.ExamVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ExamCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.ExamReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.ExamVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.ExamReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.ExamStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.ExamVersionOutputModel
 
 fun toExam(input: ExamInputModel) = Exam(
         createdBy = input.createdBy,
@@ -31,7 +34,7 @@ fun toExamVersion(exam: Exam) = ExamVersion(
         location = exam.location
 )
 
-fun toExamReport(examId: Int, inputExamReport: ExamReportInputModel) =  ExamReport(
+fun toExamReport(examId: Int, inputExamReport: ExamReportInputModel) = ExamReport(
         examId = examId,
         sheetId = inputExamReport.sheetId,
         dueDate = inputExamReport.dueDate,
@@ -105,4 +108,16 @@ fun toExamVersionOutputModel(examVersion: ExamVersion) = ExamVersionOutputModel(
         phase = examVersion.phase,
         sheetId = examVersion.sheetId,
         timestamp = examVersion.timestamp
+)
+
+fun toExamCollectionOutputModel(examList: List<ExamOutputModel>) = ExamCollectionOutputModel(
+        examList = examList
+)
+
+fun toExamReportCollectionOutputModel(examReportList: List<ExamReportOutputModel>) = ExamReportCollectionOutputModel(
+        examReportList = examReportList
+)
+
+fun toExamVersionCollectionOutputModel(examVersionList: List<ExamVersionOutputModel>) = ExamVersionCollectionOutputModel(
+        examVersionList = examVersionList
 )

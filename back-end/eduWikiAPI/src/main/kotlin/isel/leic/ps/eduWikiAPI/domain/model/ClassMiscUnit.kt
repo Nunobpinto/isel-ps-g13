@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.domain.model
 
+import isel.leic.ps.eduWikiAPI.domain.enums.ClassMiscUnitType
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_MISC_UNIT_TYPE
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_MISC_UNIT_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.COURSE_CLASS_ID
@@ -9,7 +10,7 @@ data class ClassMiscUnit (
         @ColumnName(CLASS_MISC_UNIT_ID)
         val classMiscUnitId: Int = -1,
         @ColumnName(CLASS_MISC_UNIT_TYPE)
-        val miscType: String = "",
+        val miscType: ClassMiscUnitType,
         @ColumnName(COURSE_CLASS_ID)
         val courseClassId: Int = 0
 )

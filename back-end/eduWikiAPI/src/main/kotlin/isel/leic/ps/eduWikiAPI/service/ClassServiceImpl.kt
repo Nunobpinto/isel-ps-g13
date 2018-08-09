@@ -16,17 +16,32 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.ClassOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.CourseClassOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.HomeworkOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.LectureOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.ClassReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.CourseClassReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.HomeworkReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.LectureReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.ClassStageOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.CourseClassStageOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.HomeworkStageOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.LectureStageOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.version.ClassVersionOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.version.HomeworkVersionOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.version.LectureVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ClassCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseClassCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.HomeworkCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.LectureCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.ClassReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.CourseClassReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.HomeworkReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.LectureReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.ClassStageCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.CourseClassStageCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.HomeworkStageCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.LectureStageCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.ClassVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.HomeworkVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.LectureVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.ClassReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.CourseClassReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.HomeworkReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.LectureReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.ClassStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.CourseClassStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.HomeworkStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.LectureStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.ClassVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.HomeworkVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.LectureVersionOutputModel
 import isel.leic.ps.eduWikiAPI.exceptions.NotFoundException
 import isel.leic.ps.eduWikiAPI.exceptions.UnknownDataException
 import isel.leic.ps.eduWikiAPI.repository.*
@@ -66,12 +81,15 @@ class ClassServiceImpl : ClassService {
                 )
             }
 
-    override fun getAllClasses(): List<ClassOutputModel> =
-            jdbi.inTransaction<List<ClassOutputModel>, Exception> {
+    override fun getAllClasses(): ClassCollectionOutputModel =
+            jdbi.inTransaction<ClassCollectionOutputModel, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val termDAOJdbi = it.attach(TermDAOJdbi::class.java)
-                val classes = classDAO.getAllClasses()
-                classes.map { toClassOutputModel(it, getTerm(termDAOJdbi, it.termId)) }
+                val allClasses = classDAO.getAllClasses()
+                val classList = allClasses.map {
+                    toClassOutputModel(it, getTerm(termDAOJdbi, it.termId))
+                }
+                toClassCollectionOutputModel(classList)
             }
 
     override fun getSpecificClass(classId: Int): ClassOutputModel =
@@ -131,9 +149,10 @@ class ClassServiceImpl : ClassService {
                 it.deleteSpecificClass(classId)
             }
 
-    override fun getAllReportsOfClass(classId: Int): List<ClassReportOutputModel> =
-            jdbi.withExtension<List<ClassReportOutputModel>, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
-                it.getAllReportsFromClass(classId).map { toClassReportOutputModel(it) }
+    override fun getAllReportsOfClass(classId: Int): ClassReportCollectionOutputModel =
+            jdbi.withExtension<ClassReportCollectionOutputModel, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
+                val reports = it.getAllReportsFromClass(classId).map { toClassReportOutputModel(it) }
+                toClassReportCollectionOutputModel(reports)
             }
 
     override fun getSpecificReportOfClass(classId: Int, reportId: Int): ClassReportOutputModel =
@@ -191,13 +210,14 @@ class ClassServiceImpl : ClassService {
                 it.deleteSpecificReportInClass(classId, reportId)
             }
 
-    override fun getAllStagedClasses(): List<ClassStageOutputModel> =
-            jdbi.inTransaction<List<ClassStageOutputModel>, Exception> {
+    override fun getAllStagedClasses(): ClassStageCollectionOutputModel =
+            jdbi.inTransaction<ClassStageCollectionOutputModel, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val termDAOJdbi = it.attach(TermDAOJdbi::class.java)
-                classDAO.getAllStagedClasses().map {
+                val stagedClasses = classDAO.getAllStagedClasses().map {
                     toClassStagedOutputModel(it, getTerm(termDAOJdbi, it.termId))
                 }
+                toClassStageCollectionOutputModel(stagedClasses)
             }
 
     override fun getSpecificStagedClass(stageId: Int): ClassStageOutputModel =
@@ -251,13 +271,14 @@ class ClassServiceImpl : ClassService {
                 it.deleteSpecificStagedClass(stageId)
             }
 
-    override fun getAllVersionsOfClass(classId: Int): List<ClassVersionOutputModel> =
-            jdbi.inTransaction<List<ClassVersionOutputModel>, Exception> {
+    override fun getAllVersionsOfClass(classId: Int): ClassVersionCollectionOutputModel =
+            jdbi.inTransaction<ClassVersionCollectionOutputModel, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val termDAOJdbi = it.attach(TermDAOJdbi::class.java)
-                classDAO.getAllVersionsOfSpecificClass(classId).map {
+                val classVersions = classDAO.getAllVersionsOfSpecificClass(classId).map {
                     toClassVersionOutputModel(it, getTerm(termDAOJdbi, it.termId))
                 }
+                toClassVersionCollectionOutputModel(classVersions)
             }
 
     override fun getSpecificVersionOfClass(classId: Int, versionId: Int): ClassVersionOutputModel =
@@ -287,8 +308,8 @@ class ClassServiceImpl : ClassService {
     /**
      * Course Class
      */
-    override fun getAllCoursesOfClass(classId: Int): List<CourseClassOutputModel> =
-            jdbi.inTransaction<List<CourseClassOutputModel>, Exception> {
+    override fun getAllCoursesOfClass(classId: Int): CourseClassCollectionOutputModel =
+            jdbi.inTransaction<CourseClassCollectionOutputModel, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val courseDAOJdbi = it.attach(CourseDAOJdbi::class.java)
                 val termDAOJdbi = it.attach(TermDAOJdbi::class.java)
@@ -298,10 +319,10 @@ class ClassServiceImpl : ClassService {
                             action = "Try other id"
                     )
                 }
-                classDAO.getAllCoursesOfClass(classId).map {
+                val courseClasses = classDAO.getAllCoursesOfClass(classId).map {
                     toCourseClassOutputModel(getCourse(courseDAOJdbi, it.courseId), klass, it, getTerm(termDAOJdbi, it.termId))
                 }
-
+                toCourseClassCollectionOutputModel(courseClasses)
             }
 
     override fun getSpecificCourseOfClass(classId: Int, courseId: Int): CourseClassOutputModel =
@@ -368,11 +389,14 @@ class ClassServiceImpl : ClassService {
                 it.deleteSpecificCourseInClass(classId, courseId)
             }
 
-    override fun getAllReportsOfCourseInClass(classId: Int, courseId: Int): List<CourseClassReportOutputModel> =
-            jdbi.inTransaction<List<CourseClassReportOutputModel>, Exception> {
+    override fun getAllReportsOfCourseInClass(classId: Int, courseId: Int): CourseClassReportCollectionOutputModel =
+            jdbi.inTransaction<CourseClassReportCollectionOutputModel, Exception> {
                 val classDAOJdbi = it.attach(ClassDAOJdbi::class.java)
                 val courseClass = classDAOJdbi.getCourseClass(classId, courseId).get()
-                classDAOJdbi.getAllReportsOfCourseInClass(courseClass.courseClassId).map { toCourseClassReportOutputModel(it) }
+                val reports = classDAOJdbi.getAllReportsOfCourseInClass(
+                        courseClass.courseClassId
+                ).map { toCourseClassReportOutputModel(it) }
+                toCourseClassReportCollectionOutputModel(reports)
             }
 
     override fun getSpecificReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int): CourseClassReportOutputModel =
@@ -464,9 +488,10 @@ class ClassServiceImpl : ClassService {
                 it.deleteSpecificCourseReportInClass(classId, courseId, reportId)
             }
 
-    override fun getStageEntriesOfCoursesInClass(classId: Int): List<CourseClassStageOutputModel> =
-            jdbi.withExtension<List<CourseClassStageOutputModel>, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
-                it.getStageEntriesOfCoursesInClass(classId).map { toCourseClassStageOutputModel(it) }
+    override fun getStageEntriesOfCoursesInClass(classId: Int): CourseClassStageCollectionOutputModel =
+            jdbi.withExtension<CourseClassStageCollectionOutputModel, ClassDAOJdbi, Exception>(ClassDAOJdbi::class.java) {
+                val stageEntries = it.getStageEntriesOfCoursesInClass(classId).map { toCourseClassStageOutputModel(it) }
+                toCourseClassStageCollectionOutputModel(stageEntries)
             }
 
     override fun getSpecificStagedCourseInClass(classId: Int, stageId: Int): CourseClassStageOutputModel =
@@ -529,11 +554,12 @@ class ClassServiceImpl : ClassService {
      * Lectures Methods
      */
 
-    override fun getAllLecturesFromCourseInClass(classId: Int, courseId: Int): List<LectureOutputModel> =
-            jdbi.inTransaction<List<LectureOutputModel>, Exception> {
+    override fun getAllLecturesFromCourseInClass(classId: Int, courseId: Int): LectureCollectionOutputModel =
+            jdbi.inTransaction<LectureCollectionOutputModel, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val lectureDAO = it.attach(LectureDAOJdbi::class.java)
-                lectureDAO.getAllLecturesFromCourseInClass(classDAO.getCourseClassId(classId, courseId)).map { toLectureOutputModel(it) }
+                val lectures = lectureDAO.getAllLecturesFromCourseInClass(classDAO.getCourseClassId(classId, courseId)).map { toLectureOutputModel(it) }
+                toLectureCollectionOutputModel(lectures)
             }
 
     override fun getSpecificLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int): LectureOutputModel =
@@ -587,14 +613,15 @@ class ClassServiceImpl : ClassService {
                 lectureDAO.deleteSpecificLectureOfCourseInClass(classDAO.getCourseClassId(classId, courseId), lectureId)
             }
 
-    override fun getAllReportsOfLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int): List<LectureReportOutputModel> =
-            jdbi.inTransaction<List<LectureReportOutputModel>, Exception> {
+    override fun getAllReportsOfLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int): LectureReportCollectionOutputModel =
+            jdbi.inTransaction<LectureReportCollectionOutputModel, Exception> {
                 val lectureDAO = it.attach(LectureDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
-                lectureDAO.getAllReportsOfLectureFromCourseInClass(
+                val reports = lectureDAO.getAllReportsOfLectureFromCourseInClass(
                         classDAO.getCourseClassId(classId, courseId),
                         lectureId
                 ).map { toLectureReportOutputModel(it) }
+                toLectureReportCollectionOutputModel(reports)
             }
 
     override fun getSpecificReportOfLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int, reportId: Int): LectureReportOutputModel =
@@ -671,13 +698,16 @@ class ClassServiceImpl : ClassService {
                 toLectureOutputModel(res)
             }
 
-    override fun getAllStagedLecturesOfCourseInClass(classId: Int, courseId: Int): List<LectureStageOutputModel> =
-            jdbi.inTransaction<List<LectureStageOutputModel>, Exception> {
+    override fun getAllStagedLecturesOfCourseInClass(classId: Int, courseId: Int): LectureStageCollectionOutputModel =
+            jdbi.inTransaction<LectureStageCollectionOutputModel, Exception> {
                 val lectureDAO = it.attach(LectureDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
-                lectureDAO.getAllStagedLecturesOfCourseInClass(classDAO.getCourseClassId(classId, courseId)).map {
-                    toLectureStageOutputModel(it)
-                }
+                val stagedLectures = lectureDAO.getAllStagedLecturesOfCourseInClass(
+                        classDAO.getCourseClassId(
+                                classId,
+                                courseId)
+                ).map { toLectureStageOutputModel(it) }
+                toLectureStageCollectionOutputModel(stagedLectures)
             }
 
     override fun getSpecificStagedLectureOfCourseInClass(classId: Int, courseId: Int, stageId: Int): LectureStageOutputModel =
@@ -748,14 +778,15 @@ class ClassServiceImpl : ClassService {
                 toLectureOutputModel(createdLecture)
             }
 
-    override fun getAllVersionsOfLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int): List<LectureVersionOutputModel> =
-            jdbi.inTransaction<List<LectureVersionOutputModel>, Exception> {
+    override fun getAllVersionsOfLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int): LectureVersionCollectionOutputModel =
+            jdbi.inTransaction<LectureVersionCollectionOutputModel, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val lectureDAO = it.attach(LectureDAOJdbi::class.java)
-                lectureDAO.getAllVersionsOfLectureOfCourseInclass(
+                val lectureVersions = lectureDAO.getAllVersionsOfLectureOfCourseInclass(
                         classDAO.getCourseClassId(classId, courseId),
                         lectureId
                 ).map { toLectureVersionOutputModel(it) }
+                toLectureVersionCollectionOutputModel(lectureVersions)
             }
 
     override fun getSpecificVersionOfLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int, version: Int): LectureVersionOutputModel =
@@ -799,13 +830,14 @@ class ClassServiceImpl : ClassService {
      * Homeworks Methods
      */
 
-    override fun getAllHomeworksOfCourseInClass(classId: Int, courseId: Int): List<HomeworkOutputModel> =
-            jdbi.inTransaction<List<HomeworkOutputModel>, Exception> {
+    override fun getAllHomeworksOfCourseInClass(classId: Int, courseId: Int): HomeworkCollectionOutputModel =
+            jdbi.inTransaction<HomeworkCollectionOutputModel, Exception> {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val homeworkDAO = it.attach(HomeworkDAOJdbi::class.java)
-                homeworkDAO.getAllHomeworksFromCourseInClass(
+                val homeworks = homeworkDAO.getAllHomeworksFromCourseInClass(
                         classDAO.getCourseClassId(classId, courseId)
                 ).map { toHomeworkOutputModel(it) }
+                toHomeworkCollectionOutputModel(homeworks)
             }
 
     override fun getSpecificHomeworkFromSpecificCourseInClass(classId: Int, courseId: Int, homeworkId: Int): HomeworkOutputModel =
@@ -877,13 +909,14 @@ class ClassServiceImpl : ClassService {
                 homeworkDAO.deleteSpecificHomeworkOfCourseInClass(courseClassId, homeworkId)
             }
 
-    override fun getAllStagedHomeworksOfCourseInClass(classId: Int, courseId: Int): List<HomeworkStageOutputModel> =
-            jdbi.inTransaction<List<HomeworkStageOutputModel>, Exception> {
+    override fun getAllStagedHomeworksOfCourseInClass(classId: Int, courseId: Int): HomeworkStageCollectionOutputModel =
+            jdbi.inTransaction<HomeworkStageCollectionOutputModel, Exception> {
                 val homeworkDAO = it.attach(HomeworkDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
-                homeworkDAO.getAllStagedHomeworksOfCourseInClass(
+                val stagedHomeworks = homeworkDAO.getAllStagedHomeworksOfCourseInClass(
                         classDAO.getCourseClassId(classId, courseId)
                 ).map { toHomeworkStagedOutputModel(it) }
+                toHomeworkStageCollectionOutputModel(stagedHomeworks)
             }
 
     override fun getSpecificStagedHomeworkOfCourseInClass(classId: Int, courseId: Int, stageId: Int): HomeworkStageOutputModel =
@@ -946,7 +979,7 @@ class ClassServiceImpl : ClassService {
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val courseClassId = classDAO.getCourseClassId(classId, courseId)
                 val homeworks = homeworkDAO.getAllStagedHomeworksOfCourseInClass(
-                       courseClassId
+                        courseClassId
                 )
                 storageService.batchDeleteResource(homeworks.map(HomeworkStage::sheetId))
                 homeworkDAO.deleteAllStagedHomeworksOfCourseInClass(
@@ -972,14 +1005,15 @@ class ClassServiceImpl : ClassService {
                 homeworkDAO.deleteSpecificStagedHomeworkOfCourseInClass(courseClassId, stageId)
             }
 
-    override fun getAllReportsOfHomeworkFromCourseInClass(classId: Int, courseId: Int, homeWorkId: Int): List<HomeworkReportOutputModel> =
-            jdbi.inTransaction<List<HomeworkReportOutputModel>, Exception> {
+    override fun getAllReportsOfHomeworkFromCourseInClass(classId: Int, courseId: Int, homeWorkId: Int): HomeworkReportCollectionOutputModel =
+            jdbi.inTransaction<HomeworkReportCollectionOutputModel, Exception> {
                 val homeworkDAO = it.attach(HomeworkDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
-                homeworkDAO.getAllReportsOfHomeworkFromCourseInClass(
+                val reports = homeworkDAO.getAllReportsOfHomeworkFromCourseInClass(
                         classDAO.getCourseClassId(classId, courseId),
                         homeWorkId
                 ).map { toHomeworkReportOutputModel(it) }
+                toHomeworkReportCollectionOutputModel(reports)
             }
 
     override fun getSpecificReportOfHomeworkFromCourseInClass(classId: Int, courseId: Int, homeworkId: Int, reportId: Int): HomeworkReportOutputModel =
@@ -1068,14 +1102,15 @@ class ClassServiceImpl : ClassService {
                 )
             }
 
-    override fun getAllVersionsOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int): List<HomeworkVersionOutputModel> =
-            jdbi.inTransaction<List<HomeworkVersionOutputModel>, Exception> {
+    override fun getAllVersionsOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int): HomeworkVersionCollectionOutputModel =
+            jdbi.inTransaction<HomeworkVersionCollectionOutputModel, Exception> {
                 val homeworkDAO = it.attach(HomeworkDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
-                homeworkDAO.getAllVersionsOfHomeworkOfCourseInclass(
+                val homeworkVersions = homeworkDAO.getAllVersionsOfHomeworkOfCourseInclass(
                         classDAO.getCourseClassId(classId, courseId),
                         homeworkId
                 ).map { toHomeworkVersionOutputModel(it) }
+                toHomeworkVersionCollectionOutputModel(homeworkVersions)
             }
 
     override fun getSpecificVersionOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, version: Int): HomeworkVersionOutputModel =

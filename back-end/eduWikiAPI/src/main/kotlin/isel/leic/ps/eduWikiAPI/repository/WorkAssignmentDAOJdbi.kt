@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.repository
 
+import isel.leic.ps.eduWikiAPI.domain.enums.CourseMiscUnitType
 import isel.leic.ps.eduWikiAPI.domain.model.WorkAssignment
 import isel.leic.ps.eduWikiAPI.domain.model.report.WorkAssignmentReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
@@ -82,7 +83,7 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
             "UPDATE $WORK_ASSIGNMENT_TABLE SET " +
                     "$WORK_ASSIGNMENT_VERSION = :workAssignment.version, " +
                     "$WORK_ASSIGNMENT_CREATED_BY = :workAssignment.createdBy, " +
-                    "$WORK_ASSIGNMENT_SHEET_ID = :workAssignment.uuId, " +
+                    "$WORK_ASSIGNMENT_SHEET_ID = :workAssignment.sheetId, " +
                     "$WORK_ASSIGNMENT_SUPPLEMENT = :workAssignment.supplementId, " +
                     "$WORK_ASSIGNMENT_DUE_DATE = :workAssignment.dueDate, " +
                     "$WORK_ASSIGNMENT_INDIVIDUAL = :workAssignment.individual, " +
@@ -244,7 +245,7 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
                     "$WORK_ASSIGNMENT_VOTES, " +
                     "$WORK_ASSIGNMENT_TIMESTAMP) " +
                     "VALUES(:courseMiscUnitId, :workAssignment.version, :workAssignment.createdBy, " +
-                    ":workAssignment.uuId, :workAssignment.supplementId, :workAssignment.dueDate," +
+                    ":workAssignment.sheetId, :workAssignment.supplementId, :workAssignment.dueDate," +
                     ":workAssignment.individual, :workAssignment.lateDelivery, :workAssignment.multipleDeliveries, " +
                     ":workAssignment.requiresReport, :workAssignment.votes, :workAssignment.timestamp)"
     )
@@ -257,7 +258,7 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
         if (!courseDAO.getSpecificTermOfCourse(courseId, termId).isPresent) {
             courseDAO.createCourseTerm(courseId, termId, Timestamp.valueOf(LocalDateTime.now()))
         }
-        val courseMiscUnit = courseDAO.createCourseMiscUnit(courseId, termId, "WorkAssignment")
+        val courseMiscUnit = courseDAO.createCourseMiscUnit(courseId, termId, CourseMiscUnitType.WORK_ASSIGNMENT)
         return createWorkAssignment(courseMiscUnit.courseMiscUnitId, workAssignment)
     }
 
@@ -274,7 +275,7 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
                     "$WORK_ASSIGNMENT_REPORTED_BY, " +
                     "$WORK_ASSIGNMENT_VOTES, " +
                     "$WORK_ASSIGNMENT_TIMESTAMP) " +
-                    "VALUES(:workAssignmentId, :workAssignmentReport.uuId, :workAssignmentReport.supplementId, " +
+                    "VALUES(:workAssignmentId, :workAssignmentReport.sheetId, :workAssignmentReport.supplementId, " +
                     ":workAssignmentReport.dueDate, :workAssignmentReport.individual, :workAssignmentReport.lateDelivery, " +
                     ":workAssignmentReport.multipleDeliveries, :workAssignmentReport.requiresReport, " +
                     ":workAssignmentReport.reportedBy, :workAssignmentReport.votes, :workAssignmentReport.timestamp)"
@@ -316,7 +317,7 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
                     "$WORK_ASSIGNMENT_TIMESTAMP " +
                     ") " +
                     "VALUES (:workAssignmentVersion.workAssignmentId, :workAssignmentVersion.version, " +
-                    ":workAssignmentVersion.uuId, :workAssignmentVersion.supplementId, " +
+                    ":workAssignmentVersion.sheetId, :workAssignmentVersion.supplementId, " +
                     ":workAssignmentVersion.dueDate, :workAssignmentVersion.individual, " +
                     ":workAssignmentVersion.lateDelivery, :workAssignmentVersion.multipleDeliveries, " +
                     ":workAssignmentVersion.requiresReport, :workAssignmentVersion.createdBy, :workAssignmentVersion.timestamp)"
@@ -337,7 +338,7 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
                     "$WORK_ASSIGNMENT_CREATED_BY, " +
                     "$WORK_ASSIGNMENT_VOTES, " +
                     "$WORK_ASSIGNMENT_TIMESTAMP) " +
-                    "VALUES(:stageId, :workAssignmentStage.uuId, :workAssignmentStage.supplementId, :workAssignmentStage.dueDate," +
+                    "VALUES(:stageId, :workAssignmentStage.sheetId, :workAssignmentStage.supplementId, :workAssignmentStage.dueDate," +
                     ":workAssignmentStage.individual, :workAssignmentStage.lateDelivery, " +
                     ":workAssignmentStage.multipleDeliveries, :workAssignmentStage.requiresReport, " +
                     ":workAssignmentStage.createdBy, :workAssignmentStage.votes, :workAssignmentStage.timestamp)"
@@ -351,7 +352,7 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
         if (!courseDAO.getSpecificTermOfCourse(courseId, termId).isPresent) {
             courseDAO.createCourseTerm(courseId, termId, Timestamp.valueOf(LocalDateTime.now()))
         }
-        val courseMiscUnitStage = courseDAO.createStagingCourseMiscUnit(courseId, termId, "Work Assignment")
+        val courseMiscUnitStage = courseDAO.createStagingCourseMiscUnit(courseId, termId, CourseMiscUnitType.WORK_ASSIGNMENT)
         return createStagingWorkAssignment(workAssignmentStage, courseMiscUnitStage.stageId)
     }
 
@@ -368,10 +369,10 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
     override fun updateStagedWorkAssignmentVotes(stageId: Int, votes: Int): Int
 
     override fun deleteAllWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int =
-            createCourseDAO().deleteAllCourseMiscUnitsFromTypeOfCourseInTerm(courseId, termId, "Work Assignment")
+            createCourseDAO().deleteAllCourseMiscUnitsFromTypeOfCourseInTerm(courseId, termId, CourseMiscUnitType.WORK_ASSIGNMENT)
 
     override fun deleteAllStagedWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int =
-            createCourseDAO().deleteAllStagedCourseMiscUnitsFromTypeOfCourseInTerm(courseId, termId, "Work Assignment")
+            createCourseDAO().deleteAllStagedCourseMiscUnitsFromTypeOfCourseInTerm(courseId, termId, CourseMiscUnitType.WORK_ASSIGNMENT)
 
     @SqlUpdate(
             "DELETE FROM $WORK_ASSIGNMENT_VERSION_TABLE " +

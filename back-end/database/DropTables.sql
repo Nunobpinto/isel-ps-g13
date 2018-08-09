@@ -96,6 +96,8 @@ Drop Table IF EXISTS homework;
 
 Drop Table IF EXISTS reputation_log;
 
+Drop Table IF EXISTS action_log;
+
 Drop Table IF EXISTS class_misc_unit;
 
 Drop Table IF EXISTS course_misc_unit;

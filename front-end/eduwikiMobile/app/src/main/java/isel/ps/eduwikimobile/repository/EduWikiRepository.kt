@@ -7,22 +7,22 @@ import isel.ps.eduwikimobile.API_URL
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.comms.HttpRequest
 import isel.ps.eduwikimobile.domain.model.Programme
-import isel.ps.eduwikimobile.domain.model.ProgrammeCollection
 import java.util.*
 
-class EduWikiRepository : IEduWikiRepository {
+class EduWikiRepository() : IEduWikiRepository {
 
-    private val ALL_PROGRAMMES = API_URL + "/programmes"
+    private val ALL_PROGRAMMES = API_URL + "/programmes/1"
 
-    override fun getAllProgrammes(ctx: Context, successCb: (ProgrammeCollection, String) -> Unit, errorCb: (VolleyError) -> Unit) {
+    override fun getAllProgrammes(ctx: Context, successCb: (Programme) -> Unit, errorCb: (VolleyError) -> Unit) {
         if(!isConnected(ctx)) {
             return errorCb(VolleyError())
         }
         val tag = UUID.randomUUID().toString()
         val req = HttpRequest(
                 ALL_PROGRAMMES,
-                ProgrammeCollection::class.java,
-                { programmes -> successCb(programmes, tag)},
+                "emU6MTIzNA==",
+                Programme::class.java,
+                { programme -> successCb(programme)},
                 errorCb
         )
         req.tag = tag

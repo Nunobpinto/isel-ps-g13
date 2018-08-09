@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.repository
 
+import isel.leic.ps.eduWikiAPI.domain.enums.ClassMiscUnitType
 import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.domain.model.report.ClassReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseClassReport
@@ -7,32 +8,10 @@ import isel.leic.ps.eduWikiAPI.domain.model.staging.ClassMiscUnitStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ClassStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseClassStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.ClassVersion
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_ID
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_MISC_UNIT_COURSE_CLASS_ID
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_MISC_UNIT_STAGE_ID
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_MISC_UNIT_STAGE_TABLE
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_MISC_UNIT_TYPE
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_TABLE
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_TERM_ID
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.COURSE_CLASS_CLASS_ID
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.COURSE_CLASS_COURSE_ID
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.COURSE_CLASS_ID
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.COURSE_CLASS_TABLE
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_CREATED_BY
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_FULL_NAME
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_ID
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_ORGANIZATION_ID
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_SHORT_NAME
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_TABLE
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_TIMESTAMP
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_VERSION
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_VOTES
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ClassDAO
-import org.jdbi.v3.core.Handle
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys
 import org.jdbi.v3.sqlobject.statement.SqlQuery
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
-import org.springframework.beans.factory.annotation.Autowired
 import java.util.*
 
 interface ClassDAOJdbi : ClassDAO {
@@ -532,50 +511,50 @@ interface ClassDAOJdbi : ClassDAO {
                     "$CLASS_MISC_UNIT_TYPE, " +
                     "$CLASS_MISC_UNIT_COURSE_CLASS_ID " +
                     ") " +
-                    "VALUES (:miscType::class_misc_unit_type, :courseClassId)"
+                    "VALUES (:miscType, :courseClassId)"
     )
     @GetGeneratedKeys
-    override fun createClassMiscUnit(courseClassId: Int, miscType: String): ClassMiscUnit
+    override fun createClassMiscUnit(courseClassId: Int, miscType: ClassMiscUnitType): ClassMiscUnit
 
     @SqlUpdate(
             "INSERT INTO $CLASS_MISC_UNIT_STAGE_TABLE ( " +
                     "$CLASS_MISC_UNIT_TYPE, " +
                     "$CLASS_MISC_UNIT_COURSE_CLASS_ID " +
                     ") " +
-                    "VALUES(:miscType::class_misc_unit_type, :courseClassId)"
+                    "VALUES(:miscType, :courseClassId)"
     )
     @GetGeneratedKeys
-    override fun createStagingClassMiscUnit(courseClassId: Int, s: String): ClassMiscUnitStage
+    override fun createStagingClassMiscUnit(courseClassId: Int, miscType: ClassMiscUnitType): ClassMiscUnitStage
 
     @SqlUpdate(
             "DELETE FROM $CLASS_MISC_UNIT_STAGE_TABLE " +
                     "WHERE $CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
-                    "AND $CLASS_MISC_UNIT_TYPE = :miscType::class_misc_unit_type"
+                    "AND $CLASS_MISC_UNIT_TYPE = :miscType"
     )
-    override fun deleteAllStagedClassMiscUnitsFromTypeOfCourseInClass(courseClassId: Int, miscType: String): Int
+    override fun deleteAllStagedClassMiscUnitsFromTypeOfCourseInClass(courseClassId: Int, miscType: ClassMiscUnitType): Int
 
     @SqlUpdate(
             "DELETE FROM $CLASS_MISC_UNIT_STAGE_TABLE " +
                     "WHERE $CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
                     "AND $CLASS_MISC_UNIT_STAGE_ID = :stageId " +
-                    "AND $CLASS_MISC_UNIT_TYPE = :miscType::class_misc_unit_type"
+                    "AND $CLASS_MISC_UNIT_TYPE = :miscType"
     )
-    override fun deleteSpecificStagedClassMiscUnitFromTypeOfCourseInClass(courseClassId: Int, stageId: Int, miscType: String): Int
+    override fun deleteSpecificStagedClassMiscUnitFromTypeOfCourseInClass(courseClassId: Int, stageId: Int, miscType: ClassMiscUnitType): Int
 
     @SqlUpdate(
             "DELETE FROM $CLASS_MISC_UNIT_TABLE " +
                     "WHERE $CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
-                    "AND $CLASS_MISC_UNIT_TYPE = :miscType::class_misc_unit_type"
+                    "AND $CLASS_MISC_UNIT_TYPE = :miscType"
     )
-    override fun deleteAllClassMiscUnitsFromTypeOfCourseInClass(courseClassId: Int, miscType: String): Int
+    override fun deleteAllClassMiscUnitsFromTypeOfCourseInClass(courseClassId: Int, miscType: ClassMiscUnitType): Int
 
     @SqlUpdate(
             "DELETE FROM $CLASS_MISC_UNIT_TABLE " +
                     "WHERE $CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
-                    "AND $CLASS_MISC_UNIT_TYPE = :miscType::class_misc_unit_type " +
+                    "AND $CLASS_MISC_UNIT_TYPE = :miscType " +
                     "AND $CLASS_MISC_UNIT_ID = :classMiscUnitId"
     )
-    override fun deleteSpecificClassMiscUnitFromTypeOnCourseInClass(courseClassId: Int, classMiscUnitId: Int, miscType: String): Int
+    override fun deleteSpecificClassMiscUnitFromTypeOnCourseInClass(courseClassId: Int, classMiscUnitId: Int, miscType: ClassMiscUnitType): Int
 
     @SqlQuery("SELECT * FROM $COURSE_CLASS_TABLE WHERE $COURSE_CLASS_ID = :courseClassId ")
     override fun getCourseCLassFromId(courseClassId: Int?): CourseClass

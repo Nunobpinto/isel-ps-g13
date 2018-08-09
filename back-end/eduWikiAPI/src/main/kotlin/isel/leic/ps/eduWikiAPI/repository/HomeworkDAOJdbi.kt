@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.repository
 
+import isel.leic.ps.eduWikiAPI.domain.enums.ClassMiscUnitType
 import isel.leic.ps.eduWikiAPI.domain.model.Homework
 import isel.leic.ps.eduWikiAPI.domain.model.report.HomeworkReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.HomeworkStage
@@ -9,7 +10,6 @@ import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_MISC_UNIT
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_MISC_UNIT_STAGE_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_MISC_UNIT_STAGE_TABLE
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_MISC_UNIT_TABLE
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_MISC_UNIT_TYPE
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.COURSE_CLASS_ID
 import isel.leic.ps.eduWikiAPI.repository.interfaces.HomeworkDAO
 import org.jdbi.v3.sqlobject.CreateSqlObject
@@ -32,10 +32,10 @@ interface HomeworkDAOJdbi : HomeworkDAO {
         const val HOMEWORK_ID = "homework_id"
         const val HOMEWORK_STAGE_ID = "class_misc_unit_stage_id"
         const val HOMEWORK_REPORT_ID = "homework_report_id"
-        const val HOMEWORK_SHEET_ID = "uuId"
+        const val HOMEWORK_SHEET_ID = "sheet_id"
         const val HOMEWORK_DUE_DATE = "due_date"
         const val HOMEWORK_LATE_DELIVERY = "late_delivery"
-        const val HOMEWORK_MULTIPLE_DELIVERIES = "multipleDeliveries"
+        const val HOMEWORK_MULTIPLE_DELIVERIES = "multiple_deliveries"
         const val HOMEWORK_VOTES = "votes"
         const val HOMEWORK_TIMESTAMP = "time_stamp"
         const val HOMEWORK_REPORTED_BY = "reported_by"
@@ -57,7 +57,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
                     "H.$HOMEWORK_TIMESTAMP " +
                     "FROM $HOMEWORK_TABLE AS H " +
                     "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +
-                    "ON L.$HOMEWORK_ID = C.$CLASS_MISC_UNIT_ID " +
+                    "ON H.$HOMEWORK_ID = C.$CLASS_MISC_UNIT_ID " +
                     "WHERE C.$COURSE_CLASS_ID = :courseClassId"
     )
     override fun getAllHomeworksFromCourseInClass(courseClassId: Int): List<Homework>
@@ -101,7 +101,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
 
     @Transaction
     override fun createHomeworkOnCourseInClass(courseClassId: Int, homework: Homework): Homework {
-        val classMiscUnit = createClassDAO().createClassMiscUnit(courseClassId, "Homework")
+        val classMiscUnit = createClassDAO().createClassMiscUnit(courseClassId, ClassMiscUnitType.HOMEWORK)
         return createHomework(classMiscUnit.classMiscUnitId, homework)
     }
 
@@ -124,13 +124,13 @@ interface HomeworkDAOJdbi : HomeworkDAO {
     override fun updateVotesOnHomework(homeworkId: Int, votes: Int): Int
 
     override fun deleteAllHomeworksOfCourseInClass(courseClassId: Int): Int =
-            createClassDAO().deleteAllClassMiscUnitsFromTypeOfCourseInClass(courseClassId, "Homework")
+            createClassDAO().deleteAllClassMiscUnitsFromTypeOfCourseInClass(courseClassId, ClassMiscUnitType.HOMEWORK)
 
     override fun deleteSpecificHomeworkOfCourseInClass(courseClassId: Int, homeworkId: Int): Int =
             createClassDAO().deleteSpecificClassMiscUnitFromTypeOnCourseInClass(
                     courseClassId,
                     homeworkId,
-                    "Homework"
+                    ClassMiscUnitType.HOMEWORK
             )
 
     @SqlQuery(
@@ -186,12 +186,12 @@ interface HomeworkDAOJdbi : HomeworkDAO {
 
     @Transaction
     override fun createStagingHomeworkOnCourseInClass(courseClassId: Int, homeworkStage: HomeworkStage): HomeworkStage {
-        val classMiscUnitStage = createClassDAO().createStagingClassMiscUnit(courseClassId, "Homework")
+        val classMiscUnitStage = createClassDAO().createStagingClassMiscUnit(courseClassId, ClassMiscUnitType.HOMEWORK)
         return createStagingHomework(classMiscUnitStage.courseClassId, homeworkStage)
     }
 
     override fun deleteSpecificStagedHomeworkOfCourseInClass(courseClassId: Int, stageId: Int): Int =
-            createClassDAO().deleteSpecificStagedClassMiscUnitFromTypeOfCourseInClass(courseClassId, stageId, "Homework")
+            createClassDAO().deleteSpecificStagedClassMiscUnitFromTypeOfCourseInClass(courseClassId, stageId, ClassMiscUnitType.HOMEWORK)
 
     @SqlUpdate(
             "INSERT INTO $HOMEWORK_VERSION_TABLE ( " +
@@ -277,7 +277,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
                     "$HOMEWORK_VOTES, " +
                     "$HOMEWORK_TIMESTAMP " +
                     ") " +
-                    "VALUES (:homeworkReport.homeworkId, :homeworkReport.uuId, :homeworkReport.dueDate, " +
+                    "VALUES (:homeworkReport.homeworkId, :homeworkReport.sheetId, :homeworkReport.dueDate, " +
                     ":homeworkReport.lateDelivery, :homeworkReport.multipleDeliveries, " +
                     ":homeworkReport.reportedBy, :homeworkReport.votes, :homeworkReport.timestamp)"
     )
@@ -288,7 +288,7 @@ interface HomeworkDAOJdbi : HomeworkDAO {
             "UPDATE $HOMEWORK_TABLE SET " +
                     "$HOMEWORK_VERSION = :homework.version, " +
                     "$HOMEWORK_CREATED_BY = :homework.createdBy, " +
-                    "$HOMEWORK_SHEET_ID = :homework.uuId, " +
+                    "$HOMEWORK_SHEET_ID = :homework.sheetId, " +
                     "$HOMEWORK_DUE_DATE = :homework.dueDate, " +
                     "$HOMEWORK_LATE_DELIVERY = :homework.lateDelivery, " +
                     "$HOMEWORK_MULTIPLE_DELIVERIES = :homework.multipleDeliveries, " +
@@ -389,6 +389,6 @@ interface HomeworkDAOJdbi : HomeworkDAO {
     override fun deleteSpecificVersionOfHomeworkOfCourseInClass(courseClassId: Int, homeworkId: Int, version: Int): Int
 
     override fun deleteAllStagedHomeworksOfCourseInClass(courseClassId: Int): Int =
-            createClassDAO().deleteAllStagedClassMiscUnitsFromTypeOfCourseInClass(courseClassId, "Homework")
+            createClassDAO().deleteAllStagedClassMiscUnitsFromTypeOfCourseInClass(courseClassId, ClassMiscUnitType.HOMEWORK)
 
 }

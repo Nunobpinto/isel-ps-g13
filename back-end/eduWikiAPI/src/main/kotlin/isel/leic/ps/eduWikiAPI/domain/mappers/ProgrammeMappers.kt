@@ -7,9 +7,13 @@ import isel.leic.ps.eduWikiAPI.domain.model.report.ProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.ProgrammeVersion
 import isel.leic.ps.eduWikiAPI.domain.outputModel.ProgrammeOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.ProgrammeReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.ProgrammeStageOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.version.ProgrammeVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ProgrammeCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.ProgrammeReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.ProgrammeStageCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.ProgrammeVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.ProgrammeReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.ProgrammeStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.ProgrammeVersionOutputModel
 
 fun toProgramme(input: ProgrammeInputModel) = Programme(
         createdBy = input.createdBy,
@@ -110,3 +114,18 @@ fun toProgrammeVersionOutputModel(programmeVersion: ProgrammeVersion) = Programm
         createdBy = programmeVersion.createdBy
 )
 
+fun toProgrammeCollectionOutputModel(programmeList: List<ProgrammeOutputModel>) = ProgrammeCollectionOutputModel(
+        programmeList = programmeList
+)
+
+fun toProgrammeStageCollectionOutputModel(programmeStageList: List<ProgrammeStageOutputModel>) = ProgrammeStageCollectionOutputModel(
+        programmeStageList = programmeStageList
+)
+
+fun toProgrammeReportCollectionOutputModel(programmeReportList: List<ProgrammeReportOutputModel>) = ProgrammeReportCollectionOutputModel(
+        programmeReportList = programmeReportList
+)
+
+fun toProgrammeVersionCollectionOutputModel(programmeVersionList: List<ProgrammeVersionOutputModel>) = ProgrammeVersionCollectionOutputModel(
+        programmeVersionList = programmeVersionList
+)

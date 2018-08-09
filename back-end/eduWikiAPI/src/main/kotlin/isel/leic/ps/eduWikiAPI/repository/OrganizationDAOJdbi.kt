@@ -26,8 +26,10 @@ interface OrganizationDAOJdbi : OrganizationDAO {
         const val ORGANIZATION_ADDRESS = "organization_address"
         const val ORGANIZATION_CONTACT = "organization_contact"
         const val ORGANIZATION_VOTES = "votes"
+        const val ORGANIZATION_LOG_ID = "log_id"
+        const val ORGANIZATION_REPORT_LOG_ID = "log_id"
         const val ORGANIZATION_TIMESTAMP = "time_stamp"
-        const val ORGANIZATION_REPORT_ID = "report_id"
+        const val ORGANIZATION_REPORT_ID = "organization_report_id"
         const val ORGANIZATION_CREATED_BY = "created_by"
         const val ORGANIZATION_REPORTED_BY = "reported_by"
     }

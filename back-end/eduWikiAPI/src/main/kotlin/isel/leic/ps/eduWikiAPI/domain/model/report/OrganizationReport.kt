@@ -9,6 +9,7 @@ import isel.leic.ps.eduWikiAPI.repository.OrganizationDAOJdbi.Companion.ORGANIZA
 import isel.leic.ps.eduWikiAPI.repository.OrganizationDAOJdbi.Companion.ORGANIZATION_FULL_NAME
 import isel.leic.ps.eduWikiAPI.repository.OrganizationDAOJdbi.Companion.ORGANIZATION_REPORTED_BY
 import isel.leic.ps.eduWikiAPI.repository.OrganizationDAOJdbi.Companion.ORGANIZATION_REPORT_ID
+import isel.leic.ps.eduWikiAPI.repository.OrganizationDAOJdbi.Companion.ORGANIZATION_REPORT_LOG_ID
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.sql.Timestamp
 import java.time.LocalDateTime
@@ -30,6 +31,8 @@ data class OrganizationReport (
         val reportedBy:String = "",
         @ColumnName(ORGANIZATION_VOTES)
         val votes: Int = 0,
+        @ColumnName(ORGANIZATION_REPORT_LOG_ID)
+        val logId: Int = 0,
         @ColumnName(ORGANIZATION_TIMESTAMP)
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 )

@@ -11,6 +11,7 @@ import java.nio.charset.Charset
 
 data class HttpRequest<T>(
         val urlPath: String,
+        private val authToken: String,
         private val klass: Class<T>,
         val successListener: (T) -> Unit,
         val errorListener: (VolleyError) -> Unit
@@ -36,5 +37,13 @@ data class HttpRequest<T>(
 
     override fun deliverError(error: VolleyError?) {
         errorListener(error!!)
+    }
+
+    override fun getHeaders(): MutableMap<String, String> {
+        val params = HashMap<String, String>()
+        params.put("Access-Control-Allow-Origin", "*")
+        val auth = "Basic $authToken"
+        params.put("Authorization", auth)
+        return params
     }
 }

@@ -6,7 +6,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.User
 import isel.leic.ps.eduWikiAPI.domain.model.report.UserReport
 import isel.leic.ps.eduWikiAPI.domain.outputModel.AuthUserOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.UserOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.UserReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.UserReportOutputModel
 
 
 fun toUser(inputModel: UserInputModel?) = User(

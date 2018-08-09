@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.domain.model;
 
+import isel.leic.ps.eduWikiAPI.domain.enums.TermType
 import isel.leic.ps.eduWikiAPI.repository.TermDAOJdbi.Companion.TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.TermDAOJdbi.Companion.TERM_SHORT_NAME
 import isel.leic.ps.eduWikiAPI.repository.TermDAOJdbi.Companion.TERM_TIMESTAMP
@@ -17,7 +18,7 @@ data class Term (
         @ColumnName(TERM_YEAR)
         val year: Int = 0,
         @ColumnName(TERM_TYPE)
-        val type: String = "",
+        val type: TermType = TermType.SUMMER,
         @ColumnName(TERM_TIMESTAMP)
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 )

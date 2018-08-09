@@ -4,7 +4,6 @@ import isel.leic.ps.eduWikiAPI.domain.model.User
 import isel.leic.ps.eduWikiAPI.domain.model.UserCourseClass
 import isel.leic.ps.eduWikiAPI.domain.model.UserProgramme
 import isel.leic.ps.eduWikiAPI.domain.model.report.UserReport
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.UserReportOutputModel
 import java.util.*
 
 interface UserDAO {

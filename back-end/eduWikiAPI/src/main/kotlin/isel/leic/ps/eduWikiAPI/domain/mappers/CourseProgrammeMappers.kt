@@ -7,9 +7,13 @@ import isel.leic.ps.eduWikiAPI.domain.model.report.CourseProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseProgrammeVersion
 import isel.leic.ps.eduWikiAPI.domain.outputModel.CourseProgrammeOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.CourseProgrammeReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.CourseProgrammeStageOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.version.CourseProgrammeVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseProgrammeCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.CourseProgrammeReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.CourseProgrammeStageCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.CourseProgrammeVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.CourseProgrammeReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.CourseProgrammeStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.CourseProgrammeVersionOutputModel
 
 fun toCourseProgramme(input: CourseProgrammeInputModel) = Course(
         courseId = input.courseId,
@@ -107,4 +111,20 @@ fun toCourseProgrammeStageOutputModel(courseProgrammeStage: CourseProgrammeStage
         optional = courseProgrammeStage.optional,
         credits = courseProgrammeStage.credits,
         lecturedTerm = courseProgrammeStage.lecturedTerm
+)
+
+fun toCourseProgrammeCollectionOutputModel(courseProgrammeList: List<CourseProgrammeOutputModel>) = CourseProgrammeCollectionOutputModel(
+        courseProgrammeList = courseProgrammeList
+)
+
+fun toCourseProgrammeVersionCollectionOutputModel(courseProgrammeVersionList: List<CourseProgrammeVersionOutputModel>) = CourseProgrammeVersionCollectionOutputModel(
+        courseProgrammeVersionList = courseProgrammeVersionList
+)
+
+fun toCourseProgrammeReportCollectionOutputModel(courseProgrammeReportList: List<CourseProgrammeReportOutputModel>) = CourseProgrammeReportCollectionOutputModel(
+        courseProgrammeReportList = courseProgrammeReportList
+)
+
+fun toCourseProgrammeStageCollectionOutputModel(courseProgrammeStageList: List<CourseProgrammeStageOutputModel>) = CourseProgrammeStageCollectionOutputModel(
+        courseProgrammeStageList = courseProgrammeStageList
 )

@@ -7,9 +7,12 @@ import isel.leic.ps.eduWikiAPI.domain.model.report.WorkAssignmentReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.WorkAssignmentVersion
 import isel.leic.ps.eduWikiAPI.domain.outputModel.WorkAssignmentOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.WorkAssignmentReportOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.staging.WorkAssignmentStageOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.version.WorkAssignmentVersionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.WorkAssignmentCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.WorkAssignmentReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.WorkAssignmentVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.WorkAssignmentReportOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.WorkAssignmentStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.WorkAssignmentVersionOutputModel
 
 fun toWorkAssignment(input: WorkAssignmentInputModel) = WorkAssignment(
         createdBy = input.createdBy,
@@ -126,4 +129,16 @@ fun toWorkAssignmentVersionOutputModel(workAssignmentVersion: WorkAssignmentVers
         multipleDeliveries = workAssignmentVersion.multipleDeliveries,
         requiresReport = workAssignmentVersion.requiresReport,
         timestamp = workAssignmentVersion.timestamp
+)
+
+fun toWorkAssignmentCollectionOutputModel(workAssignmentList: List<WorkAssignmentOutputModel>) = WorkAssignmentCollectionOutputModel(
+        workAssignmentList = workAssignmentList
+)
+
+fun toWorkAssignmentReportCollectionOutputModel(workAssignmentReportList: List<WorkAssignmentReportOutputModel>) = WorkAssignmentReportCollectionOutputModel(
+        workAssignmentReportList = workAssignmentReportList
+)
+
+fun toWorkAssignmentVersionCollectionOutputModel(workAssignmentVersionList: List<WorkAssignmentVersionOutputModel>) = WorkAssignmentVersionCollectionOutputModel(
+        workAssignmentVersionList = workAssignmentVersionList
 )
