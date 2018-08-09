@@ -1,8 +1,9 @@
-package isel.leic.ps.eduWikiAPI.service
+package isel.leic.ps.eduWikiAPI.eventListeners
 
 import isel.leic.ps.eduWikiAPI.domain.model.ValidationToken
 import isel.leic.ps.eduWikiAPI.mailSender.EmailService
 import isel.leic.ps.eduWikiAPI.repository.TokenDAOJdbi
+import isel.leic.ps.eduWikiAPI.eventListeners.events.OnRegistrationEvent
 import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.event.EventListener
@@ -15,11 +16,9 @@ class RegistrationListener {
 
     @Autowired
     lateinit var jdbi: Jdbi
-
     @Autowired
     lateinit var emailService: EmailService
 
-    @Async
     @EventListener
     fun handleRegistrationEvent(event: OnRegistrationEvent) {
         val user = event.user

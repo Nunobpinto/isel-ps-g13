@@ -1,4 +1,4 @@
-package isel.leic.ps.eduWikiAPI.service
+package isel.leic.ps.eduWikiAPI.eventListeners.events
 
 import isel.leic.ps.eduWikiAPI.domain.model.User
 
