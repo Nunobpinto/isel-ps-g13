@@ -1,5 +1,5 @@
 import React from 'react'
-import TransparentButton from './TransparentButton'
+import TransparentButton from '../comms/TransparentButton'
 import { Dropdown, Menu, Avatar, message, Row, Col } from 'antd'
 import fetch from 'isomorphic-fetch'
 import Cookies from 'universal-cookie'
@@ -33,10 +33,13 @@ export default class extends React.Component {
           <Col span={6} />
           <Col span={6} />
           <Col span={6}>
-            <TransparentButton
-              destiny='/logout'
-              message={'Logout'}
-            />
+            <div className='right_side'>
+              <TransparentButton
+                className=''
+                destiny='/logout'
+                message={'Logout'}
+              />
+            </div>
           </Col>
         </Row>
       </div>

@@ -1,6 +1,6 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
-import Layout from './Layout'
+import Layout from '../layout/Layout'
 import OrganizationReports from './OrganizationReports'
 import OrganizationVersions from './OrganizationVersions'
 import ReportOrganization from './ReportOrganization'

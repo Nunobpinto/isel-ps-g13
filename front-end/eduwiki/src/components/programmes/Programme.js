@@ -1,11 +1,11 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
 import {Link} from 'react-router-dom'
-import Layout from './Layout'
+import Layout from '../layout/Layout'
 import ReportProgramme from './ReportProgramme'
 import ProgrammeReports from './ProgrammeReports'
 import ProgrammeVersions from './ProgrammeVersions'
-import CourseProgramme from './CourseProgramme'
+import CourseProgramme from '../courses/CourseProgramme'
 import {Row, Col, Card, Button, Tooltip, Popover} from 'antd'
 import Cookies from 'universal-cookie'
 const cookies = new Cookies()

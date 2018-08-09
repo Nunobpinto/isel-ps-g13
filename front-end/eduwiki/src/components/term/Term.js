@@ -1,7 +1,7 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
 import {Layout, Menu, Card, Col, Row} from 'antd'
-import Exams from './Exams'
+import Exams from '../exams/Exams'
 import Cookies from 'universal-cookie'
 const cookies = new Cookies()
 

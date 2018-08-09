@@ -3,7 +3,7 @@ import fetch from 'isomorphic-fetch'
 import {Link} from 'react-router-dom'
 import MyLayout from './Layout'
 import CourseVersions from './CourseVersions'
-import Term from './Term'
+import Term from '../term/Term'
 import {Button, Card, Col, Row, Tooltip, Menu, Layout, Popover} from 'antd'
 import Cookies from 'universal-cookie'
 const cookies = new Cookies()

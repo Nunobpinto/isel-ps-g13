@@ -1,7 +1,7 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
 import { List } from 'antd'
-import IconText from './IconText'
+import IconText from '../comms/IconText'
 import Cookies from 'universal-cookie'
 const cookies = new Cookies()
 

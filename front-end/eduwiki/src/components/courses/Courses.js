@@ -1,8 +1,8 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
 import { Link } from 'react-router-dom'
-import IconText from './IconText'
-import Layout from './Layout'
+import IconText from '../comms/IconText'
+import Layout from '../layout/Layout'
 import { Button, Input, Form, List, Card } from 'antd'
 import Cookies from 'universal-cookie'
 const cookies = new Cookies()

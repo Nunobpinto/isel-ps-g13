@@ -1,5 +1,5 @@
 import React from 'react'
-import Layout from './Layout'
+import Layout from '../layout/Layout'
 import fetch from 'isomorphic-fetch'
 import {Row, Col, Card, Button, Icon} from 'antd'
 import Cookies from 'universal-cookie'

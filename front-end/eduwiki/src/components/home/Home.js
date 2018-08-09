@@ -2,8 +2,8 @@ import React from 'react'
 import Login from './Login'
 import { Link } from 'react-router-dom'
 import Cookies from 'universal-cookie'
-import UserPage from './UserPage'
-import Layout from './Layout'
+import UserPage from '../users/UserPage'
+import Layout from '../layout/Layout'
 const cookies = new Cookies()
 
 export default (props, context) => {
