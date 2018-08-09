@@ -217,8 +217,8 @@ CREATE TABLE IF NOT EXISTS reputation_matcher (
 
 CREATE TABLE IF NOT EXISTS reputation (
   reputation_id SERIAL,
-  reputation_points INTEGER NOT NULL,
-  reputation_role VARCHAR REFERENCES reputation_role NOT NULL, 
+  points INTEGER NOT NULL,
+  role VARCHAR REFERENCES reputation_role NOT NULL, 
   user_username varchar(20) REFERENCES user_account ON DELETE CASCADE,
   PRIMARY KEY (reputation_id, user_username)
 );
