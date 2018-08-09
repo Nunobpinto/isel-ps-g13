@@ -12,6 +12,7 @@ import isel.leic.ps.eduWikiAPI.domain.mappers.*
 import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.reports.UserReportOutputModel
+import isel.leic.ps.eduWikiAPI.eventListeners.events.OnRegistrationEvent
 import isel.leic.ps.eduWikiAPI.exceptions.BadRequestException
 import isel.leic.ps.eduWikiAPI.exceptions.ExceededValidationException
 import isel.leic.ps.eduWikiAPI.exceptions.NotFoundException
@@ -77,7 +78,7 @@ class UserServiceImpl : UserService {
                     reputationRole = "ROLE_UNCONFIRMED",
                     username = user1.username
             )
-            repDao.saveNewUser(reputation)
+            repDao.createUserReputation(reputation)
             eventPublisher.publishEvent(OnRegistrationEvent(user1))
             toAuthUserOutputModel(user1)
         }
@@ -107,7 +108,7 @@ class UserServiceImpl : UserService {
                                 msg = "No role found",
                                 action = "Try othr Hierarchy level"
                         ) }
-            repDao.changeRole(username, role.minPoints, role.reputationRoleId)
+            repDao.updateUserRole(username, role.minPoints, role.reputationRoleId)
             val userChanged = userDao.confirmUser(username)
             toAuthUserOutputModel(userChanged)
         }
