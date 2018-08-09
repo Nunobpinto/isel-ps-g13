@@ -2,6 +2,7 @@ import React from 'react'
 import fetch from 'isomorphic-fetch'
 import Layout from './Layout'
 import OrganizationReports from './OrganizationReports'
+import OrganizationVersions from './OrganizationVersions'
 import ReportOrganization from './ReportOrganization'
 import {Row, Col, Card, Button, Tooltip, Popover} from 'antd'
 import Cookies from 'universal-cookie'
@@ -12,6 +13,8 @@ export default class extends React.Component {
     super(props)
     this.state = {
       organization: undefined,
+      id: 0,
+      version: 0,
       err: undefined,
       full_name: '',
       short_name: '',
@@ -101,7 +104,16 @@ export default class extends React.Component {
         <div>
           {this.state.organization
             ? <div style={{ padding: '20px' }}>
-              <h1> {this.state.organization.fullName} - ({this.state.organization.shortName}) </h1>
+              <div className='title_div'>
+                <h1>{this.state.organization.fullName} - {this.state.organization.shortName} <small>({this.state.organization.timestamp})</small></h1>
+              </div>
+              <div className='version_div'>
+                <Popover placement='bottom' content={<OrganizationVersions auth={cookies.get('auth')} id={this.state.id} version={this.state.version} />} trigger='click'>
+                  <Button type='primary' id='show_reports_btn' icon='down'>
+              Version {this.state.versionNumber}
+                  </Button>
+                </Popover>
+              </div>
               <p>
                 Votes : {this.state.votes}
                 <Tooltip placement='bottom' title={`Vote Up on ${this.state.organization.shortName}`}>
@@ -172,6 +184,8 @@ export default class extends React.Component {
       })
       .then(json => this.setState({
         organization: json[0],
+        id: json[0].organizationId,
+        version: json[0].version,
         votes: json[0].votes
       }))
       .catch(err => this.setState({err: err}))

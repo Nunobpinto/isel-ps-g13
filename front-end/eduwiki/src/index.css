@@ -5,7 +5,7 @@ body {
 }
 
 #navbar {
-  background-color: #07D1E3
+  background:  linear-gradient(-90deg,#373B44, #4286f4)
 }
 
 #formItem{
@@ -76,14 +76,6 @@ body {
   margin-top: 50px;
 }
 
-#components-layout-demo-top .logo {
-  width: 120px;
-  height: 31px;
-  background: rgba(255, 255, 255, 0.164);  
-  margin: 16px 24px 16px 0;
-  float: left;
-}
-
 #formItem{
   display: inline-block;
   text-align: center;
@@ -118,6 +110,10 @@ body {
   text-align: center;
 }
 
+.logo_container {
+  background:  linear-gradient(-90deg,#373B44, #4286f4)
+}
+
 .left-div {
   float: left;
   width: 40%;
@@ -145,4 +141,59 @@ body {
 
 .login_form {
   display: inline-block;
+}
+
+.navbar_item {
+  float: left;
+  width: auto;
+}
+
+.logout {
+  float: right;
+}
+
+.app_icon {
+  width: 30%;
+}
+
+.user_icon {
+ margin-left: 20%;
+}
+
+.left_side {
+  float: left;
+  width: 30%;
+  height: 10%;
+}
+
+.side_item {
+  padding-bottom: 10%;
+}
+
+.right_side {
+  float: right;
+  width: 30%;
+  height: 10%;
+}
+
+.transparent_btn {
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border: none;
+    cursor:pointer;
+    outline:none;
+    color:white;
+}
+
+.username {
+  color: white;
+}
+
+.title_div {
+  display:inline-block
+}
+
+.version_div {
+  display:inline-block;
+  margin-left: 5%
 }

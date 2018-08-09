@@ -2,8 +2,9 @@ import React from 'react'
 import fetch from 'isomorphic-fetch'
 import {Link} from 'react-router-dom'
 import MyLayout from './Layout'
+import CourseVersions from './CourseVersions'
 import Term from './Term'
-import {Button, Card, Col, Row, Tooltip, Menu, Layout} from 'antd'
+import {Button, Card, Col, Row, Tooltip, Menu, Layout, Popover} from 'antd'
 import Cookies from 'universal-cookie'
 const cookies = new Cookies()
 
@@ -17,6 +18,7 @@ export default class extends React.Component {
       full_name: '',
       short_name: '',
       createdBy: '',
+      version: 0,
       votes: 0,
       timestamp: '',
       terms: [],
@@ -54,7 +56,16 @@ export default class extends React.Component {
           {this.state.courseError
             ? <p> Error getting this course, please try again !!! </p>
             : <div>
-              <h1>{this.state.full_name} - {this.state.short_name} <small>({this.state.timestamp})</small> </h1>
+              <div className='title_div'>
+                <h1>{this.state.full_name} - {this.state.short_name} <small>({this.state.timestamp})</small></h1>
+              </div>
+              <div className='version_div'>
+                <Popover placement='bottom' content={<CourseVersions auth={cookies.get('auth')} id={this.props.match.params.id} version={this.state.version} />} trigger='click'>
+                  <Button type='primary' id='show_reports_btn' icon='down'>
+              Version {this.state.version}
+                  </Button>
+                </Popover>
+              </div>
               <div>
                 <p>Created By : {this.state.createdBy}</p>
                 <p>
@@ -203,17 +214,18 @@ export default class extends React.Component {
             const userCoursesUri = 'http://localhost:8080/user/courses'
             fetch(userCoursesUri, header)
               .then(resp => {
-                if(resp.status >= 400) {
+                if (resp.status >= 400) {
                   throw new Error('Erro')
                 }
                 return resp.json()
               })
-              .then(userCourses => 
+              .then(userCourses =>
                 this.setState({
                   full_name: json.fullName,
                   short_name: json.shortName,
                   createdBy: json.createdBy,
                   timestamp: json.timestamp,
+                  version: json.version,
                   id: json.courseId,
                   votes: json.votes,
                   terms: terms,
@@ -248,12 +260,12 @@ export default class extends React.Component {
     }
     fetch('http://localhost:8080/user/courses', options)
       .then(resp => {
-        if (resp.status >= 400){
+        if (resp.status >= 400) {
           throw new Error(`Can´t follow this Course`)
         }
         return resp.json()
       })
-      .then(_=>this.setState({followProgrammeFlag: false}))
+      .then(_ => this.setState({followProgrammeFlag: false}))
   }
 
   unFollowCourse () {
@@ -267,11 +279,12 @@ export default class extends React.Component {
     }
     fetch('http://localhost:8080/user/courses/' + this.state.courseId, options)
       .then(resp => {
-        if (resp.status >= 400){
-
+        if (resp.status >= 400) {
+          throw new Error(`Can´t unfollow this Course`)
         }
+        return resp.json()
       })
-      .then(_=>this.setState({unFollowCourseFlag: false}))
+      .then(_ => this.setState({unFollowCourseFlag: false}))
   }
 
   componentDidUpdate () {

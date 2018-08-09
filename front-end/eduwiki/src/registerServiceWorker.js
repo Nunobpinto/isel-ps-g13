@@ -7,6 +7,7 @@
 
 // To learn more about the benefits of this model, read https://goo.gl/KwvDNy.
 // This link also includes instructions on opting out of this behavior.
+import fetch from 'isomorphic-fetch'
 
 const isLocalhost = Boolean(
   window.location.hostname === 'localhost' ||
@@ -83,7 +84,7 @@ function registerValidSW (swUrl) {
 
 function checkValidServiceWorker (swUrl) {
   // Check if the service worker can be found. If it can't reload the page.
-  fetch (swUrl)
+  fetch(swUrl)
     .then(response => {
       // Ensure service worker exists, and that we really are getting a JS file.
       if (
@@ -112,6 +113,6 @@ export function unregister () {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.ready.then(registration => {
       registration.unregister()
-    });
+    })
   }
 }

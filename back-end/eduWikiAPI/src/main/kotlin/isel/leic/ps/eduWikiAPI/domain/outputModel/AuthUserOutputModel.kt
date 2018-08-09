@@ -1,6 +1,5 @@
 package isel.leic.ps.eduWikiAPI.domain.outputModel
 
-import com.fasterxml.jackson.annotation.JsonProperty
 
 data class AuthUserOutputModel (
         val username: String = "",

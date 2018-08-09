@@ -4,8 +4,9 @@ import {Link} from 'react-router-dom'
 import Layout from './Layout'
 import ReportProgramme from './ReportProgramme'
 import ProgrammeReports from './ProgrammeReports'
+import ProgrammeVersions from './ProgrammeVersions'
 import CourseProgramme from './CourseProgramme'
-import {Row, Col, Card, Button, Tooltip, Popover, Input, InputNumber, Form, Select} from 'antd'
+import {Row, Col, Card, Button, Tooltip, Popover} from 'antd'
 import Cookies from 'universal-cookie'
 const cookies = new Cookies()
 
@@ -13,6 +14,7 @@ export default class extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      programmeId: 0,
       full_name: '',
       short_name: '',
       academic_degree: '',
@@ -21,8 +23,10 @@ export default class extends React.Component {
       createdBy: '',
       votes: 0,
       timestamp: '',
+      versionNumber: '',
       courses: [],
       allCourses: [],
+      versions: [],
       voteUp: false,
       voteDown: false,
       progError: undefined,
@@ -43,7 +47,16 @@ export default class extends React.Component {
   render () {
     return (
       <Layout>
-        <h1>{this.state.full_name} - {this.state.short_name} <small>({this.state.timestamp})</small> </h1>
+        <div className='title_div'>
+          <h1>{this.state.full_name} - {this.state.short_name} <small>({this.state.timestamp})</small></h1>
+        </div>
+        <div className='version_div'>
+          <Popover placement='bottom' content={<ProgrammeVersions auth={cookies.get('auth')} id={this.props.match.params.id} version={this.state.versionNumber} />} trigger='click'>
+            <Button type='primary' id='show_reports_btn' icon='down'>
+              Version {this.state.versionNumber}
+            </Button>
+          </Popover>
+        </div>
         <p>Created By : {this.state.createdBy}</p>
         <p>
           Votes : {this.state.votes}
@@ -65,14 +78,15 @@ export default class extends React.Component {
           </Popover>
           {this.state.canBeFollowed &&
             <Tooltip placement='bottom' title={'Follow this programme'}>
-              <Button icon='heart' onClick={() => this.setState({followProgrammeFlag: true})} />
+              <Button id='report_btn' icon='heart' onClick={() => this.setState({followProgrammeFlag: true})} />
             </Tooltip>
           }
           {this.state.userFollowing &&
-            <Tooltip placement='bottom' title={'UnFollow this programme'}>
-            <Button icon='close-circle' onClick={() => this.setState({unFollowProgrammeFlag: true})} />
-          </Tooltip>
+            <Tooltip placement='bottom' title={'Unfollow this programme'}>
+              <Button id='report_btn' icon='close-circle' onClick={() => this.setState({unFollowProgrammeFlag: true})} />
+            </Tooltip>
           }
+
         </p>
         <div style={{ padding: '20px' }}>
           <Row gutter={16}>
@@ -234,9 +248,9 @@ export default class extends React.Component {
   fetchOtherCourses () {
     const uri = 'http://localhost:8080/courses'
     const header = {
-      headers: { 
+      headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth') 
+        'Authorization': 'Basic ' + cookies.get('auth')
       }
     }
     fetch(uri, header)
@@ -264,8 +278,8 @@ export default class extends React.Component {
     const id = this.props.match.params.id
     const uri = 'http://localhost:8080/programmes/' + id
     const header = {
-      headers: { 
-        'Access-Control-Allow-Origin': '*' ,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
         'Authorization': 'Basic ' + cookies.get('auth')
       }
     }
@@ -297,13 +311,14 @@ export default class extends React.Component {
             const userProgrammeUri = 'http://localhost:8080/user/programme'
             fetch(userProgrammeUri, header)
               .then(resp => {
-                if(resp.status >= 400)
+                if (resp.status >= 400) {
                   return this.setState({
                     full_name: json.fullName,
                     short_name: json.shortName,
                     academic_degree: json.academicDegree,
                     total_credits: json.totalCredits,
                     id: json.programmeId,
+                    versionNumber: json.version,
                     duration: json.duration,
                     createdBy: json.createdBy,
                     timestamp: json.timestamp,
@@ -312,15 +327,17 @@ export default class extends React.Component {
                     courseError: undefined,
                     courses: courses
                   })
+                }
                 return resp.json()
               })
-              .then(userProgramme => 
+              .then(userProgramme =>
                 this.setState({
                   full_name: json.fullName,
                   short_name: json.shortName,
                   academic_degree: json.academicDegree,
                   total_credits: json.totalCredits,
                   id: json.programmeId,
+                  versionNumber: json.version,
                   duration: json.duration,
                   createdBy: json.createdBy,
                   timestamp: json.timestamp,
@@ -331,7 +348,8 @@ export default class extends React.Component {
                   canBeFollowed: (userProgramme.programmeId !== json.programmeId),
                   userFollowing: (userProgramme.programmeId === json.programmeId)
                 })
-              )}
+              )
+          }
           )
           .catch(err => this.setState({courseError: err}))
       })
@@ -345,7 +363,7 @@ export default class extends React.Component {
   unFollowProgramme () {
     const options = {
       method: 'DELETE',
-      
+
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Authorization': 'Basic ' + cookies.get('auth')
@@ -354,9 +372,9 @@ export default class extends React.Component {
     }
     fetch('http://localhost:8080/user/programme', options)
       .then(resp => {
-        if (resp.status >= 400){}
+        if (resp.status >= 400) {}
       })
-      .then(_=>this.setState({unFollowProgrammeFlag: false}))
+      .then(_ => this.setState({unFollowProgrammeFlag: false}))
   }
 
   followProgramme () {
@@ -375,9 +393,9 @@ export default class extends React.Component {
     }
     fetch('http://localhost:8080/user/programme', options)
       .then(resp => {
-        if (resp.status >= 400){}
+        if (resp.status >= 400) {}
       })
-      .then(_=>this.setState({followProgrammeFlag: false}))
+      .then(_ => this.setState({followProgrammeFlag: false}))
   }
 
   componentDidUpdate () {
