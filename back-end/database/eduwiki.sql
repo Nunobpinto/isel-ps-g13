@@ -2,17 +2,17 @@
 -- Auxiliary Types
 --------------------------
 
-  CREATE TYPE term_type AS ENUM ('Winter', 'Summer');
+  CREATE TYPE term_type AS ENUM ('WINTER', 'SUMMER');
 
-  CREATE TYPE course_misc_unit_type AS ENUM ('Work Assignment', 'Exam/Test');
+  CREATE TYPE course_misc_unit_type AS ENUM ('WORK_ASSIGNMENT', 'EXAM_TEST');
 
-  CREATE TYPE class_misc_unit_type AS ENUM ('Homework', 'Lecture');
+  CREATE TYPE class_misc_unit_type AS ENUM ('HOMEWORK', 'LECTURE');
 
-  CREATE TYPE exam_type AS ENUM ('Exam', 'Test');
+  CREATE TYPE exam_type AS ENUM ('EXAM', 'TEST');
 
-  CREATE TYPE weekday AS ENUM ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
+  CREATE TYPE weekday AS ENUM ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY');
 
-  CREATE TYPE gender AS ENUM ('Male', 'Female');
+  CREATE TYPE action_Type AS ENUM ('CREATE', 'ALTER', 'DELETE', 'VOTE_UP', 'VOTE_DOWN', 'APPROVE_REPORT', 'APPROVE_STAGE', 'REJECT_REPORT', 'REJECT_STAGE');
 
 --------------------------
 -- Create Main Tables
@@ -223,9 +223,19 @@ CREATE TABLE IF NOT EXISTS reputation (
   PRIMARY KEY (reputation_id, user_username)
 );
 
+CREATE TABLE IF NOT EXISTS action_log (
+	action_id SERIAL,
+	user_username VARCHAR(20) REFERENCES user_account ON DELETE CASCADE,
+	action action_type NOT NULL,
+	entity VARCHAR NOT NULL,
+	log_id INTEGER NOT NULL,
+	time_stamp TIMESTAMP NOT NULL,
+	PRIMARY KEY(action_id)
+);
+
 CREATE TABLE IF NOT EXISTS reputation_log (
   reputation_log_id SERIAL,
-  reputation_log_action VARCHAR(150) NOT NULL,
+  reputation_log_action INTEGER REFERENCES action_log,
   reputation_log_given_by varchar(15) NOT NULL,
   reputation_log_points INTEGER NOT NULL,
   reputation_id INTEGER,
@@ -270,6 +280,7 @@ CREATE TABLE IF NOT EXISTS programme_stage (
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (programme_stage_id)
 );
 

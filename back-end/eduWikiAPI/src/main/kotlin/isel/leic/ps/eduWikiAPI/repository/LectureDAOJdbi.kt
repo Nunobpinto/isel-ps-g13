@@ -1,7 +1,7 @@
 package isel.leic.ps.eduWikiAPI.repository
 
+import isel.leic.ps.eduWikiAPI.domain.enums.ClassMiscUnitType
 import isel.leic.ps.eduWikiAPI.domain.model.Lecture
-import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.domain.model.report.LectureReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.LectureStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.LectureVersion
@@ -60,7 +60,7 @@ interface LectureDAOJdbi : LectureDAO {
                     "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +
                     "ON L.$LECTURE_ID = C.$CLASS_MISC_UNIT_ID " +
                     "WHERE C.$COURSE_CLASS_ID = :courseClassId " +
-                    "AND C.$CLASS_MISC_UNIT_TYPE = Lecture"
+                    "AND C.$CLASS_MISC_UNIT_TYPE = 'LECTURE'"
     )
     override fun getAllLecturesFromCourseInClass(courseClassId: Int): List<Lecture>
 
@@ -101,7 +101,7 @@ interface LectureDAOJdbi : LectureDAO {
 
     @Transaction
     override fun createLectureOnCourseInClass(courseClassId: Int, lecture: Lecture): Lecture {
-        val classMiscUnit = createClassDAO().createClassMiscUnit(courseClassId, "Lecture")
+        val classMiscUnit = createClassDAO().createClassMiscUnit(courseClassId, ClassMiscUnitType.LECTURE)
         return createLecture(classMiscUnit.classMiscUnitId, lecture)
     }
 
@@ -124,10 +124,10 @@ interface LectureDAOJdbi : LectureDAO {
     override fun updateVotesOnLecture(lectureId: Int, votes: Int): Int
 
     override fun deleteAllLecturesOfCourseInClass(courseClassId: Int): Int =
-            createClassDAO().deleteAllClassMiscUnitsFromTypeOfCourseInClass(courseClassId, "Lecture")
+            createClassDAO().deleteAllClassMiscUnitsFromTypeOfCourseInClass(courseClassId, ClassMiscUnitType.LECTURE)
 
     override fun deleteSpecificLectureOfCourseInClass(courseClassId: Int, lectureId: Int): Int =
-            createClassDAO().deleteSpecificClassMiscUnitFromTypeOnCourseInClass(courseClassId, lectureId, "Lecture")
+            createClassDAO().deleteSpecificClassMiscUnitFromTypeOnCourseInClass(courseClassId, lectureId, ClassMiscUnitType.LECTURE)
 
     @SqlQuery(
             "SELECT L.$LECTURE_REPORT_ID, " +
@@ -296,7 +296,7 @@ interface LectureDAOJdbi : LectureDAO {
 
     @Transaction
     override fun createStagingLectureOnCourseInClass(courseClassId: Int, lectureStage: LectureStage): LectureStage {
-        val classMiscUnitStage = createClassDAO().createStagingClassMiscUnit(courseClassId, "Lecture")
+        val classMiscUnitStage = createClassDAO().createStagingClassMiscUnit(courseClassId, ClassMiscUnitType.LECTURE)
         return createStagingLecture(classMiscUnitStage.stageId, lectureStage)
     }
 
@@ -357,10 +357,10 @@ interface LectureDAOJdbi : LectureDAO {
     override fun deleteSpecificVersionOfLectureOfCourseInClass(courseClassId: Int, lectureId: Int, version: Int): Int
 
     override fun deleteAllStagedLecturesOfCourseInClass(courseClassId: Int): Int =
-            createClassDAO().deleteAllStagedClassMiscUnitsFromTypeOfCourseInClass(courseClassId, "Lecture")
+            createClassDAO().deleteAllStagedClassMiscUnitsFromTypeOfCourseInClass(courseClassId, ClassMiscUnitType.LECTURE)
 
     override fun deleteSpecificStagedLectureOfCourseInClass(courseClassId: Int, stageId: Int): Int =
-            createClassDAO().deleteSpecificStagedClassMiscUnitFromTypeOfCourseInClass(courseClassId, stageId, "Lecture")
+            createClassDAO().deleteSpecificStagedClassMiscUnitFromTypeOfCourseInClass(courseClassId, stageId, ClassMiscUnitType.LECTURE)
 
     @SqlQuery(
             "SELECT L.$LECTURE_VOTES" +

@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.repository.interfaces
 
+import isel.leic.ps.eduWikiAPI.domain.enums.CourseMiscUnitType
 import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseClassReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseProgrammeReport
@@ -49,13 +50,13 @@ interface CourseDAO {
 
     fun updateVotesOnCourse(courseId: Int, votes: Int): Int
 
-    fun createCourseMiscUnit(courseId: Int, termId: Int, miscType: String): CourseMiscUnit
+    fun createCourseMiscUnit(courseId: Int, termId: Int, miscType: CourseMiscUnitType): CourseMiscUnit
 
     fun createCourseTerm(courseId: Int, termId: Int, timestamp: Timestamp): CourseTerm
 
     fun deleteSpecificCourseMiscUnitEntry(courseMiscUnitId: Int): Int
 
-    fun deleteAllCourseMiscUnitsFromTypeOfCourseInTerm(courseId: Int, termId: Int, miscType: String): Int
+    fun deleteAllCourseMiscUnitsFromTypeOfCourseInTerm(courseId: Int, termId: Int, miscType: CourseMiscUnitType): Int
 
     fun getVotesOnCourseProgramme(programmeId: Int, courseId: Int): Int
 
@@ -89,9 +90,9 @@ interface CourseDAO {
 
     fun updateVotesOnStagedCourse(stageId: Int, votes: Int): Int
 
-    fun createStagingCourseMiscUnit(courseId: Int, termId: Int, miscType: String): CourseMiscUnitStage
+    fun createStagingCourseMiscUnit(courseId: Int, termId: Int, miscType: CourseMiscUnitType): CourseMiscUnitStage
 
-    fun deleteAllStagedCourseMiscUnitsFromTypeOfCourseInTerm(courseId: Int, termId: Int, miscType: String ): Int
+    fun deleteAllStagedCourseMiscUnitsFromTypeOfCourseInTerm(courseId: Int, termId: Int, miscType: CourseMiscUnitType): Int
 
     fun deleteSpecificStagedCourseMiscUnitEntry(courseId: Int, termId: Int, stageId: Int): Int
 

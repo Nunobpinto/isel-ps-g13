@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.domain.outputModel.reports
 
+import isel.leic.ps.eduWikiAPI.domain.enums.ExamType
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -10,7 +11,7 @@ data class ExamReportOutputModel (
         val examId: Int = 0,
         val sheet: String? = null,
         val dueDate: LocalDate? = null,
-        val type: String? = null,
+        val type: ExamType? = null,
         val phase: String? = null,
         val location: String? = null,
         val reportedBy: String = "",

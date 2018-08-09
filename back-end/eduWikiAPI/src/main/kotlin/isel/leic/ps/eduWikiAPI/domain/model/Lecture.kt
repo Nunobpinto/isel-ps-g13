@@ -10,11 +10,9 @@ import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_VERSI
 import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_VOTES
 import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_WEEK_DAY
 import org.jdbi.v3.core.mapper.reflect.ColumnName
+import java.sql.Time
 import java.sql.Timestamp
-import java.time.DayOfWeek
-import java.time.Duration
-import java.time.LocalDate
-import java.time.LocalDateTime
+import java.time.*
 
 data class Lecture(
         @ColumnName(LECTURE_ID)
@@ -28,7 +26,7 @@ data class Lecture(
         @ColumnName(LECTURE_WEEK_DAY)
         val weekDay: DayOfWeek = DayOfWeek.MONDAY,
         @ColumnName(LECTURE_BEGINS)
-        val begins: LocalDate = LocalDate.now(),
+        val begins: LocalTime = LocalTime.now(),
         @ColumnName(LECTURE_DURATION)
         val duration: Duration = Duration.ZERO,
         @ColumnName(LECTURE_LOCATION)

@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.domain.model.report
 
+import isel.leic.ps.eduWikiAPI.domain.enums.ExamType
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_DUE_DATE
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_ID
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_LOCATION
@@ -26,7 +27,7 @@ data class ExamReport (
         @ColumnName(EXAM_DUE_DATE)
         val dueDate: LocalDate? = null,
         @ColumnName(EXAM_TYPE)
-        val type: String? = null,
+        val type: ExamType? = null,
         @ColumnName(EXAM_PHASE)
         val phase: String? = null,
         @ColumnName(EXAM_LOCATION)

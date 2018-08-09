@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.repository
 
+import isel.leic.ps.eduWikiAPI.domain.enums.CourseMiscUnitType
 import isel.leic.ps.eduWikiAPI.domain.model.Exam
 import isel.leic.ps.eduWikiAPI.domain.model.report.ExamReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ExamStage
@@ -81,7 +82,7 @@ interface ExamDAOJdbi : ExamDAO {
                     "$EXAM_TIMESTAMP " +
                     ") " +
                     "VALUES(:courseMiscUnitId, :exam.version, :exam.createdBy, " +
-                    ":exam.sheetId, :exam.dueDate, :exam.type::exam_type, " +
+                    ":exam.sheetId, :exam.dueDate, :exam.type, " +
                     ":exam.phase, :exam.location, :exam.votes, :exam.timestamp)"
     )
     @GetGeneratedKeys
@@ -93,7 +94,7 @@ interface ExamDAOJdbi : ExamDAO {
         if (!courseDAO.getSpecificTermOfCourse(courseId, termId).isPresent) {
             courseDAO.createCourseTerm(courseId, termId, Timestamp.valueOf(LocalDateTime.now()))
         }
-        val courseMiscUnit = courseDAO.createCourseMiscUnit(courseId, termId, "Exam/Test")
+        val courseMiscUnit = courseDAO.createCourseMiscUnit(courseId, termId, CourseMiscUnitType.EXAM_TEST)
         return createExam(courseMiscUnit.courseMiscUnitId, exam)
     }
 
@@ -127,7 +128,7 @@ interface ExamDAOJdbi : ExamDAO {
                     "$EXAM_TIMESTAMP " +
                     ") " +
                     "values(:courseMiscUnitStageId, :examStage.sheetId, :examStage.dueDate, " +
-                    ":examStage.type::exam_type, :examStage.phase, :examStage.location, " +
+                    ":examStage.type, :examStage.phase, :examStage.location, " +
                     ":examStage.createdBy, :examStage.votes, :examStage.timestamp)"
     )
     @GetGeneratedKeys
@@ -139,7 +140,7 @@ interface ExamDAOJdbi : ExamDAO {
         if (!courseDAO.getSpecificTermOfCourse(courseId, termId).isPresent) {
             courseDAO.createCourseTerm(courseId, termId, Timestamp.valueOf(LocalDateTime.now()))
         }
-        val courseMiscUnitStage = courseDAO.createStagingCourseMiscUnit(courseId, termId, "Exam/Test")
+        val courseMiscUnitStage = courseDAO.createStagingCourseMiscUnit(courseId, termId, CourseMiscUnitType.EXAM_TEST)
         return createStagingExam(courseMiscUnitStage.stageId, examStage)
     }
 
@@ -187,7 +188,7 @@ interface ExamDAOJdbi : ExamDAO {
                     "$EXAM_TIMESTAMP " +
                     ") " +
                     "VALUES(:examVersion.examId, :examVersion.version, :examVersion.sheetId, " +
-                    ":examVersion.dueDate, :examVersion.type::exam_type, :examVersion.phase, " +
+                    ":examVersion.dueDate, :examVersion.type, :examVersion.phase, " +
                     ":examVersion.location, :examVersion.createdBy, :examVersion.timestamp)"
     )
     @GetGeneratedKeys
@@ -342,10 +343,10 @@ interface ExamDAOJdbi : ExamDAO {
             createCourseDAO().deleteSpecificStagedCourseMiscUnitEntry(courseId, termId, stageId)
 
     override fun deleteAllExamsOfCourseInTerm(courseId: Int, termId: Int): Int =
-            createCourseDAO().deleteAllCourseMiscUnitsFromTypeOfCourseInTerm(courseId, termId, "Exam/Test")
+            createCourseDAO().deleteAllCourseMiscUnitsFromTypeOfCourseInTerm(courseId, termId, CourseMiscUnitType.EXAM_TEST)
 
     override fun deleteAllStagedExamsOfCourseInTerm(courseId: Int, termId: Int): Int =
-            createCourseDAO().deleteAllStagedCourseMiscUnitsFromTypeOfCourseInTerm(courseId, termId, "Exam")
+            createCourseDAO().deleteAllStagedCourseMiscUnitsFromTypeOfCourseInTerm(courseId, termId, CourseMiscUnitType.EXAM_TEST)
 
     @SqlUpdate(
             "DELETE FROM $EXAM_VERSION_TABLE " +

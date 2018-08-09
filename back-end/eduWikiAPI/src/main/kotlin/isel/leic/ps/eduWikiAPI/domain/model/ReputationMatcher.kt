@@ -1,4 +1,4 @@
-package isel.leic.ps.eduWikiAPI.domain
+package isel.leic.ps.eduWikiAPI.domain.model
 
 import isel.leic.ps.eduWikiAPI.repository.ReputationDAOJdbi.Companion.REPUTATION_MATCHER_ID
 import isel.leic.ps.eduWikiAPI.repository.ReputationDAOJdbi.Companion.REPUTATION_MATCHER_URI

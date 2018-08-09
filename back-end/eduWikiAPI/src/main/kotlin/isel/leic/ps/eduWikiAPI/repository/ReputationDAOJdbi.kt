@@ -1,6 +1,6 @@
 package isel.leic.ps.eduWikiAPI.repository
 
-import isel.leic.ps.eduWikiAPI.domain.ReputationMatcher
+import isel.leic.ps.eduWikiAPI.domain.model.ReputationMatcher
 import isel.leic.ps.eduWikiAPI.domain.enums.ActionType
 import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ReputationDAO

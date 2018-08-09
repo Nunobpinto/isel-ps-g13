@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.domain.model
 
+import isel.leic.ps.eduWikiAPI.domain.enums.CourseMiscUnitType
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_COURSE_ID
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_TYPE
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_ID
@@ -10,7 +11,7 @@ data class CourseMiscUnit(
         @ColumnName(COURSE_MISC_UNIT_ID)
         val courseMiscUnitId: Int = -1,
         @ColumnName(COURSE_MISC_UNIT_TYPE)
-        val miscType: String = "",
+        val miscType: CourseMiscUnitType,
         @ColumnName(COURSE_MISC_UNIT_COURSE_ID)
         val courseId: Int = 0,
         @ColumnName(COURSE_MISC_UNIT_TERM_ID)

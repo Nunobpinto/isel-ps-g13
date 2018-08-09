@@ -5,5 +5,5 @@ import com.fasterxml.jackson.annotation.JsonProperty
 class VoteInputModel (
         val vote: String,
         @JsonProperty("created_by")
-        val createdBy: String
+        val createdBy: String = ""
 )

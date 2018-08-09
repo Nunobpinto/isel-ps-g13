@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.repository
 
+import isel.leic.ps.eduWikiAPI.domain.enums.CourseMiscUnitType
 import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
@@ -580,10 +581,10 @@ interface CourseDAOJdbi : CourseDAO {
                     "$COURSE_MISC_UNIT_COURSE_ID, " +
                     "$COURSE_MISC_UNIT_TERM_ID " +
                     ") " +
-                    "values(:miscType::course_misc_unit_type, :courseId, :termId)"
+                    "values(:miscType, :courseId, :termId)"
     )
     @GetGeneratedKeys
-    override fun createCourseMiscUnit(courseId: Int, termId: Int, miscType: String): CourseMiscUnit
+    override fun createCourseMiscUnit(courseId: Int, termId: Int, miscType: CourseMiscUnitType): CourseMiscUnit
 
     @SqlUpdate(
             "INSERT INTO $COURSE_TERM_TABLE ( " +
@@ -602,10 +603,10 @@ interface CourseDAOJdbi : CourseDAO {
                     "$COURSE_MISC_UNIT_TERM_ID, " +
                     "$COURSE_MISC_UNIT_TYPE " +
                     ") " +
-                    "values(:courseId, :termId, :miscType::course_misc_unit_type)"
+                    "values(:courseId, :termId, :miscType)"
     )
     @GetGeneratedKeys
-    override fun createStagingCourseMiscUnit(courseId: Int, termId: Int, miscType: String): CourseMiscUnitStage
+    override fun createStagingCourseMiscUnit(courseId: Int, termId: Int, miscType: CourseMiscUnitType): CourseMiscUnitStage
 
     @SqlUpdate(
             "DELETE FROM $COURSE_MISC_UNIT_TABLE " +
@@ -618,17 +619,17 @@ interface CourseDAOJdbi : CourseDAO {
             "DELETE FROM $COURSE_MISC_UNIT_TABLE " +
                     "WHERE $COURSE_MISC_UNIT_COURSE_ID = :courseId " +
                     "AND $COURSE_MISC_UNIT_TERM_ID = :termId " +
-                    "AND $COURSE_MISC_UNIT_TYPE = :miscType::course_misc_unit_type"
+                    "AND $COURSE_MISC_UNIT_TYPE = :miscType"
     )
-    override fun deleteAllCourseMiscUnitsFromTypeOfCourseInTerm(courseId: Int, termId: Int, miscType: String): Int
+    override fun deleteAllCourseMiscUnitsFromTypeOfCourseInTerm(courseId: Int, termId: Int, miscType: CourseMiscUnitType): Int
 
     @SqlUpdate(
             "DELETE FROM $COURSE_MISC_UNIT_STAGE_TABLE " +
                     "WHERE $COURSE_MISC_UNIT_COURSE_ID = :courseId " +
                     "AND $COURSE_MISC_UNIT_TERM_ID = :termId " +
-                    "AND $COURSE_MISC_UNIT_TYPE  = :miscType::course_misc_unit_type"
+                    "AND $COURSE_MISC_UNIT_TYPE  = :miscType"
     )
-    override fun deleteAllStagedCourseMiscUnitsFromTypeOfCourseInTerm(courseId: Int, termId: Int, miscType: String): Int
+    override fun deleteAllStagedCourseMiscUnitsFromTypeOfCourseInTerm(courseId: Int, termId: Int, miscType: CourseMiscUnitType): Int
 
     @SqlUpdate(
             "DELETE FROM $COURSE_MISC_UNIT_STAGE_TABLE " +

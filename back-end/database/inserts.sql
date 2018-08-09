@@ -69,10 +69,10 @@ insert into course_programme_version(course_id, programme_id, course_programme_v
 -- Terms Insert
 
 insert into term (term_short_name, term_year, term_type, time_stamp)
-  values ('1718v',2018,'Summer',current_timestamp);
+  values ('1718v',2018,'SUMMER',current_timestamp);
 
 insert into term (term_short_name, term_year, term_type, time_stamp)
-  values ('1718i',2017,'Winter',current_timestamp);
+  values ('1718i',2017,'WINTER',current_timestamp);
 
 -- Classes Insert
 
@@ -114,7 +114,7 @@ insert into course_term (course_id, term_id, time_stamp)
 -- Work-Assignment Insert
 
 insert into course_misc_unit (misc_type, course_id, term_id)
-    values ('Work Assignment', 1, 1);
+    values ('WORK_ASSIGNMENT', 1, 1);
 
 insert into work_assignment (work_assignment_id, created_by, sheet_id, supplement_id, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
     values (1,'ze', gen_random_uuid(),gen_random_uuid(),current_date,false ,true ,true ,false ,current_timestamp);
@@ -123,7 +123,7 @@ insert into work_assignment_version (work_assignment_id, work_assignment_version
     values (1, 1, 'ze', gen_random_uuid(),gen_random_uuid(),current_date,false ,true ,true ,false ,current_timestamp);
 
 insert into course_misc_unit (misc_type, course_id, term_id)
-    values ('Work Assignment', 1, 2);
+    values ('WORK_ASSIGNMENT', 1, 2);
 
 insert into work_assignment (work_assignment_id, created_by, sheet_id, supplement_id, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
     values (2,'ze', gen_random_uuid(), gen_random_uuid(), current_date,false ,true ,true ,false ,current_timestamp);
@@ -132,7 +132,7 @@ insert into work_assignment_version (work_assignment_id, work_assignment_version
     values (2, 1, 'ze', gen_random_uuid(),gen_random_uuid(),current_date,false ,true ,true ,false ,current_timestamp);
 
 insert into course_misc_unit (misc_type, course_id, term_id)
-    values ('Work Assignment', 3, 2);
+    values ('WORK_ASSIGNMENT', 3, 2);
 
 insert into work_assignment (work_assignment_id, created_by, sheet_id, supplement_id, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
     values (3,'ze', gen_random_uuid(),gen_random_uuid(),current_date,false ,true ,true ,false ,current_timestamp);
@@ -143,31 +143,31 @@ insert into work_assignment_version (work_assignment_id, work_assignment_version
 -- Exam Insert
 
 insert into course_misc_unit (misc_type, course_id, term_id)
-    values ('Exam/Test', 1, 1);
+    values ('EXAM_TEST', 1, 1);
 
 insert into exam (exam_id, created_by, sheet_id, due_date, exam_type, phase, location, time_stamp)
-    values (4, 'ze', gen_random_uuid() ,current_date,'Exam', '1ª','A.2.14',current_timestamp);
+    values (4, 'ze', gen_random_uuid() ,current_date,'EXAM', '1ª','A.2.14',current_timestamp);
 
 insert into exam_version (exam_id, exam_version, created_by, sheet_id, due_date, exam_type, phase, location, time_stamp)
-    values (4, 1, 'ze', gen_random_uuid() ,current_date,'Exam', '1ª','A.2.14',current_timestamp);
+    values (4, 1, 'ze', gen_random_uuid() ,current_date,'EXAM', '1ª','A.2.14',current_timestamp);
 
 insert into course_misc_unit (misc_type, course_id, term_id)
-    values ('Exam/Test', 2, 1);
+    values ('EXAM_TEST', 2, 1);
 
 insert into exam (exam_id, created_by, sheet_id, due_date, exam_type, phase, location, time_stamp)
-    values (5, 'ze', gen_random_uuid() ,current_date,'Test', '1ª','A.2.14',current_timestamp);
+    values (5, 'ze', gen_random_uuid() ,current_date,'TEST', '1ª','A.2.14',current_timestamp);
 
 insert into exam_version (exam_id, exam_version, created_by, sheet_id, due_date, exam_type, phase, location, time_stamp)
-    values (5, 1, 'ze', gen_random_uuid(),current_date,'Test', '1ª','A.2.14',current_timestamp);
+    values (5, 1, 'ze', gen_random_uuid(),current_date,'TEST', '1ª','A.2.14',current_timestamp);
 
 insert into course_misc_unit (misc_type, course_id, term_id)
-    values ('Exam/Test', 2, 2);
+    values ('EXAM_TEST', 2, 2);
 
 insert into exam (exam_id, created_by, sheet_id, due_date, exam_type, phase, location, time_stamp)
-    values (6, 'ze', gen_random_uuid() ,current_date,'Exam', '2ª','A.2.14',current_timestamp);
+    values (6, 'ze', gen_random_uuid() ,current_date,'EXAM', '2ª','A.2.14',current_timestamp);
 
 insert into exam_version (exam_id, exam_version, created_by, sheet_id, due_date, exam_type, phase, location, time_stamp)
-    values (6, 1, 'ze', gen_random_uuid(),current_date,'Exam', '2ª','A.2.14',current_timestamp);
+    values (6, 1, 'ze', gen_random_uuid(),current_date,'EXAM', '2ª','A.2.14',current_timestamp);
 
 -- Course-class Insert
 
@@ -183,36 +183,36 @@ insert into course_class (course_id, class_id, term_id, created_by, votes, time_
 -- Lecture Insert
 
 insert into class_misc_unit (class_misc_unit_id, misc_type, course_class_id)
-    values (1, 'Lecture', 1);
+    values (1, 'LECTURE', 1);
 
 insert into lecture (lecture_id, created_by, weekday, begins, duration, location, time_stamp)
-    values (1, 'bruno', 'Monday', current_time, '02:00:00', 'E.1.07', current_timestamp);
+    values (1, 'bruno', 'MONDAY', current_time, '02:00:00', 'E.1.07', current_timestamp);
 
 insert into lecture_version (lecture_id, lecture_version, created_by, weekday, begins, duration, location, time_stamp)
-    values (1, 1, 'bruno', 'Monday', current_time, '02:00:00', 'E.1.07', current_timestamp);
+    values (1, 1, 'bruno', 'MONDAY', current_time, '02:00:00', 'E.1.07', current_timestamp);
 
 insert into class_misc_unit (class_misc_unit_id, misc_type, course_class_id)
-    values (2, 'Lecture', 2);
+    values (2, 'LECTURE', 2);
 
 insert into lecture (lecture_id, created_by, weekday, begins, duration, location, time_stamp)
-    values (2, 'bruno', 'Tuesday', current_time, '02:00:00', 'G.1.07', current_timestamp);
+    values (2, 'bruno', 'TUESDAY', current_time, '02:00:00', 'G.1.07', current_timestamp);
 
 insert into lecture_version (lecture_id, lecture_version, created_by, weekday, begins, duration, location, time_stamp)
-    values (2, 1, 'bruno', 'Tuesday', current_time, '02:00:00', 'G.1.07', current_timestamp);
+    values (2, 1, 'bruno', 'TUESDAY', current_time, '02:00:00', 'G.1.07', current_timestamp);
 
 insert into class_misc_unit (class_misc_unit_id, misc_type, course_class_id)
-    values (3, 'Lecture', 3);
+    values (3, 'LECTURE', 3);
 
 insert into lecture (lecture_id, created_by, weekday, begins, duration, location, time_stamp)
-    values (3, 'bruno', 'Friday', current_time, '02:00:00', 'G.0.14', current_timestamp);
+    values (3, 'bruno', 'FRIDAY', current_time, '02:00:00', 'G.0.14', current_timestamp);
 
 insert into lecture_version (lecture_id, lecture_version, created_by, weekday, begins, duration, location, time_stamp)
-    values (3, 1, 'bruno', 'Friday', current_time, '02:00:00', 'G.0.14', current_timestamp);
+    values (3, 1, 'bruno', 'FRIDAY', current_time, '02:00:00', 'G.0.14', current_timestamp);
 
 -- Homework Insert
 
 insert into class_misc_unit (class_misc_unit_id, misc_type, course_class_id)
-    values (4, 'Homework', 1);
+    values (4, 'HOMEWORK', 1);
 
 insert into homework (homework_id, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
     values (4,'bruno',gen_random_uuid(), current_date, true, true, current_timestamp );
@@ -221,7 +221,7 @@ insert into homework_version (homework_id, homework_version, created_by, sheet_i
     values (4, 1, 'bruno',gen_random_uuid(), current_date, true, true, current_timestamp );
 
 insert into class_misc_unit (class_misc_unit_id, misc_type, course_class_id)
-    values (5, 'Homework', 2);
+    values (5, 'HOMEWORK', 2);
 
 insert into homework (homework_id, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
     values (5, 'ze', gen_random_uuid(),current_date, false , true , current_timestamp);
@@ -230,7 +230,7 @@ insert into homework_version (homework_id, homework_version, created_by, sheet_i
     values (5, 1, 'ze', gen_random_uuid(),current_date, false , true , current_timestamp);
 
 insert into class_misc_unit (class_misc_unit_id, misc_type, course_class_id)
-    values (6, 'Homework', 1);
+    values (6, 'HOMEWORK', 1);
 
 insert into homework(homework_id, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
     values (6, 'ze',gen_random_uuid(), current_date, true , true , current_timestamp);
@@ -268,19 +268,24 @@ insert into reputation_matcher (uri_match, reputation_role_id)
 
 -- Reputation Insert
 
-insert into reputation (reputation_points, reputation_role, user_username)
+insert into reputation (points, role, user_username)
   values (10, 'ROLE_BEGINNER', 'ze');
 
-insert into reputation (reputation_points, reputation_role, user_username)
+insert into reputation (points, role, user_username)
   values (5, 'ROLE_BEGINNER', 'bruno');
 
-insert into reputation (reputation_points, reputation_role, user_username)
+insert into reputation (points, role, user_username)
   values (55, 'ROLE_ADMIN', 'jg');
 
 -- Reputation Log Insert
 
+insert into action_log (user_username, action, entity, log_id, time_stamp)
+  values ('bruno','CREATE','course',1,current_timestamp);
+
+-- Reputation Log Insert
+
 insert into reputation_log (reputation_log_action, reputation_log_given_by, reputation_log_points, reputation_id, user_username)
-  values ('insert course','bruno',5,1,'ze');
+  values (1,'bruno',5,1,'ze');
 
 -- Student Course Class
 
