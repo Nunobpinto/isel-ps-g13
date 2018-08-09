@@ -6,12 +6,12 @@ import UserPage from './UserPage'
 import Layout from './Layout'
 const cookies = new Cookies()
 
-export default (props) => {
+export default (props, context) => {
   const authCookie = cookies.get('auth')
   if (authCookie) {
     return (
       <Layout>
-        <UserPage auth={authCookie} />
+        <UserPage auth={authCookie} history={props.history} />
       </Layout>
     )
   }
