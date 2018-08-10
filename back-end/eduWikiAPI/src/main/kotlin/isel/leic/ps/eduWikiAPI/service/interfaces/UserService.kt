@@ -5,6 +5,8 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.UserInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserProgrammeInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.UserReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.*
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ClassCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.UserReportOutputModel
 import java.util.*
 
@@ -16,9 +18,9 @@ interface UserService {
 
     fun deleteUser(username: String): Int
 
-    fun getCoursesOfUser(username: String): List<CourseOutputModel>
+    fun getCoursesOfUser(username: String): CourseCollectionOutputModel
 
-    fun getClassesOfUser(username: String): List<ClassOutputModel>
+    fun getClassesOfUser(username: String): ClassCollectionOutputModel
 
     fun getProgrammeOfUser(username: String): ProgrammeOutputModel
 

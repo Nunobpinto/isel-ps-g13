@@ -28,7 +28,7 @@ fun toUserReport(username: String, reportedBy: String, reportInput: UserReportIn
 fun toAuthUserOutputModel(user: User) = AuthUserOutputModel(
         username = user.username,
         givenName = user.givenName,
-        familyName = user.givenName,
+        familyName = user.familyName,
         personalEmail = user.personalEmail,
         organizationEmail = user.organizationEmail,
         confirmed = user.confirmed

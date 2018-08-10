@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service
 import isel.leic.ps.eduWikiAPI.domain.mappers.*
 import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.*
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ClassCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.UserReportOutputModel
 import isel.leic.ps.eduWikiAPI.eventListeners.events.OnRegistrationEvent
 import isel.leic.ps.eduWikiAPI.exceptions.BadRequestException
@@ -119,27 +121,29 @@ class UserServiceImpl : UserService {
                 it.deleteUser(username)
             }
 
-    override fun getCoursesOfUser(username: String): List<CourseOutputModel> =
-            jdbi.inTransaction<List<CourseOutputModel>, Exception> {
+    override fun getCoursesOfUser(username: String): CourseCollectionOutputModel =
+            jdbi.inTransaction<CourseCollectionOutputModel, Exception> {
                 val userDao = it.attach(UserDAOJdbi::class.java)
                 val courseDAO = it.attach(CourseDAOJdbi::class.java)
                 val coursesIds = userDao.getCoursesOfUser(username)
-                coursesIds.map {
+                val courses =coursesIds.map {
                     toCourseOutputModel(courseDAO.getSpecificCourse(it).get())
                 }
+                toCourseCollectionOutputModel(courses)
             }
 
-    override fun getClassesOfUser(username: String): List<ClassOutputModel> =
-            jdbi.inTransaction<List<ClassOutputModel>, NotFoundException> {
+    override fun getClassesOfUser(username: String): ClassCollectionOutputModel =
+            jdbi.inTransaction<ClassCollectionOutputModel, NotFoundException> {
                 val userDao = it.attach(UserDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val termDAO = it.attach(TermDAOJdbi::class.java)
                 val courseClasses = userDao.getClassesOfUser(username)
-                courseClasses.map {
+                val classes =courseClasses.map {
                     val courseClass = classDAO.getCourseCLassFromId(it.courseClassId)
                     val term = termDAO.getTerm(courseClass.termId).get()
                     toClassOutputModel(classDAO.getSpecificClass(it.courseId).get(), term)
                 }
+                toClassCollectionOutputModel(classes)
             }
 
     override fun getProgrammeOfUser(username: String): ProgrammeOutputModel =
