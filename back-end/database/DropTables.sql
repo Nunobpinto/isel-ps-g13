@@ -4,145 +4,142 @@
 
 DROP TABLE IF EXISTS validation_token;
 
-Drop Table IF EXISTS organization_report;
+DROP TABLE IF EXISTS organization_report;
 
-Drop Table IF EXISTS programme_report;
+DROP TABLE IF EXISTS programme_report;
 
-Drop Table IF EXISTS course_report;
+DROP TABLE IF EXISTS course_report;
 
 DROP TABLE IF EXISTS course_programme_report;
 
-Drop Table IF EXISTS class_report;
+DROP TABLE IF EXISTS class_report;
 
-Drop Table IF EXISTS work_assignment_report;
+DROP TABLE IF EXISTS work_assignment_report;
 
-Drop Table IF EXISTS exam_report;
+DROP TABLE IF EXISTS exam_report;
 
-Drop Table IF EXISTS lecture_report;
+DROP TABLE IF EXISTS lecture_report;
 
-Drop Table IF EXISTS homework_report;
+DROP TABLE IF EXISTS homework_report;
 
-Drop Table IF EXISTS user_report;
+DROP TABLE IF EXISTS user_report;
 
-Drop Table IF EXISTS course_class_report;
+DROP TABLE IF EXISTS course_class_report;
 
 --------------------------
 -- Drop Staged Tables
 --------------------------
 
-Drop Table IF EXISTS programme_stage;
+DROP TABLE IF EXISTS programme_stage;
 
-Drop Table IF EXISTS course_stage;
+DROP TABLE IF EXISTS course_stage;
 
-Drop Table IF EXISTS course_programme_stage;
+DROP TABLE IF EXISTS course_programme_stage;
 
-Drop Table IF EXISTS class_stage;
+DROP TABLE IF EXISTS class_stage;
 
-Drop Table IF EXISTS course_class_stage;
+DROP TABLE IF EXISTS course_class_stage;
 
-Drop Table IF EXISTS work_assignment_stage;
+DROP TABLE IF EXISTS work_assignment_stage;
 
-Drop Table IF EXISTS exam_stage;
+DROP TABLE IF EXISTS exam_stage;
 
-Drop Table IF EXISTS lecture_stage;
+DROP TABLE IF EXISTS lecture_stage;
 
-Drop Table IF EXISTS homework_stage;
+DROP TABLE IF EXISTS homework_stage;
 
-Drop Table IF EXISTS course_misc_unit_stage;
+DROP TABLE IF EXISTS course_misc_unit_stage;
 
-Drop Table IF EXISTS class_misc_unit_stage;
+DROP TABLE IF EXISTS class_misc_unit_stage;
 
 --------------------------
 -- Drop Version Tables
 --------------------------
 
-Drop Table IF EXISTS organization_version;
+DROP TABLE IF EXISTS organization_version;
 
-Drop Table IF EXISTS programme_version;
+DROP TABLE IF EXISTS programme_version;
 
-Drop Table IF EXISTS course_version;
+DROP TABLE IF EXISTS course_version;
 
 DROP TABLE IF EXISTS course_programme_version;
 
-Drop Table IF EXISTS class_version;
+DROP TABLE IF EXISTS class_version;
 
-Drop Table IF EXISTS work_assignment_version;
+DROP TABLE IF EXISTS work_assignment_version;
 
-Drop Table IF EXISTS exam_version;
+DROP TABLE IF EXISTS exam_version;
 
-Drop Table IF EXISTS lecture_version;
+DROP TABLE IF EXISTS lecture_version;
 
-Drop Table IF EXISTS homework_version;
+DROP TABLE IF EXISTS homework_version;
 
 --------------------------
 -- Drop Main Tables
 --------------------------
 
-Drop Table IF EXISTS resource_validator;  
+DROP TABLE IF EXISTS resource_validator;  
 
-Drop Table IF EXISTS confirm;
+DROP TABLE IF EXISTS confirm;
 
-Drop Table IF EXISTS resource;
+DROP TABLE IF EXISTS resource;
 
-Drop Table IF EXISTS course_programme;
+DROP TABLE IF EXISTS course_programme;
 
-Drop Table IF EXISTS work_assignment;
+DROP TABLE IF EXISTS work_assignment;
 
-Drop Table IF EXISTS exam;
+DROP TABLE IF EXISTS exam;
 
-Drop Table IF EXISTS lecture;
+DROP TABLE IF EXISTS lecture;
 
-Drop Table IF EXISTS homework;
+DROP TABLE IF EXISTS homework;
 
-Drop Table IF EXISTS reputation_log;
+DROP TABLE IF EXISTS reputation_log;
 
-Drop Table IF EXISTS action_log;
+DROP TABLE IF EXISTS action_log;
 
-Drop Table IF EXISTS class_misc_unit;
+DROP TABLE IF EXISTS class_misc_unit;
 
-Drop Table IF EXISTS course_misc_unit;
+DROP TABLE IF EXISTS course_misc_unit;
 
-Drop Table IF EXISTS user_course_class;
+DROP TABLE IF EXISTS user_course_class;
 
-Drop Table IF EXISTS user_programme;
+DROP TABLE IF EXISTS user_programme;
 
-Drop Table IF EXISTS reputation;
+DROP TABLE IF EXISTS reputation;
 
-Drop Table IF EXISTS reputation_matcher;
+DROP TABLE IF EXISTS reputation_matcher;
 
-Drop Table IF EXISTS reputation_role;
+DROP TABLE IF EXISTS reputation_role;
 
-Drop Table IF EXISTS course_term;
+DROP TABLE IF EXISTS course_term;
 
-Drop Table IF EXISTS course_class;
+DROP TABLE IF EXISTS course_class;
 
-Drop Table IF EXISTS class;
+DROP TABLE IF EXISTS class;
 
-Drop Table IF EXISTS term;
+DROP TABLE IF EXISTS term;
 
-Drop Table IF EXISTS programme;
+DROP TABLE IF EXISTS programme;
 
-Drop Table IF EXISTS course;
+DROP TABLE IF EXISTS course;
 
-Drop Table IF EXISTS organization;
+DROP TABLE IF EXISTS organization;
 
-Drop Table IF EXISTS user_account;
+DROP TABLE IF EXISTS user_account;
 
 --------------------------
 -- Drop Auxiliary Types
 --------------------------
 
-Drop Type IF EXISTS term_type;
+DROP TYPE IF EXISTS term_type;
 
-Drop Type IF EXISTS student_rank;
+DROP TYPE IF EXISTS action_type;
 
-Drop Type IF EXISTS course_misc_unit_type;
+DROP TYPE IF EXISTS course_misc_unit_type;
 
-Drop Type IF EXISTS class_misc_unit_type;
+DROP TYPE IF EXISTS class_misc_unit_type;
 
-Drop Type IF EXISTS exam_type;
+DROP TYPE IF EXISTS exam_type;
 
-Drop Type IF EXISTS weekday;
-
-Drop Type IF EXISTS gender;
-
+DROP TYPE IF EXISTS weekday;

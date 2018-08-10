@@ -2,106 +2,128 @@
 -- Delete Report 
 --------------------------
 
-delete from organization_report;
+DELETE FROM validation_token;
 
-delete from programme_report;
+DELETE FROM organization_report;
 
-delete from course_report;
+DELETE FROM programme_report;
 
-delete from class_report;
+DELETE FROM course_report;
 
-delete from work_assignment_report;
+DELETE FROM course_programme_report;
 
-delete from exam_report;
+DELETE FROM class_report;
 
-delete from lecture_report;
+DELETE FROM work_assignment_report;
 
-delete from homework_report;
+DELETE FROM exam_report;
 
-delete from student_report;
+DELETE FROM lecture_report;
+
+DELETE FROM homework_report;
+
+DELETE FROM user_report;
+
+DELETE FROM course_class_report;
 
 --------------------------
 -- Delete Staged 
 --------------------------
 
-delete from programme_stage;
+DELETE FROM programme_stage;
 
-delete from course_stage;
+DELETE FROM course_stage;
 
-delete from course_programme_stage;
+DELETE FROM course_programme_stage;
 
-delete from class_stage;
+DELETE FROM class_stage;
 
-delete from course_class_stage;
+DELETE FROM course_class_stage;
 
-delete from work_assignment_stage;
+DELETE FROM work_assignment_stage;
 
-delete from exam_stage;
+DELETE FROM exam_stage;
 
-delete from lecture_stage;
+DELETE FROM lecture_stage;
 
-delete from homework_stage;
+DELETE FROM homework_stage;
 
-delete from course_misc_unit_stage;
+DELETE FROM course_misc_unit_stage;
 
-delete from class_misc_unit_stage;
+DELETE FROM class_misc_unit_stage;
 
 --------------------------
 -- Delete Version from
 --------------------------
 
-delete from organization_version;
+DELETE FROM organization_version;
 
-delete from programme_version;
+DELETE FROM programme_version;
 
-delete from course_version;
+DELETE FROM course_version;
 
-delete from class_version;
+DELETE FROM course_programme_version;
 
-delete from work_assignment_version;
+DELETE FROM class_version;
 
-delete from exam_version;
+DELETE FROM work_assignment_version;
 
-delete from lecture_version;
+DELETE FROM exam_version;
 
-delete from homework_version;
+DELETE FROM lecture_version;
+
+DELETE FROM homework_version;
 
 --------------------------
 -- Delete Main from
 --------------------------
 
-delete from course_programme;
+DELETE FROM resource_validator;  
 
-delete from work_assignment;
+DELETE FROM confirm;
 
-delete from exam;
+DELETE FROM resource;
 
-delete from lecture;
+DELETE FROM course_programme;
 
-delete from homework;
+DELETE FROM work_assignment;
 
-delete from reputation_log;
+DELETE FROM exam;
 
-delete from class_misc_unit;
+DELETE FROM lecture;
 
-delete from course_misc_unit;
+DELETE FROM homework;
 
-delete from user_course_class;
+DELETE FROM reputation_log;
 
-delete from reputation;
+DELETE FROM action_log;
 
-delete from course_term;
+DELETE FROM class_misc_unit;
 
-delete from course_class;
+DELETE FROM course_misc_unit;
 
-delete from class;
+DELETE FROM user_course_class;
 
-delete from term;
+DELETE FROM user_programme;
 
-delete from programme;
+DELETE FROM reputation;
 
-delete from course;
+DELETE FROM reputation_matcher;
 
-delete from organization;
+DELETE FROM reputation_role;
 
-delete from user;
+DELETE FROM course_term;
+
+DELETE FROM course_class;
+
+DELETE FROM class;
+
+DELETE FROM term;
+
+DELETE FROM programme;
+
+DELETE FROM course;
+
+DELETE FROM organization;
+
+DELETE FROM user_account;
