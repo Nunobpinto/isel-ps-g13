@@ -2,27 +2,27 @@
 -- Auxiliary Types
 --------------------------
 
-  CREATE TYPE term_type AS ENUM ('WINTER', 'SUMMER');
+CREATE TYPE term_type AS ENUM ('WINTER', 'SUMMER');
 
-  CREATE TYPE course_misc_unit_type AS ENUM ('WORK_ASSIGNMENT', 'EXAM_TEST');
+CREATE TYPE course_misc_unit_type AS ENUM ('WORK_ASSIGNMENT', 'EXAM_TEST');
 
-  CREATE TYPE class_misc_unit_type AS ENUM ('HOMEWORK', 'LECTURE');
+CREATE TYPE class_misc_unit_type AS ENUM ('HOMEWORK', 'LECTURE');
 
-  CREATE TYPE exam_type AS ENUM ('EXAM', 'TEST');
+CREATE TYPE exam_type AS ENUM ('EXAM', 'TEST');
 
-  CREATE TYPE weekday AS ENUM ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY');
+CREATE TYPE weekday AS ENUM ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY');
 
-  CREATE TYPE action_Type AS ENUM ('CREATE', 'ALTER', 'DELETE', 'VOTE_UP', 'VOTE_DOWN', 'APPROVE_REPORT', 'APPROVE_STAGE', 'REJECT_REPORT', 'REJECT_STAGE');
+CREATE TYPE action_Type AS ENUM ('CREATE', 'ALTER', 'DELETE', 'VOTE_UP', 'VOTE_DOWN', 'APPROVE_REPORT', 'APPROVE_STAGE', 'REJECT_REPORT', 'REJECT_STAGE');
 
 --------------------------
 -- Create Main Tables
 --------------------------
 
 CREATE TABLE IF NOT EXISTS validation_token (
-	token_id SERIAL,
-	token UUID NOT NULL,
-	validation_date TIMESTAMP NOT NULL,
-	PRIMARY KEY (token_id)
+  token_id SERIAL,
+  token UUID NOT NULL,
+  validation_date TIMESTAMP NOT NULL,
+  PRIMARY KEY (token_id)
 );
 
 
@@ -224,13 +224,13 @@ CREATE TABLE IF NOT EXISTS reputation (
 );
 
 CREATE TABLE IF NOT EXISTS action_log (
-	action_id SERIAL,
-	user_username VARCHAR(20) REFERENCES user_account ON DELETE CASCADE,
-	action action_type NOT NULL,
-	entity VARCHAR NOT NULL,
-	log_id INTEGER NOT NULL,
-	time_stamp TIMESTAMP NOT NULL,
-	PRIMARY KEY(action_id)
+  action_id SERIAL,
+  user_username VARCHAR(20) REFERENCES user_account ON DELETE CASCADE,
+  action action_type NOT NULL,
+  entity VARCHAR NOT NULL,
+  log_id INTEGER NOT NULL,
+  time_stamp TIMESTAMP NOT NULL,
+  PRIMARY KEY(action_id)
 );
 
 CREATE TABLE IF NOT EXISTS reputation_log (
@@ -258,12 +258,12 @@ CREATE TABLE IF NOT EXISTS user_programme (
 );
 
 CREATE TABLE IF NOT EXISTS resource (
-   uuid UUID NOT NULL,
-	byte_sequence bytea NOT NULL,
-   content_type VARCHAR(100) NOT NULL,
-   original_filename VARCHAR(50),
-   size BIGINT,
-   PRIMARY KEY(uuid)
+  uuid UUID NOT NULL,
+  byte_sequence bytea NOT NULL,
+  content_type VARCHAR(100) NOT NULL,
+  original_filename VARCHAR(50),
+  size BIGINT,
+  PRIMARY KEY(uuid)
 );
 
 --------------------------
@@ -417,43 +417,46 @@ CREATE TABLE IF NOT EXISTS organization_report (
 );
 
 CREATE TABLE IF NOT EXISTS programme_report (
-    programme_report_id SERIAL, 
-    programme_id INTEGER REFERENCES programme ON DELETE CASCADE,
-    programme_full_name varchar(100),
-    programme_short_name varchar(10),
-    programme_academic_degree varchar(50),
-    programme_total_credits INTEGER,
-    programme_duration INTEGER,
-    reported_by VARCHAR(20) NOT NULL,
-    votes INTEGER DEFAULT 0,
-    time_stamp timestamp NOT NULL,
-    PRIMARY KEY (programme_report_id)
+  programme_report_id SERIAL, 
+  programme_id INTEGER REFERENCES programme ON DELETE CASCADE,
+  programme_full_name varchar(100),
+  programme_short_name varchar(10),
+  programme_academic_degree varchar(50),
+  programme_total_credits INTEGER,
+  programme_duration INTEGER,
+  reported_by VARCHAR(20) NOT NULL,
+  votes INTEGER DEFAULT 0,
+  time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
+  PRIMARY KEY (programme_report_id)
 );
 
 CREATE TABLE IF NOT EXISTS course_programme_report (
-   course_programme_report_id SERIAL, 
-	course_id INTEGER NOT NULL,
-	programme_id INTEGER NOT NULL,
-	course_lectured_term varchar(50),
-	course_optional BOOLEAN,
-	course_credits INTEGER,
-	to_delete BOOLEAN,
-	time_stamp timestamp NOT NULL,
-	reported_by VARCHAR(20) NOT NULL,
-	votes INTEGER DEFAULT 0,
-	FOREIGN KEY (course_id, programme_id) REFERENCES course_programme(course_id, programme_id) ON DELETE CASCADE,
-	PRIMARY KEY (course_programme_report_id)
+  course_programme_report_id SERIAL, 
+  course_id INTEGER NOT NULL,
+  programme_id INTEGER NOT NULL,
+  course_lectured_term varchar(50),
+  course_optional BOOLEAN,
+  course_credits INTEGER,
+  to_delete BOOLEAN,
+  time_stamp timestamp NOT NULL,
+  reported_by VARCHAR(20) NOT NULL,
+  votes INTEGER DEFAULT 0,
+  log_id SERIAL UNIQUE NOT NULL,
+  FOREIGN KEY (course_id, programme_id) REFERENCES course_programme(course_id, programme_id) ON DELETE CASCADE,
+  PRIMARY KEY (course_programme_report_id)
 );
 
 CREATE TABLE IF NOT EXISTS course_report (
-    course_report_id SERIAL, 
-    course_id INTEGER REFERENCES course ON DELETE CASCADE,
-    course_full_name varchar(100),
-    course_short_name varchar(10),
-    reported_by VARCHAR(20) NOT NULL,
-    votes INTEGER DEFAULT 0,
-    time_stamp timestamp NOT NULL,
-    PRIMARY KEY (course_report_id)
+  course_report_id SERIAL, 
+  course_id INTEGER REFERENCES course ON DELETE CASCADE,
+  course_full_name varchar(100),
+  course_short_name varchar(10),
+  reported_by VARCHAR(20) NOT NULL,
+  votes INTEGER DEFAULT 0,
+  time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
+  PRIMARY KEY (course_report_id)
 );
 
 CREATE TABLE IF NOT EXISTS class_report (
@@ -588,15 +591,15 @@ CREATE TABLE IF NOT EXISTS course_version (
 );
 
 CREATE TABLE IF NOT EXISTS course_programme_version (
-	course_id INTEGER,
-	programme_id INTEGER,
-   course_programme_version INTEGER,
-	course_lectured_term varchar(50) NOT NULL,
-	course_optional BOOLEAN NOT NULL,
-	course_credits INTEGER NOT NULL,
-	time_stamp timestamp NOT NULL,
-	created_by VARCHAR(20) NOT NULL,
-	PRIMARY KEY (course_id, programme_id, course_programme_version)
+  course_id INTEGER,
+  programme_id INTEGER,
+  course_programme_version INTEGER,
+  course_lectured_term varchar(50) NOT NULL,
+  course_optional BOOLEAN NOT NULL,
+  course_credits INTEGER NOT NULL,
+  time_stamp timestamp NOT NULL,
+  created_by VARCHAR(20) NOT NULL,
+  PRIMARY KEY (course_id, programme_id, course_programme_version)
 );
 
 CREATE TABLE IF NOT EXISTS class_version (
@@ -610,31 +613,31 @@ CREATE TABLE IF NOT EXISTS class_version (
 );
 
 CREATE TABLE IF NOT EXISTS work_assignment_version (
-	work_assignment_id INTEGER,
-	work_assignment_version INTEGER,
-	sheet_id UUID NOT NULL,
-   supplement_id UUID NOT NULL,
-   due_date date NOT NULL,
-   individual BOOLEAN NOT NULL,
-   late_delivery BOOLEAN NOT NULL,
-   multiple_deliveries BOOLEAN NOT NULL,
-   requires_report BOOLEAN NOT NULL,
-	created_by VARCHAR(20) NOT NULL,
-	time_stamp timestamp NOT NULL,
-	PRIMARY KEY (work_assignment_id, work_assignment_version)
+  work_assignment_id INTEGER,
+  work_assignment_version INTEGER,
+  sheet_id UUID NOT NULL,
+  supplement_id UUID NOT NULL,
+  due_date date NOT NULL,
+  individual BOOLEAN NOT NULL,
+  late_delivery BOOLEAN NOT NULL,
+  multiple_deliveries BOOLEAN NOT NULL,
+  requires_report BOOLEAN NOT NULL,
+  created_by VARCHAR(20) NOT NULL,
+  time_stamp timestamp NOT NULL,
+  PRIMARY KEY (work_assignment_id, work_assignment_version)
 );
 
 CREATE TABLE IF NOT EXISTS exam_version (
-    exam_id INTEGER,
-    exam_version INTEGER,
-    sheet_id UUID NOT NULL,
-    due_date date NOT NULL,
-    exam_type exam_type NOT NULL,
-    phase VARCHAR(30) NOT NULL,
-    location varchar(30) NOT NULL,
-    created_by VARCHAR(20) NOT NULL,
-    time_stamp timestamp NOT NULL,
-    PRIMARY KEY (exam_id, exam_version)
+  exam_id INTEGER,
+  exam_version INTEGER,
+  sheet_id UUID NOT NULL,
+  due_date date NOT NULL,
+  exam_type exam_type NOT NULL,
+  phase VARCHAR(30) NOT NULL,
+  location varchar(30) NOT NULL,
+  created_by VARCHAR(20) NOT NULL,
+  time_stamp timestamp NOT NULL,
+  PRIMARY KEY (exam_id, exam_version)
 );
 
 CREATE TABLE IF NOT EXISTS lecture_version (
