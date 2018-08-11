@@ -44,7 +44,7 @@ export default class extends React.Component {
         if (resp.status >= 400) throw new Error('Error!!!')
         return resp.json()
       })
-      .then(json => this.setState({organization: json[0]}))
+      .then(json => this.setState({organization: json.organizationList[0]}))
       .catch(_ => message.error('Something bad happened, please try again'))
   }
 }

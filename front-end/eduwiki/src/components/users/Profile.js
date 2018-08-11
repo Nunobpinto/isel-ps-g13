@@ -1,9 +1,12 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
 import MyLayout from '../layout/Layout'
-import {Dropdown, Button, Tooltip, message} from 'antd'
+import ProgrammesStage from '../programmes/ProgrammesStage'
+import UserActivity from './UserActivity'
+import {Layout, Menu, message} from 'antd'
 import Cookies from 'universal-cookie'
 const cookies = new Cookies()
+const {Content} = Layout
 
 export default class extends React.Component {
   constructor (props) {
@@ -16,8 +19,8 @@ export default class extends React.Component {
         personalEmail: '',
         organizationEmail: ''
       },
-      programmeStages: [],
-      programmeReports: []
+      showProgrammeStage: true,
+      showCourseStage: false
     }
   }
   render () {
@@ -26,13 +29,49 @@ export default class extends React.Component {
         <div >
           <div className='left_side'>
             <img src='defaultUser.png' />
-            <p><strong>Username</strong> : {this.state.user.username}</p>
-            <p><strong>Name</strong> : {this.state.user.givenName} {this.state.user.familyName}</p>
-            <p><strong>Personal email</strong> : {this.state.user.personalEmail}</p>
-            <p><strong>Organization email</strong> : {this.state.user.organizationEmail}</p>
+            <p>
+              <h1><strong>Username</strong> : {this.state.user.username}</h1>
+              <h1><strong>Name</strong> : {this.state.user.givenName} {this.state.user.familyName}</h1>
+              <h1><strong>Personal email</strong> : {this.state.user.personalEmail}</h1>
+              <h1><strong>Organization email</strong> : {this.state.user.organizationEmail}</h1>
+              <h1>User Activity :</h1>
+              <UserActivity />
+            </p>
           </div>
           <div className='centre_div'>
-            <h1>Ola</h1>
+            <h1>Staged resources</h1>
+            <Layout style={{ background: '#fff' }}>
+              <Menu
+                theme='light'
+                mode='horizontal'
+                defaultSelectedKeys={['1']}
+                defaultOpenKeys={['1']}
+              >
+                <Menu.Item
+                  key={1}
+                  onClick={() => this.setState({
+                    showProgrammeStage: true,
+                    showCourseStage: false
+                  })}
+                >
+                  Programmes
+                </Menu.Item>
+                <Menu.Item
+                  key={2}
+                  onClick={() => this.setState({
+                    showProgrammeStage: false,
+                    showCourseStage: true
+                  })}
+                >
+                  Courses
+                </Menu.Item>
+              </Menu>
+              <Content style={{ padding: '0 24px', minHeight: 280 }}>
+                {this.state.showProgrammeStage &&
+                  <ProgrammesStage history={this.props.history} />
+                }
+              </Content>
+            </Layout>
           </div>
           <div className='right_side'>
             <h1>Reputation</h1>
@@ -56,16 +95,18 @@ export default class extends React.Component {
         }
         return resp.json()
       })
-      .then(json => this.setState({
-        user: {
-          username: json.username,
-          familyName: json.familyName,
-          givenName: json.givenName,
-          personalEmail: json.personalEmail,
-          organizationEmail: json.organizationEmail
-        }
+      .then(user => {
+        this.setState({
+          user: {
+            username: user.username,
+            familyName: user.familyName,
+            givenName: user.givenName,
+            personalEmail: user.personalEmail,
+            organizationEmail: user.organizationEmail
+          }
+        })
+      })
 
-      }))
       .catch(_ => message.error('Something bad happened'))
   }
 }

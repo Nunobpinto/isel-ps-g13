@@ -1,7 +1,7 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
 import {Link} from 'react-router-dom'
-import MyLayout from './Layout'
+import MyLayout from '../layout/Layout'
 import CourseVersions from './CourseVersions'
 import Term from '../term/Term'
 import {Button, Card, Col, Row, Tooltip, Menu, Layout, Popover} from 'antd'

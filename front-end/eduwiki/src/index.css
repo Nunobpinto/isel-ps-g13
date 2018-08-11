@@ -201,4 +201,5 @@ body {
 .centre_div {
   display: inline-block;
   margin:0 auto;
+  margin-left: 5%
 }

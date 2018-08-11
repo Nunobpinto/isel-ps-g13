@@ -1,15 +1,7 @@
 import React from 'react'
-import { Menu, Layout, Dropdown, Avatar, Button } from 'antd'
+import { Layout } from 'antd'
 import Navbar from './Navbar'
 const { Header, Content, Footer } = Layout
-
-const menu = (
-  <Menu>
-    <Menu.Item>
-      Hello there!!
-    </Menu.Item>
-  </Menu>
-)
 
 export default (props) => (
   <Layout>

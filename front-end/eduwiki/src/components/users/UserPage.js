@@ -2,6 +2,7 @@ import React from 'react'
 import UserProgramme from './UserProgramme'
 import UserCourses from './UserCourses'
 import UserOrganization from './UserOrganization'
+import Feed from './Feed'
 
 export default class extends React.Component {
   constructor (props) {
@@ -20,6 +21,10 @@ export default class extends React.Component {
           <UserCourses
             auth={this.props.auth}
             history={this.props.history} />
+        </div>
+        <div className='centre_div'>
+          <h1>Welcome to your own page at Eduwiki</h1>
+          <Feed />
         </div>
         <div className='right_side'>
           <UserOrganization

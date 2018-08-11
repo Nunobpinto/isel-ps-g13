@@ -1,5 +1,5 @@
 import React from 'react'
-import Login from './Login'
+import Login from '../auth/Login'
 import { Link } from 'react-router-dom'
 import Cookies from 'universal-cookie'
 import UserPage from '../users/UserPage'
