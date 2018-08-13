@@ -15,18 +15,18 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.CourseReportOut
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.CourseStageOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.CourseVersionOutputModel
 
-fun toCourse(input: CourseInputModel) = Course(
+fun toCourse(input: CourseInputModel, createdBy: String) = Course(
+        createdBy = createdBy,
         organizationId = input.organizationId,
-        createdBy = input.createdBy,
         fullName = input.fullName,
         shortName = input.shortName
 )
 
-fun toCourseStage(input: CourseInputModel) = CourseStage(
+fun toCourseStage(input: CourseInputModel, createdBy: String) = CourseStage(
+        createdBy = createdBy,
         organizationId = input.organizationId,
         fullName = input.fullName,
-        shortName = input.shortName,
-        createdBy = input.createdBy
+        shortName = input.shortName
 )
 
 fun stagedToCourse(stage: CourseStage) = Course(
@@ -36,11 +36,11 @@ fun stagedToCourse(stage: CourseStage) = Course(
         shortName = stage.shortName
 )
 
-fun toCourseReport(courseId: Int, inputCourseReport: CourseReportInputModel) = CourseReport(
+fun toCourseReport(courseId: Int, inputCourseReport: CourseReportInputModel, reportedBy: String) = CourseReport(
+        reportedBy = reportedBy,
         courseId = courseId,
         fullName = inputCourseReport.fullName,
-        shortName = inputCourseReport.shortName,
-        reportedBy = inputCourseReport.reportedBy
+        shortName = inputCourseReport.shortName
 )
 
 fun toCourseVersion(course: Course) = CourseVersion(

@@ -28,6 +28,7 @@ interface ClassDAOJdbi : ClassDAO {
         const val COURSE_CLASS_TABLE = "course_class"
         const val COURSE_CLASS_STAGE_TABLE = "course_class_stage"
         // CLASS FIELDS
+        const val CLASS_LOG_ID = "log_id"
         const val CLASS_TERM_ID = "term_id"
         const val CLASS_ID = "class_id"
         const val CLASS_VERSION = "class_version"
@@ -35,9 +36,18 @@ interface ClassDAOJdbi : ClassDAO {
         const val CLASS_CREATED_BY = "created_by"
         const val CLASS_TIMESTAMP = "time_stamp"
         const val CLASS_VOTES = "votes"
+        // CLASS REPORT FIELDS
+        const val CLASS_REPORT_LOG_ID = "log_id"
         const val CLASS_REPORT_ID = "class_report_id"
         const val CLASS_REPORTED_BY = "reported_by"
+        // CLASS STAGE FIELDS
+        const val CLASS_STAGE_LOG_ID = "log_id"
+        const val CLASS_STAGE_TERM_ID = "term_id"
         const val CLASS_STAGE_ID = "class_stage_id"
+        const val CLASS_STAGE_NAME = "class_name"
+        const val CLASS_STAGE_CREATED_BY = "created_by"
+        const val CLASS_STAGE_TIMESTAMP = "time_stamp"
+        const val CLASS_STAGE_VOTES = "votes"
         // CLASS_MISC_UNIT FIELDS
         const val CLASS_MISC_UNIT_TYPE = "misc_type"
         const val CLASS_MISC_UNIT_ID = "class_misc_unit_id"
@@ -48,13 +58,30 @@ interface ClassDAOJdbi : ClassDAO {
         const val COURSE_CLASS_TERM_ID = "term_id"
         const val COURSE_CLASS_CLASS_ID = "class_id"
         const val COURSE_CLASS_VOTES = "votes"
+        const val COURSE_CLASS_LOG_ID = "log_id"
         const val COURSE_CLASS_TIMESTAMP = "time_stamp"
-        const val COURSE_CLASS_REPORT_ID = "course_class_report_id"
-        const val COURSE_CLASS_REPORTED_BY = "reported_by"
         const val COURSE_CLASS_COURSE_ID = "course_id"
-        const val COURSE_CLASS_STAGE_ID = "course_class_stage_id"
         const val COURSE_CLASS_CREATED_BY = "created_by"
-        const val COURSE_CLASS_DELETE_FLAG = "delete_permanently"
+        // COURSE CLASS REPORT FIELDS
+        const val COURSE_CLASS_REPORT_ID = "course_class_report_id"
+        const val COURSE_CLASS_REPORT_COURSE_CLASS_ID = "course_class_id"
+        const val COURSE_CLASS_REPORT_TERM_ID = "term_id"
+        const val COURSE_CLASS_REPORT_CLASS_ID = "class_id"
+        const val COURSE_CLASS_REPORT_COURSE_ID = "course_id"
+        const val COURSE_CLASS_REPORT_DELETE_FLAG = "delete_permanently"
+        const val COURSE_CLASS_REPORT_VOTES = "votes"
+        const val COURSE_CLASS_REPORT_LOG_ID = "log_id"
+        const val COURSE_CLASS_REPORT_TIMESTAMP = "time_stamp"
+        const val COURSE_CLASS_REPORT_REPORTED_BY = "reported_by"
+        // COURSE CLASS STAGE FIELDS
+        const val COURSE_CLASS_STAGE_ID = "course_class_stage_id"
+        const val COURSE_CLASS_STAGE_CLASS_ID = "course_class_id"
+        const val COURSE_CLASS_STAGE_COURSE_ID = "course_id"
+        const val COURSE_CLASS_STAGE_CREATED_BY = "created_by"
+        const val COURSE_CLASS_STAGE_TERM_ID = "term_id"
+        const val COURSE_CLASS_STAGE_TIMESTAMP = "time_stamp"
+        const val COURSE_CLASS_STAGE_VOTES = "votes"
+        const val COURSE_CLASS_STAGE_LOG_ID = "log_id"
     }
 
     @SqlQuery(
@@ -101,12 +128,6 @@ interface ClassDAOJdbi : ClassDAO {
     @GetGeneratedKeys
     override fun updateClass(updatedClass: Class): Class
 
-    @SqlQuery(
-            "SELECT $CLASS_VOTES FROM $CLASS_TABLE " +
-                    "WHERE $CLASS_ID = :classId"
-    )
-    override fun getClassVotes(classId: Int): Int
-
     @SqlUpdate(
             "UPDATE $CLASS_TABLE set $CLASS_VOTES = :votes " +
                     "WHERE $CLASS_ID = :classId"
@@ -119,39 +140,6 @@ interface ClassDAOJdbi : ClassDAO {
                     "WHERE $CLASS_ID = :classId"
     )
     override fun getTermIdFromSpecificClass(classId: Int): Int
-
-    @SqlQuery(
-            "SELECT C.$CLASS_ID, " +
-                    "C.$CLASS_VERSION, " +
-                    "C.$CLASS_CREATED_BY, " +
-                    "C.$CLASS_NAME, " +
-                    "C.$CLASS_TERM_ID, " +
-                    "C.$CLASS_VOTES, " +
-                    "C.$CLASS_TIMESTAMP" +
-                    "FROM $CLASS_TABLE AS C " +
-                    "INNER JOIN $COURSE_CLASS_TABLE AS CC " +
-                    "ON C.$CLASS_ID = CC.$COURSE_CLASS_ID " +
-                    "WHERE CC.$COURSE_CLASS_COURSE_ID = :courseId " +
-                    "AND CC.$COURSE_CLASS_TERM_ID = :termId"
-    )
-    override fun getAllClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class>
-
-    @SqlQuery(
-            "SELECT C.$CLASS_ID, " +
-                    "C.$CLASS_VERSION, " +
-                    "C.$CLASS_CREATED_BY, " +
-                    "C.$CLASS_NAME, " +
-                    "C.$CLASS_TERM_ID, " +
-                    "C.$CLASS_VOTES, " +
-                    "C.$CLASS_TIMESTAMP " +
-                    "FROM $CLASS_TABLE AS C " +
-                    "INNER JOIN $COURSE_CLASS_TABLE AS CC " +
-                    "ON C.$CLASS_ID = CC.$COURSE_CLASS_ID " +
-                    "WHERE CC.$COURSE_CLASS_COURSE_ID = :courseId " +
-                    "AND CC.$COURSE_CLASS_TERM_ID = :termId " +
-                    "AND CC.$COURSE_CLASS_CLASS_ID = :classId"
-    )
-    override fun getClassOnSpecificTermOfCourse(courseId: Int, termId: Int, classId: Int): Optional<Class>
 
     @SqlQuery(
             "SELECT * FROM $CLASS_STAGE_TABLE"
@@ -183,22 +171,11 @@ interface ClassDAOJdbi : ClassDAO {
     )
     override fun deleteSpecificStagedClass(stageId: Int): Int
 
-    @SqlQuery(
-            "SELECT $CLASS_VOTES FROM $CLASS_STAGE_TABLE " +
-                    "WHERE $CLASS_STAGE_ID = :stageId"
-    )
-    override fun getStagedClassVotes(stageId: Int): Int
-
     @SqlUpdate(
             "UPDATE $CLASS_STAGE_TABLE SET $CLASS_VOTES = :votes " +
                     "WHERE $CLASS_STAGE_ID = :stageId"
     )
     override fun updateStagedClassVotes(stageId: Int, votes: Int): Int
-
-    @SqlUpdate(
-            "DELETE FROM $CLASS_STAGE_TABLE"
-    )
-    override fun deleteAllStagedClasses(): Int
 
     @SqlQuery(
             "SELECT * FROM $CLASS_REPORT_TABLE WHERE $CLASS_ID = :classId"
@@ -228,24 +205,12 @@ interface ClassDAOJdbi : ClassDAO {
     @GetGeneratedKeys
     override fun reportClass(classId: Int, report: ClassReport): ClassReport
 
-    @SqlQuery(
-            "SELECT $CLASS_VOTES FROM $CLASS_REPORT_TABLE " +
-                    "WHERE $CLASS_REPORT_ID = :reportId " +
-                    "AND $CLASS_ID = :classId "
-    )
-    override fun getReportedClassVotes(classId: Int, reportId: Int): Int
-
     @SqlUpdate(
             "UPDATE $CLASS_REPORT_TABLE SET $CLASS_VOTES = :votes " +
                     "WHERE $CLASS_REPORT_ID = :reportId " +
                     "AND $CLASS_ID = :classId"
     )
     override fun updateReportedClassVotes(classId: Int, reportId: Int, votes: Int): Int
-
-    @SqlUpdate(
-            "DELETE FROM $CLASS_REPORT_TABLE WHERE $CLASS_ID = :classId"
-    )
-    override fun deleteAllReportsInClass(classId: Int): Int
 
     @SqlUpdate(
             "DELETE FROM $CLASS_REPORT_TABLE " +
@@ -281,39 +246,8 @@ interface ClassDAOJdbi : ClassDAO {
     )
     override fun getVersionOfSpecificClass(classId: Int, versionId: Int): Optional<ClassVersion>
 
-    @SqlUpdate(
-            "DELETE FROM $CLASS_VERSION_TABLE WHERE $CLASS_ID = :classId"
-    )
-    override fun deleteAllVersionsOfClass(classId: Int): Int
-
-    @SqlUpdate(
-            "DELETE FROM $CLASS_VERSION_TABLE " +
-                    "WHERE $CLASS_ID = :classId " +
-                    "AND $CLASS_VERSION = :versionId"
-    )
-    override fun deleteSpecificVersionOfClass(classId: Int, versionId: Int): Int
-
-    @SqlQuery(
-            "SELECT * FROM $CLASS_MISC_UNIT_TABLE " +
-                    "WHERE $CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId"
-    )
-    override fun getClassMiscUnit(courseClassId: Int): Optional<ClassMiscUnit>
-
     @SqlQuery("SELECT * FROM $COURSE_CLASS_TABLE WHERE $COURSE_CLASS_CLASS_ID = :classId")
     override fun getAllCoursesOfClass(classId: Int): List<CourseClass>
-
-    @SqlQuery("SELECT * FROM $COURSE_CLASS_TABLE " +
-            "WHERE $COURSE_CLASS_CLASS_ID = :classId AND $COURSE_CLASS_COURSE_ID = :courseId"
-    )
-    override fun getSpecificCourseOfClass(classId: Int, courseId: Int): Optional<CourseClass>
-
-    @SqlQuery(
-            "SELECT $COURSE_CLASS_VOTES " +
-                    "FROM $COURSE_CLASS_TABLE" +
-                    "WHERE $COURSE_CLASS_CLASS_ID = :classId " +
-                    "AND $COURSE_CLASS_COURSE_ID = :courseId "
-    )
-    override fun getCourseClassVotes(classId: Int, courseId: Int): Int
 
     @SqlUpdate(
             "UPDATE $COURSE_CLASS_TABLE " +
@@ -325,12 +259,6 @@ interface ClassDAOJdbi : ClassDAO {
 
     @SqlUpdate(
             "DELETE FROM $COURSE_CLASS_TABLE " +
-                    "WHERE $COURSE_CLASS_CLASS_ID = :classId"
-    )
-    override fun deleteAllCoursesInClass(classId: Int): Int
-
-    @SqlUpdate(
-            "DELETE FROM $COURSE_CLASS_TABLE " +
                     "WHERE $COURSE_CLASS_CLASS_ID = :classId " +
                     "AND $COURSE_CLASS_COURSE_ID = :courseId"
     )
@@ -339,16 +267,13 @@ interface ClassDAOJdbi : ClassDAO {
     @SqlQuery("SELECT * FROM $COURSE_CLASS_REPORT_TABLE WHERE $COURSE_CLASS_ID = :courseClassId ")
     override fun getAllReportsOfCourseInClass(courseClassId: Int): List<CourseClassReport>
 
-    @SqlQuery("SELECT * FROM $COURSE_CLASS_REPORT_TABLE WHERE $COURSE_CLASS_REPORT_ID = :reportId")
-    override fun getSpecificReportOfCourseInClass(reportId: Int): Optional<CourseClassReport>
-
     @SqlQuery(
-            "SELECT $COURSE_CLASS_VOTES FROM $COURSE_CLASS_REPORT_TABLE " +
-                    "WHERE $COURSE_CLASS_CLASS_ID = :classId" +
-                    "AND $COURSE_CLASS_COURSE_ID = :courseId" +
-                    "AND $COURSE_CLASS_REPORT_ID = :reportId"
+            "SELECT * FROM $COURSE_CLASS_REPORT_TABLE " +
+                    "WHERE $COURSE_CLASS_REPORT_ID = :reportId " +
+                    "AND $COURSE_CLASS_REPORT_COURSE_ID = :courseId " +
+                    "AND $COURSE_CLASS_REPORT_CLASS_ID = :reportId"
     )
-    override fun getReportedCourseClassVotes(classId: Int, courseId: Int, reportId: Int): Int
+    override fun getSpecificReportOfCourseInClass(reportId: Int, classId: Int, courseId: Int): Optional<CourseClassReport>
 
     @SqlUpdate(
             "UPDATE $COURSE_CLASS_REPORT_TABLE SET $COURSE_CLASS_VOTES = :votes " +
@@ -357,13 +282,6 @@ interface ClassDAOJdbi : ClassDAO {
                     "AND $COURSE_CLASS_REPORT_ID = :reportId"
     )
     override fun updateReportedCourseClassVotes(classId: Int, courseId: Int, reportId: Int, votes: Int): Int
-
-    @SqlUpdate(
-            "DELETE FROM $COURSE_CLASS_REPORT_TABLE " +
-                    "WHERE $COURSE_CLASS_CLASS_ID = :classId " +
-                    "AND $COURSE_CLASS_COURSE_ID = :courseId"
-    )
-    override fun deleteAllCourseReportsInClass(classId: Int, courseId: Int): Int
 
     @SqlUpdate(
             "DELETE FROM $COURSE_CLASS_REPORT_TABLE " +
@@ -386,25 +304,12 @@ interface ClassDAOJdbi : ClassDAO {
     )
     override fun getSpecificStagedCourseInClass(classId: Int, stageId: Int): Optional<CourseClassStage>
 
-    @SqlQuery(
-            "SELECT $COURSE_CLASS_VOTES FROM $COURSE_CLASS_STAGE_TABLE " +
-                    "WHERE $COURSE_CLASS_STAGE_ID = :stageId" +
-                    "AND $COURSE_CLASS_CLASS_ID = :classId"
-    )
-    override fun getStagedCourseClassVotes(classId: Int, stageId: Int): Int
-
     @SqlUpdate(
             "UPDATE $COURSE_CLASS_STAGE_TABLE SET $COURSE_CLASS_VOTES = :votes " +
                     "WHERE $COURSE_CLASS_STAGE_ID = :stageId" +
                     "AND $COURSE_CLASS_CLASS_ID = :classId"
     )
     override fun updateStagedCourseClassVotes(classId: Int, stageId: Int, votes: Int): Int
-
-    @SqlUpdate(
-            "DELETE FROM $COURSE_CLASS_STAGE_TABLE " +
-                    "WHERE $COURSE_CLASS_CLASS_ID = :classId"
-    )
-    override fun deleteStagedEntriesOfCourseInSpecificClass(classId: Int): Int
 
     @SqlUpdate(
             "DELETE FROM $COURSE_CLASS_STAGE_TABLE " +
@@ -430,14 +335,14 @@ interface ClassDAOJdbi : ClassDAO {
 
     @SqlUpdate(
             "INSERT INTO $COURSE_CLASS_REPORT_TABLE ( " +
-                    "$COURSE_CLASS_ID, " +
-                    "$COURSE_CLASS_COURSE_ID, " +
-                    "$COURSE_CLASS_CLASS_ID, " +
-                    "$COURSE_CLASS_TERM_ID, " +
-                    "$COURSE_CLASS_REPORTED_BY, " +
-                    "$COURSE_CLASS_VOTES, " +
-                    "$COURSE_CLASS_TIMESTAMP, " +
-                    "$COURSE_CLASS_DELETE_FLAG " +
+                    "$COURSE_CLASS_REPORT_ID, " +
+                    "$COURSE_CLASS_REPORT_COURSE_ID, " +
+                    "$COURSE_CLASS_REPORT_CLASS_ID, " +
+                    "$COURSE_CLASS_REPORT_TERM_ID, " +
+                    "$COURSE_CLASS_REPORT_REPORTED_BY, " +
+                    "$COURSE_CLASS_REPORT_VOTES, " +
+                    "$COURSE_CLASS_REPORT_TIMESTAMP, " +
+                    "$COURSE_CLASS_REPORT_DELETE_FLAG " +
                     ") " +
                     "VALUES(:courseClassReport.courseClassId, :courseClassReport.courseId, :courseClassReport.classId, " +
                     ":courseClassReport.termId, :courseClassReport.reportedBy, :courseClassReport.votes, :courseClassReport.timestamp," +
@@ -454,18 +359,6 @@ interface ClassDAOJdbi : ClassDAO {
     override fun getCourseClass(classId: Int, courseId: Int): Optional<CourseClass>
 
     @SqlUpdate(
-            "UPDATE $COURSE_CLASS_TABLE SET " +
-                    "$COURSE_CLASS_COURSE_ID = :updatedCourseClass.courseId, " +
-                    "$COURSE_CLASS_CLASS_ID = :updatedCourseClass.classId, " +
-                    "$COURSE_CLASS_TERM_ID = :updatedCourseClass.termId, " +
-                    "$COURSE_CLASS_VOTES = :updatedCourseClass.votes, " +
-                    "$COURSE_CLASS_TIMESTAMP = :updatedCourseClass.timestamp " +
-                    "WHERE $COURSE_CLASS_ID = :updatedCourseClass.courseClassId"
-    )
-    @GetGeneratedKeys
-    override fun updateCourseClass(updatedCourseClass: CourseClass): CourseClass
-
-    @SqlUpdate(
             "DELETE FROM $COURSE_CLASS_REPORT_TABLE " +
                     "WHERE $COURSE_CLASS_ID = :courseClassId " +
                     "AND $COURSE_CLASS_REPORT_ID = :reportId"
@@ -474,37 +367,18 @@ interface ClassDAOJdbi : ClassDAO {
 
     @SqlUpdate(
             "INSERT INTO $COURSE_CLASS_STAGE_TABLE ( " +
-                    "$COURSE_CLASS_COURSE_ID, " +
-                    "$COURSE_CLASS_CLASS_ID, " +
-                    "$COURSE_CLASS_TERM_ID, " +
-                    "$COURSE_CLASS_CREATED_BY, " +
-                    "$COURSE_CLASS_VOTES, " +
-                    "$COURSE_CLASS_TIMESTAMP " +
+                    "$COURSE_CLASS_STAGE_COURSE_ID, " +
+                    "$COURSE_CLASS_STAGE_CLASS_ID, " +
+                    "$COURSE_CLASS_STAGE_TERM_ID, " +
+                    "$COURSE_CLASS_STAGE_CREATED_BY, " +
+                    "$COURSE_CLASS_STAGE_VOTES, " +
+                    "$COURSE_CLASS_STAGE_TIMESTAMP " +
                     ")" +
                     "VALUES(:courseClassStage.courseId, :courseClassStage.classId, :courseClassStage.termId, " +
                     ":courseClassStage.createdBy, :courseClassStage.votes, :courseClassStage.timestamp)"
     )
     @GetGeneratedKeys
     override fun createStagingCourseInClass(courseClassStage: CourseClassStage): CourseClassStage
-
-    @SqlQuery(
-            "SELECT * FROM $COURSE_CLASS_STAGE_TABLE " +
-                    "WHERE $COURSE_CLASS_STAGE_ID = :stageId"
-    )
-    override fun getCourseClassStage(stageId: Int): Optional<CourseClassStage>
-
-    @SqlQuery(
-            "SELECT $COURSE_CLASS_ID FROM $COURSE_CLASS_TABLE " +
-                    "WHERE $COURSE_CLASS_CLASS_ID = :classId " +
-                    "AND $COURSE_CLASS_COURSE_ID = :courseId"
-    )
-    override fun getCourseClassId(classId: Int, courseId: Int): Int
-
-    @SqlQuery(
-            "SELECT $CLASS_MISC_UNIT_ID FROM $CLASS_MISC_UNIT_TABLE " +
-                    "WHERE $COURSE_CLASS_ID = :courseClassId"
-    )
-    override fun getClassMiscUnitId(courseClassId: Int): Int
 
     @SqlUpdate(
             "INSERT INTO $CLASS_MISC_UNIT_TABLE ( " +
@@ -557,6 +431,6 @@ interface ClassDAOJdbi : ClassDAO {
     override fun deleteSpecificClassMiscUnitFromTypeOnCourseInClass(courseClassId: Int, classMiscUnitId: Int, miscType: ClassMiscUnitType): Int
 
     @SqlQuery("SELECT * FROM $COURSE_CLASS_TABLE WHERE $COURSE_CLASS_ID = :courseClassId ")
-    override fun getCourseCLassFromId(courseClassId: Int?): CourseClass
+    override fun getCourseClassFromId(courseClassId: Int?): CourseClass
 
 }

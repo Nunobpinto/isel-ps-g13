@@ -15,16 +15,16 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.HomeworkReportO
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.HomeworkStageOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.HomeworkVersionOutputModel
 
-fun toHomework(homeworkInputModel: HomeworkInputModel) = Homework(
-        createdBy = homeworkInputModel.createdBy,
+fun toHomework(homeworkInputModel: HomeworkInputModel, createdBy: String) = Homework(
+        createdBy = createdBy,
         sheetId = homeworkInputModel.sheetId,
         dueDate = homeworkInputModel.dueDate,
         lateDelivery = homeworkInputModel.lateDelivery,
         multipleDeliveries = homeworkInputModel.multipleDeliveries
 )
 
-fun toHomeworkStage(homeworkInputModel: HomeworkInputModel) = HomeworkStage(
-        createdBy = homeworkInputModel.createdBy,
+fun toHomeworkStage(homeworkInputModel: HomeworkInputModel, createdBy: String) = HomeworkStage(
+        createdBy = createdBy,
         sheetId = homeworkInputModel.sheetId,
         dueDate = homeworkInputModel.dueDate,
         lateDelivery = homeworkInputModel.lateDelivery,
@@ -50,13 +50,13 @@ fun toHomeworkVersion(homework: Homework) = HomeworkVersion(
         timestamp = homework.timestamp
 )
 
-fun toHomeworkReport(homeworkReportInputModel: HomeworkReportInputModel) =  HomeworkReport(
-        homeworkId = homeworkReportInputModel.homeworkId,
+fun toHomeworkReport(homeworkReportInputModel: HomeworkReportInputModel, homeworkId: Int, reportedBy: String) =  HomeworkReport(
+        homeworkId = homeworkId,
         sheetId = homeworkReportInputModel.sheetId,
         dueDate = homeworkReportInputModel.dueDate,
         lateDelivery = homeworkReportInputModel.lateDelivery,
         multipleDeliveries = homeworkReportInputModel.multipleDeliveries,
-        reportedBy = homeworkReportInputModel.reportedBy
+        reportedBy = reportedBy
 )
 
 fun toHomeworkOutputModel(homework: Homework) = HomeworkOutputModel(

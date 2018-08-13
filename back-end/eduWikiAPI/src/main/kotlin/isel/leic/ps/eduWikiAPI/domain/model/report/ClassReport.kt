@@ -4,6 +4,7 @@ import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_NAME
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_REPORTED_BY
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_REPORT_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_REPORT_LOG_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_TIMESTAMP
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_VOTES
@@ -24,6 +25,8 @@ data class ClassReport(
         val reportedBy: String = "",
         @ColumnName(CLASS_VOTES)
         val votes: Int = 0,
+        @ColumnName(CLASS_REPORT_LOG_ID)
+        val logId: Int = 0,
         @ColumnName(CLASS_TIMESTAMP)
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 )

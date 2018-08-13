@@ -8,7 +8,5 @@ class CourseInputModel(
         @JsonProperty("course_short_name")
         val shortName: String = "",
         @JsonProperty("organization_id")
-        val organizationId: Int = 0,
-        @JsonProperty("created_by")
-        val createdBy: String = ""
+        val organizationId: Int = 0
 )

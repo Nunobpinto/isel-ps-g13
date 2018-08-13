@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS organization (
   organization_contact VARCHAR (15) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (organization_id)
 );
 
@@ -50,6 +51,7 @@ CREATE TABLE IF NOT EXISTS programme (
   programme_duration INTEGER NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (programme_id)
 );
 
@@ -63,6 +65,7 @@ CREATE TABLE IF NOT EXISTS course (
   course_short_name VARCHAR(10) UNIQUE NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (course_id)
 );
 
@@ -76,6 +79,7 @@ CREATE TABLE IF NOT EXISTS course_programme (
   time_stamp timestamp NOT NULL,
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
+  log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (course_id, programme_id)
 );
 
@@ -96,6 +100,7 @@ CREATE TABLE IF NOT EXISTS class (
   term_id INTEGER REFERENCES term ON DELETE RESTRICT,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (class_id, term_id)
 );
 
@@ -128,6 +133,7 @@ CREATE TABLE IF NOT EXISTS work_assignment (
   requires_report BOOLEAN NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (work_assignment_id)
 );
 
@@ -142,6 +148,7 @@ CREATE TABLE IF NOT EXISTS exam (
   location VARCHAR(30) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (exam_id)
 );
 
@@ -153,6 +160,7 @@ CREATE TABLE IF NOT EXISTS course_class (
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   FOREIGN KEY (class_id, term_id) REFERENCES class(class_id, term_id) ON DELETE CASCADE,
   PRIMARY KEY (course_class_id)
 );
@@ -174,6 +182,7 @@ CREATE TABLE IF NOT EXISTS lecture (
   location varchar(30),
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (lecture_id)
 );
 
@@ -187,6 +196,7 @@ CREATE TABLE IF NOT EXISTS homework (
   multiple_deliveries BOOLEAN,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (homework_id)
 );
 
@@ -292,6 +302,7 @@ CREATE TABLE IF NOT EXISTS course_stage (
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (course_stage_id)
 );
 
@@ -305,6 +316,7 @@ CREATE TABLE IF NOT EXISTS course_programme_stage (
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (course_programme_stage_id)
 );
 
@@ -315,6 +327,7 @@ CREATE TABLE IF NOT EXISTS class_stage (
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (class_stage_id, term_id)
 );
 
@@ -326,6 +339,7 @@ CREATE TABLE IF NOT EXISTS course_class_stage (
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   FOREIGN KEY (class_id, term_id) REFERENCES class(class_id, term_id) ON DELETE CASCADE,
   PRIMARY KEY (course_class_stage_id)
 );
@@ -359,6 +373,7 @@ CREATE TABLE IF NOT EXISTS work_assignment_stage (
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (work_assignment_stage_id)
 );
 
@@ -372,6 +387,7 @@ CREATE TABLE IF NOT EXISTS exam_stage (
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (exam_stage_id)
 );
 
@@ -384,6 +400,7 @@ CREATE TABLE IF NOT EXISTS lecture_stage (
   time_stamp timestamp NOT NULL,
   votes INTEGER DEFAULT 0,
   location VARCHAR(30) NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (lecture_stage_id)
 );
 
@@ -396,6 +413,7 @@ CREATE TABLE IF NOT EXISTS homework_stage (
   time_stamp timestamp NOT NULL,
   votes INTEGER DEFAULT 0,
   created_by VARCHAR(20) NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (homework_stage_id)
 );
 
@@ -413,6 +431,7 @@ CREATE TABLE IF NOT EXISTS organization_report (
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (organization_report_id)
 );
 
@@ -467,6 +486,7 @@ CREATE TABLE IF NOT EXISTS class_report (
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   FOREIGN KEY (class_id, term_id) REFERENCES class(class_id, term_id) ON DELETE CASCADE,
   PRIMARY KEY (class_report_id)
 );
@@ -481,6 +501,7 @@ CREATE TABLE IF NOT EXISTS course_class_report (
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (course_class_report_id)
 );
 
@@ -497,6 +518,7 @@ CREATE TABLE IF NOT EXISTS work_assignment_report (
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (work_assignment_report_id)
 );
 
@@ -511,6 +533,7 @@ CREATE TABLE IF NOT EXISTS exam_report (
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (exam_report_id)
 );
 
@@ -524,6 +547,7 @@ CREATE TABLE IF NOT EXISTS lecture_report (
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (lecture_report_id)
 );
 
@@ -537,6 +561,7 @@ CREATE TABLE IF NOT EXISTS homework_report (
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (homework_report_id)
 );
 
@@ -546,6 +571,7 @@ CREATE TABLE IF NOT EXISTS user_report (
   reason VARCHAR(200) NOT NULL,
   reported_by VARCHAR(20) NOT NULL,
   time_stamp timestamp NOT NULL,
+  log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (report_id)
 );
 

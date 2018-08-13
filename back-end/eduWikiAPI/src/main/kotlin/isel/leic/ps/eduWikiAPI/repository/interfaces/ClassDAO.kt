@@ -20,27 +20,17 @@ interface ClassDAO {
 
     fun getSpecificClass(classId: Int): Optional<Class>
 
+    fun getTermIdFromSpecificClass(classId: Int): Int
+
     fun createClass(klass: Class): Class
 
-    fun deleteSpecificClass(classId: Int): Int
+    fun createClassMiscUnit(courseClassId: Int, miscType: ClassMiscUnitType): ClassMiscUnit
 
     fun updateClass(updatedClass: Class): Class
 
-    fun getClassVotes(classId: Int): Int
-
     fun updateClassVotes(classId: Int, votes: Int): Int
 
-    fun getAllClassesOnSpecificTermOfCourse(courseId: Int, termId: Int): List<Class>
-
-    fun getClassOnSpecificTermOfCourse(courseId: Int, termId: Int, classId: Int): Optional<Class>
-
-    fun getClassMiscUnit(courseClassId: Int): Optional<ClassMiscUnit>
-
-    fun getTermIdFromSpecificClass(classId: Int): Int
-
-    fun getClassMiscUnitId(courseClassId: Int): Int
-
-    fun createClassMiscUnit(courseClassId: Int, miscType: ClassMiscUnitType): ClassMiscUnit
+    fun deleteSpecificClass(classId: Int): Int
 
     fun deleteAllClassMiscUnitsFromTypeOfCourseInClass(courseClassId: Int, miscType: ClassMiscUnitType): Int
 
@@ -57,19 +47,15 @@ interface ClassDAO {
 
     fun createStagedClass(classStage: ClassStage): ClassStage
 
-    fun deleteSpecificStagedClass(stageId: Int): Int
+    fun createStagingClassMiscUnit(courseClassId: Int, miscType: ClassMiscUnitType): ClassMiscUnitStage
 
-    fun deleteAllStagedClasses(): Int
+    fun updateStagedClassVotes(stageId: Int, votes: Int): Int
+
+    fun deleteSpecificStagedClass(stageId: Int): Int
 
     fun deleteAllStagedClassMiscUnitsFromTypeOfCourseInClass(courseClassId: Int, miscType: ClassMiscUnitType): Int
 
     fun deleteSpecificStagedClassMiscUnitFromTypeOfCourseInClass(courseClassId: Int, stageId: Int, miscType: ClassMiscUnitType): Int
-
-    fun getStagedClassVotes(stageId: Int): Int
-
-    fun updateStagedClassVotes(stageId: Int, votes: Int): Int
-
-    fun createStagingClassMiscUnit(courseClassId: Int, miscType: ClassMiscUnitType): ClassMiscUnitStage
 
     /**
      * Report entities queries
@@ -81,82 +67,57 @@ interface ClassDAO {
 
     fun reportClass(classId: Int, report: ClassReport): ClassReport
 
-    fun deleteAllReportsInClass(classId: Int): Int
+    fun updateReportedClassVotes(classId: Int, reportId: Int, votes: Int): Int
 
     fun deleteSpecificReportInClass(classId: Int, reportId: Int) : Int
-
-    fun getReportedClassVotes(classId: Int, reportId: Int): Int
-
-    fun updateReportedClassVotes(classId: Int, reportId: Int, votes: Int): Int
 
     /**
      * Version entities queries
      */
-    fun createClassVersion(classVersion: ClassVersion): ClassVersion
 
     fun getAllVersionsOfSpecificClass(classId: Int): List<ClassVersion>
 
     fun getVersionOfSpecificClass(classId: Int, versionId: Int): Optional<ClassVersion>
 
-    fun deleteAllVersionsOfClass(classId: Int): Int
-
-    fun deleteSpecificVersionOfClass(classId: Int, versionId: Int): Int
+    fun createClassVersion(classVersion: ClassVersion): ClassVersion
 
     /**
      * Courses On Class queries
      */
+
     fun getAllCoursesOfClass(classId: Int): List<CourseClass>
 
-    fun getSpecificCourseOfClass(classId: Int, courseId: Int): Optional<CourseClass>
+    fun getCourseClass(classId: Int, courseId: Int): Optional<CourseClass>
 
-    fun deleteAllCoursesInClass(classId: Int): Int
+    fun getCourseClassFromId(courseClassId: Int?): CourseClass
 
-    fun deleteSpecificCourseInClass(classId: Int, courseId: Int): Int
+    fun getSpecificReportOfCourseInClass(reportId: Int, classId: Int, courseId: Int): Optional<CourseClassReport>
 
     fun getAllReportsOfCourseInClass(courseClassId: Int): List<CourseClassReport>
-
-    fun getSpecificReportOfCourseInClass(reportId: Int): Optional<CourseClassReport>
-
-    fun deleteAllCourseReportsInClass(classId: Int, courseId: Int): Int
-
-    fun deleteSpecificCourseReportInClass(classId: Int, courseId: Int, reportId: Int): Int
 
     fun getStageEntriesOfCoursesInClass(classId: Int): List<CourseClassStage>
 
     fun getSpecificStagedCourseInClass(classId: Int, stageId: Int): Optional<CourseClassStage>
 
-    fun addCourseToClass(courseClass: CourseClass): CourseClass
+    fun deleteSpecificCourseInClass(classId: Int, courseId: Int): Int
 
-    fun deleteStagedEntriesOfCourseInSpecificClass(classId: Int): Int
+    fun deleteSpecificCourseReportInClass(classId: Int, courseId: Int, reportId: Int): Int
+
+    fun addCourseToClass(courseClass: CourseClass): CourseClass
 
     fun deleteSpecificStagedCourseInClass(classId: Int, stageId: Int): Int
 
     fun reportCourseInClass(courseClassReport: CourseClassReport): CourseClassReport
 
-    fun getCourseClass(classId: Int, courseId: Int): Optional<CourseClass>
-
-    fun updateCourseClass(updatedCourseClass: CourseClass): CourseClass
-
     fun deleteSpecificReportOnCourseClass(courseClassId: Int, reportId: Int) : Int
 
     fun createStagingCourseInClass(courseClassStage: CourseClassStage): CourseClassStage
 
-    fun getCourseClassStage(stageId: Int): Optional<CourseClassStage>
-
-    fun getCourseClassId(classId: Int, courseId: Int) : Int
-
-    fun getCourseClassVotes(classId: Int, courseId: Int): Int
-
     fun updateCourseClassVotes(classId: Int, courseId: Int, votes: Int): Int
-
-    fun getReportedCourseClassVotes(classId: Int, courseId: Int, reportId: Int): Int
 
     fun updateReportedCourseClassVotes(classId: Int, courseId: Int, reportId: Int, votes: Int): Int
 
-    fun getStagedCourseClassVotes(classId: Int, stageId: Int): Int
-
     fun updateStagedCourseClassVotes(classId: Int, stageId: Int, votes: Int): Int
 
-    fun getCourseCLassFromId(courseClassId: Int?): CourseClass
 
 }

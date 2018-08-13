@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.domain.mappers
 
+import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseClassReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Class
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.CourseClass
@@ -18,6 +19,15 @@ fun stagedToCourseClass(stage: CourseClassStage) = CourseClass(
         classId = stage.classId,
         termId = stage.termId,
         createdBy = stage.createdBy
+)
+
+fun toCourseClassReport(courseClassId: Int, courseClassReportInputModel: CourseClassReportInputModel, reportedBy: String): CourseClassReport = CourseClassReport(
+        courseClassId = courseClassId,
+        classId = courseClassReportInputModel.classId,
+        courseId = courseClassReportInputModel.courseId,
+        termId = courseClassReportInputModel.termId,
+        deletePermanently = courseClassReportInputModel.deletePermanently,
+        reportedBy = reportedBy
 )
 
 fun toCourseClassOutputModel(course: Course, klass: Class, courseClass: CourseClass, term: Term) = CourseClassOutputModel(
@@ -42,7 +52,7 @@ fun toCourseClassReportOutputModel(courseClassReport: CourseClassReport) = Cours
         reportedBy = courseClassReport.reportedBy,
         votes = courseClassReport.votes,
         timestamp = courseClassReport.timestamp,
-        deletePermanently = courseClassReport.deleltePermanently
+        deletePermanently = courseClassReport.deletePermanently
 )
 
 fun toCourseClassStageOutputModel(courseClassStage: CourseClassStage) = CourseClassStageOutputModel(

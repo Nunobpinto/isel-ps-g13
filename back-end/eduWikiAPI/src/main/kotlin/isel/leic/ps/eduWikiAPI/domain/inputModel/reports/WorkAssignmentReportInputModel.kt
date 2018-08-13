@@ -17,7 +17,5 @@ class WorkAssignmentReportInputModel (
         @JsonProperty("multipleDeliveries")
         val multipleDeliveries: Boolean? = null,
         @JsonProperty("requires_report")
-        val requiresReport: Boolean? = null,
-        @JsonProperty("reported_by")
-        val reportedBy: String = ""
+        val requiresReport: Boolean? = null
 )

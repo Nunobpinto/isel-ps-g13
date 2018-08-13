@@ -11,8 +11,6 @@ class ProgrammeInputModel(
         val academicDegree: String = "",
         @JsonProperty("programme_total_credits")
         val totalCredits: Int = 0,
-        @JsonProperty("created_by")
-        val createdBy: String = "",
         @JsonProperty("programme_duration")
         val duration: Int = 0
 )

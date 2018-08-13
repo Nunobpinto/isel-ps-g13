@@ -1,10 +1,11 @@
 package isel.leic.ps.eduWikiAPI.eventListeners.events
 
 import java.sql.Timestamp
+import java.time.LocalDateTime
 
 data class ResourceDeletedEvent(
         val user: String,
         val entity: String,
         val logId: Int,
-        val timestamp: Timestamp
+        val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 )

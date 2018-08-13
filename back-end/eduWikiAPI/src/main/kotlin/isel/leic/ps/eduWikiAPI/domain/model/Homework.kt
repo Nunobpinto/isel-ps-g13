@@ -4,6 +4,7 @@ import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_CRE
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_DUE_DATE
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_ID
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_LATE_DELIVERY
+import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_LOG_ID
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_MULTIPLE_DELIVERIES
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_SHEET_ID
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOJdbi.Companion.HOMEWORK_TIMESTAMP
@@ -20,6 +21,8 @@ data class Homework (
         val homeworkId: Int = 0,
         @ColumnName(HOMEWORK_VERSION)
         val version: Int = 1,
+        @ColumnName(HOMEWORK_LOG_ID)
+        val logId: Int = 0,
         @ColumnName(HOMEWORK_VOTES)
         val votes: Int = 0,
         @ColumnName(HOMEWORK_CREATED_BY)

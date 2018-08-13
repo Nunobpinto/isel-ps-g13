@@ -8,6 +8,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.version.ProgrammeVersion
 import java.util.*
 
 interface ProgrammeDAO {
+
     /**
      * Main entities queries
      */
@@ -16,17 +17,13 @@ interface ProgrammeDAO {
 
     fun getSpecificProgramme(programmeId: Int): Optional<Programme>
 
-    fun deleteAllProgrammes(): Int
-
-    fun deleteSpecificProgramme(programmeId: Int): Int
+    fun createProgramme(programme: Programme): Programme
 
     fun updateProgramme(programmeId: Int, programme: Programme): Programme
 
-    fun createProgramme(programme: Programme): Programme
-
-    fun getVotesOnProgramme(programmeId: Int): Int
-
     fun updateVotesOnProgramme(programmeId: Int, votes: Int): Int
+
+    fun deleteSpecificProgramme(programmeId: Int): Int
 
     /**
      * Stage entities queries
@@ -36,11 +33,7 @@ interface ProgrammeDAO {
 
     fun getAllProgrammeStageEntries(): List<ProgrammeStage>
 
-    fun deleteAllStagedProgrammes(): Int
-
     fun createStagingProgramme(programmeStage: ProgrammeStage): ProgrammeStage
-
-    fun getVotesOnStagedProgramme(stageId: Int): Int
 
     fun updateVotesOnStagedProgramme(stageId: Int, votes: Int): Int
 
@@ -54,11 +47,9 @@ interface ProgrammeDAO {
 
     fun getSpecificVersionOfProgramme(programmeId: Int, version: Int): Optional<ProgrammeVersion>
 
-    fun deleteSpecificProgrammeVersion(programmeId: Int, version: Int) : Int
-
-    fun deleteAllProgrammeVersions(programmeId: Int) : Int
-
     fun createProgrammeVersion(programmeVersion: ProgrammeVersion): ProgrammeVersion
+
+    fun deleteSpecificProgrammeVersion(programmeId: Int, version: Int) : Int
 
     /**
      * Report entity queries
@@ -70,12 +61,8 @@ interface ProgrammeDAO {
 
     fun reportProgramme(programmeId: Int, programmeReport: ProgrammeReport): ProgrammeReport
 
-    fun deleteSpecificReportOnProgramme(programmeId: Int, reportId: Int): Int
-
-    fun deleteAllReportsOnProgramme(programmeId : Int): Int
-
-    fun getVotesOnReportedProgramme(reportId: Int, programmeId: Int): Int
-
     fun updateVotesOnReportedProgramme(programmeId: Int, reportId: Int, votes: Int): Int
+
+    fun deleteSpecificReportOnProgramme(programmeId: Int, reportId: Int): Int
 
 }

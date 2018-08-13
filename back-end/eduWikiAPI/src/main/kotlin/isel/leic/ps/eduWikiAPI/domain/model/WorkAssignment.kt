@@ -6,6 +6,7 @@ import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOJdbi.Companion.WORK_A
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOJdbi.Companion.WORK_ASSIGNMENT_DUE_DATE
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOJdbi.Companion.WORK_ASSIGNMENT_INDIVIDUAL
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOJdbi.Companion.WORK_ASSIGNMENT_LATE_DELIVERY
+import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOJdbi.Companion.WORK_ASSIGNMENT_LOG_ID
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOJdbi.Companion.WORK_ASSIGNMENT_MULTIPLE_DELIVERIES
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOJdbi.Companion.WORK_ASSIGNMENT_REQUIRES_REPORT
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOJdbi.Companion.WORK_ASSIGNMENT_SHEET_ID
@@ -23,6 +24,8 @@ data class WorkAssignment (
         val workAssignmentId: Int = -1,
         @ColumnName(WORK_ASSIGNMENT_VERSION)
         val version: Int = 1,
+        @ColumnName(WORK_ASSIGNMENT_LOG_ID)
+        val logId: Int = 0,
         @ColumnName(WORK_ASSIGNMENT_VOTES)
         val votes: Int = 0,
         @ColumnName(WORK_ASSIGNMENT_CREATED_BY)

@@ -5,15 +5,11 @@ import java.time.LocalDate
 import java.util.*
 
 class HomeworkReportInputModel (
-        @JsonProperty("homework_id")
-        val homeworkId: Int = 0,
         val sheetId: UUID? = null,
         @JsonProperty("due_date")
         val dueDate: LocalDate? =null,
         @JsonProperty("late_delivery")
         val lateDelivery: Boolean? =null,
         @JsonProperty("multipleDeliveries")
-        val multipleDeliveries: Boolean? = null,
-        @JsonProperty("reported_by")
-        val reportedBy: String = ""
+        val multipleDeliveries: Boolean? = null
 )

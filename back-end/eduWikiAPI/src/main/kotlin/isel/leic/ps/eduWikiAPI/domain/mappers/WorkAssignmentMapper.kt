@@ -14,8 +14,8 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.WorkAssignmentR
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.WorkAssignmentStageOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.WorkAssignmentVersionOutputModel
 
-fun toWorkAssignment(input: WorkAssignmentInputModel) = WorkAssignment(
-        createdBy = input.createdBy,
+fun toWorkAssignment(input: WorkAssignmentInputModel, createdBy: String) = WorkAssignment(
+        createdBy = createdBy,
         sheetId = input.sheetId,
         supplementId = input.supplementId,
         dueDate = input.dueDate,
@@ -39,7 +39,7 @@ fun toWorkAssignmentVersion(workAssignment: WorkAssignment) = WorkAssignmentVers
         timestamp = workAssignment.timestamp
 )
 
-fun toWorkAssignmentReport(workAssignmentId: Int, inputWorkAssignmentReport: WorkAssignmentReportInputModel) = WorkAssignmentReport(
+fun toWorkAssignmentReport(workAssignmentId: Int, inputWorkAssignmentReport: WorkAssignmentReportInputModel, reportedBy: String) = WorkAssignmentReport(
         workAssignmentId = workAssignmentId,
         sheetId = inputWorkAssignmentReport.sheetId,
         supplementId = inputWorkAssignmentReport.supplementId,
@@ -48,10 +48,10 @@ fun toWorkAssignmentReport(workAssignmentId: Int, inputWorkAssignmentReport: Wor
         lateDelivery = inputWorkAssignmentReport.lateDelivery,
         multipleDeliveries = inputWorkAssignmentReport.multipleDeliveries,
         requiresReport = inputWorkAssignmentReport.requiresReport,
-        reportedBy = inputWorkAssignmentReport.reportedBy
+        reportedBy = reportedBy
 )
 
-fun toStageWorkAssignment(inputWorkAssignment: WorkAssignmentInputModel) = WorkAssignmentStage(
+fun toStageWorkAssignment(inputWorkAssignment: WorkAssignmentInputModel, createdBy: String) = WorkAssignmentStage(
         sheetId = inputWorkAssignment.sheetId,
         supplementId = inputWorkAssignment.supplementId,
         dueDate = inputWorkAssignment.dueDate,
@@ -59,7 +59,7 @@ fun toStageWorkAssignment(inputWorkAssignment: WorkAssignmentInputModel) = WorkA
         lateDelivery = inputWorkAssignment.lateDelivery,
         multipleDeliveries = inputWorkAssignment.multipleDeliveries,
         requiresReport = inputWorkAssignment.requiresReport,
-        createdBy = inputWorkAssignment.createdBy
+        createdBy = createdBy
 )
 
 fun stagedToWorkAssignment(stage: WorkAssignmentStage) = WorkAssignment(

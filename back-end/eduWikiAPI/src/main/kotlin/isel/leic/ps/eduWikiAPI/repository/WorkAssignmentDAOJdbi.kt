@@ -7,8 +7,10 @@ import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.WorkAssignmentVersion
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_COURSE_ID
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_ID
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_STAGE_COURSE_ID
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_STAGE_ID
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_STAGE_TABLE
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_STAGE_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_TABLE
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.interfaces.WorkAssignmentDAO
@@ -29,8 +31,8 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
         const val WORK_ASSIGNMENT_VERSION_TABLE = "work_assignment_version"
         const val WORK_ASSIGNMENT_REPORT_TABLE = "work_assignment_report"
         const val WORK_ASSIGNMENT_STAGE_TABLE = "work_assignment_stage"
-        // FIELDS
-        const val WORK_ASSIGNMENT_STAGE_ID = "work_assignment_stage_id"
+
+        // WORK ASSIGNMENT FIELDS
         const val WORK_ASSIGNMENT_ID = "work_assignment_id"
         const val WORK_ASSIGNMENT_VERSION = "work_assignment_version"
         const val WORK_ASSIGNMENT_SHEET_ID = "sheet_id"
@@ -42,9 +44,51 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
         const val WORK_ASSIGNMENT_REQUIRES_REPORT = "requires_report"
         const val WORK_ASSIGNMENT_VOTES = "votes"
         const val WORK_ASSIGNMENT_TIMESTAMP = "time_stamp"
-        const val WORK_ASSIGNMENT_REPORT_ID = "work_assignment_report_id"
-        const val WORK_ASSIGNMENT_REPORTED_BY = "reported_by"
         const val WORK_ASSIGNMENT_CREATED_BY = "created_by"
+        const val WORK_ASSIGNMENT_LOG_ID = "log_id"
+
+        // WORK ASSIGNMENT STAGE FIELDS
+        const val WORK_ASSIGNMENT_STAGE_ID = "work_assignment_stage_id"
+        const val WORK_ASSIGNMENT_STAGE_CREATED_BY = "created_by"
+        const val WORK_ASSIGNMENT_STAGE_SHEET_ID = "sheet_id"
+        const val WORK_ASSIGNMENT_STAGE_SUPPLEMENT = "supplement_id"
+        const val WORK_ASSIGNMENT_STAGE_DUE_DATE = "due_date"
+        const val WORK_ASSIGNMENT_STAGE_INDIVIDUAL = "individual"
+        const val WORK_ASSIGNMENT_STAGE_LATE_DELIVERY = "late_delivery"
+        const val WORK_ASSIGNMENT_STAGE_MULTIPLE_DELIVERIES = "multipleDeliveries"
+        const val WORK_ASSIGNMENT_STAGE_REQUIRES_REPORT = "requires_report"
+        const val WORK_ASSIGNMENT_STAGE_VOTES = "votes"
+        const val WORK_ASSIGNMENT_STAGE_TIMESTAMP = "time_stamp"
+        const val WORK_ASSIGNMENT_STAGE_LOG_ID = "log_id"
+
+
+        // WORK ASSIGNMENT REPORT FIELDS
+        const val WORK_ASSIGNMENT_REPORT_ID = "work_assignment_report_id"
+        const val WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID = "work_assignment_id"
+        const val WORK_ASSIGNMENT_REPORTED_BY = "reported_by"
+        const val WORK_ASSIGNMENT_REPORT_SHEET_ID = "sheet_id"
+        const val WORK_ASSIGNMENT_REPORT_SUPPLEMENT = "supplement_id"
+        const val WORK_ASSIGNMENT_REPORT_DUE_DATE = "due_date"
+        const val WORK_ASSIGNMENT_REPORT_INDIVIDUAL = "individual"
+        const val WORK_ASSIGNMENT_REPORT_LATE_DELIVERY = "late_delivery"
+        const val WORK_ASSIGNMENT_REPORT_MULTIPLE_DELIVERIES = "multipleDeliveries"
+        const val WORK_ASSIGNMENT_REPORT_REQUIRES_REPORT = "requires_report"
+        const val WORK_ASSIGNMENT_REPORT_VOTES = "votes"
+        const val WORK_ASSIGNMENT_REPORT_TIMESTAMP = "time_stamp"
+        const val WORK_ASSIGNMENT_REPORT_LOG_ID = "log_id"
+
+        // WORK ASSIGNMENT VERSION FIELDS
+        const val WORK_ASSIGNMENT_VERSION_WORK_ASSIGN_ID = "work_assignment_id"
+        const val WORK_ASSIGNMENT_VERSION_ID = "work_assignment_version"
+        const val WORK_ASSIGNMENT_VERSION_CREATED_BY = "created_by"
+        const val WORK_ASSIGNMENT_VERSION_SHEET_ID = "sheet_id"
+        const val WORK_ASSIGNMENT_VERSION_SUPPLEMENT = "supplement_id"
+        const val WORK_ASSIGNMENT_VERSION_DUE_DATE = "due_date"
+        const val WORK_ASSIGNMENT_VERSION_INDIVIDUAL = "individual"
+        const val WORK_ASSIGNMENT_VERSION_LATE_DELIVERY = "late_delivery"
+        const val WORK_ASSIGNMENT_VERSION_MULTIPLE_DELIVERIES = "multipleDeliveries"
+        const val WORK_ASSIGNMENT_VERSION_REQUIRES_REPORT = "requires_report"
+        const val WORK_ASSIGNMENT_VERSION_TIMESTAMP = "time_stamp"
     }
 
     @CreateSqlObject
@@ -73,11 +117,8 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
     )
     override fun getSpecificWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, workAssignmentId: Int): Optional<WorkAssignment>
 
-    @SqlQuery("SELECT * FROM $WORK_ASSIGNMENT_TABLE")
-    override fun getAllWorkAssignment(): List<WorkAssignment>
-
-    override fun deleteSpecificWorkAssignment(workAssignmentId: Int): Int =
-            createCourseDAO().deleteSpecificCourseMiscUnitEntry(workAssignmentId)
+    override fun deleteSpecificWorkAssignment(courseId: Int, termId: Int, workAssignmentId: Int): Int =
+            createCourseDAO().deleteSpecificCourseMiscUnitEntry(courseId, termId, workAssignmentId)
 
     @SqlUpdate(
             "UPDATE $WORK_ASSIGNMENT_TABLE SET " +
@@ -96,55 +137,25 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
     )
     override fun updateWorkAssignment(workAssignmentId: Int, workAssignment: WorkAssignment): WorkAssignment
 
-    @SqlQuery(
-            "SELECT $WORK_ASSIGNMENT_VOTES FROM $WORK_ASSIGNMENT_TABLE " +
-                    "WHERE $WORK_ASSIGNMENT_ID = :workAssignmentId"
-    )
-    override fun getVotesOnWorkAssignment(workAssignmentId: Int): Int
-
     @SqlUpdate(
             "UPDATE $WORK_ASSIGNMENT_TABLE SET $WORK_ASSIGNMENT_VOTES = :votes" +
                     " WHERE $WORK_ASSIGNMENT_ID = :workAssignmentId"
     )
     override fun updateVotesOnWorkAssignment(workAssignmentId: Int, votes: Int): Int
 
-    @SqlQuery(
-            "SELECT * FROM $WORK_ASSIGNMENT_STAGE_TABLE " +
-                    " WHERE $WORK_ASSIGNMENT_STAGE_ID = :stageId"
-    )
-    override fun getWorkAssignmentSpecificStageEntry(stageId: Int): Optional<WorkAssignmentStage>
-
-    @SqlQuery("SELECT * FROM $WORK_ASSIGNMENT_STAGE_TABLE")
-    override fun getAllStagedWorkAssignments(): List<WorkAssignmentStage>
-
     override fun deleteSpecificStagedWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, stageId: Int): Int =
             createCourseDAO().deleteSpecificStagedCourseMiscUnitEntry(courseId, termId, stageId)
 
-    @SqlQuery(
-            "SELECT * FROM $WORK_ASSIGNMENT_VERSION_TABLE " +
-                    "WHERE $WORK_ASSIGNMENT_ID = :workAssignmentId " +
-                    "AND $WORK_ASSIGNMENT_VERSION = :version"
-    )
-    override fun getVersionOfSpecificWorkAssignment(workAssignmentId: Int, version: Int): Optional<WorkAssignmentVersion>
-
     @SqlUpdate(
-            "DELETE FROM $WORK_ASSIGNMENT_VERSION_TABLE " +
-                    "WHERE $WORK_ASSIGNMENT_ID = :workAssignmentId " +
-                    "AND $WORK_ASSIGNMENT_VERSION = :version"
+            "DELETE FROM $WORK_ASSIGNMENT_REPORT_TABLE AS W " +
+                    "USING $COURSE_MISC_UNIT_TABLE AS C " +
+                    "WHERE W.$WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID = C.$COURSE_MISC_UNIT_ID " +
+                    "C.$COURSE_MISC_UNIT_COURSE_ID = :courseId AND " +
+                    "C.$COURSE_MISC_UNIT_TERM_ID = :termId AND " +
+                    "C.$COURSE_MISC_UNIT_ID = :workAssignmentId AND " +
+                    "AND W.$WORK_ASSIGNMENT_REPORT_ID = :reportId"
     )
-    override fun deleteVersionWorkAssignment(workAssignmentId: Int, version: Int): Int
-
-    @SqlUpdate(
-            "DELETE FROM $WORK_ASSIGNMENT_REPORT_TABLE " +
-                    "WHERE $WORK_ASSIGNMENT_REPORT_ID = :reportId"
-    )
-    override fun deleteReportOnWorkAssignment(reportId: Int): Int
-
-    @SqlUpdate(
-            "DELETE FROM $WORK_ASSIGNMENT_REPORT_TABLE " +
-                    "WHERE $WORK_ASSIGNMENT_ID = :workAssignmentId"
-    )
-    override fun deleteAllReportsOnWorkAssignment(courseMiscUnitId: Int): Int
+    override fun deleteReportOnWorkAssignment(termId: Int, courseId: Int, workAssignmentId: Int, reportId: Int): Int
 
     @SqlQuery(
             "SELECT W.$WORK_ASSIGNMENT_ID " +
@@ -169,61 +180,61 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
 
     @SqlQuery(
             "SELECT W.$WORK_ASSIGNMENT_STAGE_ID, " +
-                    "W.$WORK_ASSIGNMENT_CREATED_BY, " +
-                    "W.$WORK_ASSIGNMENT_SHEET_ID, " +
-                    "W.$WORK_ASSIGNMENT_SUPPLEMENT, " +
-                    "W.$WORK_ASSIGNMENT_DUE_DATE, " +
-                    "W.$WORK_ASSIGNMENT_INDIVIDUAL, " +
-                    "W.$WORK_ASSIGNMENT_LATE_DELIVERY, " +
-                    "W.$WORK_ASSIGNMENT_MULTIPLE_DELIVERIES, " +
-                    "W.$WORK_ASSIGNMENT_REQUIRES_REPORT, " +
-                    "W.$WORK_ASSIGNMENT_VOTES," +
-                    "W.$WORK_ASSIGNMENT_TIMESTAMP " +
+                    "W.$WORK_ASSIGNMENT_STAGE_CREATED_BY, " +
+                    "W.$WORK_ASSIGNMENT_STAGE_SHEET_ID, " +
+                    "W.$WORK_ASSIGNMENT_STAGE_SUPPLEMENT, " +
+                    "W.$WORK_ASSIGNMENT_STAGE_DUE_DATE, " +
+                    "W.$WORK_ASSIGNMENT_STAGE_INDIVIDUAL, " +
+                    "W.$WORK_ASSIGNMENT_STAGE_LATE_DELIVERY, " +
+                    "W.$WORK_ASSIGNMENT_STAGE_MULTIPLE_DELIVERIES, " +
+                    "W.$WORK_ASSIGNMENT_STAGE_REQUIRES_REPORT, " +
+                    "W.$WORK_ASSIGNMENT_STAGE_VOTES," +
+                    "W.$WORK_ASSIGNMENT_STAGE_TIMESTAMP " +
                     "FROM $WORK_ASSIGNMENT_STAGE_TABLE AS W " +
                     "INNER JOIN $COURSE_MISC_UNIT_STAGE_TABLE AS C " +
                     "ON W.$WORK_ASSIGNMENT_STAGE_ID = C.$COURSE_MISC_UNIT_STAGE_ID " +
-                    "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId " +
-                    "AND C.$COURSE_MISC_UNIT_TERM_ID = :termId"
+                    "WHERE C.$COURSE_MISC_UNIT_STAGE_COURSE_ID = :courseId " +
+                    "AND C.$COURSE_MISC_UNIT_STAGE_TERM_ID = :termId"
     )
     override fun getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignmentStage>
 
     @SqlQuery(
             "SELECT W.$WORK_ASSIGNMENT_STAGE_ID, " +
-                    "W.$WORK_ASSIGNMENT_SHEET_ID," +
-                    "W.$WORK_ASSIGNMENT_SUPPLEMENT, " +
-                    "W.$WORK_ASSIGNMENT_DUE_DATE, " +
-                    "W.$WORK_ASSIGNMENT_INDIVIDUAL, " +
-                    "W.$WORK_ASSIGNMENT_LATE_DELIVERY, " +
-                    "W.$WORK_ASSIGNMENT_MULTIPLE_DELIVERIES, " +
-                    "W.$WORK_ASSIGNMENT_REQUIRES_REPORT, " +
-                    "W.$WORK_ASSIGNMENT_CREATED_BY, " +
-                    "W.$WORK_ASSIGNMENT_VOTES, " +
-                    "W.$WORK_ASSIGNMENT_TIMESTAMP " +
+                    "W.$WORK_ASSIGNMENT_STAGE_SHEET_ID," +
+                    "W.$WORK_ASSIGNMENT_STAGE_SUPPLEMENT, " +
+                    "W.$WORK_ASSIGNMENT_STAGE_DUE_DATE, " +
+                    "W.$WORK_ASSIGNMENT_STAGE_INDIVIDUAL, " +
+                    "W.$WORK_ASSIGNMENT_STAGE_LATE_DELIVERY, " +
+                    "W.$WORK_ASSIGNMENT_STAGE_MULTIPLE_DELIVERIES, " +
+                    "W.$WORK_ASSIGNMENT_STAGE_REQUIRES_REPORT, " +
+                    "W.$WORK_ASSIGNMENT_STAGE_CREATED_BY, " +
+                    "W.$WORK_ASSIGNMENT_STAGE_VOTES, " +
+                    "W.$WORK_ASSIGNMENT_STAGE_TIMESTAMP " +
                     "FROM $WORK_ASSIGNMENT_STAGE_TABLE AS W " +
                     "INNER JOIN $COURSE_MISC_UNIT_STAGE_TABLE AS C " +
                     "ON W.$WORK_ASSIGNMENT_STAGE_ID = C.$COURSE_MISC_UNIT_STAGE_ID " +
-                    "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId " +
-                    "AND C.$COURSE_MISC_UNIT_TERM_ID = :termId " +
+                    "WHERE C.$COURSE_MISC_UNIT_STAGE_COURSE_ID = :courseId " +
+                    "AND C.$COURSE_MISC_UNIT_STAGE_TERM_ID = :termId " +
                     "AND C.$COURSE_MISC_UNIT_STAGE_ID = :stageId"
     )
     override fun getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): Optional<WorkAssignmentStage>
 
     @SqlQuery(
             "SELECT W.$WORK_ASSIGNMENT_REPORT_ID, " +
-                    "W.$WORK_ASSIGNMENT_ID, " +
-                    "W.$WORK_ASSIGNMENT_SHEET_ID, " +
-                    "W.$WORK_ASSIGNMENT_SUPPLEMENT, " +
-                    "W.$WORK_ASSIGNMENT_DUE_DATE, " +
-                    "W.$WORK_ASSIGNMENT_INDIVIDUAL, " +
-                    "W.$WORK_ASSIGNMENT_LATE_DELIVERY, " +
-                    "W.$WORK_ASSIGNMENT_MULTIPLE_DELIVERIES, " +
-                    "W.$WORK_ASSIGNMENT_REQUIRES_REPORT, " +
+                    "W.$WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID, " +
+                    "W.$WORK_ASSIGNMENT_REPORT_SHEET_ID, " +
+                    "W.$WORK_ASSIGNMENT_REPORT_SUPPLEMENT, " +
+                    "W.$WORK_ASSIGNMENT_REPORT_DUE_DATE, " +
+                    "W.$WORK_ASSIGNMENT_REPORT_INDIVIDUAL, " +
+                    "W.$WORK_ASSIGNMENT_REPORT_LATE_DELIVERY, " +
+                    "W.$WORK_ASSIGNMENT_REPORT_MULTIPLE_DELIVERIES, " +
+                    "W.$WORK_ASSIGNMENT_REPORT_REQUIRES_REPORT, " +
                     "W.$WORK_ASSIGNMENT_REPORTED_BY, " +
-                    "W.$WORK_ASSIGNMENT_VOTES, " +
-                    "W.$WORK_ASSIGNMENT_TIMESTAMP " +
+                    "W.$WORK_ASSIGNMENT_REPORT_VOTES, " +
+                    "W.$WORK_ASSIGNMENT_REPORT_TIMESTAMP " +
                     "FROM $WORK_ASSIGNMENT_REPORT_TABLE AS W" +
                     "INNER JOIN $COURSE_MISC_UNIT_TABLE AS C " +
-                    "ON W.$WORK_ASSIGNMENT_ID = C.$COURSE_MISC_UNIT_ID " +
+                    "ON W.$WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID = C.$COURSE_MISC_UNIT_ID " +
                     "WHERE C.$COURSE_MISC_UNIT_ID = :workAssignmentId" +
                     "AND C.$COURSE_MISC_UNIT_TERM_ID = :termId " +
                     "AND C.$COURSE_MISC_UNIT_COURSE_ID = :courseId"
@@ -264,17 +275,17 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
 
     @SqlUpdate(
             "INSERT INTO $WORK_ASSIGNMENT_REPORT_TABLE (" +
-                    "$WORK_ASSIGNMENT_ID, " +
-                    "$WORK_ASSIGNMENT_SHEET_ID, " +
-                    "$WORK_ASSIGNMENT_SUPPLEMENT, " +
-                    "$WORK_ASSIGNMENT_DUE_DATE, " +
-                    "$WORK_ASSIGNMENT_INDIVIDUAL, " +
-                    "$WORK_ASSIGNMENT_LATE_DELIVERY, " +
-                    "$WORK_ASSIGNMENT_MULTIPLE_DELIVERIES, " +
-                    "$WORK_ASSIGNMENT_REQUIRES_REPORT, " +
+                    "$WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID, " +
+                    "$WORK_ASSIGNMENT_REPORT_SHEET_ID, " +
+                    "$WORK_ASSIGNMENT_REPORT_SUPPLEMENT, " +
+                    "$WORK_ASSIGNMENT_REPORT_DUE_DATE, " +
+                    "$WORK_ASSIGNMENT_REPORT_INDIVIDUAL, " +
+                    "$WORK_ASSIGNMENT_REPORT_LATE_DELIVERY, " +
+                    "$WORK_ASSIGNMENT_REPORT_MULTIPLE_DELIVERIES, " +
+                    "$WORK_ASSIGNMENT_REPORT_REQUIRES_REPORT, " +
                     "$WORK_ASSIGNMENT_REPORTED_BY, " +
-                    "$WORK_ASSIGNMENT_VOTES, " +
-                    "$WORK_ASSIGNMENT_TIMESTAMP) " +
+                    "$WORK_ASSIGNMENT_REPORT_VOTES, " +
+                    "$WORK_ASSIGNMENT_REPORT_TIMESTAMP) " +
                     "VALUES(:workAssignmentId, :workAssignmentReport.sheetId, :workAssignmentReport.supplementId, " +
                     ":workAssignmentReport.dueDate, :workAssignmentReport.individual, :workAssignmentReport.lateDelivery, " +
                     ":workAssignmentReport.multipleDeliveries, :workAssignmentReport.requiresReport, " +
@@ -283,38 +294,48 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
     @GetGeneratedKeys
     override fun addReportToWorkAssignmentOnCourseInTerm(workAssignmentId: Int, workAssignmentReport: WorkAssignmentReport): WorkAssignmentReport
 
-    @SqlQuery(
-            "SELECT $WORK_ASSIGNMENT_VOTES FROM $WORK_ASSIGNMENT_REPORT_TABLE " +
-                    "WHERE $WORK_ASSIGNMENT_REPORT_ID = :reportId"
-    )
-    override fun getVotesOnReportedWorkAssignment(reportId: Int): Int
-
     @SqlUpdate(
-            "UPDATE $WORK_ASSIGNMENT_REPORT_TABLE SET $WORK_ASSIGNMENT_VOTES = :votes " +
+            "UPDATE $WORK_ASSIGNMENT_REPORT_TABLE SET $WORK_ASSIGNMENT_REPORT_VOTES = :votes " +
                     "WHERE $WORK_ASSIGNMENT_REPORT_ID = :reportId"
     )
     override fun updateVotesOnReportedWorkAssignment(reportId: Int, votes: Int): Int
 
     @SqlQuery(
-            "SELECT * FROM $WORK_ASSIGNMENT_REPORT_TABLE " +
-                    "WHERE $WORK_ASSIGNMENT_REPORT_ID = :reportId " +
-                    "AND $WORK_ASSIGNMENT_ID = :workAssignmentId"
+            "SELECT W.$WORK_ASSIGNMENT_REPORT_ID, " +
+                    "W.$WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID, " +
+                    "W.$WORK_ASSIGNMENT_REPORT_SHEET_ID, " +
+                    "W.$WORK_ASSIGNMENT_REPORT_SUPPLEMENT, " +
+                    "W.$WORK_ASSIGNMENT_REPORT_DUE_DATE, " +
+                    "W.$WORK_ASSIGNMENT_REPORT_INDIVIDUAL, " +
+                    "W.$WORK_ASSIGNMENT_REPORT_LATE_DELIVERY, " +
+                    "W.$WORK_ASSIGNMENT_REPORT_MULTIPLE_DELIVERIES, " +
+                    "W.$WORK_ASSIGNMENT_REPORT_REQUIRES_REPORT, " +
+                    "W.$WORK_ASSIGNMENT_REPORTED_BY, " +
+                    "W.$WORK_ASSIGNMENT_REPORT_VOTES, " +
+                    "W.$WORK_ASSIGNMENT_REPORT_TIMESTAMP " +
+                    "FROM $WORK_ASSIGNMENT_REPORT_TABLE AS W" +
+                    "INNER JOIN $COURSE_MISC_UNIT_TABLE AS C " +
+                    "ON W.$WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID = C.$COURSE_MISC_UNIT_ID " +
+                    "WHERE C.$COURSE_MISC_UNIT_ID = :workAssignmentId" +
+                    "AND C.$COURSE_MISC_UNIT_TERM_ID = :termId " +
+                    "AND C.$COURSE_MISC_UNIT_COURSE_ID = :courseId " +
+                    "AND W.$WORK_ASSIGNMENT_REPORT_ID = :reportId"
     )
-    override fun getSpecificReportOfWorkAssignment(workAssignmentId: Int, reportId: Int): Optional<WorkAssignmentReport>
+    override fun getSpecificReportOfWorkAssignment(termId: Int, courseId: Int, workAssignmentId: Int, reportId: Int): Optional<WorkAssignmentReport>
 
     @SqlUpdate(
             "INSERT INTO $WORK_ASSIGNMENT_VERSION_TABLE ( " +
-                    "$WORK_ASSIGNMENT_ID," +
+                    "$WORK_ASSIGNMENT_VERSION_WORK_ASSIGN_ID," +
                     "$WORK_ASSIGNMENT_VERSION, " +
-                    "$WORK_ASSIGNMENT_SHEET_ID, " +
-                    "$WORK_ASSIGNMENT_SUPPLEMENT, " +
-                    "$WORK_ASSIGNMENT_DUE_DATE, " +
-                    "$WORK_ASSIGNMENT_INDIVIDUAL, " +
-                    "$WORK_ASSIGNMENT_LATE_DELIVERY, " +
-                    "$WORK_ASSIGNMENT_MULTIPLE_DELIVERIES, " +
-                    "$WORK_ASSIGNMENT_REQUIRES_REPORT, " +
-                    "$WORK_ASSIGNMENT_CREATED_BY, " +
-                    "$WORK_ASSIGNMENT_TIMESTAMP " +
+                    "$WORK_ASSIGNMENT_VERSION_SHEET_ID, " +
+                    "$WORK_ASSIGNMENT_VERSION_SUPPLEMENT, " +
+                    "$WORK_ASSIGNMENT_VERSION_DUE_DATE, " +
+                    "$WORK_ASSIGNMENT_VERSION_INDIVIDUAL, " +
+                    "$WORK_ASSIGNMENT_VERSION_LATE_DELIVERY, " +
+                    "$WORK_ASSIGNMENT_VERSION_MULTIPLE_DELIVERIES, " +
+                    "$WORK_ASSIGNMENT_VERSION_REQUIRES_REPORT, " +
+                    "$WORK_ASSIGNMENT_VERSION_CREATED_BY, " +
+                    "$WORK_ASSIGNMENT_VERSION_TIMESTAMP " +
                     ") " +
                     "VALUES (:workAssignmentVersion.workAssignmentId, :workAssignmentVersion.version, " +
                     ":workAssignmentVersion.sheetId, :workAssignmentVersion.supplementId, " +
@@ -328,16 +349,16 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
     @SqlUpdate(
             "INSERT INTO $WORK_ASSIGNMENT_STAGE_TABLE (" +
                     "$WORK_ASSIGNMENT_STAGE_ID, " +
-                    "$WORK_ASSIGNMENT_SHEET_ID, " +
-                    "$WORK_ASSIGNMENT_SUPPLEMENT, " +
-                    "$WORK_ASSIGNMENT_DUE_DATE, " +
-                    "$WORK_ASSIGNMENT_INDIVIDUAL, " +
-                    "$WORK_ASSIGNMENT_LATE_DELIVERY, " +
-                    "$WORK_ASSIGNMENT_MULTIPLE_DELIVERIES, " +
-                    "$WORK_ASSIGNMENT_REQUIRES_REPORT, " +
-                    "$WORK_ASSIGNMENT_CREATED_BY, " +
-                    "$WORK_ASSIGNMENT_VOTES, " +
-                    "$WORK_ASSIGNMENT_TIMESTAMP) " +
+                    "$WORK_ASSIGNMENT_STAGE_SHEET_ID, " +
+                    "$WORK_ASSIGNMENT_STAGE_SUPPLEMENT, " +
+                    "$WORK_ASSIGNMENT_STAGE_DUE_DATE, " +
+                    "$WORK_ASSIGNMENT_STAGE_INDIVIDUAL, " +
+                    "$WORK_ASSIGNMENT_STAGE_LATE_DELIVERY, " +
+                    "$WORK_ASSIGNMENT_STAGE_MULTIPLE_DELIVERIES, " +
+                    "$WORK_ASSIGNMENT_STAGE_REQUIRES_REPORT, " +
+                    "$WORK_ASSIGNMENT_STAGE_CREATED_BY, " +
+                    "$WORK_ASSIGNMENT_STAGE_VOTES, " +
+                    "$WORK_ASSIGNMENT_STAGE_TIMESTAMP) " +
                     "VALUES(:stageId, :workAssignmentStage.sheetId, :workAssignmentStage.supplementId, :workAssignmentStage.dueDate," +
                     ":workAssignmentStage.individual, :workAssignmentStage.lateDelivery, " +
                     ":workAssignmentStage.multipleDeliveries, :workAssignmentStage.requiresReport, " +
@@ -356,34 +377,50 @@ interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
         return createStagingWorkAssignment(workAssignmentStage, courseMiscUnitStage.stageId)
     }
 
-    @SqlQuery(
-            "SELECT $WORK_ASSIGNMENT_VOTES FROM $WORK_ASSIGNMENT_STAGE_TABLE " +
-                    "WHERE $WORK_ASSIGNMENT_STAGE_ID = :stageId"
-    )
-    override fun getVotesOnStagedWorkAssignment(stageId: Int): Int
-
     @SqlUpdate(
-            "UPDATE $WORK_ASSIGNMENT_STAGE_TABLE SET $WORK_ASSIGNMENT_VOTES = :votes " +
+            "UPDATE $WORK_ASSIGNMENT_STAGE_TABLE SET $WORK_ASSIGNMENT_STAGE_VOTES = :votes " +
                     "WHERE $WORK_ASSIGNMENT_STAGE_ID = :stageId"
     )
     override fun updateStagedWorkAssignmentVotes(stageId: Int, votes: Int): Int
 
-    override fun deleteAllWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int =
-            createCourseDAO().deleteAllCourseMiscUnitsFromTypeOfCourseInTerm(courseId, termId, CourseMiscUnitType.WORK_ASSIGNMENT)
-
-    override fun deleteAllStagedWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int =
-            createCourseDAO().deleteAllStagedCourseMiscUnitsFromTypeOfCourseInTerm(courseId, termId, CourseMiscUnitType.WORK_ASSIGNMENT)
-
-    @SqlUpdate(
-            "DELETE FROM $WORK_ASSIGNMENT_VERSION_TABLE " +
-                    "WHERE $WORK_ASSIGNMENT_ID = :workAssignmentId"
+    @SqlQuery(
+            "SELECT * " +
+                    "W.$WORK_ASSIGNMENT_VERSION_WORK_ASSIGN_ID," +
+                    "W.$WORK_ASSIGNMENT_VERSION, " +
+                    "W.$WORK_ASSIGNMENT_VERSION_SHEET_ID, " +
+                    "W.$WORK_ASSIGNMENT_VERSION_SUPPLEMENT, " +
+                    "W.$WORK_ASSIGNMENT_VERSION_DUE_DATE, " +
+                    "W.$WORK_ASSIGNMENT_VERSION_INDIVIDUAL, " +
+                    "W.$WORK_ASSIGNMENT_VERSION_LATE_DELIVERY, " +
+                    "W.$WORK_ASSIGNMENT_VERSION_MULTIPLE_DELIVERIES, " +
+                    "W.$WORK_ASSIGNMENT_VERSION_REQUIRES_REPORT, " +
+                    "W.$WORK_ASSIGNMENT_VERSION_CREATED_BY, " +
+                    "W.$WORK_ASSIGNMENT_VERSION_TIMESTAMP " +
+                    "FROM $WORK_ASSIGNMENT_VERSION_TABLE AS W " +
+                    "INNER JOIN $COURSE_MISC_UNIT_TABLE as C ON W.$WORK_ASSIGNMENT_VERSION_WORK_ASSIGN_ID = C.$COURSE_MISC_UNIT_ID " +
+                    "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId AND C.$COURSE_MISC_UNIT_TERM_ID = :termId " +
+                    "C.$COURSE_MISC_UNIT_ID = :workAssignment"
     )
-    override fun deleteAllVersionOfWorkAssignments(workAssignmentId: Int): Int
+    override fun getAllVersionsOfSpecificWorkAssignment(termId: Int, courseId: Int, workAssignmentId: Int): List<WorkAssignmentVersion>
 
     @SqlQuery(
-            "SELECT * FROM $WORK_ASSIGNMENT_VERSION_TABLE " +
-                    "WHERE $WORK_ASSIGNMENT_ID = :workAssignmentId"
+            "SELECT * " +
+                    "W.$WORK_ASSIGNMENT_VERSION_WORK_ASSIGN_ID," +
+                    "W.$WORK_ASSIGNMENT_VERSION, " +
+                    "W.$WORK_ASSIGNMENT_VERSION_SHEET_ID, " +
+                    "W.$WORK_ASSIGNMENT_VERSION_SUPPLEMENT, " +
+                    "W.$WORK_ASSIGNMENT_VERSION_DUE_DATE, " +
+                    "W.$WORK_ASSIGNMENT_VERSION_INDIVIDUAL, " +
+                    "W.$WORK_ASSIGNMENT_VERSION_LATE_DELIVERY, " +
+                    "W.$WORK_ASSIGNMENT_VERSION_MULTIPLE_DELIVERIES, " +
+                    "W.$WORK_ASSIGNMENT_VERSION_REQUIRES_REPORT, " +
+                    "W.$WORK_ASSIGNMENT_VERSION_CREATED_BY, " +
+                    "W.$WORK_ASSIGNMENT_VERSION_TIMESTAMP " +
+                    "FROM $WORK_ASSIGNMENT_VERSION_TABLE AS W " +
+                    "INNER JOIN $COURSE_MISC_UNIT_TABLE as C ON W.$WORK_ASSIGNMENT_VERSION_WORK_ASSIGN_ID = C.$COURSE_MISC_UNIT_ID " +
+                    "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId AND C.$COURSE_MISC_UNIT_TERM_ID = :termId " +
+                    "AND C.$COURSE_MISC_UNIT_ID = :workAssignment AND W.$WORK_ASSIGNMENT_VERSION_ID = :version"
     )
-    override fun getAllVersionsOfSpecificWorkAssignment(workAssignmentId: Int): List<WorkAssignmentVersion>
+    override fun getVersionOfSpecificWorkAssignment(termId: Int, courseId: Int, workAssignmentId: Int, version: Int): Optional<WorkAssignmentVersion>
 
 }

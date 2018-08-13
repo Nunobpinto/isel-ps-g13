@@ -17,16 +17,16 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.LectureVersionO
 import java.time.Duration
 
 
-fun toLecture(lectureInputModel: LectureInputModel) = Lecture(
-        createdBy = lectureInputModel.createdBy,
+fun toLecture(lectureInputModel: LectureInputModel, createdBy: String) = Lecture(
+        createdBy = createdBy,
         weekDay = lectureInputModel.weekDay,
         begins = lectureInputModel.begins,
         duration = lectureInputModel.duration,
         location = lectureInputModel.location
 )
 
-fun toLectureStage(lectureInputModel: LectureInputModel) = LectureStage(
-        createdBy = lectureInputModel.createdBy,
+fun toLectureStage(lectureInputModel: LectureInputModel, createdBy: String) = LectureStage(
+        createdBy = createdBy,
         weekDay = lectureInputModel.weekDay,
         begins = lectureInputModel.begins,
         duration = lectureInputModel.duration,
@@ -52,13 +52,13 @@ fun toLectureVersion(lecture: Lecture) = LectureVersion(
         timestamp = lecture.timestamp
 )
 
-fun toLectureReport(lectureReportInputModel: LectureReportInputModel) = LectureReport(
-        lectureId = lectureReportInputModel.lectureId,
+fun toLectureReport(lectureReportInputModel: LectureReportInputModel, lectureId: Int, reportedBy: String) = LectureReport(
+        lectureId = lectureId,
         weekDay = lectureReportInputModel.weekday,
         begins = lectureReportInputModel.begins,
         duration = if (lectureReportInputModel.duration != null) Duration.ofMinutes(lectureReportInputModel.duration) else null,
         location = lectureReportInputModel.location,
-        reportedBy = lectureReportInputModel.reportedBy
+        reportedBy = reportedBy
 )
 
 fun toLectureOutputModel(lecture: Lecture) = LectureOutputModel(

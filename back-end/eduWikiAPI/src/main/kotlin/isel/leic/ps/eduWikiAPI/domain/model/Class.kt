@@ -2,6 +2,7 @@ package isel.leic.ps.eduWikiAPI.domain.model
 
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_CREATED_BY
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_LOG_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_NAME
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_TIMESTAMP
@@ -24,6 +25,8 @@ data class Class(
         val termId: Int = 0,
         @ColumnName(CLASS_VOTES)
         val votes: Int = 0,
+        @ColumnName(CLASS_LOG_ID)
+        val logId: Int = 0,
         @ColumnName(CLASS_TIMESTAMP)
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 )

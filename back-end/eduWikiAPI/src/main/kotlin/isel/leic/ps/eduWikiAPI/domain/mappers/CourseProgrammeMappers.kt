@@ -3,6 +3,7 @@ package isel.leic.ps.eduWikiAPI.domain.mappers
 import isel.leic.ps.eduWikiAPI.domain.inputModel.CourseProgrammeInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseProgrammeReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Course
+import isel.leic.ps.eduWikiAPI.domain.model.CourseProgramme
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseProgrammeVersion
@@ -15,35 +16,35 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.CourseProgramme
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.CourseProgrammeStageOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.CourseProgrammeVersionOutputModel
 
-fun toCourseProgramme(input: CourseProgrammeInputModel) = Course(
+fun toCourseProgramme(input: CourseProgrammeInputModel, createdBy: String) = CourseProgramme(
         courseId = input.courseId,
         lecturedTerm = input.lecturedTerm,
         programmeId = input.programmeId,
         credits = input.credits,
         optional = input.optional,
-        createdBy = input.createdBy
+        createdBy = createdBy
 )
 
-fun toCourseProgrammeReport(programmeId: Int, courseId: Int, inputCourseReport: CourseProgrammeReportInputModel) = CourseProgrammeReport(
+fun toCourseProgrammeReport(programmeId: Int, courseId: Int, inputCourseReport: CourseProgrammeReportInputModel, reportedBy: String) = CourseProgrammeReport(
         courseId = courseId,
         programmeId = programmeId,
-        reportedBy = inputCourseReport.reportedBy,
+        reportedBy = reportedBy,
         lecturedTerm = inputCourseReport.lecturedTerm,
         optional = inputCourseReport.optional,
         credits = inputCourseReport.credits,
         deleteFlag = inputCourseReport.deleteFlag
 )
 
-fun toCourseProgrammeStage(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel) = CourseProgrammeStage(
+fun toCourseProgrammeStage(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel, createdBy: String) = CourseProgrammeStage(
         courseId = inputCourseProgramme.courseId,
         programmeId = programmeId,
         credits = inputCourseProgramme.credits,
         optional = inputCourseProgramme.optional,
         lecturedTerm = inputCourseProgramme.lecturedTerm,
-        createdBy = inputCourseProgramme.createdBy
+        createdBy = createdBy
 )
 
-fun stagedToCourseProgramme(programmeId: Int, courseProgrammeStage: CourseProgrammeStage) = Course(
+fun stagedToCourseProgramme(programmeId: Int, courseProgrammeStage: CourseProgrammeStage) = CourseProgramme(
         createdBy = courseProgrammeStage.createdBy,
         programmeId = programmeId,
         lecturedTerm = courseProgrammeStage.lecturedTerm,
@@ -51,7 +52,7 @@ fun stagedToCourseProgramme(programmeId: Int, courseProgrammeStage: CourseProgra
         credits = courseProgrammeStage.credits
 )
 
-fun toCourseProgrammeVersion(course: Course) = CourseProgrammeVersion(
+fun toCourseProgrammeVersion(course: CourseProgramme) = CourseProgrammeVersion(
         version = course.version,
         courseId = course.courseId,
         programmeId = course.programmeId,
@@ -62,19 +63,19 @@ fun toCourseProgrammeVersion(course: Course) = CourseProgrammeVersion(
         createdBy = course.createdBy
 )
 
-fun toCourseProgrammeOutputModel(course: Course) = CourseProgrammeOutputModel(
-        courseId = course.courseId,
+fun toCourseProgrammeOutputModel(courseProgramme: CourseProgramme, course: Course) = CourseProgrammeOutputModel(
+        courseId = courseProgramme.courseId,
         organizationId = course.organizationId,
-        version = course.version,
-        votes = course.votes,
-        timestamp = course.timestamp,
+        version = courseProgramme.version,
+        votes = courseProgramme.votes,
+        timestamp = courseProgramme.timestamp,
         fullName = course.fullName,
         shortName = course.shortName,
-        username = course.createdBy,
-        programmeId = course.programmeId,
-        optional = course.optional,
-        credits = course.credits,
-        lecturedTerm = course.lecturedTerm
+        username = courseProgramme.createdBy,
+        programmeId = courseProgramme.programmeId,
+        optional = courseProgramme.optional,
+        credits = courseProgramme.credits,
+        lecturedTerm = courseProgramme.lecturedTerm
 )
 
 fun toCourseProgrammeReportOutputModel(courseProgrammeReport: CourseProgrammeReport) = CourseProgrammeReportOutputModel(

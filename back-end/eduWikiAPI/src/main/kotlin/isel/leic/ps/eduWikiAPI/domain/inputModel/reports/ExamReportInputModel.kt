@@ -14,7 +14,5 @@ class ExamReportInputModel(
         @JsonProperty("exam_type")
         val type: ExamType? = null,
         val phase: String? = null,
-        val location: String? = null,
-        @JsonProperty("reported_by")
-        val reportedBy: String = ""
+        val location: String? = null
 )

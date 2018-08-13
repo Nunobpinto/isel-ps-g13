@@ -7,6 +7,5 @@ class HomeworkInputModel (
         val sheetId: UUID = UUID.randomUUID(),
         val dueDate: LocalDate = LocalDate.now(),
         val lateDelivery: Boolean = false,
-        val multipleDeliveries: Boolean = false,
-        val createdBy: String = ""
+        val multipleDeliveries: Boolean = false
 )

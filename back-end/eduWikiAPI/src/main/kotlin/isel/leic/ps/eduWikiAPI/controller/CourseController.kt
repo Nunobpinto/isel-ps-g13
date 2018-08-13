@@ -4,11 +4,11 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.*
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ExamReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.WorkAssignmentReportInputModel
-import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
 import isel.leic.ps.eduWikiAPI.service.interfaces.CourseService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import java.security.Principal
 
 @RestController
 @RequestMapping("/courses")
@@ -31,22 +31,24 @@ class CourseController {
     fun getSpecificCourse(@PathVariable courseId: Int) = courseService.getSpecificCourse(courseId)
 
     @PostMapping
-    fun createCourse(@RequestBody inputCourse: CourseInputModel) = courseService.createCourse(inputCourse)
+    fun createCourse(@RequestBody inputCourse: CourseInputModel, principal: Principal) = courseService.createCourse(inputCourse, principal)
 
     @PostMapping("/{courseId}/vote")
     fun voteOnCourse(
             @PathVariable courseId: Int,
-            @RequestBody inputVote: VoteInputModel
-    ) = courseService.voteOnCourse(courseId, inputVote)
+            @RequestBody inputVote: VoteInputModel,
+            principal: Principal
+    ) = courseService.voteOnCourse(courseId, inputVote, principal)
 
     @PatchMapping("/{courseId}")
     fun partialUpdateOnCourse(
             @PathVariable courseId: Int,
-            @RequestBody inputCourse: CourseInputModel
-    ) = courseService.partialUpdateOnCourse(courseId, inputCourse)
+            @RequestBody inputCourse: CourseInputModel,
+            principal: Principal
+    ) = courseService.partialUpdateOnCourse(courseId, inputCourse, principal)
 
     @DeleteMapping("/{courseId}")
-    fun deleteSpecificCourse(@PathVariable courseId: Int) = courseService.deleteSpecificCourse(courseId)
+    fun deleteSpecificCourse(@PathVariable courseId: Int, principal: Principal) = courseService.deleteSpecificCourse(courseId, principal)
 
     // ----------------------------
     // Course Version Endpoints
@@ -61,15 +63,6 @@ class CourseController {
             @PathVariable courseId: Int,
             @PathVariable versionId: Int
     ) = courseService.getVersionOfSpecificCourse(courseId, versionId)
-
-    @DeleteMapping("/{courseId}/versions")
-    fun deleteAllVersionsOfCourse(@PathVariable courseId: Int) = courseService.deleteAllVersionsOfCourse(courseId)
-
-    @DeleteMapping("/{courseId}/versions/{version}")
-    fun deleteVersionOfCourse(
-            @PathVariable courseId: Int,
-            @PathVariable version: Int
-    ) = courseService.deleteVersionOfCourse(courseId, version)
 
     // ----------------------------
     // Course Report Endpoints
@@ -87,30 +80,27 @@ class CourseController {
     @PostMapping("/{courseId}/reports")
     fun reportCourse(
             @PathVariable courseId: Int,
-            @RequestBody inputCourseReport: CourseReportInputModel
-    ) = courseService.reportCourse(courseId, inputCourseReport)
+            @RequestBody inputCourseReport: CourseReportInputModel,
+            principal: Principal
+    ) = courseService.reportCourse(courseId, inputCourseReport, principal)
 
     @PostMapping("/{courseId}/reports/{reportId}/vote")
     fun voteOnReportOfCourse(
             @PathVariable courseId: Int,
             @PathVariable reportId: Int,
-            @RequestBody inputVote: VoteInputModel
-    ) = courseService.voteOnReportedCourse(reportId, inputVote)
+            @RequestBody inputVote: VoteInputModel,
+            principal: Principal
+    ) = courseService.voteOnReportedCourse(courseId, reportId, inputVote, principal)
 
     @PostMapping("/{courseId}/reports/{reportId}")
     fun updateReportedCourse(
             @PathVariable courseId: Int,
-            @PathVariable reportId: Int
-    ) = courseService.updateReportedCourse(courseId, reportId)
-
-    @DeleteMapping("/{courseId}/reports")
-    fun deleteAllReportsOnCourse(@PathVariable courseId: Int) = courseService.deleteAllReportsOnCourse(courseId)
+            @PathVariable reportId: Int,
+            principal: Principal
+    ) = courseService.updateReportedCourse(courseId, reportId, principal)
 
     @DeleteMapping("/{courseId}/reports/{reportId}")
-    fun deleteReportOnCourse(
-            @PathVariable courseId: Int,
-            @PathVariable reportId: Int
-    ) = courseService.deleteReportOnCourse(courseId, reportId)
+    fun deleteReportOnCourse(@PathVariable courseId: Int, reportId: Int, principal: Principal) = courseService.deleteReportOnCourse(courseId, reportId, principal)
 
     // ----------------------------
     // Course Stage Endpoints
@@ -123,22 +113,20 @@ class CourseController {
     fun getCourseSpecificStageEntry(@PathVariable stageId: Int) = courseService.getCourseSpecificStageEntry(stageId)
 
     @PostMapping("/stage")
-    fun createStagingCourse(@RequestBody inputCourse: CourseInputModel) = courseService.createStagingCourse(inputCourse)
+    fun createStagingCourse(@RequestBody inputCourse: CourseInputModel, principal: Principal) = courseService.createStagingCourse(inputCourse, principal)
 
     @PostMapping("/stage/{stageId}")
-    fun createCourseFromStaged(@PathVariable stageId: Int) = courseService.createCourseFromStaged(stageId)
+    fun createCourseFromStaged(@PathVariable stageId: Int, principal: Principal) = courseService.createCourseFromStaged(stageId, principal)
 
     @PostMapping("/stage/{stageId}/vote")
     fun voteOnStagedCourse(
             @PathVariable stageId: Int,
-            @RequestBody inputVote: VoteInputModel
-    ) = courseService.voteOnStagedCourse(stageId, inputVote)
-
-    @DeleteMapping("/stage")
-    fun deleteAllStagedCourses() = courseService.deleteAllStagedCourses()
+            @RequestBody inputVote: VoteInputModel,
+            principal: Principal
+    ) = courseService.voteOnStagedCourse(stageId, inputVote, principal)
 
     @DeleteMapping("/stage/{stageId}")
-    fun deleteSpecificStagedCourse(@PathVariable stageId: Int) = courseService.deleteSpecificStagedCourse(stageId)
+    fun deleteSpecificStagedCourse(@PathVariable stageId: Int, principal: Principal) = courseService.deleteSpecificStagedCourse(stageId, principal)
 
     // ----------- TERM -----------
 
@@ -176,33 +164,29 @@ class CourseController {
 
     @PostMapping("/{courseId}/terms/{termId}/exams")
     fun createExamOnCourseInTerm(
-            @RequestParam sheet: MultipartFile,
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            examInputModel: ExamInputModel //TODO check if @RequestBody does work too
-    ) = courseService.createExamOnCourseInTerm(sheet, courseId, termId, examInputModel)
+            @RequestParam sheet: MultipartFile,
+            examInputModel: ExamInputModel,  //TODO check if @RequestBody does work too
+            principal: Principal
+    ) = courseService.createExamOnCourseInTerm(termId, courseId, sheet, examInputModel, principal)
 
     @PostMapping("/{courseId}/terms/{termId}/exams/{examId}/vote")
     fun voteOnExam(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            @PathVariable examId : Int,
-            @RequestBody inputVote: VoteInputModel
-    ) = courseService.voteOnExam(examId, inputVote)
-
-
-    @DeleteMapping("/{courseId}/terms/{termId}/exams")
-    fun deleteAllExamsOfCourseInTerm(
-            @PathVariable courseId: Int,
-            @PathVariable termId: Int
-    ) = courseService.deleteAllExamsOfCourseInTerm(courseId, termId)
+            @PathVariable examId: Int,
+            @RequestBody inputVote: VoteInputModel,
+            principal: Principal
+    ) = courseService.voteOnExam(termId, courseId, examId, inputVote, principal)
 
     @DeleteMapping("/{courseId}/terms/{termId}/exams/{examId}")
     fun deleteSpecificExamOfCourseInTerm(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            @PathVariable examId: Int
-    ) = courseService.deleteSpecificExamOfCourseInTerm(courseId, termId, examId)
+            @PathVariable examId: Int,
+            principal: Principal
+    ) = courseService.deleteSpecificExamOfCourseInTerm(courseId, termId, examId, principal)
 
     // ----------------------------
     // Exam Version Endpoints
@@ -213,7 +197,7 @@ class CourseController {
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable examId: Int
-    ) = courseService.getAllVersionsOfSpecificExam(examId)
+    ) = courseService.getAllVersionsOfSpecificExam(termId, courseId, examId)
 
     @GetMapping("/{courseId}/terms/{termId}/exams/{examId}/versions/{versionId}")
     fun getVersionOfSpecificExam(
@@ -221,22 +205,7 @@ class CourseController {
             @PathVariable termId: Int,
             @PathVariable examId: Int,
             @PathVariable versionId: Int
-    ) = courseService.getVersionOfSpecificExam(examId, versionId)
-
-    @DeleteMapping("/{courseId}/terms/{termId}/exams/{examId}/versions")
-    fun deleteAllVersionsOfExam(
-            @PathVariable courseId: Int,
-            @PathVariable termId: Int,
-            @PathVariable examId: Int
-    ) = courseService.deleteAllVersionsOfExam(examId)
-
-    @DeleteMapping("/{courseId}/terms/{termId}/exams/{examId}/versions/{version}")
-    fun deleteVersionOfExam(
-            @PathVariable courseId: Int,
-            @PathVariable termId: Int,
-            @PathVariable examId: Int,
-            @PathVariable version: Int
-    ) = courseService.deleteVersionOfExam(examId, version)
+    ) = courseService.getVersionOfSpecificExam(termId, courseId, examId, versionId)
 
     // ----------------------------
     // Exam Report Endpoints
@@ -247,7 +216,7 @@ class CourseController {
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable examId: Int
-    ) = courseService.getAllReportsOnExamOnSpecificTermOfCourse(examId)
+    ) = courseService.getAllReportsOnExamOnSpecificTermOfCourse(termId, courseId, examId)
 
     @GetMapping("/{courseId}/terms/{termId}/exams/{examId}/reports/{reportId}")
     fun getSpecificReportOnExamOnSpecificTermOfCourse(
@@ -255,15 +224,16 @@ class CourseController {
             @PathVariable termId: Int,
             @PathVariable examId: Int,
             @PathVariable reportId: Int
-    ) = courseService.getSpecificReportOnExamOnSpecificTermOfCourse(reportId)
+    ) = courseService.getSpecificReportOnExamOnSpecificTermOfCourse(termId, courseId, examId, reportId)
 
     @PostMapping("/{courseId}/terms/{termId}/exams/{examId}/reports")
     fun addReportToExamOnCourseInTerm(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable examId: Int,
-            @RequestBody inputExamReport: ExamReportInputModel
-    ) = courseService.addReportToExamOnCourseInTerm(examId, inputExamReport)
+            @RequestBody inputExamReport: ExamReportInputModel,
+            principal: Principal
+    ) = courseService.addReportToExamOnCourseInTerm(termId, courseId, examId, inputExamReport, principal)
 
     @PostMapping("/{courseId}/terms/{termId}/exams/{examId}/reports/{reportId}/vote")
     fun voteOnReportToExamOnCourseInTerm(
@@ -271,31 +241,27 @@ class CourseController {
             @PathVariable termId: Int,
             @PathVariable examId: Int,
             @PathVariable reportId: Int,
-            @RequestBody inputVote: VoteInputModel
-    ) = courseService.voteOnReportedExamOnCourseInTerm(reportId, inputVote)
+            @RequestBody inputVote: VoteInputModel,
+            principal: Principal
+    ) = courseService.voteOnReportedExamOnCourseInTerm(termId, courseId, examId, reportId, inputVote, principal)
 
     @PostMapping("/{courseId}/terms/{termId}/exams/{examId}/reports/{reportId}")
     fun updateReportedExam(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable examId: Int,
-            @PathVariable reportId: Int
-    ) = courseService.updateReportedExam(examId, reportId, courseId, termId)
-
-    @DeleteMapping("/{courseId}/terms/{termId}/exams/{examId}/reports")
-    fun deleteAllReportsOnExam(
-            @PathVariable courseId: Int,
-            @PathVariable termId: Int,
-            @PathVariable examId: Int
-    ) = courseService.deleteAllReportsOnExam(examId)
+            @PathVariable reportId: Int,
+            principal: Principal
+    ) = courseService.updateReportedExam(examId, reportId, courseId, termId, principal)
 
     @DeleteMapping("/{courseId}/terms/{termId}/exams/{examId}/reports/{reportId}")
     fun deleteReportOnExam(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable examId: Int,
-            @PathVariable reportId: Int
-    ) = courseService.deleteReportOnExam(examId, reportId)
+            @PathVariable reportId: Int,
+            principal: Principal
+    ) = courseService.deleteReportOnExam(termId, courseId, examId, reportId, principal)
 
     // ----------------------------
     // Exam Stage Endpoints
@@ -317,39 +283,37 @@ class CourseController {
 
     @PostMapping("/{courseId}/terms/{termId}/exams/stage")
     fun createStagingExam(
-            @RequestParam sheet: MultipartFile,
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            examInputModel: ExamInputModel
-    ) = courseService.createStagingExam(sheet, courseId, termId, examInputModel)
+            @RequestParam sheet: MultipartFile,
+            examInputModel: ExamInputModel,
+            principal: Principal
+    ) = courseService.createStagingExam(courseId, termId, examInputModel, sheet, principal)
 
     @PostMapping("/{courseId}/terms/{termId}/exams/stage/{stageId}")
     fun createExamFromStaged(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            @PathVariable stageId: Int
-    ) = courseService.createExamFromStaged(courseId, termId, stageId)
+            @PathVariable stageId: Int,
+            principal: Principal
+    ) = courseService.createExamFromStaged(courseId, termId, stageId, principal)
 
     @PostMapping("/{courseId}/terms/{termId}/exams/stage/{stageId}/vote")
     fun voteOnStagedExam(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable stageId: Int,
-            @RequestBody inputVote: VoteInputModel
-    ) = courseService.voteOnStagedExam(stageId, inputVote)
-
-    @DeleteMapping("/{courseId}/terms/{termId}/exams/stage")
-    fun deleteAllStagedExamsOfCourseInTerm(
-            @PathVariable courseId: Int,
-            @PathVariable termId: Int
-    ) = courseService.deleteAllStagedExamsOfCourseInTerm(courseId, termId)
+            @RequestBody inputVote: VoteInputModel,
+            principal: Principal
+    ) = courseService.voteOnStagedExam(termId, courseId, stageId, inputVote, principal)
 
     @DeleteMapping("/{courseId}/terms/{termId}/exams/stage/{stageId}")
     fun deleteStagedExamOfCourseInTerm(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            @PathVariable stageId: Int
-    ) = courseService.deleteSpecificStagedExamOfCourseInTerm(courseId, termId, stageId)
+            @PathVariable stageId: Int,
+            principal: Principal
+    ) = courseService.deleteSpecificStagedExamOfCourseInTerm(courseId, termId, stageId, principal)
 
     // ----- WORK ASSIGNMENT ------
 
@@ -372,31 +336,29 @@ class CourseController {
 
     @PostMapping("/{courseId}/terms/{termId}/work-assignments")
     fun createWorkAssignmentOnCourseInTerm(
-            @RequestParam sheet: MultipartFile,
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            workAssignmentInputModel: WorkAssignmentInputModel
-    ) = courseService.createWorkAssignmentOnCourseInTerm(sheet, courseId, termId, workAssignmentInputModel)
+            @RequestParam sheet: MultipartFile,
+            workAssignmentInputModel: WorkAssignmentInputModel,
+            principal: Principal
+    ) = courseService.createWorkAssignmentOnCourseInTerm(courseId, termId, workAssignmentInputModel, sheet, principal)
 
     @PostMapping("/{courseId}/terms/{termId}/work-assignments/{workAssignmentId}/vote")
-    fun voteOnWorkAssignment(@PathVariable courseId: Int,
-                             @PathVariable termId: Int,
-                             @PathVariable workAssignmentId: Int,
-                             @RequestBody inputVote: VoteInputModel
-    ) = courseService.voteOnWorkAssignment(workAssignmentId, inputVote)
-
-    @DeleteMapping("/{courseId}/terms/{termId}/work-assignments")
-    fun deleteAllWorkAssignmentsOfCourseInTerm(
+    fun voteOnWorkAssignment(
             @PathVariable courseId: Int,
-            @PathVariable termId: Int
-    ) = courseService.deleteAllWorkAssignmentsOfCourseInTerm(courseId, termId)
+            @PathVariable termId: Int,
+            @PathVariable workAssignmentId: Int,
+            @RequestBody inputVote: VoteInputModel,
+            principal: Principal
+    ) = courseService.voteOnWorkAssignment(termId, courseId, workAssignmentId, inputVote, principal)
 
     @DeleteMapping("/{courseId}/terms/{termId}/work-assignments/{workAssignmentId}")
     fun deleteSpecificWorkAssignment(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            @PathVariable workAssignmentId: Int
-    ) = courseService.deleteSpecificWorkAssignmentOfCourseInTerm(courseId, termId, workAssignmentId)
+            @PathVariable workAssignmentId: Int,
+            principal: Principal
+    ) = courseService.deleteSpecificWorkAssignmentOfCourseInTerm(courseId, termId, workAssignmentId, principal)
 
     // ----------------------------
     // Work Assignment Version Endpoints
@@ -407,30 +369,15 @@ class CourseController {
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable workAssignmentId: Int
-    ) = courseService.getAllVersionsOfSpecificWorkAssignment(workAssignmentId)
+    ) = courseService.getAllVersionsOfSpecificWorkAssignment(termId, courseId, workAssignmentId)
 
-    @GetMapping("/{courseId}/terms/{termId}/work-assignments/{workAssignmentId}/versions/{version}")
+    @GetMapping("/{courseId}/terms/{termId}/work-assignments/{workAssignmentId}/versions/{versionId}")
     fun getVersionOfSpecificWorkAssignment(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable workAssignmentId: Int,
-            @PathVariable version: Int
-    ) = courseService.getVersionOfSpecificWorkAssignment(workAssignmentId, version)
-
-    @DeleteMapping("/{courseId}/terms/{termId}/work-assignments/{workAssignmentId}/versions")
-    fun deleteAllVersionsOfWorkAssignment(
-            @PathVariable courseId: Int,
-            @PathVariable termId: Int,
-            @PathVariable workAssignmentId: Int
-    ) = courseService.deleteAllVersionsOfWorkAssignment(workAssignmentId)
-
-    @DeleteMapping("/{courseId}/terms/{termId}/work-assignments/{workAssignmentId}/versions/{version}")
-    fun deleteVersionOfWorkAssignment(
-            @PathVariable courseId: Int,
-            @PathVariable termId: Int,
-            @PathVariable workAssignmentId: Int,
-            @PathVariable version: Int
-    ) = courseService.deleteVersionOfWorkAssignment(workAssignmentId, version)
+            @PathVariable versionId: Int
+    ) = courseService.getVersionOfSpecificWorkAssignment(termId, courseId, workAssignmentId, versionId)
 
     // ----------------------------
     // Work Assignment Report Endpoints
@@ -449,15 +396,16 @@ class CourseController {
             @PathVariable termId: Int,
             @PathVariable workAssignmentId: Int,
             @PathVariable reportId: Int
-    ) = courseService.getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(workAssignmentId, reportId)
+    ) = courseService.getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(termId, courseId, workAssignmentId, reportId)
 
     @PostMapping("/{courseId}/terms/{termId}/work-assignments/{workAssignmentId}/reports")
     fun addReportToWorkAssignmentOnCourseInTerm(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable workAssignmentId: Int,
-            @RequestBody inputWorkAssignmentReport: WorkAssignmentReportInputModel
-    ) = courseService.addReportToWorkAssignmentOnCourseInTerm(workAssignmentId, inputWorkAssignmentReport)
+            @RequestBody inputWorkAssignmentReport: WorkAssignmentReportInputModel,
+            principal: Principal
+    ) = courseService.addReportToWorkAssignmentOnCourseInTerm(termId, courseId, workAssignmentId, inputWorkAssignmentReport, principal)
 
     @PostMapping("/{courseId}/terms/{termId}/work-assignments/{workAssignmentId}/reports/{reportId}/vote")
     fun voteOnReportToWorkAssignmentOnCourseInTerm(
@@ -465,31 +413,27 @@ class CourseController {
             @PathVariable termId: Int,
             @PathVariable workAssignmentId: Int,
             @PathVariable reportId: Int,
-            @RequestBody inputVote: VoteInputModel
-    ) = courseService.voteOnReportedWorkAssignmentOnCourseInTerm(reportId, inputVote)
+            @RequestBody inputVote: VoteInputModel,
+            principal: Principal
+    ) = courseService.voteOnReportedWorkAssignmentOnCourseInTerm(termId, courseId, workAssignmentId, reportId, inputVote, principal)
 
     @PostMapping("/{courseId}/terms/{termId}/work-assignments/{workAssignmentId}/reports/{reportId}")
     fun updateReportedWorkAssignment(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable workAssignmentId: Int,
-            @PathVariable reportId: Int
-    ) = courseService.updateWorkAssignmentBasedOnReport(workAssignmentId, reportId, courseId, termId)
-
-    @DeleteMapping("/{courseId}/terms/{termId}/work-assignments/{workAssignmentsId}/reports")
-    fun deleteAllReportsOnWorkAssignment(
-            @PathVariable courseId: Int,
-            @PathVariable termId: Int,
-            @PathVariable workAssignmentId: Int
-    ) = courseService.deleteAllReportsOnWorkAssignment(workAssignmentId)
+            @PathVariable reportId: Int,
+            principal: Principal
+    ) = courseService.updateWorkAssignmentBasedOnReport(workAssignmentId, reportId, courseId, termId, principal)
 
     @DeleteMapping("/{courseId}/terms/{termId}/work-assignments/{workAssignmentId}/reports/{reportId}")
     fun deleteReportOnWorkAssignment(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable workAssignmentId: Int,
-            @PathVariable reportId: Int
-    ) = courseService.deleteReportOnWorkAssignment(workAssignmentId, reportId)
+            @PathVariable reportId: Int,
+            principal: Principal
+    ) = courseService.deleteReportOnWorkAssignment(termId, courseId, workAssignmentId, reportId, principal)
 
     // ----------------------------
     // Work Assignment Stage Endpoints
@@ -510,38 +454,36 @@ class CourseController {
 
     @PostMapping("/{courseId}/terms/{termId}/work-assignments/stage")
     fun createStagingWorkAssignment(
-            @RequestParam sheet: MultipartFile,
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            workAssignmentInputModel: WorkAssignmentInputModel
-    ) = courseService.createStagingWorkAssignment(sheet, courseId, termId, workAssignmentInputModel)
+            @RequestParam sheet: MultipartFile,
+            workAssignmentInputModel: WorkAssignmentInputModel,
+            principal: Principal
+    ) = courseService.createStagingWorkAssignment(sheet, courseId, termId, workAssignmentInputModel, principal)
 
     @PostMapping("/{courseId}/terms/{termId}/work-assignments/stage/{stageId}")
     fun createWorkAssignmentFromStaged(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            @PathVariable stageId: Int
-    ) = courseService.createWorkAssignmentFromStaged(courseId, termId, stageId)
+            @PathVariable stageId: Int,
+            principal: Principal
+    ) = courseService.createWorkAssignmentFromStaged(courseId, termId, stageId, principal)
 
     @PostMapping("/{courseId}/terms/{termId}/work-assignments/stage/{stageId}/vote")
     fun voteOnStagedWorkAssignment(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @PathVariable stageId: Int,
-            @RequestBody inputVote: VoteInputModel
-    ) = courseService.voteOnStagedWorkAssignment(stageId, inputVote)
-
-    @DeleteMapping("/{courseId}/terms/{termId}/work-assignments/stage")
-    fun deleteAllStagedWorkAssignmentsOfCourseInTerm(
-            @PathVariable courseId: Int,
-            @PathVariable termId: Int
-    ) = courseService.deleteAllStagedWorkAssignmentsOfCourseInTerm(courseId, termId)
+            @RequestBody inputVote: VoteInputModel,
+            principal: Principal
+    ) = courseService.voteOnStagedWorkAssignment(termId, courseId, stageId, inputVote, principal)
 
     @DeleteMapping("/{courseId}/terms/{termId}/work-assignments/stage/{stageId}")
     fun deleteSpecificStagedWorkAssignment(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            @PathVariable stageId: Int
-    ) = courseService.deleteSpecificStagedWorkAssignmentOfCourseInTerm(courseId, termId, stageId)
+            @PathVariable stageId: Int,
+            principal: Principal
+    ) = courseService.deleteSpecificStagedWorkAssignmentOfCourseInTerm(courseId, termId, stageId, principal)
 
 }

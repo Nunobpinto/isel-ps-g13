@@ -5,6 +5,7 @@ import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_ID
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_CREATED_BY
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_DUE_DATE
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_LOCATION
+import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_LOG_ID
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_PHASE
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_SHEET_ID
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_TYPE
@@ -22,6 +23,8 @@ data class Exam (
         val examId: Int = 0,
         @ColumnName(EXAM_VERSION)
         val version: Int = 1,
+        @ColumnName(EXAM_LOG_ID)
+        val logId: Int = 0,
         @ColumnName(EXAM_VOTES)
         val votes: Int = 0,
         @ColumnName(EXAM_CREATED_BY)

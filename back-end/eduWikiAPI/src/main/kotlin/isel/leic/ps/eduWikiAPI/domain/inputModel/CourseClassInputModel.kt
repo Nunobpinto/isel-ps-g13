@@ -8,7 +8,5 @@ data class CourseClassInputModel(
         @JsonProperty("class_id")
         val classId: Int = 0,
         @JsonProperty("term_id")
-        val termId: Int = 0,
-        @JsonProperty("created_by")
-        val createdBy: String = ""
+        val termId: Int = 0
 )

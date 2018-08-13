@@ -14,7 +14,5 @@ class ProgrammeReportInputModel(
         @JsonProperty("programme_total_credits")
         val totalCredits: Int? = null,
         @JsonProperty("programme_duration")
-        val duration: Int? = null,
-        @JsonProperty("reported_by")
-        val reportedBy: String = ""
+        val duration: Int? = null
 )

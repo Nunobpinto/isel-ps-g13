@@ -6,7 +6,5 @@ class ClassInputModel (
         @JsonProperty("class_name")
         val className: String = "",
         @JsonProperty("term_id")
-        val termId: Int = 0,
-        @JsonProperty("created_by")
-        val createdBy: String = ""
+        val termId: Int = 0
 )

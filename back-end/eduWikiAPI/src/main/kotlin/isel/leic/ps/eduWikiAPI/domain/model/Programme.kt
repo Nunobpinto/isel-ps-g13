@@ -5,6 +5,7 @@ import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOJdbi.Companion.PROGRAMME_C
 import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOJdbi.Companion.PROGRAMME_DURATION
 import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOJdbi.Companion.PROGRAMME_FULL_NAME
 import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOJdbi.Companion.PROGRAMME_ID
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOJdbi.Companion.PROGRAMME_LOG_ID
 import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOJdbi.Companion.PROGRAMME_SHORT_NAME
 import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOJdbi.Companion.PROGRAMME_TIMESTAMP
 import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOJdbi.Companion.PROGRAMME_TOTAL_CREDITS
@@ -19,6 +20,8 @@ data class Programme(
         val programmeId: Int = -1,
         @ColumnName(PROGRAMME_VERSION)
         val version: Int = 1,
+        @ColumnName(PROGRAMME_LOG_ID)
+        val logId: Int = 0,
         @ColumnName(PROGRAMME_VOTES)
         val votes: Int = 0,
         @ColumnName(PROGRAMME_CREATED_BY)

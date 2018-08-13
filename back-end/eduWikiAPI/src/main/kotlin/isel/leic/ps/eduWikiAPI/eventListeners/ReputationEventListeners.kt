@@ -28,6 +28,8 @@ class ReputationEventListeners {
 
     @Autowired
     lateinit var jdbi: Jdbi
+//    @Autowired
+//    lateinit var publisher: ApplicationEventPublisher
 
     @Async
     @EventListener
@@ -76,29 +78,35 @@ class ReputationEventListeners {
 
     @Async
     @EventListener
-    fun handleResourceApprovedEvent(event: ResourceApprovedEvent) {
+    fun handleResourceApprovedEventOnUpdate(event: ResourceApprovedEvent) {
         jdbi.useTransaction<Exception> {
             val reputationDAO = it.attach(ReputationDAOJdbi::class.java)
 
             // Log Approval
             val adminApprovalActionLog = reputationDAO.registerActionLog(
                     event.administrator,
-                    event.action,
+                    event.adminAction,
                     event.approvedEntity,
                     event.approvedLogId,
                     event.timestamp
             )
-            // Log effect of that approval
+             // Log effect of that approval
             val creatorActionlog = reputationDAO.registerActionLog(
                     event.creator,
-                    if(event.action == ActionType.APPROVE_REPORT) ActionType.ALTER else ActionType.CREATE,
+                    event.resultingAction,
                     event.newEntity,
                     event.newLogId,
                     event.timestamp
             )
 
             // Modify creator's reputation
-            val pointsGiven = if(event.action == ActionType.APPROVE_REPORT) APPROVED_REPORT_POINTS else APPROVED_RESOURCE_POINTS
+            val pointsGiven: Int = when(event.adminAction) {
+                ActionType.REJECT_STAGE -> REJECTED_RESOURCE_POINTS
+                ActionType.REJECT_REPORT -> REJECTED_REPORT_POINTS
+                ActionType.APPROVE_STAGE -> APPROVED_RESOURCE_POINTS
+                ActionType.APPROVE_REPORT -> APPROVED_REPORT_POINTS
+                else -> throw ReputationUpdateException("Bad adminAction, it can't be ${event.adminAction}", event)
+            }
             changeUserReputation(reputationDAO, creatorActionlog.actionId, event.creator, event.administrator, pointsGiven, event)
 
             // Affect the reputation of users that interacted with this resource
@@ -171,8 +179,64 @@ class ReputationEventListeners {
             // Change creator's reputation based on vote
             val pointsGiven = if(actionLog.actionType == ActionType.VOTE_UP) VOTE_UP_POINTS else VOTE_DOWN_POINTS
             changeUserReputation(reputationDAO, actionLog.actionId, event.owner, event.voter, pointsGiven, event)
+            /*
+            publisher.publishEvent(ReputationUpdateEvent(
+            owner = event.owner,
+            givenBy = event.voter,
+            pointsGiven = pointsGiven,
+            actionId = actionLog.actionId
+            ))
+            */
         }
     }
+
+    /*
+        @Async
+        @TransactionalEventListener/*(phase = TransactionPhase.BEFORE_COMMIT)*/
+        fun handleReputationUpdateEvent(event: ReputationUpdateEvent) {
+            jdbi.useTransaction<Exception> {
+                val reputationDAO = it.attach(ReputationDAOJdbi::class.java)
+                // Get owner's reputation details
+                val ownerRepDetails = reputationDAO.getUserReputationDetails(event.owner)
+                        .orElseThrow { ReputationUpdateException("Could not get ${event.owner} reputation details", event) }
+
+                // Log reputation change
+                reputationDAO.registerReputationLog(
+                        ownerRepDetails.user,
+                        ownerRepDetails.repId,
+                        event.pointsGiven,
+                        event.givenBy,
+                        event.actionId
+                )
+
+                val newPoints = ownerRepDetails.points + event.pointsGiven
+                val roles = reputationDAO.getAllReputationRoles().filter { it.hierarchyLevel > 0 }
+
+                when {
+                // If reputation is lower than minimum value, reset it
+                    newPoints < MIN_ALLOWED_POINTS -> {
+                        val firstRole = roles.last()
+                        ownerRepDetails.role = firstRole.reputationRoleId
+                        ownerRepDetails.points = firstRole.minPoints
+                    }
+                // If reputation has reached peak, stop increasing
+                    newPoints > roles.first().maxPoints -> {
+                        val maxRole = roles.first()
+                        ownerRepDetails.role = maxRole.reputationRoleId
+                        ownerRepDetails.points = maxRole.maxPoints
+                    }
+                // Resolve new role if that's the case
+                    else -> {
+                        val newRole = roles.find { newPoints <= it.maxPoints && newPoints >= it.minPoints }
+                                ?: throw ReputationUpdateException("Error finding new role for reputation $newPoints", event)
+                        ownerRepDetails.role = newRole.reputationRoleId
+                        ownerRepDetails.points = newPoints
+                    }
+                }
+                reputationDAO.updateUserReputation(ownerRepDetails)
+            }
+        }
+    */
 
     private fun changeUserReputation(reputationDAO: ReputationDAOJdbi, actionId: Int, owner: String, givenBy: String, pointsGiven: Int, event: Any) {
         // Get owner's reputation details

@@ -9,6 +9,8 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.Organizati
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.OrganizationVersionCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.OrganizationReportOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.OrganizationVersionOutputModel
+import java.security.Principal
+import java.util.*
 
 interface OrganizationService {
 
@@ -16,35 +18,27 @@ interface OrganizationService {
 
     fun getAllOrganizations(): OrganizationCollectionOutputModel
 
-    fun createOrganization(organizationInputModel: OrganizationInputModel) : OrganizationOutputModel
+    fun createOrganization(organizationInputModel: OrganizationInputModel, principal: Principal) : OrganizationOutputModel
 
     fun deleteOrganization(organizationId: Int): Int
 
-    fun deleteAllOrganizations(): Int
-
-    fun updateOrganization(organizationId: Int, organizationInputModel: OrganizationInputModel): OrganizationOutputModel
+    fun updateOrganization(organizationId: Int, organizationInputModel: OrganizationInputModel, principal: Principal): OrganizationOutputModel
 
     fun getAllReportsOnOrganization(organizationId: Int): OrganizationReportCollectionOutputModel
 
     fun getSpecificReportOnOrganization(organizationId: Int, reportId: Int): OrganizationReportOutputModel
 
-    fun reportOrganization(organizationId: Int, input: OrganizationReportInputModel): OrganizationReportOutputModel
+    fun reportOrganization(organizationId: Int, input: OrganizationReportInputModel, principal: Principal): OrganizationReportOutputModel
 
-    fun deleteAllReportsOnOrganization(organizationId: Int): Int
+    fun deleteSpecificReportOnOrganization(organizationId: Int, reportId: Int, principal: Principal): Int
 
-    fun deleteSpecificReportOnOrganization(organizationId: Int, reportId: Int): Int
+    fun voteOnOrganization(organizationId: Int, vote: VoteInputModel, principal: Principal): Int
 
-    fun voteOnOrganization(organizationId: Int, vote: VoteInputModel): Int
-
-    fun voteOnOrganizationReport(organizationId: Int, reportId: Int, vote: VoteInputModel): Int
+    fun voteOnOrganizationReport(organizationId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int
 
     fun getAllVersionsOfOrganization(organizationId: Int): OrganizationVersionCollectionOutputModel
 
     fun getSpecificVersionOfOrganization(organizationId: Int, version: Int): OrganizationVersionOutputModel
 
-    fun deleteAllVersionsOfOrganization(organizationId: Int): Int
-
-    fun deleteSpecificVersionOfOrganization(organizationId: Int, version: Int): Int
-
-    fun updateReportedOrganization(organizationId: Int, reportId: Int): OrganizationOutputModel
+    fun updateReportedOrganization(organizationId: Int, reportId: Int, principal: Principal): OrganizationOutputModel
 }

@@ -31,7 +31,6 @@ class UserServiceImpl : UserService {
 
     @Autowired
     lateinit var jdbi: Jdbi
-
     @Autowired
     lateinit var eventPublisher: ApplicationEventPublisher
 
@@ -137,9 +136,10 @@ class UserServiceImpl : UserService {
                 val userDao = it.attach(UserDAOJdbi::class.java)
                 val classDAO = it.attach(ClassDAOJdbi::class.java)
                 val termDAO = it.attach(TermDAOJdbi::class.java)
+
                 val courseClasses = userDao.getClassesOfUser(username)
                 val classes =courseClasses.map {
-                    val courseClass = classDAO.getCourseCLassFromId(it.courseClassId)
+                    val courseClass = classDAO.getCourseClassFromId(it.courseClassId)
                     val term = termDAO.getTerm(courseClass.termId).get()
                     toClassOutputModel(classDAO.getSpecificClass(it.courseId).get(), term)
                 }

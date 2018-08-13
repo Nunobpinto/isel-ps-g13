@@ -7,8 +7,10 @@ import isel.leic.ps.eduWikiAPI.domain.model.staging.ExamStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.ExamVersion
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_COURSE_ID
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_ID
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_STAGE_COURSE_ID
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_STAGE_ID
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_STAGE_TABLE
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_STAGE_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_TABLE
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_MISC_UNIT_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ExamDAO
@@ -29,10 +31,10 @@ interface ExamDAOJdbi : ExamDAO {
         const val EXAM_VERSION_TABLE = "exam_version"
         const val EXAM_REPORT_TABLE = "exam_report"
         const val EXAM_STAGE_TABLE = "exam_stage"
-        // FIELDS
+
+        // EXAM FIELDS
         const val EXAM_ID = "exam_id"
         const val EXAM_VERSION = "exam_version"
-        const val EXAM_VERSION_ID = "exam_id"
         const val EXAM_SHEET_ID = "sheet_id"
         const val EXAM_DUE_DATE = "due_date"
         const val EXAM_TYPE = "exam_type"
@@ -40,17 +42,52 @@ interface ExamDAOJdbi : ExamDAO {
         const val EXAM_LOCATION = "location"
         const val EXAM_VOTES = "votes"
         const val EXAM_TIMESTAMP = "time_stamp"
-        const val EXAM_REPORT_ID = "exam_report_id"
-        const val EXAM_STAGE_ID = "exam_stage_id"
-        const val EXAM_REPORTED_BY = "reported_by"
         const val EXAM_CREATED_BY = "created_by"
+        const val EXAM_LOG_ID = "log_id"
+
+        // EXAM STAGE FIELDS
+        const val EXAM_STAGE_ID = "exam_stage_id"
+        const val EXAM_STAGE_CREATED_BY = "created_by"
+        const val EXAM_STAGE_SHEET_ID = "sheet_id"
+        const val EXAM_STAGE_DUE_DATE = "due_date"
+        const val EXAM_STAGE_TYPE = "exam_type"
+        const val EXAM_STAGE_PHASE = "phase"
+        const val EXAM_STAGE_LOCATION = "location"
+        const val EXAM_STAGE_VOTES = "votes"
+        const val EXAM_STAGE_TIMESTAMP = "time_stamp"
+        const val EXAM_STAGE_LOG_ID = "log_id"
+
+        // EXAM REPORT FIELDS
+        const val EXAM_REPORT_ID = "exam_report_id"
+        const val EXAM_REPORT_EXAM_ID = "exam_id"
+        const val EXAM_REPORTED_BY = "reported_by"
+        const val EXAM_REPORT_SHEET_ID = "sheet_id"
+        const val EXAM_REPORT_DUE_DATE = "due_date"
+        const val EXAM_REPORT_TYPE = "exam_type"
+        const val EXAM_REPORT_PHASE = "phase"
+        const val EXAM_REPORT_LOCATION = "location"
+        const val EXAM_REPORT_VOTES = "votes"
+        const val EXAM_REPORT_TIMESTAMP = "time_stamp"
+        const val EXAM_REPORT_LOG_ID = "log_id"
+
+        // EXAM VERSION FIELDS
+        const val EXAM_VERSION_EXAM_ID = "exam_id"
+        const val EXAM_VERSION_ID = "exam_version"
+        const val EXAM_VERSION_SHEET_ID = "sheet_id"
+        const val EXAM_VERSION_DUE_DATE = "due_date"
+        const val EXAM_VERSION_TYPE = "exam_type"
+        const val EXAM_VERSION_PHASE = "phase"
+        const val EXAM_VERSION_LOCATION = "location"
+        const val EXAM_VERSION_TIMESTAMP = "time_stamp"
+        const val EXAM_VERSION_CREATED_BY = "created_by"
+
     }
 
     @CreateSqlObject
     fun createCourseDAO(): CourseDAOJdbi
 
-    override fun deleteSpecificExamOfCourseInTerm(examId: Int): Int =
-            createCourseDAO().deleteSpecificCourseMiscUnitEntry(examId)
+    override fun deleteSpecificExamOfCourseInTerm(termId: Int, courseId: Int, examId: Int): Int =
+            createCourseDAO().deleteSpecificCourseMiscUnitEntry(courseId, termId, examId)
 
     @SqlUpdate(
             "update $EXAM_TABLE SET " +
@@ -98,34 +135,23 @@ interface ExamDAOJdbi : ExamDAO {
         return createExam(courseMiscUnit.courseMiscUnitId, exam)
     }
 
-    @SqlQuery(
-            "SELECT $EXAM_VOTES FROM $EXAM_TABLE " +
-                    "WHERE $EXAM_ID = :examId"
-    )
-    override fun getVotesOnExam(examId: Int): Int
-
     @SqlUpdate(
             "UPDATE $EXAM_TABLE SET $EXAM_VOTES = :votes " +
                     "WHERE $EXAM_ID = :examId"
     )
     override fun updateVotesOnExam(examId: Int, votes: Int): Int
 
-    @SqlQuery(
-            "SELECT * FROM $EXAM_STAGE_TABLE"
-    )
-    override fun getAllStagedExams(): List<ExamStage>
-
     @SqlUpdate(
             "INSERT INTO $EXAM_STAGE_TABLE ( " +
                     "$EXAM_STAGE_ID, " +
-                    "$EXAM_SHEET_ID, " +
-                    "$EXAM_DUE_DATE, " +
-                    "$EXAM_TYPE, " +
-                    "$EXAM_PHASE, " +
-                    "$EXAM_LOCATION, " +
-                    "$EXAM_CREATED_BY, " +
-                    "$EXAM_VOTES, " +
-                    "$EXAM_TIMESTAMP " +
+                    "$EXAM_STAGE_SHEET_ID, " +
+                    "$EXAM_STAGE_DUE_DATE, " +
+                    "$EXAM_STAGE_TYPE, " +
+                    "$EXAM_STAGE_PHASE, " +
+                    "$EXAM_STAGE_LOCATION, " +
+                    "$EXAM_STAGE_CREATED_BY, " +
+                    "$EXAM_STAGE_VOTES, " +
+                    "$EXAM_STAGE_TIMESTAMP " +
                     ") " +
                     "values(:courseMiscUnitStageId, :examStage.sheetId, :examStage.dueDate, " +
                     ":examStage.type, :examStage.phase, :examStage.location, " +
@@ -144,48 +170,23 @@ interface ExamDAOJdbi : ExamDAO {
         return createStagingExam(courseMiscUnitStage.stageId, examStage)
     }
 
-    @SqlQuery(
-            "SELECT $EXAM_VOTES FROM $EXAM_STAGE_TABLE " +
-                    "WHERE $EXAM_STAGE_ID = :stageId"
-    )
-    override fun getVotesOnStagedExam(stageId: Int): Int
-
     @SqlUpdate(
-            "UPDATE $EXAM_STAGE_TABLE SET $EXAM_VOTES = :votes " +
+            "UPDATE $EXAM_STAGE_TABLE SET $EXAM_STAGE_VOTES = :votes " +
                     "WHERE $EXAM_STAGE_ID = :stageId"
     )
     override fun updateVotesOnStagedExam(stageId: Int, votes: Int): Int
 
-    @SqlQuery(
-            "SELECT * FROM $EXAM_VERSION_TABLE " +
-                    "WHERE $EXAM_VERSION_ID = :examId " +
-                    "AND $EXAM_VERSION = :version"
-    )
-    override fun getVersionExam(examId: Int, version: Int): Optional<ExamVersion>
-
-    @SqlQuery(
-            "SELECT * FROM $EXAM_VERSION_TABLE"
-    )
-    override fun getAllVersionExams(): List<ExamVersion>
-
-    @SqlUpdate(
-            "DELETE FROM $EXAM_VERSION_TABLE " +
-                    "WHERE $EXAM_VERSION_ID = :examId " +
-                    "AND $EXAM_VERSION = :version"
-    )
-    override fun deleteVersionOfExam(examId: Int, version: Int): Int
-
     @SqlUpdate(
             "INSERT INTO $EXAM_VERSION_TABLE ( " +
+                    "$EXAM_VERSION_EXAM_ID, " +
                     "$EXAM_VERSION_ID, " +
-                    "$EXAM_VERSION, " +
-                    "$EXAM_SHEET_ID, " +
-                    "$EXAM_DUE_DATE, " +
-                    "$EXAM_TYPE, " +
-                    "$EXAM_PHASE, " +
-                    "$EXAM_LOCATION, " +
-                    "$EXAM_CREATED_BY, " +
-                    "$EXAM_TIMESTAMP " +
+                    "$EXAM_VERSION_SHEET_ID, " +
+                    "$EXAM_VERSION_DUE_DATE, " +
+                    "$EXAM_VERSION_TYPE, " +
+                    "$EXAM_VERSION_PHASE, " +
+                    "$EXAM_VERSION_LOCATION, " +
+                    "$EXAM_VERSION_CREATED_BY, " +
+                    "$EXAM_VERSION_TIMESTAMP " +
                     ") " +
                     "VALUES(:examVersion.examId, :examVersion.version, :examVersion.sheetId, " +
                     ":examVersion.dueDate, :examVersion.type, :examVersion.phase, " +
@@ -196,15 +197,15 @@ interface ExamDAOJdbi : ExamDAO {
 
     @SqlUpdate(
             "INSERT INTO $EXAM_REPORT_TABLE ( " +
-                    "$EXAM_ID, " +
-                    "$EXAM_SHEET_ID, " +
-                    "$EXAM_DUE_DATE, " +
-                    "$EXAM_TYPE, " +
-                    "$EXAM_PHASE, " +
-                    "$EXAM_LOCATION, " +
+                    "$EXAM_REPORT_EXAM_ID, " +
+                    "$EXAM_REPORT_SHEET_ID, " +
+                    "$EXAM_REPORT_DUE_DATE, " +
+                    "$EXAM_REPORT_TYPE, " +
+                    "$EXAM_REPORT_PHASE, " +
+                    "$EXAM_REPORT_LOCATION, " +
                     "$EXAM_REPORTED_BY, " +
-                    "$EXAM_VOTES, " +
-                    "$EXAM_TIMESTAMP " +
+                    "$EXAM_REPORT_VOTES, " +
+                    "$EXAM_REPORT_TIMESTAMP " +
                     ") " +
                     "VALUES(:examReport.examId, :examReport.sheetId, :examReport.dueDate, " +
                     ":examReport.type, :examReport.phase, :examReport.location, " +
@@ -214,17 +215,15 @@ interface ExamDAOJdbi : ExamDAO {
     override fun reportExam(examReport: ExamReport): ExamReport
 
     @SqlUpdate(
-            "DELETE FROM $EXAM_REPORT_TABLE " +
-                    "WHERE $EXAM_ID = :examId " +
-                    "AND $EXAM_REPORT_ID = :reportId"
+            "DELETE FROM $EXAM_REPORT_TABLE AS E " +
+                    "USING $COURSE_MISC_UNIT_TABLE AS C " +
+                    "WHERE E.$EXAM_REPORT_EXAM_ID = C.$COURSE_MISC_UNIT_ID AND " +
+                    "C.$COURSE_MISC_UNIT_COURSE_ID = :courseId AND " +
+                    "C.$COURSE_MISC_UNIT_TERM_ID = :termId AND " +
+                    "C.$COURSE_MISC_UNIT_ID = :examId AND " +
+                    "E.$EXAM_REPORT_ID = :reportId"
     )
-    override fun deleteReportOnExam(examId: Int, reportId: Int): Int
-
-    @SqlUpdate(
-            "DELETE FROM $EXAM_REPORT_TABLE " +
-                    "WHERE $EXAM_ID = :examId"
-    )
-    override fun deleteAllReportsOnExam(examId: Int): Int
+    override fun deleteReportOnExam(courseId: Int, termId: Int, examId: Int, reportId: Int): Int
 
     @SqlQuery(
             "SELECT E.$EXAM_ID, " +
@@ -267,104 +266,122 @@ interface ExamDAOJdbi : ExamDAO {
 
     @SqlQuery(
             "SELECT E.$EXAM_STAGE_ID, " +
-                    "E.$EXAM_SHEET_ID, " +
-                    "E.$EXAM_DUE_DATE, " +
-                    "E.$EXAM_TYPE, " +
-                    "E.$EXAM_PHASE " +
-                    "E.$EXAM_LOCATION, " +
-                    "E.$EXAM_CREATED_BY " +
-                    "E.$EXAM_VOTES, " +
-                    "E.$EXAM_TIMESTAMP " +
+                    "E.$EXAM_STAGE_SHEET_ID, " +
+                    "E.$EXAM_STAGE_DUE_DATE, " +
+                    "E.$EXAM_STAGE_TYPE, " +
+                    "E.$EXAM_STAGE_PHASE " +
+                    "E.$EXAM_STAGE_LOCATION, " +
+                    "E.$EXAM_STAGE_CREATED_BY " +
+                    "E.$EXAM_STAGE_VOTES, " +
+                    "E.$EXAM_STAGE_TIMESTAMP " +
                     "FROM $EXAM_STAGE_TABLE AS E " +
                     "INNER JOIN $COURSE_MISC_UNIT_STAGE_TABLE AS C " +
-                    "ON E.$EXAM_ID = C.$COURSE_MISC_UNIT_ID " +
-                    "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId " +
-                    "AND C.$COURSE_MISC_UNIT_TERM_ID = :termId"
+                    "ON E.$EXAM_STAGE_ID = C.$COURSE_MISC_UNIT_STAGE_ID " +
+                    "WHERE C.$COURSE_MISC_UNIT_STAGE_COURSE_ID = :courseId " +
+                    "AND C.$COURSE_MISC_UNIT_STAGE_TERM_ID = :termId"
     )
     override fun getStageEntriesFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int): List<ExamStage>
 
     @SqlQuery(
             "SELECT E.$EXAM_STAGE_ID, " +
-                    "E.$EXAM_SHEET_ID, " +
-                    "E.$EXAM_DUE_DATE, " +
-                    "E.$EXAM_TYPE, " +
-                    "E.$EXAM_PHASE, " +
-                    "E.$EXAM_LOCATION, " +
-                    "E.$EXAM_CREATED_BY, " +
-                    "E.$EXAM_VOTES, " +
-                    "E.$EXAM_TIMESTAMP " +
+                    "E.$EXAM_STAGE_SHEET_ID, " +
+                    "E.$EXAM_STAGE_DUE_DATE, " +
+                    "E.$EXAM_STAGE_TYPE, " +
+                    "E.$EXAM_STAGE_PHASE " +
+                    "E.$EXAM_STAGE_LOCATION, " +
+                    "E.$EXAM_STAGE_CREATED_BY " +
+                    "E.$EXAM_STAGE_VOTES, " +
+                    "E.$EXAM_STAGE_TIMESTAMP " +
                     "FROM $EXAM_STAGE_TABLE AS E " +
                     "INNER JOIN $COURSE_MISC_UNIT_STAGE_TABLE AS C " +
                     "ON E.$EXAM_STAGE_ID = C.$COURSE_MISC_UNIT_STAGE_ID " +
-                    "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId " +
-                    "AND C.$COURSE_MISC_UNIT_TERM_ID = :termId " +
+                    "WHERE C.$COURSE_MISC_UNIT_STAGE_COURSE_ID = :courseId " +
                     "AND C.$COURSE_MISC_UNIT_STAGE_ID = :stageId"
     )
     override fun getStageEntryFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): Optional<ExamStage>
 
     @SqlQuery(
-            "SELECT * FROM $EXAM_REPORT_TABLE " +
-                    "WHERE $EXAM_ID = :examId"
+            "SELECT " +
+                    "E.$EXAM_REPORT_ID, " +
+                    "E.$EXAM_REPORT_EXAM_ID, " +
+                    "E.$EXAM_REPORT_SHEET_ID, " +
+                    "E.$EXAM_REPORT_DUE_DATE, " +
+                    "E.$EXAM_REPORT_TYPE, " +
+                    "E.$EXAM_REPORT_PHASE, " +
+                    "E.$EXAM_REPORT_LOCATION, " +
+                    "E.$EXAM_REPORTED_BY, " +
+                    "E.$EXAM_REPORT_VOTES, " +
+                    "E.$EXAM_REPORT_TIMESTAMP, " +
+                    "E.$EXAM_REPORT_LOG_ID " +
+                    "FROM $COURSE_MISC_UNIT_TABLE as C " +
+                    "INNER JOIN $EXAM_REPORT_TABLE as E ON c.$COURSE_MISC_UNIT_ID = E.$EXAM_REPORT_EXAM_ID " +
+                    "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId AND C.$COURSE_MISC_UNIT_TERM_ID = :termId AND " +
+                    "C.$COURSE_MISC_UNIT_ID = :examId"
     )
-    override fun getAllReportsOnExamOnSpecificTermOfCourse(examId: Int): List<ExamReport>
+    override fun getAllReportsOnExamOnSpecificTermOfCourse(courseId: Int, termId: Int, examId: Int): List<ExamReport>
 
     @SqlQuery(
-            "SELECT * FROM $EXAM_REPORT_TABLE " +
-                    "WHERE $EXAM_REPORT_ID = :reportId"
+            "SELECT " +
+                    "E.$EXAM_REPORT_ID, " +
+                    "E.$EXAM_REPORT_EXAM_ID, " +
+                    "E.$EXAM_REPORT_SHEET_ID, " +
+                    "E.$EXAM_REPORT_DUE_DATE, " +
+                    "E.$EXAM_REPORT_TYPE, " +
+                    "E.$EXAM_REPORT_PHASE, " +
+                    "E.$EXAM_REPORT_LOCATION, " +
+                    "E.$EXAM_REPORTED_BY, " +
+                    "E.$EXAM_REPORT_VOTES, " +
+                    "E.$EXAM_REPORT_TIMESTAMP, " +
+                    "E.$EXAM_REPORT_LOG_ID " +
+                    "FROM $COURSE_MISC_UNIT_TABLE as C " +
+                    "INNER JOIN $EXAM_REPORT_TABLE as E ON C.$COURSE_MISC_UNIT_ID = E.$EXAM_REPORT_EXAM_ID " +
+                    "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId AND C.$COURSE_MISC_UNIT_TERM_ID = :termId AND " +
+                    "C.$COURSE_MISC_UNIT_ID = :examId AND E.$EXAM_REPORT_ID = :reportId"
     )
-    override fun getSpecificReportOnExamOnSpecificTermOfCourse(reportId: Int): Optional<ExamReport>
-
-    @SqlQuery(
-            "SELECT $EXAM_VOTES FROM $EXAM_REPORT_TABLE " +
-                    "WHERE $EXAM_REPORT_ID = :reportId"
-    )
-    override fun getVotesOnReportedExam(reportId: Int): Int
+    override fun getSpecificReportOnExamOnSpecificTermOfCourse(courseId: Int, termId: Int, examId: Int, reportId: Int): Optional<ExamReport>
 
     @SqlUpdate(
-            "UPDATE $EXAM_REPORT_TABLE SET $EXAM_VOTES = :votes " +
+            "UPDATE $EXAM_REPORT_TABLE SET $EXAM_REPORT_VOTES = :votes " +
                     "WHERE $EXAM_REPORT_ID = :reportId"
     )
     override fun updateVotesOnReportedExam(reportId: Int, votes: Int): Int
 
-    @SqlQuery(
-            "SELECT * FROM $EXAM_REPORT_TABLE " +
-                    "WHERE $EXAM_ID = :examId " +
-                    "AND $EXAM_REPORT_ID = :reportId"
-    )
-    override fun getSpecificReportOfExam(examId: Int, reportId: Int): Optional<ExamReport>
-
-    @SqlQuery(
-            "SELECT * FROM $EXAM_STAGE_TABLE " +
-                    "WHERE $EXAM_STAGE_ID = :stageId"
-    )
-    override fun getExamSpecificStageEntry(stageId: Int): Optional<ExamStage>
-
     override fun deleteSpecificStagedExamOfCourseInTerm(courseId: Int, termId: Int, stageId: Int): Int =
             createCourseDAO().deleteSpecificStagedCourseMiscUnitEntry(courseId, termId, stageId)
 
-    override fun deleteAllExamsOfCourseInTerm(courseId: Int, termId: Int): Int =
-            createCourseDAO().deleteAllCourseMiscUnitsFromTypeOfCourseInTerm(courseId, termId, CourseMiscUnitType.EXAM_TEST)
-
-    override fun deleteAllStagedExamsOfCourseInTerm(courseId: Int, termId: Int): Int =
-            createCourseDAO().deleteAllStagedCourseMiscUnitsFromTypeOfCourseInTerm(courseId, termId, CourseMiscUnitType.EXAM_TEST)
-
-    @SqlUpdate(
-            "DELETE FROM $EXAM_VERSION_TABLE " +
-                    "WHERE $EXAM_VERSION_ID = :examId"
+    @SqlQuery(
+            "SELECT " +
+                    "V.$EXAM_VERSION_ID, " +
+                    "V.$EXAM_VERSION_EXAM_ID, " +
+                    "V.$EXAM_VERSION_SHEET_ID, " +
+                    "V.$EXAM_VERSION_DUE_DATE, " +
+                    "V.$EXAM_VERSION_TYPE, " +
+                    "V.$EXAM_VERSION_PHASE, " +
+                    "V.$EXAM_VERSION_LOCATION, " +
+                    "V.$EXAM_VERSION_CREATED_BY, " +
+                    "V.$EXAM_VERSION_TIMESTAMP, " +
+                    "FROM $EXAM_VERSION_TABLE as V " +
+                    "INNER JOIN $COURSE_MISC_UNIT_TABLE as C ON V.$EXAM_VERSION_EXAM_ID = C.$COURSE_MISC_UNIT_ID " +
+                    "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId AND C.$COURSE_MISC_UNIT_TERM_ID = :termId AND C.$COURSE_MISC_UNIT_ID = :examId"
     )
-    override fun deleteAllVersionOfExam(examId: Int): Int
+    override fun getAllVersionsOfSpecificExam(termId: Int, courseId: Int, examId: Int): List<ExamVersion>
 
     @SqlQuery(
-            "SELECT * FROM $EXAM_VERSION_TABLE " +
-                    "WHERE $EXAM_VERSION_ID = :examId"
+            "SELECT " +
+                    "V.$EXAM_VERSION_ID, " +
+                    "V.$EXAM_VERSION_EXAM_ID, " +
+                    "V.$EXAM_VERSION_SHEET_ID, " +
+                    "V.$EXAM_VERSION_DUE_DATE, " +
+                    "V.$EXAM_VERSION_TYPE, " +
+                    "V.$EXAM_VERSION_PHASE, " +
+                    "V.$EXAM_VERSION_LOCATION, " +
+                    "V.$EXAM_VERSION_CREATED_BY, " +
+                    "V.$EXAM_VERSION_TIMESTAMP, " +
+                    "FROM $EXAM_VERSION_TABLE as V " +
+                    "INNER JOIN $COURSE_MISC_UNIT_TABLE as C ON V.$EXAM_VERSION_EXAM_ID = C.$COURSE_MISC_UNIT_ID " +
+                    "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId AND C.$COURSE_MISC_UNIT_TERM_ID = :termId AND " +
+                    "C.$COURSE_MISC_UNIT_ID = :examId AND V.$EXAM_VERSION_ID = :version"
     )
-    override fun getAllVersionsOfSpecificExam(examId: Int): List<ExamVersion>
-
-    @SqlQuery(
-            "SELECT * FROM $EXAM_VERSION_TABLE " +
-                    "WHERE $EXAM_VERSION_ID = :examId " +
-                    "AND $EXAM_VERSION = :versionId"
-    )
-    override fun getVersionOfSpecificExam(examId: Int, version: Int): Optional<ExamVersion>
+    override fun getVersionOfSpecificExam(termId: Int, courseId: Int, examId: Int, version: Int): Optional<ExamVersion>
 
 }

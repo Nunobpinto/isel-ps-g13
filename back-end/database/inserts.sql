@@ -182,8 +182,8 @@ insert into course_class (course_id, class_id, term_id, created_by, votes, time_
 
 -- Lecture Insert
 
-insert into class_misc_unit (class_misc_unit_id, misc_type, course_class_id)
-    values (1, 'LECTURE', 1);
+insert into class_misc_unit (misc_type, course_class_id)
+    values ('LECTURE', 1);
 
 insert into lecture (lecture_id, created_by, weekday, begins, duration, location, time_stamp)
     values (1, 'bruno', 'MONDAY', current_time, '02:00:00', 'E.1.07', current_timestamp);
@@ -191,8 +191,8 @@ insert into lecture (lecture_id, created_by, weekday, begins, duration, location
 insert into lecture_version (lecture_id, lecture_version, created_by, weekday, begins, duration, location, time_stamp)
     values (1, 1, 'bruno', 'MONDAY', current_time, '02:00:00', 'E.1.07', current_timestamp);
 
-insert into class_misc_unit (class_misc_unit_id, misc_type, course_class_id)
-    values (2, 'LECTURE', 2);
+insert into class_misc_unit (misc_type, course_class_id)
+    values ('LECTURE', 2);
 
 insert into lecture (lecture_id, created_by, weekday, begins, duration, location, time_stamp)
     values (2, 'bruno', 'TUESDAY', current_time, '02:00:00', 'G.1.07', current_timestamp);
@@ -200,8 +200,8 @@ insert into lecture (lecture_id, created_by, weekday, begins, duration, location
 insert into lecture_version (lecture_id, lecture_version, created_by, weekday, begins, duration, location, time_stamp)
     values (2, 1, 'bruno', 'TUESDAY', current_time, '02:00:00', 'G.1.07', current_timestamp);
 
-insert into class_misc_unit (class_misc_unit_id, misc_type, course_class_id)
-    values (3, 'LECTURE', 3);
+insert into class_misc_unit (misc_type, course_class_id)
+    values ('LECTURE', 3);
 
 insert into lecture (lecture_id, created_by, weekday, begins, duration, location, time_stamp)
     values (3, 'bruno', 'FRIDAY', current_time, '02:00:00', 'G.0.14', current_timestamp);
@@ -211,8 +211,8 @@ insert into lecture_version (lecture_id, lecture_version, created_by, weekday, b
 
 -- Homework Insert
 
-insert into class_misc_unit (class_misc_unit_id, misc_type, course_class_id)
-    values (4, 'HOMEWORK', 1);
+insert into class_misc_unit (misc_type, course_class_id)
+    values ('HOMEWORK', 1);
 
 insert into homework (homework_id, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
     values (4,'bruno',gen_random_uuid(), current_date, true, true, current_timestamp );
@@ -220,8 +220,8 @@ insert into homework (homework_id, created_by, sheet_id, due_date, late_delivery
 insert into homework_version (homework_id, homework_version, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
     values (4, 1, 'bruno',gen_random_uuid(), current_date, true, true, current_timestamp );
 
-insert into class_misc_unit (class_misc_unit_id, misc_type, course_class_id)
-    values (5, 'HOMEWORK', 2);
+insert into class_misc_unit (misc_type, course_class_id)
+    values ('HOMEWORK', 2);
 
 insert into homework (homework_id, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
     values (5, 'ze', gen_random_uuid(),current_date, false , true , current_timestamp);
@@ -229,8 +229,8 @@ insert into homework (homework_id, created_by, sheet_id, due_date, late_delivery
 insert into homework_version (homework_id, homework_version, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
     values (5, 1, 'ze', gen_random_uuid(),current_date, false , true , current_timestamp);
 
-insert into class_misc_unit (class_misc_unit_id, misc_type, course_class_id)
-    values (6, 'HOMEWORK', 1);
+insert into class_misc_unit (misc_type, course_class_id)
+    values ('HOMEWORK', 1);
 
 insert into homework(homework_id, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
     values (6, 'ze',gen_random_uuid(), current_date, true , true , current_timestamp);

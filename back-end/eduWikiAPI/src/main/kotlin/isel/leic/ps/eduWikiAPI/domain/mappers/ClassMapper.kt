@@ -15,20 +15,27 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.ClassStage
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.ClassVersionCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.ClassReportOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.ClassStageOutputModel
+import java.security.Principal
 import java.sql.Timestamp
 import java.time.LocalDateTime
 
-fun toClass(input: ClassInputModel) = Class(
+fun toClass(input: ClassInputModel, createdBy: String) = Class(
         termId = input.termId,
         className = input.className,
-        createdBy = input.createdBy
+        createdBy = createdBy
 )
 
-fun toClassReport(classId: Int, report: ClassReportInputModel) = ClassReport(
+fun toClassStage(input: ClassInputModel, createdBy: String): ClassStage = ClassStage(
+        termId = input.termId,
+        className = input.className,
+        createdBy = createdBy
+)
+
+fun toClassReport(classId: Int, report: ClassReportInputModel, reportedBy: String) = ClassReport(
         classId = classId,
         termId = report.termId,
         className = report.className,
-        reportedBy = report.reportedBy,
+        reportedBy = reportedBy,
         timestamp = Timestamp.valueOf(LocalDateTime.now())
 )
 

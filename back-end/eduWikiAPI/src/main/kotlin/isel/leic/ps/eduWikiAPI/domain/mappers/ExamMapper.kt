@@ -14,8 +14,8 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.ExamReportOutpu
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.ExamStageOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.ExamVersionOutputModel
 
-fun toExam(input: ExamInputModel) = Exam(
-        createdBy = input.createdBy,
+fun toExam(input: ExamInputModel, createdBy: String) = Exam(
+        createdBy = createdBy,
         dueDate = input.dueDate,
         type = input.type,
         phase = input.phase,
@@ -34,22 +34,22 @@ fun toExamVersion(exam: Exam) = ExamVersion(
         location = exam.location
 )
 
-fun toExamReport(examId: Int, inputExamReport: ExamReportInputModel) = ExamReport(
+fun toExamReport(examId: Int, inputExamReport: ExamReportInputModel, reportedBy: String) = ExamReport(
         examId = examId,
+        reportedBy = reportedBy,
         sheetId = inputExamReport.sheetId,
         dueDate = inputExamReport.dueDate,
         type = inputExamReport.type,
         phase = inputExamReport.phase,
-        location = inputExamReport.location,
-        reportedBy = inputExamReport.reportedBy
+        location = inputExamReport.location
 )
 
-fun toStageExam(inputExam: ExamInputModel) = ExamStage(
+fun toStageExam(inputExam: ExamInputModel, createdBy: String) = ExamStage(
+        createdBy = createdBy,
         dueDate = inputExam.dueDate,
         type = inputExam.type,
         phase = inputExam.phase,
-        location = inputExam.location,
-        createdBy = inputExam.createdBy
+        location = inputExam.location
 )
 
 fun stagedToExam(stage: ExamStage) = Exam(

@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.service
 
+import isel.leic.ps.eduWikiAPI.domain.enums.ActionType
 import isel.leic.ps.eduWikiAPI.domain.inputModel.CourseInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.ExamInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
@@ -9,8 +10,6 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ExamReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.WorkAssignmentReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.mappers.*
 import isel.leic.ps.eduWikiAPI.domain.model.*
-import isel.leic.ps.eduWikiAPI.domain.model.staging.ExamStage
-import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
 import isel.leic.ps.eduWikiAPI.domain.outputModel.CourseOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.ExamOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.TermOutputModel
@@ -34,27 +33,42 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.WorkAssignmentS
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.CourseVersionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.ExamVersionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.WorkAssignmentVersionOutputModel
+import isel.leic.ps.eduWikiAPI.eventListeners.events.*
 import isel.leic.ps.eduWikiAPI.exceptions.NotFoundException
 import isel.leic.ps.eduWikiAPI.repository.*
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_REPORT_TABLE
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_STAGE_TABLE
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_TABLE
+import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_REPORT_TABLE
+import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_STAGE_TABLE
+import isel.leic.ps.eduWikiAPI.repository.ExamDAOJdbi.Companion.EXAM_TABLE
+import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOJdbi.Companion.WORK_ASSIGNMENT_REPORT_TABLE
+import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOJdbi.Companion.WORK_ASSIGNMENT_STAGE_TABLE
+import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOJdbi.Companion.WORK_ASSIGNMENT_TABLE
 import isel.leic.ps.eduWikiAPI.service.interfaces.CourseService
 import isel.leic.ps.eduWikiAPI.service.interfaces.ResourceStorageService
 import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
+import java.security.Principal
 
 @Service
 class CourseServiceImpl : CourseService {
 
     @Autowired
     lateinit var jdbi: Jdbi
-
     @Autowired
     lateinit var storageService: ResourceStorageService
+    @Autowired
+    lateinit var publisher: ApplicationEventPublisher
 
-    /**
-     * Course Methods
-     */
+    // ---------- Course ----------
+
+    // ----------------------------
+    // Course Methods
+    // ----------------------------
 
     override fun getAllCourses(): CourseCollectionOutputModel =
             jdbi.withExtension<CourseCollectionOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
@@ -66,33 +80,88 @@ class CourseServiceImpl : CourseService {
             jdbi.withExtension<CourseOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
                 toCourseOutputModel(
                         it.getSpecificCourse(courseId)
-                                .orElseThrow {
-                                    NotFoundException(
-                                            msg = "No course found",
-                                            action = "Try again with other course id"
-                                    )
-                                }
+                                .orElseThrow { NotFoundException("No course found", "Try again with other course id") }
                 )
             }
 
-    override fun getAllReportsOnCourse(courseId: Int): CourseReportCollectionOutputModel =
-            jdbi.withExtension<CourseReportCollectionOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                val reports = it.getAllReportsOnCourse(courseId).map { toCourseReportOutputModel(it) }
-                toCourseReportCollectionOutputModel(reports)
+    override fun createCourse(inputCourse: CourseInputModel, principal: Principal): CourseOutputModel =
+            jdbi.inTransaction<CourseOutputModel, Exception> {
+                val courseDAO = it.attach(CourseDAOJdbi::class.java)
+
+                val course = courseDAO.createCourse(toCourse(inputCourse, principal.name))
+                courseDAO.createCourseVersion(toCourseVersion(course))
+
+                publisher.publishEvent(ResourceCreatedEvent(
+                        principal.name,
+                        COURSE_TABLE,
+                        course.logId
+                ))
+                toCourseOutputModel(course)
             }
 
-    override fun getSpecificReportOfCourse(courseId: Int, reportId: Int): CourseReportOutputModel =
-            jdbi.withExtension<CourseReportOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                toCourseReportOutputModel(
-                        it.getSpecificReportOfCourse(courseId, reportId)
-                                .orElseThrow {
-                                    NotFoundException(
-                                            msg = "No report found",
-                                            action = "Try again with other report id"
-                                    )
-                                }
-                )
+    override fun voteOnCourse(courseId: Int, vote: VoteInputModel, principal: Principal): Int =
+            jdbi.inTransaction<Int, Exception> {
+                val courseDAO = it.attach(CourseDAOJdbi::class.java)
+
+                val course = courseDAO.getSpecificCourse(courseId)
+                        .orElseThrow { NotFoundException("No Course found", "Try another id") }
+
+                val votes = if(Vote.valueOf(vote.vote) == Vote.Down) course.votes.dec() else course.votes.inc()
+                val success = courseDAO.updateVotesOnCourse(courseId, votes)
+
+                publisher.publishEvent(VoteOnResourceEvent(
+                        principal.name,
+                        course.createdBy,
+                        COURSE_TABLE,
+                        course.logId,
+                        Vote.valueOf(vote.vote)
+                ))
+                success
             }
+
+    override fun partialUpdateOnCourse(courseId: Int, inputCourse: CourseInputModel, principal: Principal): CourseOutputModel =
+            jdbi.inTransaction<CourseOutputModel, Exception> {
+                val courseDAO = it.attach(CourseDAOJdbi::class.java)
+
+                val course = courseDAO.getSpecificCourse(courseId)
+                        .orElseThrow { NotFoundException("No Course found", "Try another id") }
+
+                val updatedCourse = courseDAO.updateCourse(Course(
+                        courseId = courseId,
+                        createdBy = principal.name,
+                        version = course.version.inc(),
+                        organizationId = course.organizationId,
+                        fullName = if(inputCourse.fullName.isEmpty()) course.fullName else inputCourse.fullName,
+                        shortName = if(inputCourse.shortName.isEmpty()) course.shortName else inputCourse.shortName
+                ))
+                courseDAO.createCourseVersion(toCourseVersion(updatedCourse))
+
+                publisher.publishEvent(ResourceUpdatedEvent(
+                        principal.name,
+                        COURSE_TABLE,
+                        updatedCourse.logId
+                ))
+                toCourseOutputModel(updatedCourse)
+            }
+
+    override fun deleteSpecificCourse(courseId: Int, principal: Principal): Int =
+            jdbi.withExtension<Int, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
+                val course = it.getSpecificCourse(courseId)
+                        .orElseThrow { NotFoundException("No Course found", "Try another id") }
+
+                val success = it.deleteSpecificCourse(courseId)
+
+                publisher.publishEvent(ResourceDeletedEvent(
+                        principal.name,
+                        COURSE_TABLE,
+                        course.logId
+                ))
+                success
+            }
+
+    // ----------------------------
+    // Course Stage Methods
+    // ----------------------------
 
     override fun getAllCourseStageEntries(): CourseStageCollectionOutputModel =
             jdbi.withExtension<CourseStageCollectionOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
@@ -104,14 +173,203 @@ class CourseServiceImpl : CourseService {
             jdbi.withExtension<CourseStageOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
                 toCourseStageOutputModel(
                         it.getCourseSpecificStageEntry(stageId)
-                                .orElseThrow {
-                                    NotFoundException(
-                                            msg = "No staged course found",
-                                            action = "Try again with other stage id"
-                                    )
-                                }
+                                .orElseThrow { NotFoundException("No staged course found", "Try again with other stage id") }
                 )
             }
+
+    override fun createStagingCourse(inputCourse: CourseInputModel, principal: Principal): CourseStageOutputModel =
+            jdbi.withExtension<CourseStageOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
+                val courseStage = it.createStagingCourse(toCourseStage(inputCourse, principal.name))
+
+                publisher.publishEvent(ResourceCreatedEvent(
+                        principal.name,
+                        COURSE_STAGE_TABLE,
+                        courseStage.logId
+                ))
+                toCourseStageOutputModel(courseStage)
+            }
+
+    override fun createCourseFromStaged(stageId: Int, principal: Principal): CourseOutputModel =
+            jdbi.inTransaction<CourseOutputModel, Exception> {
+                val courseDAO = it.attach(CourseDAOJdbi::class.java)
+
+                val courseStage = courseDAO.getCourseSpecificStageEntry(stageId)
+                        .orElseThrow { NotFoundException("No staged course found", "Try again with other stage id") }
+                val createdCourse = courseDAO.createCourse(stagedToCourse(courseStage))
+                courseDAO.deleteStagedCourse(stageId)
+                courseDAO.createCourseVersion(toCourseVersion(createdCourse))
+
+                publisher.publishEvent(ResourceApprovedEvent(
+                        principal.name,
+                        ActionType.APPROVE_STAGE,
+                        COURSE_STAGE_TABLE,
+                        courseStage.logId,
+                        courseStage.createdBy,
+                        ActionType.CREATE,
+                        COURSE_TABLE,
+                        createdCourse.logId
+                ))
+                toCourseOutputModel(createdCourse)
+            }
+
+    override fun voteOnStagedCourse(stageId: Int, vote: VoteInputModel, principal: Principal): Int =
+            jdbi.inTransaction<Int, Exception> {
+                val courseDAO = it.attach(CourseDAOJdbi::class.java)
+
+                val courseStage = courseDAO.getCourseSpecificStageEntry(stageId)
+                        .orElseThrow { NotFoundException("No staged course found", "Try again with other stage id") }
+                val votes = if(Vote.valueOf(vote.vote) == Vote.Down) courseStage.votes.dec() else courseStage.votes.inc()
+                val success = courseDAO.updateVotesOnStagedCourse(stageId, votes)
+
+                publisher.publishEvent(VoteOnResourceEvent(
+                        principal.name,
+                        courseStage.createdBy,
+                        COURSE_STAGE_TABLE,
+                        courseStage.logId,
+                        Vote.valueOf(vote.vote)
+                ))
+                success
+            }
+
+    override fun deleteSpecificStagedCourse(stageId: Int, principal: Principal): Int =
+            jdbi.withExtension<Int, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
+                val courseStage = it.getCourseSpecificStageEntry(stageId)
+                        .orElseThrow { NotFoundException("No staged course found", "Try again with other stage id") }
+                val success = it.deleteStagedCourse(stageId)
+
+                publisher.publishEvent(ResourceRejectedEvent(
+                        principal.name,
+                        courseStage.createdBy,
+                        ActionType.REJECT_STAGE,
+                        COURSE_STAGE_TABLE,
+                        courseStage.logId
+                ))
+                success
+            }
+
+    // ----------------------------
+    // Course Report Methods
+    // ----------------------------
+
+    override fun getAllReportsOnCourse(courseId: Int): CourseReportCollectionOutputModel =
+            jdbi.withExtension<CourseReportCollectionOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
+                val reports = it.getAllReportsOnCourse(courseId).map { toCourseReportOutputModel(it) }
+                toCourseReportCollectionOutputModel(reports)
+            }
+
+    override fun getSpecificReportOfCourse(courseId: Int, reportId: Int): CourseReportOutputModel =
+            jdbi.withExtension<CourseReportOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
+                toCourseReportOutputModel(
+                        it.getSpecificReportOfCourse(courseId, reportId)
+                                .orElseThrow { NotFoundException("No report found", "Try again with other report id") }
+                )
+            }
+
+    override fun reportCourse(courseId: Int, inputCourseReport: CourseReportInputModel, principal: Principal): CourseReportOutputModel =
+            jdbi.withExtension<CourseReportOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
+                val courseReport = it.reportCourse(courseId, toCourseReport(courseId, inputCourseReport, principal.name))
+
+                publisher.publishEvent(ResourceCreatedEvent(
+                        principal.name,
+                        COURSE_REPORT_TABLE,
+                        courseReport.logId
+                ))
+                toCourseReportOutputModel(courseReport)
+            }
+
+    override fun voteOnReportedCourse(courseId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int =
+            jdbi.inTransaction<Int, Exception> {
+                val courseDAO = it.attach(CourseDAOJdbi::class.java)
+
+                val courseReport = courseDAO.getSpecificReportOfCourse(courseId, reportId)
+                        .orElseThrow { NotFoundException("No report found", "Try again with other report id") }
+
+                val votes = if(Vote.valueOf(vote.vote) == Vote.Down) courseReport.votes.dec() else courseReport.votes.inc()
+                val success = courseDAO.updateVotesOnReportedCourse(reportId, votes)
+
+                publisher.publishEvent(VoteOnResourceEvent(
+                        principal.name,
+                        courseReport.reportedBy,
+                        COURSE_REPORT_TABLE,
+                        courseReport.logId,
+                        Vote.valueOf(vote.vote)
+                ))
+                success
+            }
+
+    override fun updateReportedCourse(courseId: Int, reportId: Int, principal: Principal): CourseOutputModel =
+            jdbi.inTransaction<CourseOutputModel, Exception> {
+                val courseDAO = it.attach(CourseDAOJdbi::class.java)
+
+                val course = courseDAO.getSpecificCourse(courseId)
+                        .orElseThrow { NotFoundException("No course found", "Try another id") }
+                val report = courseDAO.getSpecificReportOfCourse(courseId, reportId)
+                        .orElseThrow { NotFoundException("No report found", "Try again with other report id") }
+
+                val updatedCourse = courseDAO.updateCourse(Course(
+                        courseId = courseId,
+                        organizationId = course.organizationId,
+                        version = course.version.inc(),
+                        createdBy = report.reportedBy,
+                        fullName = report.fullName ?: course.fullName,
+                        shortName = report.shortName ?: course.shortName
+                ))
+                courseDAO.createCourseVersion(toCourseVersion(updatedCourse))
+                courseDAO.deleteReportOnCourse(reportId)
+
+                publisher.publishEvent(ResourceApprovedEvent(
+                        principal.name,
+                        ActionType.APPROVE_REPORT,
+                        COURSE_REPORT_TABLE,
+                        report.logId,
+                        report.reportedBy,
+                        ActionType.ALTER,
+                        COURSE_TABLE,
+                        updatedCourse.logId
+                ))
+                toCourseOutputModel(updatedCourse)
+            }
+
+    override fun deleteReportOnCourse(courseId: Int, reportId: Int, principal: Principal): Int =
+            jdbi.withExtension<Int, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
+                val courseReport= it.getSpecificReportOfCourse(courseId, reportId)
+                        .orElseThrow { NotFoundException("No report found", "Try again with other report id") }
+
+                val success = it.deleteReportOnCourse(reportId)
+
+                publisher.publishEvent(ResourceRejectedEvent(
+                        principal.name,
+                        courseReport.reportedBy,
+                        ActionType.APPROVE_REPORT,
+                        COURSE_REPORT_TABLE,
+                        courseReport.logId
+                ))
+                success
+            }
+
+    // ----------------------------
+    // Course Version Methods
+    // ----------------------------
+
+    override fun getAllVersionsOfSpecificCourse(courseId: Int): CourseVersionCollectionOutputModel =
+            jdbi.withExtension<CourseVersionCollectionOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
+                val courseVersions = it.getAllVersionsOfSpecificCourse(courseId).map { toCourseVersionOutputModel(it) }
+                toCourseVersionCollectionOutputModel(courseVersions)
+            }
+
+    override fun getVersionOfSpecificCourse(courseId: Int, versionId: Int): CourseVersionOutputModel =
+            jdbi.withExtension<CourseVersionOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
+                toCourseVersionOutputModel(
+                        it.getVersionOfSpecificCourse(courseId, versionId)
+                                .orElseThrow { NotFoundException("No version found", "Try again with other version number") }
+                )
+            }
+
+    // ----------- TERM -----------
+
+    // ----------------------------
+    // Term Methods
+    // ----------------------------
 
     override fun getTermsOfCourse(courseId: Int): List<TermOutputModel> =
             jdbi.withExtension<List<TermOutputModel>, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
@@ -124,14 +382,15 @@ class CourseServiceImpl : CourseService {
             jdbi.withExtension<TermOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
                 toTermOutputModel(
                         it.getSpecificTermOfCourse(courseId, termId)
-                                .orElseThrow {
-                                    NotFoundException(
-                                            msg = "No term found related to this course",
-                                            action = "Try again with other term id or course id"
-                                    )
-                                }
+                                .orElseThrow { NotFoundException("No term found related to this course","Try again with other term id or course id") }
                 )
             }
+
+    // ----------- EXAM -----------
+
+    // ----------------------------
+    // Exam Methods
+    // ----------------------------
 
     override fun getAllExamsFromSpecificTermOfCourse(courseId: Int, termId: Int): ExamCollectionOutputModel =
             jdbi.withExtension<ExamCollectionOutputModel, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
@@ -143,14 +402,70 @@ class CourseServiceImpl : CourseService {
             jdbi.withExtension<ExamOutputModel, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
                 toExamOutputModel(
                         it.getSpecificExamFromSpecificTermOfCourse(courseId, termId, examId)
-                                .orElseThrow {
-                                    NotFoundException(
-                                            msg = "No exam found",
-                                            action = "Try again with other exam id"
-                                    )
-                                }
+                                .orElseThrow { NotFoundException("No exam found", "Try again with other exam id") }
                 )
             }
+
+    override fun createExamOnCourseInTerm(
+            courseId: Int,
+            termId: Int,
+            sheet: MultipartFile,
+            inputExam: ExamInputModel,
+            principal: Principal
+    ): ExamOutputModel =
+            jdbi.inTransaction<ExamOutputModel, Exception> {
+                val examDAO = it.attach(ExamDAOJdbi::class.java)
+
+                val createdExam = examDAO.createExamOnCourseInTerm(courseId, termId, toExam(inputExam, principal.name))
+                examDAO.createExamVersion(toExamVersion(createdExam))
+                storageService.storeResource(createdExam.sheetId, sheet)
+
+                publisher.publishEvent(ResourceCreatedEvent(
+                        principal.name,
+                        EXAM_TABLE,
+                        createdExam.logId
+                ))
+                toExamOutputModel(createdExam)
+            }
+
+    override fun voteOnExam(termId: Int, courseId: Int, examId: Int, inputVote: VoteInputModel, principal: Principal): Int =
+            jdbi.inTransaction<Int, Exception> {
+                val examDAO = it.attach(ExamDAOJdbi::class.java)
+
+                val exam = examDAO.getSpecificExamFromSpecificTermOfCourse(courseId, termId, examId)
+                        .orElseThrow { NotFoundException("No exam found", "Try again with other exam id") }
+                val votes = if(Vote.valueOf(inputVote.vote) == Vote.Down) exam.votes.dec() else exam.votes.inc()
+                val success = examDAO.updateVotesOnExam(examId, votes)
+
+                publisher.publishEvent(VoteOnResourceEvent(
+                        principal.name,
+                        exam.createdBy,
+                        EXAM_TABLE,
+                        exam.logId,
+                        Vote.valueOf(inputVote.vote)
+                ))
+                success
+            }
+
+    override fun deleteSpecificExamOfCourseInTerm(courseId: Int, termId: Int, examId: Int, principal: Principal): Int =
+            jdbi.inTransaction<Int, Exception> {
+                val examDAO = it.attach(ExamDAOJdbi::class.java)
+                val exam = examDAO.getSpecificExamFromSpecificTermOfCourse(courseId, termId, examId)
+                        .orElseThrow { NotFoundException("No exam found", "Try again with other exam id") }
+                storageService.deleteSpecificResource(exam.sheetId)
+                val success = examDAO.deleteSpecificExamOfCourseInTerm(termId, courseId, examId)
+
+                publisher.publishEvent(ResourceDeletedEvent(
+                        principal.name,
+                        EXAM_TABLE,
+                        exam.logId
+                ))
+                success
+            }
+
+    // ----------------------------
+    // Exam Stage Methods
+    // ----------------------------
 
     override fun getStageEntriesFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int): List<ExamStageOutputModel> =
             jdbi.withExtension<List<ExamStageOutputModel>, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
@@ -161,33 +476,219 @@ class CourseServiceImpl : CourseService {
             jdbi.withExtension<ExamStageOutputModel, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
                 toExamStageOutputModel(
                         it.getStageEntryFromExamOnSpecificTermOfCourse(courseId, termId, stageId)
-                                .orElseThrow {
-                                    NotFoundException(
-                                            msg = "No exam staged found",
-                                            action = "Try again with other staged id"
-                                    )
-                                }
+                                .orElseThrow { NotFoundException("No exam staged found", "Try again with other staged id") }
                 )
             }
 
-    override fun getAllReportsOnExamOnSpecificTermOfCourse(examId: Int): ExamReportCollectionOutputModel =
+    override fun createStagingExam(
+            courseId: Int,
+            termId: Int,
+            examInputModel: ExamInputModel,
+            sheet: MultipartFile,
+            principal: Principal
+    ): ExamStageOutputModel = jdbi.inTransaction<ExamStageOutputModel, Exception> {
+        val examDAO = it.attach(ExamDAOJdbi::class.java)
+
+        val stagingExam = examDAO.createStagingExamOnCourseInTerm(courseId, termId, toStageExam(examInputModel, principal.name))
+        storageService.storeResource(stagingExam.sheetId, sheet)
+
+        publisher.publishEvent(ResourceCreatedEvent(
+                principal.name,
+                EXAM_STAGE_TABLE,
+                stagingExam.logId
+        ))
+        toExamStageOutputModel(stagingExam)
+    }
+
+    override fun createExamFromStaged(courseId: Int, termId: Int, stageId: Int, principal: Principal): ExamOutputModel =
+            jdbi.inTransaction<ExamOutputModel, Exception> {
+                val examDAO = it.attach(ExamDAOJdbi::class.java)
+
+                val examStage = examDAO.getStageEntryFromExamOnSpecificTermOfCourse(courseId, termId, stageId)
+                        .orElseThrow { NotFoundException("No exam staged found", "Try again with other staged id") }
+
+                val exam = examDAO.createExamOnCourseInTerm(courseId, termId, stagedToExam(examStage))
+                examDAO.createExamVersion(toExamVersion(exam))
+                examDAO.deleteSpecificStagedExamOfCourseInTerm(courseId, termId, stageId)
+
+                publisher.publishEvent(ResourceApprovedEvent(
+                        principal.name,
+                        ActionType.APPROVE_STAGE,
+                        EXAM_STAGE_TABLE,
+                        examStage.logId,
+                        examStage.createdBy,
+                        ActionType.CREATE,
+                        EXAM_TABLE,
+                        exam.logId
+                ))
+                toExamOutputModel(exam)
+            }
+
+    override fun voteOnStagedExam(termId: Int, courseId: Int, stageId: Int, vote: VoteInputModel, principal: Principal): Int =
+            jdbi.inTransaction<Int, Exception> {
+                val examDAO = it.attach(ExamDAOJdbi::class.java)
+                val examStage = examDAO.getStageEntryFromExamOnSpecificTermOfCourse(courseId, termId, stageId)
+                        .orElseThrow { NotFoundException("No exam staged found", "Try again with other staged id") }
+                val votes = if(Vote.valueOf(vote.vote) == Vote.Down) examStage.votes.dec() else examStage.votes.inc()
+                val success = examDAO.updateVotesOnStagedExam(stageId, votes)
+                publisher.publishEvent(VoteOnResourceEvent(
+                        principal.name,
+                        examStage.createdBy,
+                        EXAM_STAGE_TABLE,
+                        examStage.logId,
+                        Vote.valueOf(vote.vote)
+                ))
+                success
+            }
+
+    override fun deleteSpecificStagedExamOfCourseInTerm(courseId: Int, termId: Int, stageId: Int, principal: Principal): Int =
+            jdbi.inTransaction<Int, Exception> {
+                val examDAO = it.attach(ExamDAOJdbi::class.java)
+
+                val stagedExam = examDAO.getStageEntryFromExamOnSpecificTermOfCourse(courseId, termId, stageId)
+                        .orElseThrow { NotFoundException("No exam staged found", "Try again with other staged id") }
+                storageService.deleteSpecificResource(stagedExam.sheetId)
+                val success = examDAO.deleteSpecificStagedExamOfCourseInTerm(courseId, termId, stageId)
+
+                publisher.publishEvent(ResourceRejectedEvent(
+                        principal.name,
+                        stagedExam.createdBy,
+                        ActionType.REJECT_STAGE,
+                        EXAM_STAGE_TABLE,
+                        stagedExam.logId
+                ))
+                success
+            }
+
+    // ----------------------------
+    // Exam Report Methods
+    // ----------------------------
+
+    override fun getAllReportsOnExamOnSpecificTermOfCourse(termId: Int, courseId: Int, examId: Int): ExamReportCollectionOutputModel =
             jdbi.withExtension<ExamReportCollectionOutputModel, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
-                val reports = it.getAllReportsOnExamOnSpecificTermOfCourse(examId).map { toExamReportOutputModel(it) }
+                val reports = it.getAllReportsOnExamOnSpecificTermOfCourse(courseId, termId, examId).map { toExamReportOutputModel(it) }
                 toExamReportCollectionOutputModel(reports)
             }
 
-    override fun getSpecificReportOnExamOnSpecificTermOfCourse(reportId: Int): ExamReportOutputModel =
+    override fun getSpecificReportOnExamOnSpecificTermOfCourse(termId: Int, courseId: Int, examId: Int, reportId: Int): ExamReportOutputModel =
             jdbi.withExtension<ExamReportOutputModel, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
                 toExamReportOutputModel(
-                        it.getSpecificReportOnExamOnSpecificTermOfCourse(reportId)
-                                .orElseThrow {
-                                    NotFoundException(
-                                            msg = "No report found",
-                                            action = "Try again with other report id"
-                                    )
-                                }
+                        it.getSpecificReportOnExamOnSpecificTermOfCourse(courseId, termId, examId, reportId)
+                                .orElseThrow { NotFoundException("No report found", "Try again with other report id") }
                 )
             }
+
+    override fun addReportToExamOnCourseInTerm(termId: Int, courseId: Int, examId: Int, inputExamReport: ExamReportInputModel, principal: Principal): ExamReportOutputModel =
+            jdbi.withExtension<ExamReportOutputModel, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
+                // Check if exam exists before reporting
+                it.getSpecificExamFromSpecificTermOfCourse(courseId, termId, examId)
+                        .orElseThrow { NotFoundException("No exam found", "Try again") }
+
+                val reportExam = it.reportExam(toExamReport(examId, inputExamReport, principal.name))
+
+                publisher.publishEvent(ResourceCreatedEvent(
+                        principal.name,
+                        EXAM_REPORT_TABLE,
+                        reportExam.logId
+                ))
+                toExamReportOutputModel(reportExam)
+            }
+
+    override fun voteOnReportedExamOnCourseInTerm(termId: Int, courseId: Int, examId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int =
+            jdbi.inTransaction<Int, Exception> {
+                val examDAO = it.attach(ExamDAOJdbi::class.java)
+                val examReport = examDAO.getSpecificReportOnExamOnSpecificTermOfCourse(courseId, termId, examId, reportId)
+                        .orElseThrow { NotFoundException("No report found", "Try again with other report id") }
+
+                val votes = if(Vote.valueOf(vote.vote) == Vote.Down) examReport.votes.dec() else examReport.votes.inc()
+                val success = examDAO.updateVotesOnReportedExam(reportId, votes)
+
+                publisher.publishEvent(VoteOnResourceEvent(
+                        principal.name,
+                        examReport.reportedBy,
+                        EXAM_REPORT_TABLE,
+                        examReport.logId,
+                        Vote.valueOf(vote.vote)
+                ))
+                success
+            }
+
+    override fun updateReportedExam(examId: Int, reportId: Int, courseId: Int, termId: Int, principal: Principal): ExamOutputModel =
+            jdbi.inTransaction<ExamOutputModel, Exception> {
+                val examDAO = it.attach(ExamDAOJdbi::class.java)
+
+                val exam = examDAO.getSpecificExamFromSpecificTermOfCourse(courseId, termId, examId)
+                        .orElseThrow { NotFoundException("No exam found", "Try again with other ids") }
+                val report = examDAO.getSpecificReportOnExamOnSpecificTermOfCourse(courseId, termId, examId, reportId)
+                        .orElseThrow { NotFoundException("No report found", "Try again with other ids") }
+
+                val updatedExam = examDAO.updateExam(examId, Exam(
+                        examId = exam.examId,
+                        version = exam.version.inc(),
+                        createdBy = report.reportedBy,
+                        sheetId = report.sheetId ?: exam.sheetId,
+                        dueDate = report.dueDate ?: exam.dueDate,
+                        type = report.type ?: exam.type,
+                        phase = report.phase ?: exam.phase,
+                        location = report.location ?: exam.location
+                ))
+                examDAO.createExamVersion(toExamVersion(updatedExam))
+                examDAO.deleteReportOnExam(courseId, termId, examId, reportId)
+
+                publisher.publishEvent(ResourceApprovedEvent(
+                        principal.name,
+                        ActionType.APPROVE_REPORT,
+                        EXAM_REPORT_TABLE,
+                        report.logId,
+                        report.reportedBy,
+                        ActionType.ALTER,
+                        EXAM_TABLE,
+                        updatedExam.logId
+                ))
+                toExamOutputModel(updatedExam)
+            }
+
+
+    override fun deleteReportOnExam(termId: Int, courseId: Int, examId: Int, reportId: Int, principal: Principal): Int =
+            jdbi.withExtension<Int, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
+                val examReport = it.getSpecificReportOnExamOnSpecificTermOfCourse(courseId, termId, examId, reportId)
+                        .orElseThrow { NotFoundException("No report found", "Try again with other ids") }
+
+                val success = it.deleteReportOnExam(courseId, termId, examId, reportId)
+
+                publisher.publishEvent(ResourceRejectedEvent(
+                        principal.name,
+                        examReport.reportedBy,
+                        ActionType.REJECT_REPORT,
+                        EXAM_REPORT_TABLE,
+                        examReport.logId
+                ))
+                success
+            }
+
+    // ----------------------------
+    // Exam Version Methods
+    // ----------------------------
+
+    override fun getAllVersionsOfSpecificExam(termId: Int, courseId: Int, examId: Int): ExamVersionCollectionOutputModel =
+            jdbi.withExtension<ExamVersionCollectionOutputModel, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
+                val examVersions = it.getAllVersionsOfSpecificExam(termId, courseId, examId).map { toExamVersionOutputModel(it) }
+                toExamVersionCollectionOutputModel(examVersions)
+            }
+
+    override fun getVersionOfSpecificExam(termId: Int, courseId: Int, examId: Int, versionId: Int): ExamVersionOutputModel =
+            jdbi.withExtension<ExamVersionOutputModel, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
+                toExamVersionOutputModel(
+                        it.getVersionOfSpecificExam(termId, courseId, examId, versionId)
+                                .orElseThrow { NotFoundException("No version found", "Try again with other version number") }
+                )
+            }
+
+    // ------ WORK ASSIGNMENT -----
+
+    // ----------------------------
+    // Work Assignment Methods
+    // ----------------------------
 
     override fun getAllWorkAssignmentsFromSpecificTermOfCourse(courseId: Int, termId: Int): WorkAssignmentCollectionOutputModel =
             jdbi.withExtension<WorkAssignmentCollectionOutputModel, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
@@ -199,14 +700,70 @@ class CourseServiceImpl : CourseService {
             jdbi.withExtension<WorkAssignmentOutputModel, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
                 toWorkAssignmentOutputModel(
                         it.getSpecificWorkAssignmentOfCourseInTerm(workAssignmentId, courseId, termId)
-                                .orElseThrow {
-                                    NotFoundException(
-                                            msg = "No Work Assignment found",
-                                            action = "Try again with other work assignment id"
-                                    )
-                                }
+                                .orElseThrow { NotFoundException("No Work Assignment found", "Try again with other work assignment id") }
                 )
             }
+
+    override fun createWorkAssignmentOnCourseInTerm(
+            courseId: Int,
+            termId: Int,
+            inputWorkAssignment: WorkAssignmentInputModel,
+            sheet: MultipartFile,
+            principal: Principal
+    ): WorkAssignmentOutputModel = jdbi.inTransaction<WorkAssignmentOutputModel, Exception> {
+        val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
+
+        val createdWorkAssignment = workAssignmentDAO.createWorkAssignmentOnCourseInTerm(courseId, termId, toWorkAssignment(inputWorkAssignment, principal.name))
+        workAssignmentDAO.createWorkAssignmentVersion(toWorkAssignmentVersion(createdWorkAssignment))
+        storageService.storeResource(createdWorkAssignment.sheetId, sheet)
+
+        publisher.publishEvent(ResourceCreatedEvent(
+                principal.name,
+                WORK_ASSIGNMENT_TABLE,
+                createdWorkAssignment.logId
+        ))
+        toWorkAssignmentOutputModel(createdWorkAssignment)
+    }
+
+    override fun voteOnWorkAssignment(termId: Int, courseId: Int, workAssignmentId: Int, vote: VoteInputModel, principal: Principal): Int =
+            jdbi.inTransaction<Int, Exception> {
+                val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
+                val workAssignment = workAssignmentDAO.getSpecificWorkAssignmentOfCourseInTerm(courseId, termId, workAssignmentId)
+                        .orElseThrow { NotFoundException("No Work Assignment found", "Try again with other work assignment id") }
+
+                val votes = if(Vote.valueOf(vote.vote) == Vote.Down) workAssignment.votes.dec() else workAssignment.votes.inc()
+                val success = workAssignmentDAO.updateVotesOnWorkAssignment(workAssignmentId, votes)
+
+                publisher.publishEvent(VoteOnResourceEvent(
+                        principal.name,
+                        workAssignment.createdBy,
+                        WORK_ASSIGNMENT_TABLE,
+                        workAssignment.logId,
+                        Vote.valueOf(vote.vote)
+                ))
+                success
+            }
+
+    override fun deleteSpecificWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, workAssignmentId: Int, principal: Principal): Int =
+            jdbi.inTransaction<Int, Exception> {
+                val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
+
+                val workAssignment = workAssignmentDAO.getSpecificWorkAssignmentOfCourseInTerm(workAssignmentId, courseId, termId)
+                        .orElseThrow { NotFoundException("No Work Assignment found", "Try again with other work assignment id") }
+                storageService.deleteSpecificResource(workAssignment.sheetId)
+                val success = workAssignmentDAO.deleteSpecificWorkAssignment(courseId, termId, workAssignmentId)
+
+                publisher.publishEvent(ResourceDeletedEvent(
+                        principal.name,
+                        WORK_ASSIGNMENT_TABLE,
+                        workAssignment.logId
+                ))
+                success
+            }
+
+    // ----------------------------
+    // Work Assignment Stage Methods
+    // ----------------------------
 
     override fun getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignmentStageOutputModel> =
             jdbi.withExtension<List<WorkAssignmentStageOutputModel>, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
@@ -217,14 +774,94 @@ class CourseServiceImpl : CourseService {
             jdbi.withExtension<WorkAssignmentStageOutputModel, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
                 toWorkAssignmentStageOutputModel(
                         it.getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId, termId, stageId)
-                                .orElseThrow {
-                                    NotFoundException(
-                                            msg = "No Work Assignment Staged found",
-                                            action = "Try again with other stage id"
-                                    )
-                                }
+                                .orElseThrow { NotFoundException("No Work Assignment Staged found", "Try again with other stage id") }
                 )
             }
+
+    override fun createStagingWorkAssignment(
+            sheet: MultipartFile,
+            courseId: Int,
+            termId: Int,
+            inputWorkAssignment: WorkAssignmentInputModel,
+            principal: Principal
+    ): WorkAssignmentStageOutputModel = jdbi.inTransaction<WorkAssignmentStageOutputModel, Exception> {
+        val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
+
+        val stagingWorkAssignment = workAssignmentDAO.createStagingWorkAssingment(courseId, termId, toStageWorkAssignment(inputWorkAssignment, principal.name))
+        storageService.storeResource(stagingWorkAssignment.sheetId, sheet)
+
+        publisher.publishEvent(ResourceCreatedEvent(
+                principal.name,
+                WORK_ASSIGNMENT_STAGE_TABLE,
+                stagingWorkAssignment.logId
+        ))
+        toWorkAssignmentStageOutputModel(stagingWorkAssignment)
+    }
+
+    override fun createWorkAssignmentFromStaged(courseId: Int, termId: Int, stageId: Int, principal: Principal): WorkAssignmentOutputModel =
+            jdbi.inTransaction<WorkAssignmentOutputModel, Exception> {
+                val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
+                val workAssignmentStage = workAssignmentDAO.getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId, termId, stageId)
+                        .orElseThrow { NotFoundException("No Work Assignment Staged found", "Try again with other stage id") }
+
+                val workAssignment = workAssignmentDAO.createWorkAssignmentOnCourseInTerm(courseId, termId, stagedToWorkAssignment(workAssignmentStage))
+                workAssignmentDAO.createWorkAssignmentVersion(toWorkAssignmentVersion(workAssignment))
+                workAssignmentDAO.deleteSpecificStagedWorkAssignmentOfCourseInTerm(courseId, termId, stageId)
+
+                publisher.publishEvent(ResourceApprovedEvent(
+                        principal.name,
+                        ActionType.APPROVE_STAGE,
+                        WORK_ASSIGNMENT_STAGE_TABLE,
+                        workAssignmentStage.logId,
+                        workAssignmentStage.createdBy,
+                        ActionType.CREATE,
+                        WORK_ASSIGNMENT_TABLE,
+                        workAssignment.logId
+                ))
+                toWorkAssignmentOutputModel(workAssignment)
+            }
+
+    override fun voteOnStagedWorkAssignment(termId: Int, courseId: Int, stageId: Int, vote: VoteInputModel, principal: Principal): Int =
+            jdbi.inTransaction<Int, Exception> {
+                val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
+
+                val workAssignmentStage = workAssignmentDAO.getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId, termId, stageId)
+                        .orElseThrow { NotFoundException("No Work Assignment Staged found", "Try again with other stage id") }
+                val votes = if(Vote.valueOf(vote.vote) == Vote.Down) workAssignmentStage.votes.dec() else workAssignmentStage.votes.inc()
+                val success = workAssignmentDAO.updateStagedWorkAssignmentVotes(stageId, votes)
+
+                publisher.publishEvent(VoteOnResourceEvent(
+                        principal.name,
+                        workAssignmentStage.createdBy,
+                        WORK_ASSIGNMENT_STAGE_TABLE,
+                        workAssignmentStage.logId,
+                        Vote.valueOf(vote.vote)
+                ))
+                success
+            }
+
+    override fun deleteSpecificStagedWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, stageId: Int, principal: Principal): Int =
+            jdbi.inTransaction<Int, Exception> {
+                val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
+
+                val stagedWorkAssignment = workAssignmentDAO.getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId, termId, stageId)
+                        .orElseThrow { NotFoundException("No Work Assignment Staged found", "Try again with other stage id") }
+                storageService.deleteSpecificResource(stagedWorkAssignment.sheetId)
+                val success = workAssignmentDAO.deleteSpecificStagedWorkAssignmentOfCourseInTerm(courseId, termId, stageId)
+
+                publisher.publishEvent(ResourceRejectedEvent(
+                        principal.name,
+                        stagedWorkAssignment.createdBy,
+                        ActionType.REJECT_STAGE,
+                        WORK_ASSIGNMENT_STAGE_TABLE,
+                        stagedWorkAssignment.logId
+                ))
+                success
+            }
+
+    // ----------------------------
+    // Work Assignment Report Methods
+    // ----------------------------
 
     override fun getAllReportsOnWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): WorkAssignmentReportCollectionOutputModel =
             jdbi.withExtension<WorkAssignmentReportCollectionOutputModel, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
@@ -232,281 +869,66 @@ class CourseServiceImpl : CourseService {
                 toWorkAssignmentReportCollectionOutputModel(reports)
             }
 
-    override fun getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(workAssignmentId: Int, reportId: Int): WorkAssignmentReportOutputModel =
+    override fun getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(termId: Int, courseId: Int, workAssignmentId: Int, reportId: Int): WorkAssignmentReportOutputModel =
             jdbi.withExtension<WorkAssignmentReportOutputModel, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
                 toWorkAssignmentReportOutputModel(
-                        it.getSpecificReportOfWorkAssignment(workAssignmentId, reportId)
-                                .orElseThrow {
-                                    NotFoundException(
-                                            msg = "No report found",
-                                            action = "Try again with other report id"
-                                    )
-                                }
+                        it.getSpecificReportOfWorkAssignment(termId, courseId, workAssignmentId, reportId)
+                                .orElseThrow { NotFoundException("No report found", "Try again with other report id") }
                 )
             }
-
-    override fun createCourse(inputCourse: CourseInputModel): CourseOutputModel =
-            jdbi.inTransaction<CourseOutputModel, Exception> {
-                val courseDAO = it.attach(CourseDAOJdbi::class.java)
-                val course = courseDAO.createCourse(toCourse(inputCourse))
-                courseDAO.createCourseVersion(toCourseVersion(course))
-                toCourseOutputModel(course)
-            }
-
-    override fun voteOnCourse(courseId: Int, vote: VoteInputModel): Int =
-            jdbi.inTransaction<Int, Exception> {
-                val courseDAO = it.attach(CourseDAOJdbi::class.java)
-                var votes = courseDAO.getVotesOnCourse(courseId)
-                votes = if (Vote.valueOf(vote.vote) == Vote.Down) --votes else ++votes
-                courseDAO.updateVotesOnCourse(courseId, votes)
-            }
-
-    override fun reportCourse(courseId: Int, inputCourseReport: CourseReportInputModel): CourseReportOutputModel =
-            jdbi.withExtension<CourseReportOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                toCourseReportOutputModel(
-                        it.reportCourse(courseId, toCourseReport(courseId, inputCourseReport))
-                )
-            }
-
-    override fun voteOnReportedCourse(reportId: Int, vote: VoteInputModel): Int =
-            jdbi.inTransaction<Int, Exception> {
-                val courseDAO = it.attach(CourseDAOJdbi::class.java)
-                var votes = courseDAO.getVotesOnReportedCourse(reportId)
-                votes = if (Vote.valueOf(vote.vote) == Vote.Down) --votes else ++votes
-                courseDAO.updateVotesOnReportedCourse(reportId, votes)
-            }
-
-    override fun updateReportedCourse(courseId: Int, reportId: Int): CourseOutputModel =
-            jdbi.inTransaction<CourseOutputModel, Exception> {
-                val courseDAO = it.attach(CourseDAOJdbi::class.java)
-                val course = courseDAO.getSpecificCourse(courseId).get()
-                val report = courseDAO.getSpecificReportOfCourse(courseId, reportId).get()
-                val updatedCourse = Course(
-                        courseId = courseId,
-                        organizationId = course.organizationId,
-                        version = course.version.inc(),
-                        createdBy = report.reportedBy,
-                        fullName = report.fullName ?: course.fullName,
-                        shortName = report.shortName ?: course.shortName
-                )
-                val res = courseDAO.updateCourse(updatedCourse)
-                courseDAO.createCourseVersion(toCourseVersion(updatedCourse))
-                courseDAO.deleteReportOnCourse(reportId)
-                toCourseOutputModel(res)
-            }
-
-    override fun createStagingCourse(inputCourse: CourseInputModel): CourseStageOutputModel =
-            jdbi.withExtension<CourseStageOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                toCourseStageOutputModel(it.createStagingCourse(toCourseStage(inputCourse)))
-            }
-
-    override fun createCourseFromStaged(stageId: Int): CourseOutputModel =
-            jdbi.inTransaction<CourseOutputModel, Exception> {
-                val courseDAO = it.attach(CourseDAOJdbi::class.java)
-                val courseStage = courseDAO.getCourseSpecificStageEntry(stageId).get()
-                val createdCourse = courseDAO.createCourse(stagedToCourse(courseStage))
-                courseDAO.deleteStagedCourse(stageId)
-                courseDAO.createCourseVersion(toCourseVersion(createdCourse))
-                toCourseOutputModel(createdCourse)
-            }
-
-    override fun partialUpdateOnCourse(courseId: Int, inputCourse: CourseInputModel): CourseOutputModel =
-            jdbi.inTransaction<CourseOutputModel, Exception> {
-                val courseDAO = it.attach(CourseDAOJdbi::class.java)
-                val course = courseDAO.getSpecificCourse(courseId).get()
-                val updatedCourse = Course(
-                        courseId = courseId,
-                        version = course.version.inc(),
-                        organizationId = course.organizationId,
-                        createdBy = inputCourse.createdBy,
-                        fullName = if (inputCourse.fullName.isEmpty()) course.fullName else inputCourse.fullName,
-                        shortName = if (inputCourse.shortName.isEmpty()) course.shortName else inputCourse.shortName
-                )
-                val res = courseDAO.updateCourse(updatedCourse)
-                courseDAO.createCourseVersion(toCourseVersion(updatedCourse))
-                toCourseOutputModel(res)
-            }
-
-    override fun deleteAllCourses(): Int =
-            jdbi.withExtension<Int, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                it.deleteAllCourses()
-            }
-
-    override fun deleteSpecificCourse(courseId: Int): Int =
-            jdbi.withExtension<Int, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                it.deleteSpecificCourse(courseId)
-            }
-
-    override fun deleteAllStagedCourses(): Int =
-            jdbi.withExtension<Int, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                it.deleteAllStagedCourses()
-            }
-
-    override fun deleteSpecificStagedCourse(stageId: Int): Int =
-            jdbi.withExtension<Int, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                it.deleteStagedCourse(stageId)
-            }
-
-    override fun deleteAllReportsOnCourse(courseId: Int): Int =
-            jdbi.withExtension<Int, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                it.deleteAllReportsOnCourse(courseId)
-            }
-
-    override fun deleteReportOnCourse(courseId: Int, reportId: Int): Int =
-            jdbi.withExtension<Int, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                it.deleteReportOnCourse(reportId)
-            }
-
-    override fun voteOnStagedCourse(stageId: Int, vote: VoteInputModel): Int =
-            jdbi.inTransaction<Int, Exception> {
-                val courseDAO = it.attach(CourseDAOJdbi::class.java)
-                var votes = courseDAO.getVotesOnStagedCourse(stageId)
-                votes = if (Vote.valueOf(vote.vote) == Vote.Down) --votes else ++votes
-                courseDAO.updateVotesOnStagedCourse(stageId, votes)
-            }
-
-    override fun createExamOnCourseInTerm(
-            sheet: MultipartFile,
-            courseId: Int,
-            termId: Int,
-            inputExam: ExamInputModel
-    ): ExamOutputModel =
-            jdbi.inTransaction<ExamOutputModel, Exception> {
-                val examDAO = it.attach(ExamDAOJdbi::class.java)
-                val createdExam = examDAO.createExamOnCourseInTerm(courseId, termId, toExam(inputExam))
-                examDAO.createExamVersion(toExamVersion(createdExam))
-                storageService.storeResource(createdExam.sheetId, sheet)
-                toExamOutputModel(createdExam)
-            }
-
-
-    override fun addReportToExamOnCourseInTerm(examId: Int, inputExamReport: ExamReportInputModel): ExamReportOutputModel =
-            jdbi.withExtension<ExamReportOutputModel, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
-                toExamReportOutputModel(it.reportExam(toExamReport(examId, inputExamReport)))
-            }
-
-    override fun voteOnReportedExamOnCourseInTerm(reportId: Int, vote: VoteInputModel): Int =
-            jdbi.inTransaction<Int, Exception> {
-                val examDAO = it.attach(ExamDAOJdbi::class.java)
-                var votes = examDAO.getVotesOnReportedExam(reportId)
-                votes = if (Vote.valueOf(vote.vote) == Vote.Down) --votes else ++votes
-                examDAO.updateVotesOnReportedExam(reportId, votes)
-            }
-
-    override fun updateReportedExam(examId: Int, reportId: Int, courseId: Int, termId: Int): ExamOutputModel =
-            jdbi.inTransaction<ExamOutputModel, Exception> {
-                val examDAO = it.attach(ExamDAOJdbi::class.java)
-                val exam = examDAO.getSpecificExamFromSpecificTermOfCourse(courseId, termId, examId).get()
-                val report = examDAO.getSpecificReportOfExam(examId, reportId).get()
-                val updatedExam = Exam(
-                        examId = exam.examId,
-                        version = exam.version.inc(),
-                        createdBy = report.reportedBy,
-                        sheetId = report.sheetId ?: exam.sheetId,
-                        dueDate = report.dueDate ?: exam.dueDate,
-                        type = report.type ?: exam.type,
-                        phase = report.phase ?: exam.phase,
-                        location = report.location ?: exam.location
-                )
-                val res = examDAO.updateExam(examId, updatedExam)
-                examDAO.createExamVersion(toExamVersion(updatedExam))
-                examDAO.deleteReportOnExam(examId, reportId)
-                toExamOutputModel(res)
-            }
-
-    override fun createStagingExam(
-            sheet: MultipartFile,
-            courseId: Int,
-            termId: Int,
-            examInputModel: ExamInputModel
-    ): ExamStageOutputModel = jdbi.inTransaction<ExamStageOutputModel, Exception> {
-        val examDAO = it.attach(ExamDAOJdbi::class.java)
-        val stagingExam = examDAO.createStagingExamOnCourseInTerm(courseId, termId, toStageExam(examInputModel))
-        storageService.storeResource(stagingExam.sheetId, sheet)
-        toExamStageOutputModel(stagingExam)
-    }
-
-    override fun createExamFromStaged(courseId: Int, termId: Int, stageId: Int): ExamOutputModel =
-            jdbi.inTransaction<ExamOutputModel, Exception> {
-                val examDAO = it.attach(ExamDAOJdbi::class.java)
-                val examStage = examDAO.getExamSpecificStageEntry(stageId).get()
-                val exam = examDAO.createExamOnCourseInTerm(courseId, termId, stagedToExam(examStage))
-                examDAO.createExamVersion(toExamVersion(exam))
-                examDAO.deleteSpecificStagedExamOfCourseInTerm(courseId, termId, stageId)
-                toExamOutputModel(exam)
-            }
-
-    override fun voteOnStagedExam(stageId: Int, vote: VoteInputModel): Int =
-            jdbi.inTransaction<Int, Exception> {
-                val examDAO = it.attach(ExamDAOJdbi::class.java)
-                var votes = examDAO.getVotesOnStagedExam(stageId)
-                votes = if (Vote.valueOf(vote.vote) == Vote.Down) --votes else ++votes
-                examDAO.updateVotesOnStagedExam(stageId, votes)
-            }
-
-    override fun createWorkAssignmentOnCourseInTerm(
-            sheet: MultipartFile,
-            courseId: Int,
-            termId: Int,
-            inputWorkAssignment: WorkAssignmentInputModel
-    ): WorkAssignmentOutputModel = jdbi.inTransaction<WorkAssignmentOutputModel, Exception> {
-        val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
-        val createdWorkAssignment = workAssignmentDAO.createWorkAssignmentOnCourseInTerm(
-                courseId,
-                termId,
-                toWorkAssignment(inputWorkAssignment)
-        )
-        workAssignmentDAO.createWorkAssignmentVersion(toWorkAssignmentVersion(createdWorkAssignment))
-        storageService.storeResource(createdWorkAssignment.sheetId, sheet)
-        toWorkAssignmentOutputModel(createdWorkAssignment)
-    }
 
     override fun addReportToWorkAssignmentOnCourseInTerm(
+            termId: Int,
+            courseId: Int,
             workAssignmentId: Int,
-            inputWorkAssignmentReport: WorkAssignmentReportInputModel
+            inputWorkAssignmentReport: WorkAssignmentReportInputModel,
+            principal: Principal
     ): WorkAssignmentReportOutputModel =
             jdbi.withExtension<WorkAssignmentReportOutputModel, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
-                toWorkAssignmentReportOutputModel(it.addReportToWorkAssignmentOnCourseInTerm(
-                        workAssignmentId,
-                        toWorkAssignmentReport(workAssignmentId, inputWorkAssignmentReport)
+                val workAssignmentReport = it.addReportToWorkAssignmentOnCourseInTerm(workAssignmentId, toWorkAssignmentReport(workAssignmentId, inputWorkAssignmentReport, principal.name))
+
+                publisher.publishEvent(ResourceCreatedEvent(
+                        principal.name,
+                        WORK_ASSIGNMENT_REPORT_TABLE,
+                        workAssignmentReport.logId
                 ))
+                toWorkAssignmentReportOutputModel(workAssignmentReport)
             }
 
-    override fun voteOnReportedWorkAssignmentOnCourseInTerm(reportId: Int, vote: VoteInputModel): Int =
+    override fun voteOnReportedWorkAssignmentOnCourseInTerm(termId: Int, courseId: Int, workAssignmentId: Int, reportId: Int, inputVote: VoteInputModel, principal: Principal): Int =
             jdbi.inTransaction<Int, Exception> {
                 val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
-                var votes = workAssignmentDAO.getVotesOnReportedWorkAssignment(reportId)
-                votes = if (Vote.valueOf(vote.vote) == Vote.Down) --votes else ++votes
-                workAssignmentDAO.updateVotesOnReportedWorkAssignment(reportId, votes)
-            }
 
-    override fun voteOnExam(examId: Int, vote: VoteInputModel): Int =
-            jdbi.inTransaction<Int, Exception> {
-                val examDAO = it.attach(ExamDAOJdbi::class.java)
-                var votes = examDAO.getVotesOnExam(examId)
-                votes = if (Vote.valueOf(vote.vote) == Vote.Down) --votes else ++votes
-                examDAO.updateVotesOnExam(examId, votes)
-            }
+                val report = workAssignmentDAO.getSpecificReportOfWorkAssignment(termId, courseId, workAssignmentId, reportId)
+                        .orElseThrow { NotFoundException("No report found", "Try again with other report id") }
+                val votes = if(Vote.valueOf(inputVote.vote) == Vote.Down) report.votes.dec() else report.votes.inc()
+                val success = workAssignmentDAO.updateVotesOnReportedWorkAssignment(reportId, votes)
 
-    override fun voteOnWorkAssignment(workAssignmentId: Int, vote: VoteInputModel): Int =
-            jdbi.inTransaction<Int, Exception> {
-                val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
-                var votes = workAssignmentDAO.getVotesOnWorkAssignment(workAssignmentId)
-                votes = if (Vote.valueOf(vote.vote) == Vote.Down) --votes else ++votes
-                workAssignmentDAO.updateVotesOnWorkAssignment(workAssignmentId, votes)
+                publisher.publishEvent(VoteOnResourceEvent(
+                        principal.name,
+                        report.reportedBy,
+                        WORK_ASSIGNMENT_REPORT_TABLE,
+                        report.logId,
+                        Vote.valueOf(inputVote.vote)
+                ))
+                success
             }
 
     override fun updateWorkAssignmentBasedOnReport(
             workAssignmentId: Int,
             reportId: Int,
             courseId: Int,
-            termId: Int
+            termId: Int,
+            principal: Principal
     ): WorkAssignmentOutputModel =
             jdbi.inTransaction<WorkAssignmentOutputModel, Exception> {
                 val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
-                val workAssignment = workAssignmentDAO.getSpecificWorkAssignmentOfCourseInTerm(workAssignmentId, courseId, termId).get()
-                val report = workAssignmentDAO.getSpecificReportOfWorkAssignment(workAssignmentId, reportId).get()
-                val updatedWorkAssignment = WorkAssignment(
+
+                val workAssignment = workAssignmentDAO.getSpecificWorkAssignmentOfCourseInTerm(courseId, termId, workAssignmentId)
+                        .orElseThrow { NotFoundException("No report found", "Try again with other report id") }
+                val report = workAssignmentDAO.getSpecificReportOfWorkAssignment(termId, courseId, workAssignmentId, reportId)
+                        .orElseThrow { NotFoundException("No report found", "Try again with other report id") }
+                val updatedWorkAssignment = workAssignmentDAO.updateWorkAssignment(workAssignmentId, WorkAssignment(
                         workAssignmentId = workAssignmentId,
                         version = workAssignment.version.inc(),
                         createdBy = report.reportedBy,
@@ -517,225 +939,55 @@ class CourseServiceImpl : CourseService {
                         lateDelivery = report.lateDelivery ?: workAssignment.lateDelivery,
                         multipleDeliveries = report.multipleDeliveries ?: workAssignment.multipleDeliveries,
                         requiresReport = report.requiresReport ?: workAssignment.requiresReport
-                )
-                val res = workAssignmentDAO.updateWorkAssignment(workAssignmentId, updatedWorkAssignment)
+                ))
                 workAssignmentDAO.createWorkAssignmentVersion(toWorkAssignmentVersion(updatedWorkAssignment))
-                workAssignmentDAO.deleteReportOnWorkAssignment(reportId)
-                toWorkAssignmentOutputModel(res)
+                workAssignmentDAO.deleteReportOnWorkAssignment(termId, courseId, workAssignmentId, reportId)
+
+                publisher.publishEvent(ResourceApprovedEvent(
+                        principal.name,
+                        ActionType.APPROVE_REPORT,
+                        WORK_ASSIGNMENT_REPORT_TABLE,
+                        report.logId,
+                        report.reportedBy,
+                        ActionType.ALTER,
+                        WORK_ASSIGNMENT_TABLE,
+                        updatedWorkAssignment.logId
+                ))
+                toWorkAssignmentOutputModel(updatedWorkAssignment)
             }
 
-    override fun createStagingWorkAssignment(
-            sheet: MultipartFile,
-            courseId: Int,
-            termId: Int,
-            inputWorkAssignment: WorkAssignmentInputModel
-    ): WorkAssignmentStageOutputModel = jdbi.inTransaction<WorkAssignmentStageOutputModel, Exception> {
-        val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
-        val stagingWorkAssignment = workAssignmentDAO.createStagingWorkAssingment(
-                courseId,
-                termId,
-                toStageWorkAssignment(inputWorkAssignment)
-        )
-        storageService.storeResource(stagingWorkAssignment.sheetId, sheet)
-        toWorkAssignmentStageOutputModel(stagingWorkAssignment)
-    }
+    override fun deleteReportOnWorkAssignment(termId: Int, courseId: Int, workAssignmentId: Int, reportId: Int, principal: Principal): Int =
+            jdbi.withExtension<Int, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
+                val report = it.getSpecificReportOfWorkAssignment(termId, courseId, workAssignmentId, reportId)
+                        .orElseThrow { NotFoundException("No report found", "Try again with other report id") }
+                val success = it.deleteReportOnWorkAssignment(termId, courseId, workAssignmentId, reportId)
 
-    override fun createWorkAssignmentFromStaged(courseId: Int, termId: Int, stageId: Int): WorkAssignmentOutputModel =
-            jdbi.inTransaction<WorkAssignmentOutputModel, Exception> {
-                val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
-                val workAssignmentStage = workAssignmentDAO.getWorkAssignmentSpecificStageEntry(stageId).get()
-                val workAssignment = workAssignmentDAO.createWorkAssignmentOnCourseInTerm(
-                        courseId,
-                        termId,
-                        stagedToWorkAssignment(workAssignmentStage)
-                )
-                workAssignmentDAO.createWorkAssignmentVersion(toWorkAssignmentVersion(workAssignment))
-                workAssignmentDAO.deleteSpecificStagedWorkAssignmentOfCourseInTerm(courseId, termId, stageId)
-                toWorkAssignmentOutputModel(workAssignment)
+                publisher.publishEvent(ResourceRejectedEvent(
+                        principal.name,
+                        report.reportedBy,
+                        ActionType.REJECT_REPORT,
+                        WORK_ASSIGNMENT_REPORT_TABLE,
+                        report.logId
+                ))
+                success
             }
 
-    override fun voteOnStagedWorkAssignment(stageId: Int, vote: VoteInputModel): Int =
-            jdbi.inTransaction<Int, Exception> {
-                val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
-                var votes = workAssignmentDAO.getVotesOnStagedWorkAssignment(stageId)
-                votes = if (Vote.valueOf(vote.vote) == Vote.Down) --votes else ++votes
-                workAssignmentDAO.updateStagedWorkAssignmentVotes(stageId, votes)
-            }
+    // ----------------------------
+    // Work Assignment Version Methods
+    // ----------------------------
 
-    override fun getAllVersionsOfSpecificCourse(courseId: Int): CourseVersionCollectionOutputModel =
-            jdbi.withExtension<CourseVersionCollectionOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                val courseVersions = it.getAllVersionsOfSpecificCourse(courseId).map { toCourseVersionOutputModel(it) }
-                toCourseVersionCollectionOutputModel(courseVersions)
-            }
-
-    override fun getVersionOfSpecificCourse(courseId: Int, versionId: Int): CourseVersionOutputModel =
-            jdbi.withExtension<CourseVersionOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                toCourseVersionOutputModel(
-                        it.getVersionOfSpecificCourse(courseId, versionId)
-                                .orElseThrow {
-                                    NotFoundException(
-                                            msg = "No version found",
-                                            action = "Try again with other version number"
-                                    )
-                                }
-
-                )
-            }
-
-    override fun getAllVersionsOfSpecificExam(examId: Int): ExamVersionCollectionOutputModel =
-            jdbi.withExtension<ExamVersionCollectionOutputModel, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
-                val examVersions = it.getAllVersionsOfSpecificExam(examId).map { toExamVersionOutputModel(it) }
-                toExamVersionCollectionOutputModel(examVersions)
-            }
-
-    override fun getVersionOfSpecificExam(examId: Int, versionId: Int): ExamVersionOutputModel =
-            jdbi.withExtension<ExamVersionOutputModel, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
-                toExamVersionOutputModel(
-                        it.getVersionOfSpecificExam(examId, versionId)
-                                .orElseThrow {
-                                    NotFoundException(
-                                            msg = "No version found",
-                                            action = "Try again with other version number"
-                                    )
-                                }
-                )
-            }
-
-    override fun getAllVersionsOfSpecificWorkAssignment(workAssignmentId: Int): WorkAssignmentVersionCollectionOutputModel =
+    override fun getAllVersionsOfSpecificWorkAssignment(termId: Int, courseId: Int, workAssignmentId: Int): WorkAssignmentVersionCollectionOutputModel =
             jdbi.withExtension<WorkAssignmentVersionCollectionOutputModel, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
-                val workAssignmentVersions = it.getAllVersionsOfSpecificWorkAssignment(workAssignmentId).map { toWorkAssignmentVersionOutputModel(it) }
+                val workAssignmentVersions = it.getAllVersionsOfSpecificWorkAssignment(termId, courseId, workAssignmentId).map { toWorkAssignmentVersionOutputModel(it) }
                 toWorkAssignmentVersionCollectionOutputModel(workAssignmentVersions)
             }
 
-    override fun getVersionOfSpecificWorkAssignment(workAssignmentId: Int, versionId: Int): WorkAssignmentVersionOutputModel =
+    override fun getVersionOfSpecificWorkAssignment(termId: Int, courseId: Int, workAssignmentId: Int, versionId: Int): WorkAssignmentVersionOutputModel =
             jdbi.withExtension<WorkAssignmentVersionOutputModel, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
                 toWorkAssignmentVersionOutputModel(
-                        it.getVersionOfSpecificWorkAssignment(workAssignmentId, versionId)
-                                .orElseThrow {
-                                    NotFoundException(
-                                            msg = "No version found",
-                                            action = "Try again with other version number"
-                                    )
-                                }
+                        it.getVersionOfSpecificWorkAssignment(termId, courseId, workAssignmentId, versionId)
+                                .orElseThrow { NotFoundException("No version found", "Try again with other version number") }
                 )
-            }
-
-    override fun deleteAllExamsOfCourseInTerm(courseId: Int, termId: Int): Int =
-            jdbi.inTransaction<Int, Exception> {
-                val examDAO = it.attach(ExamDAOJdbi::class.java)
-                val exams = examDAO.getAllExamsFromSpecificTermOfCourse(courseId, termId)
-                storageService.batchDeleteResource(exams.map(Exam::sheetId))
-                examDAO.deleteAllExamsOfCourseInTerm(courseId, termId)
-            }
-
-    override fun deleteSpecificExamOfCourseInTerm(courseId: Int, termId: Int, examId: Int): Int =
-            jdbi.inTransaction<Int, Exception> {
-                val examDAO = it.attach(ExamDAOJdbi::class.java)
-                val exam = examDAO.getSpecificExamFromSpecificTermOfCourse(courseId, termId, examId).get()
-                storageService.deleteSpecificResource(exam.sheetId)
-                examDAO.deleteSpecificExamOfCourseInTerm(examId)
-            }
-
-    override fun deleteAllStagedExamsOfCourseInTerm(courseId: Int, termId: Int): Int =
-            jdbi.inTransaction<Int, Exception> {
-                val examDAO = it.attach(ExamDAOJdbi::class.java)
-                val stagedExams = examDAO.getStageEntriesFromExamOnSpecificTermOfCourse(courseId, termId)
-                storageService.batchDeleteResource(stagedExams.map(ExamStage::sheetId))
-                examDAO.deleteAllStagedExamsOfCourseInTerm(courseId, termId)
-            }
-
-    override fun deleteSpecificStagedExamOfCourseInTerm(courseId: Int, termId: Int, stageId: Int): Int =
-            jdbi.inTransaction<Int, Exception> {
-                val examDAO = it.attach(ExamDAOJdbi::class.java)
-                val stagedExam = examDAO.getStageEntryFromExamOnSpecificTermOfCourse(
-                        courseId,
-                        termId,
-                        stageId
-                ).get()
-                storageService.deleteSpecificResource(stagedExam.sheetId)
-                examDAO.deleteSpecificStagedExamOfCourseInTerm(courseId, termId, stageId)
-            }
-
-    override fun deleteAllReportsOnExam(examId: Int): Int =
-            jdbi.withExtension<Int, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
-                it.deleteAllReportsOnExam(examId)
-            }
-
-    override fun deleteReportOnExam(examId: Int, reportId: Int): Int =
-            jdbi.withExtension<Int, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
-                it.deleteReportOnExam(examId, reportId)
-            }
-
-    override fun deleteAllWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int =
-            jdbi.inTransaction<Int, Exception> {
-                val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
-                val workAssignments = workAssignmentDAO.getAllWorkAssignmentsFromSpecificTermOfCourse(courseId, termId)
-                storageService.batchDeleteResource(workAssignments.map(WorkAssignment::sheetId))
-                workAssignmentDAO.deleteAllWorkAssignmentsOfCourseInTerm(courseId, termId)
-            }
-
-    override fun deleteSpecificWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, workAssignmentId: Int): Int =
-            jdbi.inTransaction<Int, Exception> {
-                val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
-                val workAssignment = workAssignmentDAO.getSpecificWorkAssignmentOfCourseInTerm(workAssignmentId, courseId, termId).get()
-                storageService.deleteSpecificResource(workAssignment.sheetId)
-                workAssignmentDAO.deleteSpecificWorkAssignment(workAssignmentId)
-            }
-
-    override fun deleteAllStagedWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int =
-            jdbi.inTransaction<Int, Exception> {
-                val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
-                val workAssignments = workAssignmentDAO.getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(courseId, termId)
-                storageService.batchDeleteResource(workAssignments.map(WorkAssignmentStage::sheetId))
-                workAssignmentDAO.deleteAllStagedWorkAssignmentsOfCourseInTerm(courseId, termId)
-            }
-
-    override fun deleteSpecificStagedWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, stageId: Int): Int =
-            jdbi.inTransaction<Int, Exception> {
-                val workAssignmentDAO = it.attach(WorkAssignmentDAOJdbi::class.java)
-                val stagedWorkAssignment = workAssignmentDAO.getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId, termId, stageId).get()
-                storageService.deleteSpecificResource(stagedWorkAssignment.sheetId)
-                workAssignmentDAO.deleteSpecificStagedWorkAssignmentOfCourseInTerm(courseId, termId, stageId)
-            }
-
-    override fun deleteAllReportsOnWorkAssignment(workAssignmentId: Int): Int =
-            jdbi.withExtension<Int, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
-                it.deleteAllReportsOnWorkAssignment(workAssignmentId)
-            }
-
-    override fun deleteReportOnWorkAssignment(workAssignmentId: Int, reportId: Int): Int =
-            jdbi.withExtension<Int, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
-                it.deleteReportOnWorkAssignment(reportId)
-            }
-
-    override fun deleteAllVersionsOfCourse(courseId: Int): Int =
-            jdbi.withExtension<Int, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                it.deleteAllVersionsOfCourse(courseId)
-            }
-
-    override fun deleteVersionOfCourse(courseId: Int, version: Int): Int =
-            jdbi.withExtension<Int, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                it.deleteVersionOfCourse(courseId, version)
-            }
-
-    override fun deleteAllVersionsOfWorkAssignment(workAssignmentId: Int): Int =
-            jdbi.withExtension<Int, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
-                it.deleteAllVersionOfWorkAssignments(workAssignmentId)
-            }
-
-    override fun deleteVersionOfWorkAssignment(workAssignmentId: Int, version: Int): Int =
-            jdbi.withExtension<Int, WorkAssignmentDAOJdbi, Exception>(WorkAssignmentDAOJdbi::class.java) {
-                it.deleteVersionWorkAssignment(workAssignmentId, version)
-            }
-
-    override fun deleteAllVersionsOfExam(examId: Int): Int =
-            jdbi.withExtension<Int, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
-                it.deleteAllVersionOfExam(examId)
-            }
-
-    override fun deleteVersionOfExam(examId: Int, version: Int): Int =
-            jdbi.withExtension<Int, ExamDAOJdbi, Exception>(ExamDAOJdbi::class.java) {
-                it.deleteVersionOfExam(examId, version)
             }
 
 }

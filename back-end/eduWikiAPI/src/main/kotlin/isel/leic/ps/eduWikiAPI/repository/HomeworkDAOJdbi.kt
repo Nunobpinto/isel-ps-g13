@@ -27,19 +27,39 @@ interface HomeworkDAOJdbi : HomeworkDAO {
         const val HOMEWORK_STAGE_TABLE = "homework_stage"
         const val HOMEWORK_VERSION_TABLE = "homework_version"
         const val HOMEWORK_REPORT_TABLE = "homework_report"
-        // FIELDS
+        // HOMEWORK FIELDS
         const val HOMEWORK_VERSION = "homework_version"
+        const val HOMEWORK_LOG_ID = "log_id"
         const val HOMEWORK_ID = "homework_id"
-        const val HOMEWORK_STAGE_ID = "class_misc_unit_stage_id"
-        const val HOMEWORK_REPORT_ID = "homework_report_id"
         const val HOMEWORK_SHEET_ID = "sheet_id"
         const val HOMEWORK_DUE_DATE = "due_date"
         const val HOMEWORK_LATE_DELIVERY = "late_delivery"
         const val HOMEWORK_MULTIPLE_DELIVERIES = "multiple_deliveries"
         const val HOMEWORK_VOTES = "votes"
         const val HOMEWORK_TIMESTAMP = "time_stamp"
-        const val HOMEWORK_REPORTED_BY = "reported_by"
         const val HOMEWORK_CREATED_BY = "created_by"
+        // HOMEWORK REPORT FIELDS
+        const val HOMEWORK_REPORT_ID = "homework_report_id"
+        const val HOMEWORK_REPORT_HOMEWORK_ID = "homework_id"
+        const val HOMEWORK_REPORTED_BY = "reported_by"
+        const val HOMEWORK_REPORT_LOG_ID = "log_id"
+        const val HOMEWORK_REPORT_SHEET_ID = "sheet_id"
+        const val HOMEWORK_REPORT_DUE_DATE = "due_date"
+        const val HOMEWORK_REPORT_LATE_DELIVERY = "late_delivery"
+        const val HOMEWORK_REPORT_MULTIPLE_DELIVERIES = "multiple_deliveries"
+        const val HOMEWORK_REPORT_VOTES = "votes"
+        const val HOMEWORK_REPORT_TIMESTAMP = "time_stamp"
+        // HOMEWORK STAGE FIELDS
+        const val HOMEWORK_STAGE_ID = "homework_stage_id"
+        const val HOMEWORK_STAGE_CREATED_BY = "created_by"
+        const val HOMEWORK_STAGE_LOG_ID = "log_id"
+        const val HOMEWORK_STAGE_SHEET_ID = "sheet_id"
+        const val HOMEWORK_STAGE_DUE_DATE = "due_date"
+        const val HOMEWORK_STAGE_LATE_DELIVERY = "late_delivery"
+        const val HOMEWORK_STAGE_MULTIPLE_DELIVERIES = "multiple_deliveries"
+        const val HOMEWORK_STAGE_VOTES = "votes"
+        const val HOMEWORK_STAGE_TIMESTAMP = "time_stamp"
+        // HOMEWORK VERSION FIELDS
     }
 
     @CreateSqlObject
@@ -105,16 +125,6 @@ interface HomeworkDAOJdbi : HomeworkDAO {
         return createHomework(classMiscUnit.classMiscUnitId, homework)
     }
 
-    @SqlQuery(
-            "SELECT H.$HOMEWORK_VOTES " +
-                    "FROM $HOMEWORK_TABLE AS H " +
-                    "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +
-                    "ON H.$HOMEWORK_ID = C.$CLASS_MISC_UNIT_ID " +
-                    "WHERE C.$COURSE_CLASS_ID = :courseClassId " +
-                    "AND L.$HOMEWORK_ID = :homeworkId"
-    )
-    override fun getVotesOnHomework(courseClassId: Int, homeworkId: Int): Int
-
     @SqlUpdate(
             "UPDATE $HOMEWORK_TABLE AS H SET H.$HOMEWORK_VOTES = :votes " +
                     "FROM $CLASS_MISC_UNIT_TABLE AS C" +
@@ -122,9 +132,6 @@ interface HomeworkDAOJdbi : HomeworkDAO {
                     "AND H.$HOMEWORK_ID = :homeworkId"
     )
     override fun updateVotesOnHomework(homeworkId: Int, votes: Int): Int
-
-    override fun deleteAllHomeworksOfCourseInClass(courseClassId: Int): Int =
-            createClassDAO().deleteAllClassMiscUnitsFromTypeOfCourseInClass(courseClassId, ClassMiscUnitType.HOMEWORK)
 
     override fun deleteSpecificHomeworkOfCourseInClass(courseClassId: Int, homeworkId: Int): Int =
             createClassDAO().deleteSpecificClassMiscUnitFromTypeOnCourseInClass(
@@ -135,13 +142,13 @@ interface HomeworkDAOJdbi : HomeworkDAO {
 
     @SqlQuery(
             "SELECT H.$HOMEWORK_STAGE_ID, " +
-                    "H.$HOMEWORK_SHEET_ID, " +
-                    "H.$HOMEWORK_DUE_DATE, " +
-                    "H.$HOMEWORK_LATE_DELIVERY, " +
-                    "H.$HOMEWORK_MULTIPLE_DELIVERIES, " +
-                    "H.$HOMEWORK_TIMESTAMP, " +
-                    "H.$HOMEWORK_VOTES, " +
-                    "H.$HOMEWORK_CREATED_BY " +
+                    "H.$HOMEWORK_STAGE_SHEET_ID, " +
+                    "H.$HOMEWORK_STAGE_DUE_DATE, " +
+                    "H.$HOMEWORK_STAGE_LATE_DELIVERY, " +
+                    "H.$HOMEWORK_STAGE_MULTIPLE_DELIVERIES, " +
+                    "H.$HOMEWORK_STAGE_TIMESTAMP, " +
+                    "H.$HOMEWORK_STAGE_VOTES, " +
+                    "H.$HOMEWORK_STAGE_CREATED_BY " +
                     "FROM $HOMEWORK_STAGE_TABLE AS H " +
                     "INNER JOIN $CLASS_MISC_UNIT_STAGE_TABLE AS C " +
                     "ON H.$HOMEWORK_STAGE_ID = C.$CLASS_MISC_UNIT_STAGE_ID " +
@@ -151,13 +158,13 @@ interface HomeworkDAOJdbi : HomeworkDAO {
 
     @SqlQuery(
             "SELECT H.$HOMEWORK_STAGE_ID, " +
-                    "H.$HOMEWORK_SHEET_ID, " +
-                    "H.$HOMEWORK_DUE_DATE, " +
-                    "H.$HOMEWORK_LATE_DELIVERY, " +
-                    "H.$HOMEWORK_MULTIPLE_DELIVERIES, " +
-                    "H.$HOMEWORK_TIMESTAMP, " +
-                    "H.$HOMEWORK_VOTES, " +
-                    "H.$HOMEWORK_CREATED_BY " +
+                    "H.$HOMEWORK_STAGE_SHEET_ID, " +
+                    "H.$HOMEWORK_STAGE_DUE_DATE, " +
+                    "H.$HOMEWORK_STAGE_LATE_DELIVERY, " +
+                    "H.$HOMEWORK_STAGE_MULTIPLE_DELIVERIES, " +
+                    "H.$HOMEWORK_STAGE_TIMESTAMP, " +
+                    "H.$HOMEWORK_STAGE_VOTES, " +
+                    "H.$HOMEWORK_STAGE_CREATED_BY " +
                     "FROM $HOMEWORK_STAGE_TABLE AS H " +
                     "INNER JOIN $CLASS_MISC_UNIT_STAGE_TABLE AS C " +
                     "ON H.$HOMEWORK_STAGE_ID = C.$CLASS_MISC_UNIT_STAGE_ID " +
@@ -169,13 +176,13 @@ interface HomeworkDAOJdbi : HomeworkDAO {
     @SqlUpdate(
             "INSERT INTO $HOMEWORK_STAGE_TABLE ( " +
                     "$HOMEWORK_STAGE_ID, " +
-                    "$HOMEWORK_SHEET_ID, " +
-                    "$HOMEWORK_DUE_DATE, " +
-                    "$HOMEWORK_LATE_DELIVERY, " +
-                    "$HOMEWORK_MULTIPLE_DELIVERIES, " +
-                    "$HOMEWORK_TIMESTAMP, " +
-                    "$HOMEWORK_VOTES," +
-                    "$HOMEWORK_CREATED_BY " +
+                    "$HOMEWORK_STAGE_SHEET_ID, " +
+                    "$HOMEWORK_STAGE_DUE_DATE, " +
+                    "$HOMEWORK_STAGE_LATE_DELIVERY, " +
+                    "$HOMEWORK_STAGE_MULTIPLE_DELIVERIES, " +
+                    "$HOMEWORK_STAGE_TIMESTAMP, " +
+                    "$HOMEWORK_STAGE_VOTES," +
+                    "$HOMEWORK_STAGE_CREATED_BY " +
                     ") " +
                     "VALUES(:stagedClassMiscUnitId, :homeworkStage.sheetId, :homeworkStage.dueDate, " +
                     ":homeworkStage.lateDelivery, :homeworkStage.multipleDeliveries, :homeworkStage.timestamp, " +
@@ -211,18 +218,8 @@ interface HomeworkDAOJdbi : HomeworkDAO {
     @GetGeneratedKeys
     override fun createHomeworkVersion(homeworkVersion: HomeworkVersion): HomeworkVersion
 
-    @SqlQuery(
-            "SELECT L.$HOMEWORK_VOTES" +
-                    "FROM $HOMEWORK_STAGE_TABLE as L" +
-                    "INNER JOIN $CLASS_MISC_UNIT_STAGE_TABLE as C" +
-                    "on L.$HOMEWORK_STAGE_ID = C.$CLASS_MISC_UNIT_STAGE_ID" +
-                    "WHERE C.$COURSE_CLASS_ID = :courseClassId" +
-                    "AND L.$HOMEWORK_STAGE_ID = :stageId"
-    )
-    override fun getVotesOnStagedHomework(courseClassId: Int, stageId: Int): Int
-
     @SqlUpdate(
-            "UPDATE $HOMEWORK_STAGE_TABLE as L SET L.$HOMEWORK_VOTES = :votes " +
+            "UPDATE $HOMEWORK_STAGE_TABLE as L SET L.$HOMEWORK_STAGE_VOTES = :votes " +
                     "FROM $CLASS_MISC_UNIT_STAGE_TABLE as C" +
                     "WHERE L.$HOMEWORK_STAGE_ID = C.$CLASS_MISC_UNIT_STAGE_ID " +
                     "AND L.$HOMEWORK_STAGE_ID = :stageId"
@@ -249,33 +246,33 @@ interface HomeworkDAOJdbi : HomeworkDAO {
 
     @SqlQuery(
             "SELECT H.$HOMEWORK_REPORT_ID, " +
-                    "H.$HOMEWORK_ID, " +
-                    "H.$HOMEWORK_SHEET_ID, " +
-                    "H.$HOMEWORK_DUE_DATE, " +
-                    "H.$HOMEWORK_LATE_DELIVERY, " +
-                    "H.$HOMEWORK_MULTIPLE_DELIVERIES, " +
+                    "H.$HOMEWORK_REPORT_HOMEWORK_ID, " +
+                    "H.$HOMEWORK_REPORT_SHEET_ID, " +
+                    "H.$HOMEWORK_REPORT_DUE_DATE, " +
+                    "H.$HOMEWORK_REPORT_LATE_DELIVERY, " +
+                    "H.$HOMEWORK_REPORT_MULTIPLE_DELIVERIES, " +
                     "H.$HOMEWORK_REPORTED_BY, " +
-                    "H.$HOMEWORK_VOTES, " +
-                    "H.$HOMEWORK_TIMESTAMP " +
+                    "H.$HOMEWORK_REPORT_VOTES, " +
+                    "H.$HOMEWORK_REPORT_TIMESTAMP " +
                     "FROM $HOMEWORK_TABLE AS H " +
                     "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +
-                    "ON H.$HOMEWORK_ID = C.$CLASS_MISC_UNIT_ID " +
+                    "ON H.$HOMEWORK_REPORT_HOMEWORK_ID = C.$CLASS_MISC_UNIT_ID " +
                     "WHERE C.$CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
-                    "AND H.$HOMEWORK_ID = :homeworkId " +
+                    "AND H.$HOMEWORK_REPORT_HOMEWORK_ID = :homeworkId " +
                     "AND H.$HOMEWORK_REPORT_ID = :reportId"
     )
     override fun getSpecificReportOfHomeworkFromCourseInClass(courseClassId: Int, homeworkId: Int, reportId: Int): Optional<HomeworkReport>
 
     @SqlUpdate(
             "INSERT INTO $HOMEWORK_REPORT_TABLE ( " +
-                    "$HOMEWORK_ID, " +
-                    "$HOMEWORK_SHEET_ID, " +
-                    "$HOMEWORK_DUE_DATE, " +
-                    "$HOMEWORK_LATE_DELIVERY, " +
-                    "$HOMEWORK_MULTIPLE_DELIVERIES, " +
+                    "$HOMEWORK_REPORT_HOMEWORK_ID, " +
+                    "$HOMEWORK_REPORT_SHEET_ID, " +
+                    "$HOMEWORK_REPORT_DUE_DATE, " +
+                    "$HOMEWORK_REPORT_LATE_DELIVERY, " +
+                    "$HOMEWORK_REPORT_MULTIPLE_DELIVERIES, " +
                     "$HOMEWORK_REPORTED_BY, " +
-                    "$HOMEWORK_VOTES, " +
-                    "$HOMEWORK_TIMESTAMP " +
+                    "$HOMEWORK_REPORT_VOTES, " +
+                    "$HOMEWORK_REPORT_TIMESTAMP " +
                     ") " +
                     "VALUES (:homeworkReport.homeworkId, :homeworkReport.sheetId, :homeworkReport.dueDate, " +
                     ":homeworkReport.lateDelivery, :homeworkReport.multipleDeliveries, " +
@@ -297,39 +294,23 @@ interface HomeworkDAOJdbi : HomeworkDAO {
                     "WHERE $HOMEWORK_ID = :homework.homeworkId"
     )
     @GetGeneratedKeys
-    override fun updateHomeWork(homework: Homework): Homework
-
-    @SqlQuery(
-            "SELECT $HOMEWORK_VOTES FROM $HOMEWORK_REPORT_TABLE " +
-                    "WHERE $HOMEWORK_ID = :homeworkId" +
-                    "AND $HOMEWORK_REPORT_ID = :reportId"
-    )
-    override fun getVotesOnReportedHomework(homeworkId: Int, reportId: Int): Int
+    override fun updateHomework(homework: Homework): Homework
 
     @SqlUpdate(
             "DELETE FROM $HOMEWORK_REPORT_TABLE " +
                     "USING $CLASS_MISC_UNIT_TABLE " +
-                    "WHERE $HOMEWORK_ID = $CLASS_MISC_UNIT_ID " +
+                    "WHERE $HOMEWORK_REPORT_HOMEWORK_ID = $CLASS_MISC_UNIT_ID " +
                     "AND $CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
-                    "AND $HOMEWORK_ID = :homeworkId"
+                    "AND $HOMEWORK_REPORT_HOMEWORK_ID = :homeworkId"
     )
     override fun updateVotesOnReportedLecture(lectureId: Any, reportId: Int, votes: Int): Int
 
     @SqlUpdate(
             "DELETE FROM $HOMEWORK_REPORT_TABLE " +
                     "USING $CLASS_MISC_UNIT_TABLE " +
-                    "WHERE $HOMEWORK_ID = $CLASS_MISC_UNIT_ID " +
+                    "WHERE $HOMEWORK_REPORT_HOMEWORK_ID = $CLASS_MISC_UNIT_ID " +
                     "AND $CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
-                    "AND $HOMEWORK_ID = :homeworkId"
-    )
-    override fun deleteAllReportsOnHomeworkOfCourseInClass(courseClassId: Int, homeworkId: Int): Int
-
-    @SqlUpdate(
-            "DELETE FROM $HOMEWORK_REPORT_TABLE " +
-                    "USING $CLASS_MISC_UNIT_TABLE " +
-                    "WHERE $HOMEWORK_ID = $CLASS_MISC_UNIT_ID " +
-                    "AND $CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
-                    "AND $HOMEWORK_ID = :homeworkId " +
+                    "AND $HOMEWORK_REPORT_HOMEWORK_ID = :homeworkId " +
                     "AND $HOMEWORK_REPORT_ID = :reportId"
     )
     override fun deleteSpecificReportOnHomeworkOfCourseInClass(courseClassId: Int, homeworkId: Int, reportId: Int): Int
@@ -368,27 +349,5 @@ interface HomeworkDAOJdbi : HomeworkDAO {
                     "AND H.$HOMEWORK_VERSION = :version"
     )
     override fun getSpecificVersionOfHomeworkOfCourseInClass(courseClassId: Int, homeworkId: Int, version: Int): Optional<HomeworkVersion>
-
-    @SqlUpdate(
-            "DELETE FROM $HOMEWORK_VERSION_TABLE " +
-                    "USING $CLASS_MISC_UNIT_TABLE " +
-                    "WHERE $HOMEWORK_ID = $CLASS_MISC_UNIT_ID " +
-                    "AND $CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
-                    "AND $HOMEWORK_ID = :homeworkId"
-    )
-    override fun deleteAllVersionsOfHomeworkOfCourseInClass(courseClassId: Int, homeworkId: Int): Int
-
-    @SqlUpdate(
-            "DELETE FROM $HOMEWORK_VERSION_TABLE " +
-                    "USING $CLASS_MISC_UNIT_TABLE " +
-                    "WHERE $HOMEWORK_ID = $CLASS_MISC_UNIT_ID " +
-                    "AND $CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
-                    "AND $HOMEWORK_ID = :homeworkId " +
-                    "AND $HOMEWORK_VERSION = :version"
-    )
-    override fun deleteSpecificVersionOfHomeworkOfCourseInClass(courseClassId: Int, homeworkId: Int, version: Int): Int
-
-    override fun deleteAllStagedHomeworksOfCourseInClass(courseClassId: Int): Int =
-            createClassDAO().deleteAllStagedClassMiscUnitsFromTypeOfCourseInClass(courseClassId, ClassMiscUnitType.HOMEWORK)
 
 }

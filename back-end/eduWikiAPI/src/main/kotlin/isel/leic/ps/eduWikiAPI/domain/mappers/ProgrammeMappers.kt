@@ -15,8 +15,8 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.ProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.ProgrammeStageOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.ProgrammeVersionOutputModel
 
-fun toProgramme(input: ProgrammeInputModel) = Programme(
-        createdBy = input.createdBy,
+fun toProgramme(input: ProgrammeInputModel, createdBy: String) = Programme(
+        createdBy = createdBy,
         fullName = input.fullName,
         shortName = input.shortName,
         academicDegree = input.academicDegree,
@@ -24,8 +24,8 @@ fun toProgramme(input: ProgrammeInputModel) = Programme(
         duration = input.duration
 )
 
-fun toProgrammeStage(input: ProgrammeInputModel) = ProgrammeStage(
-        createdBy = input.createdBy,
+fun toProgrammeStage(input: ProgrammeInputModel, createdBy: String) = ProgrammeStage(
+        createdBy = createdBy,
         fullName = input.fullName,
         shortName = input.shortName,
         academicDegree = input.academicDegree,
@@ -42,14 +42,14 @@ fun stagedToProgramme(stage: ProgrammeStage) = Programme(
         duration = stage.duration
 )
 
-fun toProgrammeReport(programmeId: Int, inputProgrammeReport: ProgrammeReportInputModel) = ProgrammeReport(
+fun toProgrammeReport(programmeId: Int, inputProgrammeReport: ProgrammeReportInputModel, reportedBy: String) = ProgrammeReport(
         programmeId = programmeId,
+        reportedBy = reportedBy,
         fullName = inputProgrammeReport.fullName,
         shortName = inputProgrammeReport.shortName,
         academicDegree = inputProgrammeReport.academicDegree,
         duration = inputProgrammeReport.duration,
-        totalCredits = inputProgrammeReport.totalCredits,
-        reportedBy = inputProgrammeReport.reportedBy
+        totalCredits = inputProgrammeReport.totalCredits
 )
 
 fun toProgrammeVersion(programme: Programme) = ProgrammeVersion(

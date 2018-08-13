@@ -9,8 +9,6 @@ class CourseProgrammeInputModel (
         val programmeId: Int = 0,
         @JsonProperty("course_lectured_term")
         val lecturedTerm: String = "",
-        @JsonProperty("created_by")
-        val createdBy: String = "",
         @JsonProperty("course_optional")
         val optional: Boolean = false,
         @JsonProperty("course_credits")

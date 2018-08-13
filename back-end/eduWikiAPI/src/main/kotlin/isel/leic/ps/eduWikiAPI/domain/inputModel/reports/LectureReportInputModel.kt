@@ -7,12 +7,8 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 class LectureReportInputModel (
-        @JsonProperty("lecture_id")
-        val lectureId: Int = 0,
         val weekday: DayOfWeek? = null,
         val begins: LocalTime? = null,
         val duration: Long? = null,
-        val location: String? = null,
-        @JsonProperty("reported_by")
-        val reportedBy: String = ""
+        val location: String? = null
 )

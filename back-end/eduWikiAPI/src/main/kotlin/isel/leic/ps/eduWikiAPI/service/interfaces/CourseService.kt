@@ -31,6 +31,7 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.CourseVersionOu
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.ExamVersionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.WorkAssignmentVersionOutputModel
 import org.springframework.web.multipart.MultipartFile
+import java.security.Principal
 
 interface CourseService {
 
@@ -54,37 +55,31 @@ interface CourseService {
 
     fun getSpecificWorkAssignmentFromSpecificTermOfCourse(workAssignmentId: Int, courseId: Int, termId: Int): WorkAssignmentOutputModel
 
-    fun createCourse(inputCourse: CourseInputModel): CourseOutputModel
+    fun createCourse(inputCourse: CourseInputModel, principal: Principal): CourseOutputModel
 
-    fun createCourseFromStaged(stageId: Int): CourseOutputModel
+    fun createCourseFromStaged(stageId: Int, principal: Principal): CourseOutputModel
 
-    fun createExamOnCourseInTerm(sheet: MultipartFile, courseId: Int, termId: Int, inputExam: ExamInputModel): ExamOutputModel
+    fun createExamOnCourseInTerm(courseId: Int, termId: Int, sheet: MultipartFile, inputExam: ExamInputModel, principal: Principal): ExamOutputModel
 
-    fun createExamFromStaged(courseId: Int, termId: Int, stageId: Int): ExamOutputModel
+    fun createExamFromStaged(courseId: Int, termId: Int, stageId: Int, principal: Principal): ExamOutputModel
 
-    fun createWorkAssignmentOnCourseInTerm(sheet: MultipartFile, courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): WorkAssignmentOutputModel
+    fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel, sheet: MultipartFile, principal: Principal): WorkAssignmentOutputModel
 
-    fun createWorkAssignmentFromStaged(courseId: Int, termId: Int, stageId: Int): WorkAssignmentOutputModel
+    fun createWorkAssignmentFromStaged(courseId: Int, termId: Int, stageId: Int, principal: Principal): WorkAssignmentOutputModel
 
-    fun voteOnCourse(courseId: Int, vote: VoteInputModel): Int
+    fun voteOnCourse(courseId: Int, vote: VoteInputModel, principal: Principal): Int
 
-    fun voteOnExam(examId: Int, vote: VoteInputModel): Int
+    fun voteOnExam(termId: Int, courseId: Int, examId: Int, inputVote: VoteInputModel, principal: Principal): Int
 
-    fun voteOnWorkAssignment(workAssignmentId: Int, vote: VoteInputModel): Int
+    fun voteOnWorkAssignment(termId: Int, courseId: Int, workAssignmentId: Int, vote: VoteInputModel, principal: Principal): Int
 
-    fun partialUpdateOnCourse(courseId: Int, inputCourse: CourseInputModel): CourseOutputModel
+    fun partialUpdateOnCourse(courseId: Int, inputCourse: CourseInputModel, principal: Principal): CourseOutputModel
 
-    fun deleteAllCourses(): Int
+    fun deleteSpecificCourse(courseId: Int, principal: Principal): Int
 
-    fun deleteSpecificCourse(courseId: Int): Int
+    fun deleteSpecificExamOfCourseInTerm(courseId: Int, termId: Int, examId: Int, principal: Principal): Int
 
-    fun deleteAllExamsOfCourseInTerm(courseId: Int, termId: Int): Int
-
-    fun deleteSpecificExamOfCourseInTerm(courseId: Int, termId: Int, examId: Int): Int
-
-    fun deleteAllWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int
-
-    fun deleteSpecificWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, workAssignmentId: Int): Int
+    fun deleteSpecificWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, workAssignmentId: Int, principal: Principal): Int
 
     /**
      * Stage entities queries
@@ -102,29 +97,23 @@ interface CourseService {
 
     fun getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): WorkAssignmentStageOutputModel
 
-    fun createStagingCourse(inputCourse: CourseInputModel): CourseStageOutputModel
+    fun createStagingCourse(inputCourse: CourseInputModel, principal: Principal): CourseStageOutputModel
 
-    fun createStagingExam(sheet: MultipartFile, courseId: Int, termId: Int, examInputModel: ExamInputModel): ExamStageOutputModel
+    fun createStagingExam(courseId: Int, termId: Int, examInputModel: ExamInputModel, sheet: MultipartFile, principal: Principal): ExamStageOutputModel
 
-    fun createStagingWorkAssignment(sheet: MultipartFile, courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel): WorkAssignmentStageOutputModel
+    fun createStagingWorkAssignment(sheet: MultipartFile, courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel, principal: Principal): WorkAssignmentStageOutputModel
 
-    fun voteOnStagedCourse(stageId: Int, vote: VoteInputModel): Int
+    fun voteOnStagedCourse(stageId: Int, vote: VoteInputModel, principal: Principal): Int
 
-    fun voteOnStagedExam(stageId: Int, vote: VoteInputModel): Int
+    fun voteOnStagedExam(termId: Int, courseId: Int, stageId: Int, vote: VoteInputModel, principal: Principal): Int
 
-    fun voteOnStagedWorkAssignment(stageId: Int, vote: VoteInputModel): Int
+    fun voteOnStagedWorkAssignment(termId: Int, courseId: Int, stageId: Int, vote: VoteInputModel, principal: Principal): Int
 
-    fun deleteAllStagedWorkAssignmentsOfCourseInTerm(courseId: Int, termId: Int): Int
+    fun deleteSpecificStagedWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, stageId: Int, principal: Principal): Int
 
-    fun deleteSpecificStagedWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, stageId: Int): Int
+    fun deleteSpecificStagedCourse(stageId: Int, principal: Principal): Int
 
-    fun deleteAllStagedCourses(): Int
-
-    fun deleteSpecificStagedCourse(stageId: Int): Int
-
-    fun deleteAllStagedExamsOfCourseInTerm(courseId: Int, termId: Int): Int
-
-    fun deleteSpecificStagedExamOfCourseInTerm(courseId: Int, termId: Int, stageId: Int): Int
+    fun deleteSpecificStagedExamOfCourseInTerm(courseId: Int, termId: Int, stageId: Int, principal: Principal): Int
 
     /**
      * Version entities queries
@@ -134,25 +123,13 @@ interface CourseService {
 
     fun getVersionOfSpecificCourse(courseId: Int, versionId: Int): CourseVersionOutputModel
 
-    fun getAllVersionsOfSpecificExam(examId: Int): ExamVersionCollectionOutputModel
+    fun getAllVersionsOfSpecificExam(termId: Int, courseId: Int, examId: Int): ExamVersionCollectionOutputModel
 
-    fun getVersionOfSpecificExam(examId: Int, versionId: Int): ExamVersionOutputModel
+    fun getVersionOfSpecificExam(termId: Int, courseId: Int, examId: Int, versionId: Int): ExamVersionOutputModel
 
-    fun getAllVersionsOfSpecificWorkAssignment(workAssignmentId: Int): WorkAssignmentVersionCollectionOutputModel
+    fun getAllVersionsOfSpecificWorkAssignment(termId: Int, courseId: Int, workAssignmentId: Int): WorkAssignmentVersionCollectionOutputModel
 
-    fun getVersionOfSpecificWorkAssignment(workAssignmentId: Int, versionId: Int): WorkAssignmentVersionOutputModel
-
-    fun deleteAllVersionsOfCourse(courseId: Int): Int
-
-    fun deleteVersionOfCourse(courseId: Int, version: Int): Int
-
-    fun deleteAllVersionsOfWorkAssignment(workAssignmentId: Int): Int
-
-    fun deleteVersionOfWorkAssignment(workAssignmentId: Int, version: Int): Int
-
-    fun deleteAllVersionsOfExam(examId: Int): Int
-
-    fun deleteVersionOfExam(examId: Int, version: Int): Int
+    fun getVersionOfSpecificWorkAssignment(termId: Int, courseId: Int, workAssignmentId: Int, versionId: Int): WorkAssignmentVersionOutputModel
 
     /**
      * Report entities queries
@@ -162,42 +139,36 @@ interface CourseService {
 
     fun getSpecificReportOfCourse(courseId: Int, reportId: Int): CourseReportOutputModel
 
-    fun getAllReportsOnExamOnSpecificTermOfCourse(examId: Int): ExamReportCollectionOutputModel
+    fun getAllReportsOnExamOnSpecificTermOfCourse(termId: Int, courseId: Int, examId: Int): ExamReportCollectionOutputModel
 
-    fun getSpecificReportOnExamOnSpecificTermOfCourse(reportId: Int): ExamReportOutputModel
+    fun getSpecificReportOnExamOnSpecificTermOfCourse(termId: Int, courseId: Int, examId: Int, reportId: Int): ExamReportOutputModel
 
     fun getAllReportsOnWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): WorkAssignmentReportCollectionOutputModel
 
-    fun getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(workAssignmentId: Int, reportId: Int): WorkAssignmentReportOutputModel
+    fun getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(termId: Int, courseId: Int, workAssignmentId: Int, reportId: Int): WorkAssignmentReportOutputModel
 
-    fun reportCourse(courseId: Int, inputCourseReport: CourseReportInputModel): CourseReportOutputModel
+    fun reportCourse(courseId: Int, inputCourseReport: CourseReportInputModel, principal: Principal): CourseReportOutputModel
 
-    fun voteOnReportedCourse(reportId: Int, vote: VoteInputModel): Int
+    fun voteOnReportedCourse(courseId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int
 
-    fun voteOnReportedExamOnCourseInTerm(reportId: Int, vote: VoteInputModel): Int
+    fun voteOnReportedExamOnCourseInTerm(termId: Int, courseId: Int, examId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int
 
-    fun voteOnReportedWorkAssignmentOnCourseInTerm(reportId: Int, vote: VoteInputModel): Int
+    fun voteOnReportedWorkAssignmentOnCourseInTerm(termId: Int, courseId: Int, workAssignmentId: Int, reportId: Int, inputVote: VoteInputModel, principal: Principal): Int
 
-    fun updateReportedCourse(courseId: Int, reportId: Int) : CourseOutputModel
+    fun updateReportedCourse(courseId: Int, reportId: Int, principal: Principal) : CourseOutputModel
 
-    fun updateReportedExam(examId: Int, reportId: Int, courseId: Int, termId: Int): ExamOutputModel
+    fun updateReportedExam(examId: Int, reportId: Int, courseId: Int, termId: Int, principal: Principal): ExamOutputModel
 
-    fun updateWorkAssignmentBasedOnReport(workAssignmentId: Int, reportId: Int, courseId: Int, termId: Int): WorkAssignmentOutputModel
+    fun updateWorkAssignmentBasedOnReport(workAssignmentId: Int, reportId: Int, courseId: Int, termId: Int, principal: Principal): WorkAssignmentOutputModel
 
-    fun addReportToExamOnCourseInTerm(examId: Int, inputExamReport: ExamReportInputModel): ExamReportOutputModel
+    fun addReportToExamOnCourseInTerm(termId: Int, courseId: Int, examId: Int, inputExamReport: ExamReportInputModel, principal: Principal): ExamReportOutputModel
 
-    fun addReportToWorkAssignmentOnCourseInTerm(workAssignmentId: Int, inputWorkAssignmentReport: WorkAssignmentReportInputModel): WorkAssignmentReportOutputModel
+    fun addReportToWorkAssignmentOnCourseInTerm(termId: Int, courseId: Int, workAssignmentId: Int, inputWorkAssignmentReport: WorkAssignmentReportInputModel, principal: Principal): WorkAssignmentReportOutputModel
 
-    fun deleteAllReportsOnCourse(courseId: Int): Int
+    fun deleteReportOnCourse(courseId: Int, reportId: Int, principal: Principal): Int
 
-    fun deleteReportOnCourse(courseId: Int, reportId: Int): Int
+    fun deleteReportOnExam(termId: Int, courseId: Int, examId: Int, reportId: Int, principal: Principal): Int
 
-    fun deleteAllReportsOnExam(examId: Int): Int
-
-    fun deleteReportOnExam(examId: Int, reportId: Int): Int
-
-    fun deleteAllReportsOnWorkAssignment(workAssignmentId: Int): Int
-
-    fun deleteReportOnWorkAssignment(workAssignmentId: Int, reportId: Int): Int
+    fun deleteReportOnWorkAssignment(termId: Int, courseId: Int, workAssignmentId: Int, reportId: Int, principal: Principal): Int
 
 }

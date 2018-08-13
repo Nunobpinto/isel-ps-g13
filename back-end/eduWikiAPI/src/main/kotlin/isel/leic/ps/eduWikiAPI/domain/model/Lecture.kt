@@ -5,6 +5,7 @@ import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_CREAT
 import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_DURATION
 import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_ID
 import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_LOCATION
+import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_LOG_ID
 import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_TIMESTAMP
 import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_VERSION
 import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_VOTES
@@ -31,6 +32,8 @@ data class Lecture(
         val duration: Duration = Duration.ZERO,
         @ColumnName(LECTURE_LOCATION)
         val location: String = "",
+        @ColumnName(LECTURE_LOG_ID)
+        val logId: Int = 0,
         @ColumnName(LECTURE_TIMESTAMP)
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 )

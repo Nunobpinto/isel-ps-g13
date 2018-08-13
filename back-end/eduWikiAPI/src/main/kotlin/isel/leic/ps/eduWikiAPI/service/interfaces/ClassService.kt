@@ -6,7 +6,6 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseClassReportInputM
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.HomeworkReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.LectureReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.report.LectureReport
-import isel.leic.ps.eduWikiAPI.domain.model.staging.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.ClassOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.CourseClassOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.HomeworkOutputModel
@@ -38,6 +37,7 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.ClassVersionOut
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.HomeworkVersionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.LectureVersionOutputModel
 import org.springframework.web.multipart.MultipartFile
+import java.security.Principal
 
 interface ClassService {
     /**
@@ -47,13 +47,13 @@ interface ClassService {
 
     fun getSpecificClass(classId: Int): ClassOutputModel
 
-    fun createClass(input: ClassInputModel): ClassOutputModel
+    fun createClass(input: ClassInputModel, principal: Principal): ClassOutputModel
 
-    fun voteOnClass(classId: Int, vote: VoteInputModel): Int
+    fun voteOnClass(classId: Int, vote: VoteInputModel, principal: Principal): Int
 
-    fun partialUpdateOnClass(classId: Int, input: ClassInputModel): ClassOutputModel
+    fun partialUpdateOnClass(classId: Int, input: ClassInputModel, principal: Principal): ClassOutputModel
 
-    fun deleteSpecificClass(classId: Int): Int
+    fun deleteSpecificClass(classId: Int, principal: Principal): Int
 
     /**
      * Class Report
@@ -62,15 +62,13 @@ interface ClassService {
 
     fun getSpecificReportOfClass(classId: Int, reportId: Int): ClassReportOutputModel
 
-    fun reportClass(classId: Int, report: ClassReportInputModel): ClassReportOutputModel
+    fun createClassReport(classId: Int, report: ClassReportInputModel, principal: Principal): ClassReportOutputModel
 
-    fun voteOnReportClass(classId: Int, reportId: Int, vote: VoteInputModel): Int
+    fun voteOnReportClass(classId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int
 
-    fun updateClassFromReport(classId: Int, reportId: Int): ClassOutputModel
+    fun updateClassFromReport(classId: Int, reportId: Int, principal: Principal): ClassOutputModel
 
-    fun deleteAllReportsInClass(classId: Int): Int
-
-    fun deleteSpecificReportInClass(classId: Int, reportId: Int): Int
+    fun deleteSpecificReportInClass(classId: Int, reportId: Int, principal: Principal): Int
 
     /**
      * Class Stage
@@ -79,15 +77,13 @@ interface ClassService {
 
     fun getSpecificStagedClass(stageId: Int): ClassStageOutputModel
 
-    fun createStagingClass(classStage: ClassStage): ClassStageOutputModel
+    fun createStagingClass(classStageInputModel: ClassInputModel, principal: Principal): ClassStageOutputModel
 
-    fun createClassFromStaged(stageId: Int): ClassOutputModel
+    fun createClassFromStaged(stageId: Int, principal: Principal): ClassOutputModel
 
-    fun voteOnStagedClass(stageId: Int, vote: VoteInputModel): Int
+    fun voteOnStagedClass(stageId: Int, vote: VoteInputModel, principal: Principal): Int
 
-    fun deleteAllStagedClasses(): Int
-
-    fun deleteSpecificStagedClass(stageId: Int): Int
+    fun deleteSpecificStagedClass(stageId: Int, principal: Principal): Int
 
     /**
      * Class version
@@ -96,10 +92,6 @@ interface ClassService {
 
     fun getSpecificVersionOfClass(classId: Int, versionId: Int): ClassVersionOutputModel
 
-    fun deleteAllVersionsOfClass(courseId: Int): Int
-
-    fun deleteSpecificVersionOfClass(courseId: Int, versionId: Int): Int
-
     /**
      * Course Class
      */
@@ -107,13 +99,11 @@ interface ClassService {
 
     fun getSpecificCourseOfClass(classId: Int, courseId: Int): CourseClassOutputModel
 
-    fun addCourseToClass(classId: Int, courseId: Int, courseClassInputModel: CourseClassInputModel): CourseClassOutputModel
+    fun addCourseToClass(classId: Int, courseId: Int, courseClassInputModel: CourseClassInputModel, principal: Principal): CourseClassOutputModel
 
-    fun voteOnCourseInClass(classId: Int, courseId: Int, vote: VoteInputModel): Int
+    fun voteOnCourseInClass(classId: Int, courseId: Int, vote: VoteInputModel, principal: Principal): Int
 
-    fun deleteAllCoursesInClass(classId: Int): Int
-
-    fun deleteSpecificCourseInClass(classId: Int, courseId: Int): Int
+    fun deleteSpecificCourseInClass(classId: Int, courseId: Int, principal: Principal): Int
 
     /**
      * Course Class Report
@@ -122,15 +112,13 @@ interface ClassService {
 
     fun getSpecificReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int): CourseClassReportOutputModel
 
-    fun reportCourseInClass(classId: Int, courseId: Int, courseClassReportInputModel: CourseClassReportInputModel): CourseClassReportOutputModel
+    fun reportCourseInClass(classId: Int, courseId: Int, courseClassReportInputModel: CourseClassReportInputModel, principal: Principal): CourseClassReportOutputModel
 
-    fun updateCourseInClassFromReport(classId: Int, courseId: Int, reportId: Int): CourseClassOutputModel
+    fun updateCourseInClassFromReport(classId: Int, courseId: Int, reportId: Int, principal: Principal): CourseClassOutputModel
 
-    fun voteOnReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int, vote: VoteInputModel): Int
+    fun voteOnReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int
 
-    fun deleteAllCourseReportsInClass(classId: Int, courseId: Int): Int
-
-    fun deleteSpecificCourseReportInClass(classId: Int, courseId: Int, reportId: Int): Int
+    fun deleteReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int, principal: Principal): Int
 
     /**
      * Course Class Stage
@@ -139,15 +127,13 @@ interface ClassService {
 
     fun getSpecificStagedCourseInClass(classId: Int, stageId: Int): CourseClassStageOutputModel
     
-    fun createStagingCourseInClass(classId: Int, courseId: Int, courseClassInputModel: CourseClassInputModel): CourseClassStageOutputModel
+    fun createStagingCourseInClass(classId: Int, courseId: Int, principal: Principal): CourseClassStageOutputModel
     
-    fun addCourseInClassFromStaged(classId: Int, stageId: Int): CourseClassOutputModel
+    fun addCourseInClassFromStaged(classId: Int, stageId: Int, principal: Principal): CourseClassOutputModel
     
-    fun voteOnStagedCourseInClass(classId: Int, stageId: Int, vote: VoteInputModel): Int
+    fun voteOnStagedCourseInClass(classId: Int, stageId: Int, vote: VoteInputModel, principal: Principal): Int
     
-    fun deleteStageEntriesOfCourseInSpecificClass(classId: Int): Int
-    
-    fun deleteSpecificStagedCourseInClass(classId: Int, stageId: Int): Int
+    fun deleteSpecificStagedCourseInClass(classId: Int, stageId: Int, principal: Principal): Int
 
     /**
      * Lectures Of Class
@@ -156,13 +142,11 @@ interface ClassService {
 
     fun getSpecificLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int): LectureOutputModel
 
-    fun createLectureOnCourseInClass(classId: Int, courseId: Int, lectureInputModel: LectureInputModel): LectureOutputModel
+    fun createLectureOnCourseInClass(classId: Int, courseId: Int, lectureInputModel: LectureInputModel, principal: Principal): LectureOutputModel
 
-    fun voteOnLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int, vote: VoteInputModel): Int
+    fun voteOnLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int, vote: VoteInputModel, principal: Principal): Int
 
-    fun deleteAllLecturesOfCourseInClass(classId: Int, courseId: Int): Int
-
-    fun deleteSpecificLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int): Int
+    fun deleteSpecificLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int, principal: Principal): Int
 
     /**
      * Lecture Report
@@ -171,15 +155,13 @@ interface ClassService {
 
     fun getSpecificReportOfLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int, reportId: Int): LectureReportOutputModel
 
-    fun deleteAllReportsOnLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int): Int
+    fun deleteSpecificReportOnLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int, reportId: Int, principal: Principal): Int
 
-    fun deleteSpecificReportOnLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int, reportId: Int): Int
+    fun createReportOnLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int, lectureReportInputModel: LectureReportInputModel, principal: Principal): LectureReport
 
-    fun createReportOnLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int, lectureReportInputModel: LectureReportInputModel): LectureReport
+    fun voteOnReportOfLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int
 
-    fun voteOnReportOfLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int, reportId: Int, vote: VoteInputModel): Int
-
-    fun updateLectureFromReport(classId: Int, courseId: Int, lectureId: Int, reportId: Int): LectureOutputModel
+    fun updateLectureFromReport(classId: Int, courseId: Int, lectureId: Int, reportId: Int, principal: Principal): LectureOutputModel
 
     /**
      * Lecture Stage
@@ -188,15 +170,13 @@ interface ClassService {
 
     fun getSpecificStagedLectureOfCourseInClass(classId: Int, courseId: Int, stageId: Int): LectureStageOutputModel
 
-    fun createStagingLectureOfCourseInClass(classId: Int, courseId: Int, lectureInputModel: LectureInputModel): LectureStageOutputModel
+    fun createStagingLectureOfCourseInClass(classId: Int, courseId: Int, lectureInputModel: LectureInputModel, principal: Principal): LectureStageOutputModel
 
-    fun deleteAllStagedLecturesOfCourseInClass(classId: Int, courseId: Int): Int
+    fun deleteSpecificStagedLectureOfCourseInClass(classId: Int, courseId: Int, stageId: Int, principal: Principal): Int
 
-    fun deleteSpecificStagedLectureOfCourseInClass(classId: Int, courseId: Int, stageId: Int): Int
+    fun voteOnStagedLectureOfCourseInClass(classId: Int, courseId: Int, stageId: Int, vote: VoteInputModel, principal: Principal): Int
 
-    fun voteOnStagedLectureOfCourseInClass(classId: Int, courseId: Int, stageId: Int, vote: VoteInputModel): Int
-
-    fun createLectureFromStaged(classId: Int, courseId: Int, stageId: Int): LectureOutputModel
+    fun createLectureFromStaged(classId: Int, courseId: Int, stageId: Int, principal: Principal): LectureOutputModel
 
     /**
      * Lecture Version
@@ -205,10 +185,6 @@ interface ClassService {
 
     fun getSpecificVersionOfLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int, version: Int): LectureVersionOutputModel
 
-    fun deleteAllVersionsOfLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int): Int
-
-    fun deleteSpecificVersionOfLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int, version: Int): Int
-
     /**
      * Homework
      */
@@ -216,13 +192,11 @@ interface ClassService {
 
     fun getSpecificHomeworkFromSpecificCourseInClass(classId: Int, courseId: Int, homeworkId: Int): HomeworkOutputModel
 
-    fun createHomeworkOnCourseInClass(sheet: MultipartFile, classId: Int, courseId: Int, homeworkInputModel: HomeworkInputModel): HomeworkOutputModel
+    fun createHomeworkOnCourseInClass(sheet: MultipartFile, classId: Int, courseId: Int, homeworkInputModel: HomeworkInputModel, principal: Principal): HomeworkOutputModel
 
-    fun voteOnHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, vote: VoteInputModel): Int
+    fun voteOnHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, vote: VoteInputModel, principal: Principal): Int
 
-    fun deleteAllHomeworksOfCourseInClass(classId: Int, courseId: Int): Int
-
-    fun deleteSpecificHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int): Int
+    fun deleteSpecificHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, principal: Principal): Int
 
     /**
      * Homework Stage
@@ -231,15 +205,13 @@ interface ClassService {
 
     fun getSpecificStagedHomeworkOfCourseInClass(classId: Int, courseId: Int, stageId: Int): HomeworkStageOutputModel
 
-    fun createStagingHomeworkOnCourseInClass(sheet: MultipartFile, classId: Int, courseId: Int, homeworkInputModel: HomeworkInputModel): HomeworkStageOutputModel
+    fun createStagingHomeworkOnCourseInClass(sheet: MultipartFile, classId: Int, courseId: Int, homeworkInputModel: HomeworkInputModel, principal: Principal): HomeworkStageOutputModel
 
-    fun createHomeworkFromStaged(classId: Int, courseId: Int, stageId: Int): HomeworkOutputModel
+    fun createHomeworkFromStaged(classId: Int, courseId: Int, stageId: Int, principal: Principal): HomeworkOutputModel
 
-    fun voteOnStagedHomeworkOfCourseInClass(classId: Int, courseId: Int, stageId: Int, vote: VoteInputModel): Int
+    fun voteOnStagedHomeworkOfCourseInClass(classId: Int, courseId: Int, stageId: Int, vote: VoteInputModel, principal: Principal): Int
 
-    fun deleteAllStagedHomeworksOfCourseInClass(classId: Int, courseId: Int): Int
-
-    fun deleteSpecificStagedHomeworkOfCourseInClass(classId: Int, courseId: Int, stageId: Int): Int
+    fun deleteSpecificStagedHomeworkOfCourseInClass(classId: Int, courseId: Int, stageId: Int, principal: Principal): Int
 
     /**
      * Homework Report
@@ -248,15 +220,13 @@ interface ClassService {
 
     fun getSpecificReportOfHomeworkFromCourseInClass(classId: Int, courseId: Int, homeworkId: Int, reportId: Int): HomeworkReportOutputModel
 
-    fun createReportOnHomeworkFromCourseInClass(classId: Int, courseId: Int, homeworkId: Int, homeworkReportInputModel: HomeworkReportInputModel): HomeworkReportOutputModel
+    fun createReportOnHomeworkFromCourseInClass(classId: Int, courseId: Int, homeworkId: Int, homeworkReportInputModel: HomeworkReportInputModel, principal: Principal): HomeworkReportOutputModel
 
-    fun updateHomeworkFromReport(classId: Int, courseId: Int, homeworkId: Int, reportId: Int): HomeworkOutputModel
+    fun updateHomeworkFromReport(classId: Int, courseId: Int, homeworkId: Int, reportId: Int, principal: Principal): HomeworkOutputModel
 
-    fun voteOnReportOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, reportId: Int, vote: VoteInputModel): Int
+    fun voteOnReportOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int
 
-    fun deleteAllReportsOnHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int): Int
-
-    fun deleteSpecificReportOnHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, reportId: Int): Int
+    fun deleteSpecificReportOnHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, reportId: Int, principal: Principal): Int
     
     /**
      * Homework version
@@ -264,10 +234,5 @@ interface ClassService {
     fun getAllVersionsOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int): HomeworkVersionCollectionOutputModel
 
     fun getSpecificVersionOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, version: Int): HomeworkVersionOutputModel
-
-    fun deleteAllVersionsOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int): Int
-
-    fun deleteSpecificVersionOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, version: Int): Int
-
 
 }

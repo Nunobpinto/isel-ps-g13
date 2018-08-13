@@ -4,6 +4,7 @@ import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.COURSE_CLASS_CL
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.COURSE_CLASS_COURSE_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.COURSE_CLASS_CREATED_BY
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.COURSE_CLASS_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.COURSE_CLASS_LOG_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.COURSE_CLASS_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.COURSE_CLASS_TIMESTAMP
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.COURSE_CLASS_VOTES
@@ -24,6 +25,8 @@ data class CourseClass (
         val createdBy: String = "",
         @ColumnName(COURSE_CLASS_VOTES)
         val votes: Int = 0,
+        @ColumnName(COURSE_CLASS_LOG_ID)
+        val logId: Int = 0,
         @ColumnName(COURSE_CLASS_TIMESTAMP)
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 )

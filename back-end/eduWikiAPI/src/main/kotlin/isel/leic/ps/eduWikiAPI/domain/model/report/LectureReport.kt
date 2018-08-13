@@ -5,20 +5,22 @@ import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_DURAT
 import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_ID
 import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_LOCATION
 import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_REPORTED_BY
-import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_REPORT_ID
+import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_REPORT_LOG_ID
+import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_REPORT_REPORT_ID
 import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_TIMESTAMP
 import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_VOTES
 import isel.leic.ps.eduWikiAPI.repository.LectureDAOJdbi.Companion.LECTURE_WEEK_DAY
 import org.jdbi.v3.core.mapper.reflect.ColumnName
-import java.sql.Time
 import java.sql.Timestamp
 import java.time.*
 
 data class LectureReport (
-        @ColumnName(LECTURE_REPORT_ID)
+        @ColumnName(LECTURE_REPORT_REPORT_ID)
         val reportId: Int = -1,
         @ColumnName(LECTURE_ID)
         val lectureId: Int = 0,
+        @ColumnName(LECTURE_REPORT_LOG_ID)
+        val logId: Int = 0,
         @ColumnName(LECTURE_WEEK_DAY)
         val weekDay: DayOfWeek? = null,
         @ColumnName(LECTURE_BEGINS)

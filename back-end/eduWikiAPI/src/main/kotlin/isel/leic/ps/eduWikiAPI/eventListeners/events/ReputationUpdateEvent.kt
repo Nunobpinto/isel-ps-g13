@@ -1,6 +1,6 @@
 package isel.leic.ps.eduWikiAPI.eventListeners.events
 
-class ReputationUpdateEvent(
+data class ReputationUpdateEvent(
         val owner: String,
         val pointsGiven: Int,
         val givenBy: String,

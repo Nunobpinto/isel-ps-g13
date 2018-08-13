@@ -4,7 +4,6 @@ import java.time.LocalDate
 import java.util.*
 
 class WorkAssignmentInputModel(
-        val createdBy: String,
         val sheetId: UUID = UUID.randomUUID(),
         val supplementId: UUID = UUID.randomUUID(),
         val dueDate: LocalDate = LocalDate.now(),

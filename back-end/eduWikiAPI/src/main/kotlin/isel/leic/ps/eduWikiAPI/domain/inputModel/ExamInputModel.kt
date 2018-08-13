@@ -7,6 +7,5 @@ class ExamInputModel(
         val dueDate: LocalDate = LocalDate.now(),
         val type: ExamType,
         val phase: String = "",
-        val location: String = "",
-        val createdBy: String = ""
+        val location: String = ""
 )

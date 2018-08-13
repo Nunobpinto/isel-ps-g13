@@ -9,7 +9,5 @@ class LectureInputModel(
         val weekDay: DayOfWeek = DayOfWeek.MONDAY,
         val begins: LocalTime = LocalTime.now(),
         val duration: Duration = Duration.ZERO,
-        val location: String = "",
-        @JsonProperty("created_by")
-        val createdBy: String = ""
+        val location: String = ""
 )
