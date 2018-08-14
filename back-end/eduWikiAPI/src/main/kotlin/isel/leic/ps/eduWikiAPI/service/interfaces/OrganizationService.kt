@@ -4,7 +4,7 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.OrganizationInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.OrganizationReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.OrganizationCollectionOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.OrganizationOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.OrganizationOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.OrganizationReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.OrganizationVersionCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.OrganizationReportOutputModel

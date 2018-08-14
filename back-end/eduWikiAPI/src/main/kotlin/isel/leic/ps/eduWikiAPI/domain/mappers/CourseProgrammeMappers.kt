@@ -7,11 +7,11 @@ import isel.leic.ps.eduWikiAPI.domain.model.CourseProgramme
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseProgrammeVersion
-import isel.leic.ps.eduWikiAPI.domain.outputModel.CourseProgrammeOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseProgrammeCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.CourseProgrammeReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.CourseProgrammeStageCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.CourseProgrammeVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.CourseProgrammeOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.CourseProgrammeReportOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.CourseProgrammeStageOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.CourseProgrammeVersionOutputModel
@@ -71,7 +71,7 @@ fun toCourseProgrammeOutputModel(courseProgramme: CourseProgramme, course: Cours
         timestamp = courseProgramme.timestamp,
         fullName = course.fullName,
         shortName = course.shortName,
-        username = courseProgramme.createdBy,
+        createdBy = courseProgramme.createdBy,
         programmeId = courseProgramme.programmeId,
         optional = courseProgramme.optional,
         credits = courseProgramme.credits,

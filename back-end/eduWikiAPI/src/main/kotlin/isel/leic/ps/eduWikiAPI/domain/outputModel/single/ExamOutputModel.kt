@@ -1,11 +1,10 @@
-package isel.leic.ps.eduWikiAPI.domain.outputModel
+package isel.leic.ps.eduWikiAPI.domain.outputModel.single
 
 import isel.leic.ps.eduWikiAPI.domain.enums.ExamType
 import java.util.*
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.LocalDateTime
-
 
 data class ExamOutputModel (
         val examId: Int = 0,

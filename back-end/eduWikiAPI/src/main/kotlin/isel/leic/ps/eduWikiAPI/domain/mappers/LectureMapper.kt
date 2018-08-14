@@ -6,7 +6,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.Lecture
 import isel.leic.ps.eduWikiAPI.domain.model.report.LectureReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.LectureStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.LectureVersion
-import isel.leic.ps.eduWikiAPI.domain.outputModel.LectureOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.LectureOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.LectureCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.LectureReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.LectureStageCollectionOutputModel
@@ -62,7 +62,7 @@ fun toLectureReport(lectureReportInputModel: LectureReportInputModel, lectureId:
 )
 
 fun toLectureOutputModel(lecture: Lecture) = LectureOutputModel(
-        username = lecture.createdBy,
+        createdBy = lecture.createdBy,
         weekDay = lecture.weekDay,
         begins = lecture.begins,
         duration = lecture.duration,

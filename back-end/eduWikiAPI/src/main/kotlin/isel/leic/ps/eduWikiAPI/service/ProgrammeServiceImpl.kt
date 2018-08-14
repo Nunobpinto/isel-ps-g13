@@ -8,8 +8,8 @@ import isel.leic.ps.eduWikiAPI.domain.mappers.*
 import isel.leic.ps.eduWikiAPI.domain.model.CourseProgramme
 import isel.leic.ps.eduWikiAPI.domain.model.Programme
 import isel.leic.ps.eduWikiAPI.domain.model.Vote
-import isel.leic.ps.eduWikiAPI.domain.outputModel.CourseProgrammeOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.ProgrammeOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.CourseProgrammeOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.ProgrammeOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseProgrammeCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ProgrammeCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.CourseProgrammeReportCollectionOutputModel
