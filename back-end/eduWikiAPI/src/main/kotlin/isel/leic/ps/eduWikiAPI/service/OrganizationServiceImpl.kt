@@ -8,7 +8,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.service.interfaces.OrganizationService
 import isel.leic.ps.eduWikiAPI.domain.mappers.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.OrganizationCollectionOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.OrganizationOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.OrganizationOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.OrganizationReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.OrganizationVersionCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.OrganizationReportOutputModel
@@ -178,7 +178,7 @@ class OrganizationServiceImpl : OrganizationService {
                         contact = report.contact ?: prevorganization.contact,
                         address = report.address ?: prevorganization.address
                 )
-                val updatedOrganization = organizationDAO.updateOrganization(prevorganization)
+                val updatedOrganization = organizationDAO.updateOrganization(organization)
                 organizationDAO.createOrganizationVersion(toOrganizationVersion(updatedOrganization))
                 organizationDAO.deleteReportOnOrganization(organizationId, reportId)
                 toOrganizationOutputModel(updatedOrganization)

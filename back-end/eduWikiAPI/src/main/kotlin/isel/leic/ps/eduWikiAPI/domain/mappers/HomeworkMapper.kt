@@ -6,7 +6,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.Homework
 import isel.leic.ps.eduWikiAPI.domain.model.report.HomeworkReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.HomeworkStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.HomeworkVersion
-import isel.leic.ps.eduWikiAPI.domain.outputModel.HomeworkOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.HomeworkOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.HomeworkCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.HomeworkReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.HomeworkStageCollectionOutputModel
@@ -60,7 +60,7 @@ fun toHomeworkReport(homeworkReportInputModel: HomeworkReportInputModel) =  Home
 )
 
 fun toHomeworkOutputModel(homework: Homework) = HomeworkOutputModel(
-        username = homework.createdBy,
+        createdBy = homework.createdBy,
         sheetId = homework.sheetId,
         dueDate = homework.dueDate,
         lateDelivery = homework.lateDelivery,

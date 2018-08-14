@@ -3,8 +3,8 @@ package isel.leic.ps.eduWikiAPI.service.interfaces
 import isel.leic.ps.eduWikiAPI.domain.inputModel.*
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseProgrammeReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ProgrammeReportInputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.CourseProgrammeOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.ProgrammeOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.CourseProgrammeOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.ProgrammeOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseProgrammeCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ProgrammeCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.CourseProgrammeReportCollectionOutputModel

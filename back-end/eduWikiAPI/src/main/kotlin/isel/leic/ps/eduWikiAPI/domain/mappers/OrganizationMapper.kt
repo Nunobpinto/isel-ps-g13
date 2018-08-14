@@ -6,26 +6,26 @@ import isel.leic.ps.eduWikiAPI.domain.model.Organization
 import isel.leic.ps.eduWikiAPI.domain.model.report.OrganizationReport
 import isel.leic.ps.eduWikiAPI.domain.model.version.OrganizationVersion
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.OrganizationCollectionOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.OrganizationOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.OrganizationOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.OrganizationReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.OrganizationVersionCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.OrganizationReportOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.OrganizationVersionOutputModel
 
-fun toOrganization(organizationInputModel: OrganizationInputModel, user: String) = Organization(
+fun toOrganization(organizationInputModel: OrganizationInputModel/*, user: String*/) = Organization(
         fullName = organizationInputModel.fullName,
         shortName = organizationInputModel.shortName,
         address = organizationInputModel.address,
-        createdBy = user,
+        //createdBy = user,
         contact = organizationInputModel.contact
 )
 
-fun toOrganizationReport(organizationId: Int, input: OrganizationReportInputModel, principal: String) = OrganizationReport(
+fun toOrganizationReport(organizationId: Int, input: OrganizationReportInputModel/*, principal: String*/) = OrganizationReport(
         fullName = input.fullName,
         shortName = input.shortName,
         address = input.address,
         contact = input.contact,
-        reportedBy = principal,
+        //reportedBy = principal,
         organizationId = organizationId
 )
 
@@ -48,7 +48,7 @@ fun toOrganizationOutputModel(organization: Organization) = OrganizationOutputMo
         address = organization.address,
         fullName = organization.fullName,
         timestamp = organization.timestamp,
-        username = organization.createdBy,
+        createdBy = organization.createdBy,
         shortName = organization.shortName
 )
 

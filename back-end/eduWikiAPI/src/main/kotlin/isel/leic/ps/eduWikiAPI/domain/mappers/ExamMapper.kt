@@ -6,7 +6,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.Exam
 import isel.leic.ps.eduWikiAPI.domain.model.report.ExamReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ExamStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.ExamVersion
-import isel.leic.ps.eduWikiAPI.domain.outputModel.ExamOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.ExamOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ExamCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.ExamReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.ExamVersionCollectionOutputModel

@@ -11,10 +11,10 @@ import isel.leic.ps.eduWikiAPI.domain.mappers.*
 import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ExamStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
-import isel.leic.ps.eduWikiAPI.domain.outputModel.CourseOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.ExamOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.TermOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.WorkAssignmentOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.CourseOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.ExamOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.TermOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.WorkAssignmentOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ExamCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.WorkAssignmentCollectionOutputModel

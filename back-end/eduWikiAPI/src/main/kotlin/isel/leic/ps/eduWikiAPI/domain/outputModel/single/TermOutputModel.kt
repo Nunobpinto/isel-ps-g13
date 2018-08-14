@@ -1,4 +1,4 @@
-package isel.leic.ps.eduWikiAPI.domain.outputModel
+package isel.leic.ps.eduWikiAPI.domain.outputModel.single
 
 import isel.leic.ps.eduWikiAPI.domain.enums.TermType
 import java.sql.Timestamp

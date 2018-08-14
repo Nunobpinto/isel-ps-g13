@@ -4,8 +4,8 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.UserInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.UserReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.User
 import isel.leic.ps.eduWikiAPI.domain.model.report.UserReport
-import isel.leic.ps.eduWikiAPI.domain.outputModel.AuthUserOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.UserOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.AuthUserOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.UserReportOutputModel
 
 

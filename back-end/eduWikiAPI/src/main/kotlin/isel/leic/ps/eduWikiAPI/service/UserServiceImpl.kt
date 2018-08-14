@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import isel.leic.ps.eduWikiAPI.domain.mappers.*
 import isel.leic.ps.eduWikiAPI.domain.model.*
-import isel.leic.ps.eduWikiAPI.domain.outputModel.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ClassCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.UserReportOutputModel
 import isel.leic.ps.eduWikiAPI.eventListeners.events.OnRegistrationEvent
 import isel.leic.ps.eduWikiAPI.exceptions.BadRequestException

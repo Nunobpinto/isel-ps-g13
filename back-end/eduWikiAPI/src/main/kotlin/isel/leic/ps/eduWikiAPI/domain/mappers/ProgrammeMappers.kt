@@ -6,7 +6,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.Programme
 import isel.leic.ps.eduWikiAPI.domain.model.report.ProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.ProgrammeVersion
-import isel.leic.ps.eduWikiAPI.domain.outputModel.ProgrammeOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.ProgrammeOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ProgrammeCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.ProgrammeReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.ProgrammeStageCollectionOutputModel
@@ -74,7 +74,7 @@ fun toProgrammeOutput(programme: Programme) = ProgrammeOutputModel(
         academicDegree = programme.academicDegree,
         timestamp = programme.timestamp,
         totalCredits = programme.totalCredits,
-        username = programme.createdBy
+        createdBy = programme.createdBy
 )
 
 fun toProgrammeStageOutputModel(programmeStage: ProgrammeStage) = ProgrammeStageOutputModel(

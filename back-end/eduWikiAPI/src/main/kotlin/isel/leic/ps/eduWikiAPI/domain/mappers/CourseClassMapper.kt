@@ -6,7 +6,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.CourseClass
 import isel.leic.ps.eduWikiAPI.domain.model.Term
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseClassReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseClassStage
-import isel.leic.ps.eduWikiAPI.domain.outputModel.CourseClassOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.CourseClassOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseClassCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.CourseClassReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.CourseClassStageCollectionOutputModel
@@ -22,7 +22,7 @@ fun stagedToCourseClass(stage: CourseClassStage) = CourseClass(
 
 fun toCourseClassOutputModel(course: Course, klass: Class, courseClass: CourseClass, term: Term) = CourseClassOutputModel(
         courseId = course.courseId,
-        username= courseClass.createdBy,
+        createdBy= courseClass.createdBy,
         timestamp = courseClass.timestamp,
         votes = courseClass.votes,
         lecturedTerm = term.shortName,

@@ -6,7 +6,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
-import isel.leic.ps.eduWikiAPI.domain.outputModel.CourseOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.CourseOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.CourseReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.CourseStageCollectionOutputModel
@@ -61,7 +61,7 @@ fun toCourseOutputModel(course: Course) = CourseOutputModel(
         timestamp = course.timestamp,
         fullName = course.fullName,
         shortName = course.shortName,
-        username = course.createdBy
+        createdBy = course.createdBy
 )
 
 fun toCourseReportOutputModel(courseReport: CourseReport) = CourseReportOutputModel(

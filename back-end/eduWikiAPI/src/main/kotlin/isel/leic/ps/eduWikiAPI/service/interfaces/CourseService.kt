@@ -7,10 +7,10 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.WorkAssignmentInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ExamReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.WorkAssignmentReportInputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.CourseOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.ExamOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.TermOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.WorkAssignmentOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.CourseOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.ExamOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.TermOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.WorkAssignmentOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ExamCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.WorkAssignmentCollectionOutputModel

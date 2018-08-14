@@ -7,6 +7,7 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.UserReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ClassCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.UserReportOutputModel
 import java.util.*
 

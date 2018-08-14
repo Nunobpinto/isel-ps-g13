@@ -1,4 +1,4 @@
-package isel.leic.ps.eduWikiAPI.domain.outputModel
+package isel.leic.ps.eduWikiAPI.domain.outputModel.single
 
 import java.sql.Timestamp
 import java.time.LocalDate

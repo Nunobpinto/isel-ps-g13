@@ -6,7 +6,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.WorkAssignment
 import isel.leic.ps.eduWikiAPI.domain.model.report.WorkAssignmentReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.WorkAssignmentVersion
-import isel.leic.ps.eduWikiAPI.domain.outputModel.WorkAssignmentOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.WorkAssignmentOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.WorkAssignmentCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.WorkAssignmentReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.WorkAssignmentVersionCollectionOutputModel
