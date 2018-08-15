@@ -4,12 +4,10 @@ import isel.leic.ps.eduWikiAPI.configuration.security.authorization.ReputationRo
 import isel.leic.ps.eduWikiAPI.domain.enums.ActionType
 import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.eventListeners.events.*
-import isel.leic.ps.eduWikiAPI.exceptions.ReputationUpdateException
+import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.ReputationUpdateException
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ReputationDAO
-import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Async
-import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.event.TransactionalEventListener

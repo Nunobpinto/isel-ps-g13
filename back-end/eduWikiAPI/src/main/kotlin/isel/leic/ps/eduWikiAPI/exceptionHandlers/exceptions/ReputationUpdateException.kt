@@ -1,4 +1,4 @@
-package isel.leic.ps.eduWikiAPI.exceptions
+package isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions
 
 class ReputationUpdateException(
         msg: String,

@@ -1,4 +1,4 @@
-package isel.leic.ps.eduWikiAPI.service.interfaces
+package isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces
 
 import isel.leic.ps.eduWikiAPI.domain.model.Resource
 import org.springframework.web.multipart.MultipartFile

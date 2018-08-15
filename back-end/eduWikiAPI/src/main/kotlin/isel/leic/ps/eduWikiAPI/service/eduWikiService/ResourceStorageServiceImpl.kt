@@ -1,14 +1,12 @@
-package isel.leic.ps.eduWikiAPI.service
+package isel.leic.ps.eduWikiAPI.service.eduWikiService
 
 import isel.leic.ps.eduWikiAPI.domain.model.Resource
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ResourceDAO
-import isel.leic.ps.eduWikiAPI.service.interfaces.ResourceStorageService
-import org.jdbi.v3.core.Jdbi
+import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.ResourceStorageService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
-import java.lang.reflect.Executable
 import java.util.*
 
 @Service

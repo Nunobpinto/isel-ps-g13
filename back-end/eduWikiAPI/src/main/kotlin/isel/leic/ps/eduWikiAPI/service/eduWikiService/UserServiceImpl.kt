@@ -1,11 +1,11 @@
-package isel.leic.ps.eduWikiAPI.service
+package isel.leic.ps.eduWikiAPI.service.eduWikiService
 
 import isel.leic.ps.eduWikiAPI.configuration.security.authorization.ReputationRole
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserCourseClassInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserProgrammeInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.UserReportInputModel
-import isel.leic.ps.eduWikiAPI.service.interfaces.UserService
+import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import isel.leic.ps.eduWikiAPI.domain.mappers.*
@@ -15,11 +15,10 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseCollectionOu
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.UserReportOutputModel
 import isel.leic.ps.eduWikiAPI.eventListeners.events.OnRegistrationEvent
-import isel.leic.ps.eduWikiAPI.exceptions.BadRequestException
-import isel.leic.ps.eduWikiAPI.exceptions.ExceededValidationException
-import isel.leic.ps.eduWikiAPI.exceptions.NotFoundException
-import isel.leic.ps.eduWikiAPI.exceptions.UnknownDataException
-import isel.leic.ps.eduWikiAPI.repository.*
+import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.BadRequestException
+import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.ExceededValidationException
+import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.NotFoundException
+import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.UnknownDataException
 import isel.leic.ps.eduWikiAPI.repository.interfaces.*
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.transaction.annotation.Transactional

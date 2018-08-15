@@ -1,10 +1,9 @@
-package isel.leic.ps.eduWikiAPI.service.interfaces
+package isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserCourseClassInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserProgrammeInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.UserReportInputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ClassCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.*

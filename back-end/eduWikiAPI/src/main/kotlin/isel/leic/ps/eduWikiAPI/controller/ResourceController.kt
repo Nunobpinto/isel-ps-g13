@@ -1,6 +1,6 @@
 package isel.leic.ps.eduWikiAPI.controller
 
-import isel.leic.ps.eduWikiAPI.service.interfaces.ResourceStorageService
+import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.ResourceStorageService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus

@@ -1,4 +1,4 @@
-package isel.leic.ps.eduWikiAPI.service
+package isel.leic.ps.eduWikiAPI.service.eduWikiService
 
 import isel.leic.ps.eduWikiAPI.domain.enums.ActionType
 import isel.leic.ps.eduWikiAPI.domain.inputModel.*
@@ -25,19 +25,16 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.ProgrammeStageO
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.CourseProgrammeVersionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.ProgrammeVersionOutputModel
 import isel.leic.ps.eduWikiAPI.eventListeners.events.*
-import isel.leic.ps.eduWikiAPI.exceptions.NotFoundException
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl
+import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.NotFoundException
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_PROGRAMME_REPORT_TABLE
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_PROGRAMME_STAGE_TABLE
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_PROGRAMME_TABLE
-import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl
 import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_REPORT_TABLE
 import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_STAGE_TABLE
 import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_TABLE
 import isel.leic.ps.eduWikiAPI.repository.interfaces.CourseDAO
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ProgrammeDAO
-import isel.leic.ps.eduWikiAPI.service.interfaces.ProgrammeService
-import org.jdbi.v3.core.Jdbi
+import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.ProgrammeService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service

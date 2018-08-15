@@ -1,4 +1,4 @@
-package isel.leic.ps.eduWikiAPI.mailSender
+package isel.leic.ps.eduWikiAPI.service.mailSender
 
 import org.springframework.mail.SimpleMailMessage
 
