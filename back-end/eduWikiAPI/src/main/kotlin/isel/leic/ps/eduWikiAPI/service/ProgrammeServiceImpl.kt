@@ -26,26 +26,31 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.CourseProgramme
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.ProgrammeVersionOutputModel
 import isel.leic.ps.eduWikiAPI.eventListeners.events.*
 import isel.leic.ps.eduWikiAPI.exceptions.NotFoundException
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_PROGRAMME_REPORT_TABLE
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_PROGRAMME_STAGE_TABLE
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_PROGRAMME_TABLE
-import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOJdbi
-import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOJdbi.Companion.PROGRAMME_REPORT_TABLE
-import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOJdbi.Companion.PROGRAMME_STAGE_TABLE
-import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOJdbi.Companion.PROGRAMME_TABLE
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_PROGRAMME_REPORT_TABLE
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_PROGRAMME_STAGE_TABLE
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_PROGRAMME_TABLE
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_REPORT_TABLE
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_STAGE_TABLE
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_TABLE
+import isel.leic.ps.eduWikiAPI.repository.interfaces.CourseDAO
+import isel.leic.ps.eduWikiAPI.repository.interfaces.ProgrammeDAO
 import isel.leic.ps.eduWikiAPI.service.interfaces.ProgrammeService
 import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
 
 @Service
 class ProgrammeServiceImpl : ProgrammeService {
 
     @Autowired
-    lateinit var jdbi: Jdbi
+    lateinit var programmeDAO: ProgrammeDAO
+    @Autowired
+    lateinit var courseDAO: CourseDAO
     @Autowired
     lateinit var publisher: ApplicationEventPublisher
 
@@ -55,302 +60,289 @@ class ProgrammeServiceImpl : ProgrammeService {
     // Programme Methods
     // -------------------------------
 
-    override fun getAllProgrammes(): ProgrammeCollectionOutputModel =
-            jdbi.withExtension<ProgrammeCollectionOutputModel, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
-                val programmes = it.getAllProgrammes().map { toProgrammeOutput(it) }
-                toProgrammeCollectionOutputModel(programmes)
-            }
+    @Transactional
+    override fun getAllProgrammes(): ProgrammeCollectionOutputModel {
+        val programmes = programmeDAO.getAllProgrammes().map { toProgrammeOutput(it) }
+        return toProgrammeCollectionOutputModel(programmes)
+    }
 
-    override fun getSpecificProgramme(programmeId: Int): ProgrammeOutputModel =
-            jdbi.withExtension<ProgrammeOutputModel, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
-                toProgrammeOutput(it.getSpecificProgramme(programmeId)
-                        .orElseThrow { NotFoundException("No Programme Found", "Try with other id") }
-                )
-            }
+    @Transactional
+    override fun getSpecificProgramme(programmeId: Int): ProgrammeOutputModel {
+        return toProgrammeOutput(programmeDAO.getSpecificProgramme(programmeId)
+                .orElseThrow { NotFoundException("No Programme Found", "Try with other id") }
+        )
+    }
 
-    override fun createProgramme(inputProgramme: ProgrammeInputModel, principal: Principal): ProgrammeOutputModel =
-            jdbi.inTransaction<ProgrammeOutputModel, Exception> {
-                val programmeDAO = it.attach(ProgrammeDAOJdbi::class.java)
+    @Transactional
+    override fun createProgramme(inputProgramme: ProgrammeInputModel, principal: Principal): ProgrammeOutputModel {
+        val programme = programmeDAO.createProgramme(toProgramme(inputProgramme, principal.name))
+        programmeDAO.createProgrammeVersion(toProgrammeVersion(programme))
 
-                val programme = programmeDAO.createProgramme(toProgramme(inputProgramme, principal.name))
-                programmeDAO.createProgrammeVersion(toProgrammeVersion(programme))
+        publisher.publishEvent(ResourceCreatedEvent(
+                principal.name,
+                PROGRAMME_TABLE,
+                programme.logId
+        ))
+        return toProgrammeOutput(programme)
+    }
 
-                publisher.publishEvent(ResourceCreatedEvent(
-                        principal.name,
-                        PROGRAMME_TABLE,
-                        programme.logId
-                ))
-                toProgrammeOutput(programme)
-            }
+    @Transactional
+    override fun voteOnProgramme(programmeId: Int, vote: VoteInputModel, principal: Principal): Int {
+        val programme = programmeDAO.getSpecificProgramme(programmeId)
+                .orElseThrow { NotFoundException("No Programme Found", "Try with other id") }
+        val votes = if(Vote.valueOf(vote.vote) == Vote.Down) programme.votes.dec() else programme.votes.inc()
+        val success = programmeDAO.updateVotesOnProgramme(programmeId, votes)
 
-    override fun voteOnProgramme(programmeId: Int, vote: VoteInputModel, principal: Principal): Int =
-            jdbi.inTransaction<Int, Exception> {
-                val programmeDAO = it.attach(ProgrammeDAOJdbi::class.java)
+        publisher.publishEvent(VoteOnResourceEvent(
+                principal.name,
+                programme.createdBy,
+                PROGRAMME_TABLE,
+                programme.logId,
+                Vote.valueOf(vote.vote)
+        ))
+        return success
+    }
 
-                val programme = programmeDAO.getSpecificProgramme(programmeId)
-                        .orElseThrow { NotFoundException("No Programme Found", "Try with other id") }
-                val votes = if(Vote.valueOf(vote.vote) == Vote.Down) programme.votes.dec() else programme.votes.inc()
-                val success = programmeDAO.updateVotesOnProgramme(programmeId, votes)
+    @Transactional
+    override fun partialUpdateOnProgramme(programmeId: Int, inputProgramme: ProgrammeInputModel, principal: Principal): ProgrammeOutputModel {
+        val programme = programmeDAO.getSpecificProgramme(programmeId)
+                .orElseThrow { NotFoundException("No Programme Found", "Try with other id") }
 
-                publisher.publishEvent(VoteOnResourceEvent(
-                        principal.name,
-                        programme.createdBy,
-                        PROGRAMME_TABLE,
-                        programme.logId,
-                        Vote.valueOf(vote.vote)
-                ))
-                success
-            }
+        val updatedProgramme = Programme(
+                programmeId = programmeId,
+                version = programme.version.inc(),
+                createdBy = principal.name,
+                fullName = if(inputProgramme.fullName.isEmpty()) programme.fullName else inputProgramme.fullName,
+                shortName = if(inputProgramme.shortName.isEmpty()) programme.shortName else inputProgramme.shortName,
+                academicDegree = if(inputProgramme.academicDegree.isEmpty()) programme.academicDegree else inputProgramme.academicDegree,
+                totalCredits = if(inputProgramme.totalCredits == 0) programme.totalCredits else inputProgramme.totalCredits,
+                duration = if(inputProgramme.duration == 0) programme.duration else inputProgramme.duration
+        )
+        val res = programmeDAO.updateProgramme(programmeId, updatedProgramme)
+        programmeDAO.createProgrammeVersion(toProgrammeVersion(updatedProgramme))
 
-    override fun partialUpdateOnProgramme(programmeId: Int, inputProgramme: ProgrammeInputModel, principal: Principal): ProgrammeOutputModel =
-            jdbi.inTransaction<ProgrammeOutputModel, Exception> {
-                val programmeDAO = it.attach(ProgrammeDAOJdbi::class.java)
+        publisher.publishEvent(ResourceUpdatedEvent(
+                principal.name,
+                PROGRAMME_TABLE,
+                programme.logId
+        ))
+        return toProgrammeOutput(res)
+    }
 
-                val programme = programmeDAO.getSpecificProgramme(programmeId)
-                        .orElseThrow { NotFoundException("No Programme Found", "Try with other id") }
+    @Transactional
+    override fun deleteSpecificProgramme(programmeId: Int, principal: Principal): Int {
+        val programme = programmeDAO.getSpecificProgramme(programmeId)
+                .orElseThrow { NotFoundException("No Programme Found", "Try with other id") }
+        val success = programmeDAO.deleteSpecificProgramme(programmeId)
 
-                val updatedProgramme = Programme(
-                        programmeId = programmeId,
-                        version = programme.version.inc(),
-                        createdBy = principal.name,
-                        fullName = if(inputProgramme.fullName.isEmpty()) programme.fullName else inputProgramme.fullName,
-                        shortName = if(inputProgramme.shortName.isEmpty()) programme.shortName else inputProgramme.shortName,
-                        academicDegree = if(inputProgramme.academicDegree.isEmpty()) programme.academicDegree else inputProgramme.academicDegree,
-                        totalCredits = if(inputProgramme.totalCredits == 0) programme.totalCredits else inputProgramme.totalCredits,
-                        duration = if(inputProgramme.duration == 0) programme.duration else inputProgramme.duration
-                )
-                val res = programmeDAO.updateProgramme(programmeId, updatedProgramme)
-                programmeDAO.createProgrammeVersion(toProgrammeVersion(updatedProgramme))
-
-                publisher.publishEvent(ResourceUpdatedEvent(
-                        principal.name,
-                        PROGRAMME_TABLE,
-                        programme.logId
-                ))
-                toProgrammeOutput(res)
-            }
-
-    override fun deleteSpecificProgramme(programmeId: Int, principal: Principal): Int =
-            jdbi.withExtension<Int, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
-                val programme = it.getSpecificProgramme(programmeId)
-                        .orElseThrow { NotFoundException("No Programme Found", "Try with other id") }
-                val success = it.deleteSpecificProgramme(programmeId)
-
-                publisher.publishEvent(ResourceDeletedEvent(
-                        principal.name,
-                        PROGRAMME_TABLE,
-                        programme.logId
-                ))
-                success
-            }
+        publisher.publishEvent(ResourceDeletedEvent(
+                principal.name,
+                PROGRAMME_TABLE,
+                programme.logId
+        ))
+        return success
+    }
 
     // -------------------------------
     // Programme Stage Methods
     // -------------------------------
 
-    override fun getSpecificStageEntryOfProgramme(stageId: Int): ProgrammeStageOutputModel =
-            jdbi.withExtension<ProgrammeStageOutputModel, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
-                toProgrammeStageOutputModel(
-                        it.getSpecificStageEntryOfProgramme(stageId)
-                                .orElseThrow { NotFoundException("No Programme Staged Found", "Try with other id") }
-                )
-            }
-
-    override fun getAllProgrammeStageEntries(): ProgrammeStageCollectionOutputModel =
-            jdbi.withExtension<ProgrammeStageCollectionOutputModel, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
-                val stagedProgrammes = it.getAllProgrammeStageEntries().map { toProgrammeStageOutputModel(it) }
-                toProgrammeStageCollectionOutputModel(stagedProgrammes)
-            }
-
-    override fun voteOnStagedProgramme(stageId: Int, vote: VoteInputModel, principal: Principal): Int =
-            jdbi.inTransaction<Int, Exception> {
-                val programmeDAO = it.attach(ProgrammeDAOJdbi::class.java)
-
-                val programmeStage = programmeDAO.getSpecificStageEntryOfProgramme(stageId)
+    @Transactional
+    override fun getSpecificStageEntryOfProgramme(stageId: Int): ProgrammeStageOutputModel {
+        return toProgrammeStageOutputModel(
+                programmeDAO.getSpecificStageEntryOfProgramme(stageId)
                         .orElseThrow { NotFoundException("No Programme Staged Found", "Try with other id") }
-                val votes = if(Vote.valueOf(vote.vote) == Vote.Down) programmeStage.votes.dec() else programmeStage.votes.inc()
-                val success = programmeDAO.updateVotesOnStagedProgramme(stageId, votes)
+        )
+    }
 
-                publisher.publishEvent(VoteOnResourceEvent(
-                        principal.name,
-                        programmeStage.createdBy,
-                        PROGRAMME_STAGE_TABLE,
-                        programmeStage.logId,
-                        Vote.valueOf(vote.vote)
-                ))
-                success
-            }
+    @Transactional
+    override fun getAllProgrammeStageEntries(): ProgrammeStageCollectionOutputModel {
+        val stagedProgrammes = programmeDAO.getAllProgrammeStageEntries().map { toProgrammeStageOutputModel(it) }
+        return toProgrammeStageCollectionOutputModel(stagedProgrammes)
+    }
 
-    override fun createStagingProgramme(inputProgramme: ProgrammeInputModel, principal: Principal): ProgrammeStageOutputModel =
-            jdbi.withExtension<ProgrammeStageOutputModel, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
-                val programmeStage = it.createStagingProgramme(toProgrammeStage(inputProgramme, principal.name))
+    @Transactional
+    override fun voteOnStagedProgramme(stageId: Int, vote: VoteInputModel, principal: Principal): Int {
+        val programmeStage = programmeDAO.getSpecificStageEntryOfProgramme(stageId)
+                .orElseThrow { NotFoundException("No Programme Staged Found", "Try with other id") }
+        val votes = if(Vote.valueOf(vote.vote) == Vote.Down) programmeStage.votes.dec() else programmeStage.votes.inc()
+        val success = programmeDAO.updateVotesOnStagedProgramme(stageId, votes)
 
-                publisher.publishEvent(ResourceCreatedEvent(
-                        principal.name,
-                        PROGRAMME_STAGE_TABLE,
-                        programmeStage.logId
-                ))
-                toProgrammeStageOutputModel(programmeStage)
-            }
+        publisher.publishEvent(VoteOnResourceEvent(
+                principal.name,
+                programmeStage.createdBy,
+                PROGRAMME_STAGE_TABLE,
+                programmeStage.logId,
+                Vote.valueOf(vote.vote)
+        ))
+        return success
+    }
 
-    override fun createProgrammeFromStaged(stageId: Int, principal: Principal): ProgrammeOutputModel =
-            jdbi.inTransaction<ProgrammeOutputModel, Exception> {
-                val programmeDAO = it.attach(ProgrammeDAOJdbi::class.java)
+    @Transactional
+    override fun createStagingProgramme(inputProgramme: ProgrammeInputModel, principal: Principal): ProgrammeStageOutputModel {
+        val programmeStage = programmeDAO.createStagingProgramme(toProgrammeStage(inputProgramme, principal.name))
 
-                val programmeStage = programmeDAO.getSpecificStageEntryOfProgramme(stageId)
-                        .orElseThrow { NotFoundException("No Programme Staged Found", "Try with other id") }
-                val createdProgramme = programmeDAO.createProgramme(stagedToProgramme(programmeStage))
-                programmeDAO.deleteSpecificStagedProgramme(stageId)
-                programmeDAO.createProgrammeVersion(toProgrammeVersion(createdProgramme))
+        publisher.publishEvent(ResourceCreatedEvent(
+                principal.name,
+                PROGRAMME_STAGE_TABLE,
+                programmeStage.logId
+        ))
+        return toProgrammeStageOutputModel(programmeStage)
+    }
 
-                publisher.publishEvent(ResourceApprovedEvent(
-                        principal.name,
-                        ActionType.APPROVE_STAGE,
-                        PROGRAMME_STAGE_TABLE,
-                        programmeStage.logId,
-                        programmeStage.createdBy,
-                        ActionType.CREATE,
-                        PROGRAMME_TABLE,
-                        createdProgramme.logId
-                ))
-                toProgrammeOutput(createdProgramme)
-            }
+    @Transactional
+    override fun createProgrammeFromStaged(stageId: Int, principal: Principal): ProgrammeOutputModel {
+        val programmeStage = programmeDAO.getSpecificStageEntryOfProgramme(stageId)
+                .orElseThrow { NotFoundException("No Programme Staged Found", "Try with other id") }
+        val createdProgramme = programmeDAO.createProgramme(stagedToProgramme(programmeStage))
+        programmeDAO.deleteSpecificStagedProgramme(stageId)
+        programmeDAO.createProgrammeVersion(toProgrammeVersion(createdProgramme))
 
-    override fun deleteSpecificStagedProgramme(stageId: Int, principal: Principal): Int =
-            jdbi.withExtension<Int, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
-                val programme = it.getSpecificStageEntryOfProgramme(stageId)
-                        .orElseThrow { NotFoundException("No Programme Staged Found", "Try with other id") }
-                val success = it.deleteSpecificStagedProgramme(stageId)
+        publisher.publishEvent(ResourceApprovedEvent(
+                principal.name,
+                ActionType.APPROVE_STAGE,
+                PROGRAMME_STAGE_TABLE,
+                programmeStage.logId,
+                programmeStage.createdBy,
+                ActionType.CREATE,
+                PROGRAMME_TABLE,
+                createdProgramme.logId
+        ))
+        return toProgrammeOutput(createdProgramme)
+    }
 
-                publisher.publishEvent(ResourceRejectedEvent(
-                        principal.name,
-                        programme.createdBy,
-                        ActionType.REJECT_STAGE,
-                        PROGRAMME_STAGE_TABLE,
-                        programme.logId
-                ))
-                success
-            }
+    @Transactional
+    override fun deleteSpecificStagedProgramme(stageId: Int, principal: Principal): Int {
+        val programme = programmeDAO.getSpecificStageEntryOfProgramme(stageId)
+                .orElseThrow { NotFoundException("No Programme Staged Found", "Try with other id") }
+        val success = programmeDAO.deleteSpecificStagedProgramme(stageId)
+
+        publisher.publishEvent(ResourceRejectedEvent(
+                principal.name,
+                programme.createdBy,
+                ActionType.REJECT_STAGE,
+                PROGRAMME_STAGE_TABLE,
+                programme.logId
+        ))
+        return success
+    }
 
     // -------------------------------
     // Programme Report Methods
     // -------------------------------
 
-    override fun getAllReportsOfSpecificProgramme(programmeId: Int): ProgrammeReportCollectionOutputModel =
-            jdbi.withExtension<ProgrammeReportCollectionOutputModel, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
-                val reports = it.getAllReportsOfSpecificProgramme(programmeId).map { toProgrammeReportOutputModel(it) }
-                toProgrammeReportCollectionOutputModel(reports)
-            }
+    @Transactional
+    override fun getAllReportsOfSpecificProgramme(programmeId: Int): ProgrammeReportCollectionOutputModel {
+        val reports = programmeDAO.getAllReportsOfSpecificProgramme(programmeId).map { toProgrammeReportOutputModel(it) }
+        return toProgrammeReportCollectionOutputModel(reports)
+    }
 
-    override fun getSpecificReportOfProgramme(programmeId: Int, reportId: Int): ProgrammeReportOutputModel =
-            jdbi.withExtension<ProgrammeReportOutputModel, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
-                toProgrammeReportOutputModel(it.getSpecificReportOfProgramme(programmeId, reportId)
-                        .orElseThrow { NotFoundException("No report found", "Try with other id") })
-            }
+    @Transactional
+    override fun getSpecificReportOfProgramme(programmeId: Int, reportId: Int): ProgrammeReportOutputModel {
+        return toProgrammeReportOutputModel(programmeDAO.getSpecificReportOfProgramme(programmeId, reportId)
+                .orElseThrow { NotFoundException("No report found", "Try with other id") })
+    }
 
-    override fun reportProgramme(programmeId: Int, inputProgrammeReport: ProgrammeReportInputModel, principal: Principal): ProgrammeReportOutputModel =
-            jdbi.withExtension<ProgrammeReportOutputModel, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
-                val reportProgramme = it.reportProgramme(programmeId, toProgrammeReport(programmeId, inputProgrammeReport, principal.name))
+    @Transactional
+    override fun reportProgramme(programmeId: Int, inputProgrammeReport: ProgrammeReportInputModel, principal: Principal): ProgrammeReportOutputModel {
+        val reportProgramme = programmeDAO.reportProgramme(programmeId, toProgrammeReport(programmeId, inputProgrammeReport, principal.name))
 
-                publisher.publishEvent(ResourceCreatedEvent(
-                        principal.name,
-                        PROGRAMME_REPORT_TABLE,
-                        reportProgramme.logId
-                ))
-                toProgrammeReportOutputModel(reportProgramme)
-            }
+        publisher.publishEvent(ResourceCreatedEvent(
+                principal.name,
+                PROGRAMME_REPORT_TABLE,
+                reportProgramme.logId
+        ))
+        return toProgrammeReportOutputModel(reportProgramme)
+    }
 
-    override fun voteOnReportedProgramme(programmeId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int =
-            jdbi.inTransaction<Int, Exception> {
-                val programmeDAO = it.attach(ProgrammeDAOJdbi::class.java)
-                val programmeReport = programmeDAO.getSpecificReportOfProgramme(reportId, programmeId)
-                        .orElseThrow { NotFoundException("No report found", "Try with other id") }
+    @Transactional
+    override fun voteOnReportedProgramme(programmeId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int {
+        val programmeReport = programmeDAO.getSpecificReportOfProgramme(reportId, programmeId)
+                .orElseThrow { NotFoundException("No report found", "Try with other id") }
 
-                val votes = if(Vote.valueOf(vote.vote) == Vote.Down) programmeReport.votes.dec() else programmeReport.votes.inc()
-                val success = programmeDAO.updateVotesOnReportedProgramme(programmeId, reportId, votes)
+        val votes = if(Vote.valueOf(vote.vote) == Vote.Down) programmeReport.votes.dec() else programmeReport.votes.inc()
+        val success = programmeDAO.updateVotesOnReportedProgramme(programmeId, reportId, votes)
 
-                publisher.publishEvent(VoteOnResourceEvent(
-                        principal.name,
-                        programmeReport.reportedBy,
-                        PROGRAMME_REPORT_TABLE,
-                        programmeReport.logId,
-                        Vote.valueOf(vote.vote)
-                ))
-                success
-            }
+        publisher.publishEvent(VoteOnResourceEvent(
+                principal.name,
+                programmeReport.reportedBy,
+                PROGRAMME_REPORT_TABLE,
+                programmeReport.logId,
+                Vote.valueOf(vote.vote)
+        ))
+        return success
+    }
 
-    override fun updateProgrammeFromReport(programmeId: Int, reportId: Int, principal: Principal): ProgrammeOutputModel =
-            jdbi.inTransaction<ProgrammeOutputModel, Exception> {
-                val programmeDAO = it.attach(ProgrammeDAOJdbi::class.java)
+    @Transactional
+    override fun updateProgrammeFromReport(programmeId: Int, reportId: Int, principal: Principal): ProgrammeOutputModel {
+        val programme = programmeDAO.getSpecificProgramme(programmeId)
+                .orElseThrow { NotFoundException("No programme found", "Try with other id") }
+        val report = programmeDAO.getSpecificReportOfProgramme(programmeId, reportId)
+                .orElseThrow { NotFoundException("No report found", "Try with other id") }
 
-                val programme = programmeDAO.getSpecificProgramme(programmeId)
-                        .orElseThrow { NotFoundException("No programme found", "Try with other id") }
-                val report = programmeDAO.getSpecificReportOfProgramme(programmeId, reportId)
-                        .orElseThrow { NotFoundException("No report found", "Try with other id") }
+        val res = programmeDAO.updateProgramme(programmeId, Programme(
+                version = programme.version.inc(),
+                createdBy = report.reportedBy,
+                fullName = report.fullName ?: programme.fullName,
+                shortName = report.shortName ?: programme.shortName,
+                academicDegree = report.academicDegree ?: programme.academicDegree,
+                totalCredits = report.totalCredits ?: programme.totalCredits,
+                duration = report.duration ?: programme.duration
+        ))
+        programmeDAO.createProgrammeVersion(toProgrammeVersion(res))
+        programmeDAO.deleteSpecificReportOnProgramme(programmeId, reportId)
 
-                val res = programmeDAO.updateProgramme(programmeId, Programme(
-                        version = programme.version.inc(),
-                        createdBy = report.reportedBy,
-                        fullName = report.fullName ?: programme.fullName,
-                        shortName = report.shortName ?: programme.shortName,
-                        academicDegree = report.academicDegree ?: programme.academicDegree,
-                        totalCredits = report.totalCredits ?: programme.totalCredits,
-                        duration = report.duration ?: programme.duration
-                ))
-                programmeDAO.createProgrammeVersion(toProgrammeVersion(res))
-                programmeDAO.deleteSpecificReportOnProgramme(programmeId, reportId)
+        publisher.publishEvent(ResourceApprovedEvent(
+                principal.name,
+                ActionType.APPROVE_REPORT,
+                PROGRAMME_REPORT_TABLE,
+                report.logId,
+                report.reportedBy,
+                ActionType.ALTER,
+                PROGRAMME_TABLE,
+                res.logId
+        ))
+        return toProgrammeOutput(res)
+    }
 
-                publisher.publishEvent(ResourceApprovedEvent(
-                        principal.name,
-                        ActionType.APPROVE_REPORT,
-                        PROGRAMME_REPORT_TABLE,
-                        report.logId,
-                        report.reportedBy,
-                        ActionType.ALTER,
-                        PROGRAMME_TABLE,
-                        res.logId
-                ))
-                toProgrammeOutput(res)
-            }
+    @Transactional
+    override fun deleteSpecificReportOnProgramme(programmeId: Int, reportId: Int, principal: Principal): Int {
+        val programmeReport = programmeDAO.getSpecificReportOfProgramme(programmeId, reportId)
+                .orElseThrow { NotFoundException("No report found", "Try with other id") }
 
-    override fun deleteSpecificReportOnProgramme(programmeId: Int, reportId: Int, principal: Principal): Int =
-            jdbi.withExtension<Int, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
-                val programmeReport = it.getSpecificReportOfProgramme(programmeId, reportId)
-                        .orElseThrow { NotFoundException("No report found", "Try with other id") }
+        val success = programmeDAO.deleteSpecificReportOnProgramme(programmeId, reportId)
 
-                val success = it.deleteSpecificReportOnProgramme(programmeId, reportId)
-
-                publisher.publishEvent(ResourceRejectedEvent(
-                        principal.name,
-                        programmeReport.reportedBy,
-                        ActionType.REJECT_REPORT,
-                        PROGRAMME_REPORT_TABLE,
-                        programmeReport.logId
-                ))
-                success
-            }
+        publisher.publishEvent(ResourceRejectedEvent(
+                principal.name,
+                programmeReport.reportedBy,
+                ActionType.REJECT_REPORT,
+                PROGRAMME_REPORT_TABLE,
+                programmeReport.logId
+        ))
+        return success
+    }
 
     // -------------------------------
     // Programme Version Methods
     // -------------------------------
 
-    override fun getAllVersionsOfProgramme(programmeId: Int): ProgrammeVersionCollectionOutputModel =
-            jdbi.withExtension<ProgrammeVersionCollectionOutputModel, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
-                val programmeVersions = it.getAllVersionsOfProgramme(programmeId).map { toProgrammeVersionOutputModel(it) }
-                toProgrammeVersionCollectionOutputModel(programmeVersions)
-            }
+    @Transactional
+    override fun getAllVersionsOfProgramme(programmeId: Int): ProgrammeVersionCollectionOutputModel {
+        val programmeVersions = programmeDAO.getAllVersionsOfProgramme(programmeId).map { toProgrammeVersionOutputModel(it) }
+        return toProgrammeVersionCollectionOutputModel(programmeVersions)
+    }
 
-    override fun getSpecificVersionOfProgramme(programmeId: Int, version: Int): ProgrammeVersionOutputModel =
-            jdbi.withExtension<ProgrammeVersionOutputModel, ProgrammeDAOJdbi, Exception>(ProgrammeDAOJdbi::class.java) {
-                toProgrammeVersionOutputModel(
-                        it.getSpecificVersionOfProgramme(programmeId, version)
-                                .orElseThrow {
-                                    NotFoundException(
-                                            msg = "No version found",
-                                            action = "Try other version"
-                                    )
-                                })
-            }
+    @Transactional
+    override fun getSpecificVersionOfProgramme(programmeId: Int, version: Int): ProgrammeVersionOutputModel {
+        return toProgrammeVersionOutputModel(
+                programmeDAO.getSpecificVersionOfProgramme(programmeId, version)
+                        .orElseThrow {
+                            NotFoundException(
+                                    msg = "No version found",
+                                    action = "Try other version"
+                            )
+                        })
+    }
 
     // ------ Course Programme -------
 
@@ -358,293 +350,281 @@ class ProgrammeServiceImpl : ProgrammeService {
     // Course Programme Methods
     // -------------------------------
 
-    override fun getAllCoursesOnSpecificProgramme(programmeId: Int): CourseProgrammeCollectionOutputModel =
-            jdbi.withExtension<CourseProgrammeCollectionOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) { courseDAO ->
-                val courseProgrammes = courseDAO.getAllCoursesOnSpecificProgramme(programmeId)
-                toCourseProgrammeCollectionOutputModel(courseProgrammes.map {
-                    toCourseProgrammeOutputModel(
-                            it,
-                            courseDAO.getSpecificCourse(it.courseId)
-                                    .orElseThrow { NotFoundException("Course with id ${it.courseId} does not exist", "Try again later") }
-                    )
-                })
-            }
+    @Transactional
+    override fun getAllCoursesOnSpecificProgramme(programmeId: Int): CourseProgrammeCollectionOutputModel {
+        val courseProgrammes = courseDAO.getAllCoursesOnSpecificProgramme(programmeId)
+        return toCourseProgrammeCollectionOutputModel(courseProgrammes.map {
+            toCourseProgrammeOutputModel(
+                    it,
+                    courseDAO.getSpecificCourse(it.courseId)
+                            .orElseThrow { NotFoundException("Course with id ${it.courseId} does not exist", "Try again later") }
+            )
+        })
+    }
 
-    override fun getSpecificCourseOfProgramme(programmeId: Int, courseId: Int): CourseProgrammeOutputModel =
-            jdbi.withExtension<CourseProgrammeOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                toCourseProgrammeOutputModel(
-                        it.getSpecificCourseOfProgramme(programmeId, courseId)
-                                .orElseThrow { NotFoundException("No course with the id in this programme", "Add course to this programme") },
-                        it.getSpecificCourse(courseId)
-                                .orElseThrow { NotFoundException("No course found", "Try another id") }
-                        )
-            }
+    @Transactional
+    override fun getSpecificCourseOfProgramme(programmeId: Int, courseId: Int): CourseProgrammeOutputModel {
+        return toCourseProgrammeOutputModel(
+                courseDAO.getSpecificCourseOfProgramme(programmeId, courseId)
+                        .orElseThrow { NotFoundException("No course with the id in this programme", "Add course to this programme") },
+                courseDAO.getSpecificCourse(courseId)
+                        .orElseThrow { NotFoundException("No course found", "Try another id") }
+        )
+    }
 
-    override fun addCourseToProgramme(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel, principal: Principal): CourseProgrammeOutputModel =
-            jdbi.inTransaction<CourseProgrammeOutputModel, Exception> {
-                val courseDAO = it.attach(CourseDAOJdbi::class.java)
+    @Transactional
+    override fun addCourseToProgramme(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel, principal: Principal): CourseProgrammeOutputModel {
+        val course = courseDAO.getSpecificCourse(inputCourseProgramme.courseId)
+                .orElseThrow { NotFoundException("Course does not exist", "Use a valid course") }
 
-                val course = courseDAO.getSpecificCourse(inputCourseProgramme.courseId)
-                        .orElseThrow { NotFoundException("Course does not exist", "Use a valid course") }
+        val newCourseProgramme = courseDAO.addCourseToProgramme(programmeId, toCourseProgramme(inputCourseProgramme, principal.name))
+        courseDAO.createCourseProgrammeVersion(toCourseProgrammeVersion(newCourseProgramme))
 
-                val newCourseProgramme = courseDAO.addCourseToProgramme(programmeId, toCourseProgramme(inputCourseProgramme, principal.name))
-                courseDAO.createCourseProgrammeVersion(toCourseProgrammeVersion(newCourseProgramme))
+        publisher.publishEvent(ResourceCreatedEvent(
+                principal.name,
+                COURSE_PROGRAMME_TABLE,
+                newCourseProgramme.logId
+        ))
+        return toCourseProgrammeOutputModel(newCourseProgramme, course)
+    }
 
-                publisher.publishEvent(ResourceCreatedEvent(
-                        principal.name,
-                        COURSE_PROGRAMME_TABLE,
-                        newCourseProgramme.logId
-                ))
-                toCourseProgrammeOutputModel(newCourseProgramme, course)
-            }
+    @Transactional
+    override fun voteOnCourseProgramme(programmeId: Int, courseId: Int, vote: VoteInputModel, principal: Principal): Int {
+        val courseProgramme = courseDAO.getSpecificCourseOfProgramme(programmeId, courseId)
+                .orElseThrow { NotFoundException("This course in this programme does not exist", "Try again") }
 
-    override fun voteOnCourseProgramme(programmeId: Int, courseId: Int, vote: VoteInputModel, principal: Principal): Int =
-            jdbi.inTransaction<Int, Exception> {
-                val courseDAO = it.attach(CourseDAOJdbi::class.java)
+        val votes = if(Vote.valueOf(vote.vote) == Vote.Down) courseProgramme.votes.dec() else courseProgramme.votes.inc()
+        val success = courseDAO.updateVotesOnCourseProgramme(programmeId, courseId, votes)
 
-                val courseProgramme = courseDAO.getSpecificCourseOfProgramme(programmeId, courseId)
-                        .orElseThrow { NotFoundException("This course in this programme does not exist", "Try again") }
+        publisher.publishEvent(VoteOnResourceEvent(
+                principal.name,
+                courseProgramme.createdBy,
+                COURSE_PROGRAMME_TABLE,
+                courseProgramme.logId,
+                Vote.valueOf(vote.vote)
+        ))
+        return success
+    }
 
-                val votes = if(Vote.valueOf(vote.vote) == Vote.Down) courseProgramme.votes.dec() else courseProgramme.votes.inc()
-                val success = courseDAO.updateVotesOnCourseProgramme(programmeId, courseId, votes)
+    @Transactional
+    override fun deleteSpecificCourseProgramme(programmeId: Int, courseId: Int, principal: Principal): Int {
+        val courseProgramme = courseDAO.getSpecificCourseOfProgramme(programmeId, courseId)
+                .orElseThrow { NotFoundException("This course in this programme does not exist", "Try again") }
 
-                publisher.publishEvent(VoteOnResourceEvent(
-                        principal.name,
-                        courseProgramme.createdBy,
-                        COURSE_PROGRAMME_TABLE,
-                        courseProgramme.logId,
-                        Vote.valueOf(vote.vote)
-                ))
-                success
-            }
+        val success = courseDAO.deleteSpecificCourseProgramme(programmeId, courseId)
 
-    override fun deleteSpecificCourseProgramme(programmeId: Int, courseId: Int, principal: Principal): Int =
-            jdbi.withExtension<Int, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                val courseProgramme = it.getSpecificCourseOfProgramme(programmeId, courseId)
-                        .orElseThrow { NotFoundException("This course in this programme does not exist", "Try again") }
-
-                val success = it.deleteSpecificCourseProgramme(programmeId, courseId)
-
-                publisher.publishEvent(ResourceDeletedEvent(
-                        principal.name,
-                        COURSE_PROGRAMME_TABLE,
-                        courseProgramme.logId
-                ))
-                success
-            }
+        publisher.publishEvent(ResourceDeletedEvent(
+                principal.name,
+                COURSE_PROGRAMME_TABLE,
+                courseProgramme.logId
+        ))
+        return success
+    }
 
     // -------------------------------
     // Course Programme Stage Methods
     // -------------------------------
 
-    override fun getAllCourseStageEntriesOfSpecificProgramme(programmeId: Int): CourseProgrammeStageCollectionOutputModel =
-            jdbi.withExtension<CourseProgrammeStageCollectionOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                val courseProgrammeStageEntries = it.getAllCourseStageEntriesOfSpecificProgramme(programmeId).map { toCourseProgrammeStageOutputModel(it) }
-                toCourseProgrammeStageCollectionOutputModel(courseProgrammeStageEntries)
-            }
+    @Transactional
+    override fun getAllCourseStageEntriesOfSpecificProgramme(programmeId: Int): CourseProgrammeStageCollectionOutputModel {
+        val courseProgrammeStageEntries = courseDAO.getAllCourseStageEntriesOfSpecificProgramme(programmeId).map { toCourseProgrammeStageOutputModel(it) }
+        return toCourseProgrammeStageCollectionOutputModel(courseProgrammeStageEntries)
+    }
 
-    override fun getSpecificStagedCourseOfProgramme(programmeId: Int, stageId: Int): CourseProgrammeStageOutputModel =
-            jdbi.withExtension<CourseProgrammeStageOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                toCourseProgrammeStageOutputModel(
-                        it.getSpecificStagedCourseProgramme(programmeId, stageId)
-                                .orElseThrow { NotFoundException("No staged version of course with this id in this programme", "Search other staged version") }
-                )
-            }
-
-    override fun createStagingCourseOnProgramme(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel, principal: Principal): CourseProgrammeStageOutputModel =
-            jdbi.withExtension<CourseProgrammeStageOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                val courseProgrammeStage = it.createStagingCourseOfProgramme(toCourseProgrammeStage(programmeId, inputCourseProgramme, principal.name))
-
-                publisher.publishEvent(ResourceCreatedEvent(
-                        principal.name,
-                        COURSE_PROGRAMME_STAGE_TABLE,
-                        courseProgrammeStage.logId
-                ))
-                toCourseProgrammeStageOutputModel(courseProgrammeStage)
-            }
-
-    override fun createCourseProgrammeFromStaged(programmeId: Int, stageId: Int, principal: Principal): CourseProgrammeOutputModel =
-            jdbi.inTransaction<CourseProgrammeOutputModel, Exception> {
-                val courseDAO = it.attach(CourseDAOJdbi::class.java)
-
-                val courseProgrammeStage = courseDAO.getSpecificStagedCourseProgramme(programmeId, stageId)
+    @Transactional
+    override fun getSpecificStagedCourseOfProgramme(programmeId: Int, stageId: Int): CourseProgrammeStageOutputModel {
+        return toCourseProgrammeStageOutputModel(
+                courseDAO.getSpecificStagedCourseProgramme(programmeId, stageId)
                         .orElseThrow { NotFoundException("No staged version of course with this id in this programme", "Search other staged version") }
+        )
+    }
 
-                val courseProgramme = courseDAO.addCourseToProgramme(programmeId, stagedToCourseProgramme(programmeId, courseProgrammeStage))
-                courseDAO.deleteStagedCourseProgramme(stageId)
-                courseDAO.createCourseProgrammeVersion(toCourseProgrammeVersion(courseProgramme))
-                val course = courseDAO.getSpecificCourse(courseProgramme.courseId)
-                        .orElseThrow { NotFoundException("The course id in this stage is not valid", "Contact admins") }
+    @Transactional
+    override fun createStagingCourseOnProgramme(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel, principal: Principal): CourseProgrammeStageOutputModel {
+        val courseProgrammeStage = courseDAO.createStagingCourseOfProgramme(toCourseProgrammeStage(programmeId, inputCourseProgramme, principal.name))
 
-                publisher.publishEvent(ResourceApprovedEvent(
-                        principal.name,
-                        ActionType.APPROVE_STAGE,
-                        COURSE_PROGRAMME_STAGE_TABLE,
-                        courseProgrammeStage.logId,
-                        courseProgrammeStage.createdBy,
-                        ActionType.CREATE,
-                        COURSE_PROGRAMME_TABLE,
-                        courseProgramme.logId
-                ))
-                toCourseProgrammeOutputModel(courseProgramme, course)
-            }
+        publisher.publishEvent(ResourceCreatedEvent(
+                principal.name,
+                COURSE_PROGRAMME_STAGE_TABLE,
+                courseProgrammeStage.logId
+        ))
+        return toCourseProgrammeStageOutputModel(courseProgrammeStage)
+    }
 
-    override fun voteOnStagedCourseProgramme(programmeId: Int, stageId: Int, vote: VoteInputModel, principal: Principal): Int =
-            jdbi.inTransaction<Int, Exception> {
-                val courseDAO = it.attach(CourseDAOJdbi::class.java)
+    @Transactional
+    override fun createCourseProgrammeFromStaged(programmeId: Int, stageId: Int, principal: Principal): CourseProgrammeOutputModel {
+        val courseProgrammeStage = courseDAO.getSpecificStagedCourseProgramme(programmeId, stageId)
+                .orElseThrow { NotFoundException("No staged version of course with this id in this programme", "Search other staged version") }
 
-                val courseProgrammeStage = courseDAO.getSpecificStagedCourseProgramme(programmeId, stageId)
-                        .orElseThrow { NotFoundException("Either the stage or programme id are not valid", "Try other ids") }
-                val votes = if(Vote.valueOf(vote.vote) == Vote.Down) courseProgrammeStage.votes.dec() else courseProgrammeStage.votes.inc()
-                val success = courseDAO.updateVotesOnStagedCourseProgramme(programmeId, stageId, votes)
+        val courseProgramme = courseDAO.addCourseToProgramme(programmeId, stagedToCourseProgramme(programmeId, courseProgrammeStage))
+        courseDAO.deleteStagedCourseProgramme(stageId)
+        courseDAO.createCourseProgrammeVersion(toCourseProgrammeVersion(courseProgramme))
+        val course = courseDAO.getSpecificCourse(courseProgramme.courseId)
+                .orElseThrow { NotFoundException("The course id in this stage is not valid", "Contact admins") }
 
-                publisher.publishEvent(VoteOnResourceEvent(
-                        principal.name,
-                        courseProgrammeStage.createdBy,
-                        COURSE_PROGRAMME_STAGE_TABLE,
-                        courseProgrammeStage.logId,
-                        Vote.valueOf(vote.vote)
-                ))
-                success
-            }
+        publisher.publishEvent(ResourceApprovedEvent(
+                principal.name,
+                ActionType.APPROVE_STAGE,
+                COURSE_PROGRAMME_STAGE_TABLE,
+                courseProgrammeStage.logId,
+                courseProgrammeStage.createdBy,
+                ActionType.CREATE,
+                COURSE_PROGRAMME_TABLE,
+                courseProgramme.logId
+        ))
+        return toCourseProgrammeOutputModel(courseProgramme, course)
+    }
 
-    override fun deleteSpecificStagedCourseProgramme(programmeId: Int, stageId: Int, principal: Principal): Int =
-            jdbi.withExtension<Int, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                val courseProgrammeStage = it.getSpecificStagedCourseProgramme(programmeId, stageId)
-                        .orElseThrow { NotFoundException("Either the stage or programme id are not valid", "Try other ids") }
+    @Transactional
+    override fun voteOnStagedCourseProgramme(programmeId: Int, stageId: Int, vote: VoteInputModel, principal: Principal): Int {
+        val courseProgrammeStage = courseDAO.getSpecificStagedCourseProgramme(programmeId, stageId)
+                .orElseThrow { NotFoundException("Either the stage or programme id are not valid", "Try other ids") }
+        val votes = if(Vote.valueOf(vote.vote) == Vote.Down) courseProgrammeStage.votes.dec() else courseProgrammeStage.votes.inc()
+        val success = courseDAO.updateVotesOnStagedCourseProgramme(programmeId, stageId, votes)
 
-                val success = it.deleteSpecificStagedCourseProgramme(programmeId, stageId)
+        publisher.publishEvent(VoteOnResourceEvent(
+                principal.name,
+                courseProgrammeStage.createdBy,
+                COURSE_PROGRAMME_STAGE_TABLE,
+                courseProgrammeStage.logId,
+                Vote.valueOf(vote.vote)
+        ))
+        return success
+    }
 
-                publisher.publishEvent(ResourceRejectedEvent(
-                        principal.name,
-                        courseProgrammeStage.createdBy,
-                        ActionType.REJECT_STAGE,
-                        COURSE_PROGRAMME_STAGE_TABLE,
-                        courseProgrammeStage.logId
-                ))
-                success
-            }
+    @Transactional
+    override fun deleteSpecificStagedCourseProgramme(programmeId: Int, stageId: Int, principal: Principal): Int {
+        val courseProgrammeStage = courseDAO.getSpecificStagedCourseProgramme(programmeId, stageId)
+                .orElseThrow { NotFoundException("Either the stage or programme id are not valid", "Try other ids") }
+
+        val success = courseDAO.deleteSpecificStagedCourseProgramme(programmeId, stageId)
+
+        publisher.publishEvent(ResourceRejectedEvent(
+                principal.name,
+                courseProgrammeStage.createdBy,
+                ActionType.REJECT_STAGE,
+                COURSE_PROGRAMME_STAGE_TABLE,
+                courseProgrammeStage.logId
+        ))
+        return success
+    }
 
     // -------------------------------
     // Course Programme Report Methods
     // -------------------------------
 
-    override fun getAllReportsOfCourseOnProgramme(programmeId: Int, courseId: Int): CourseProgrammeReportCollectionOutputModel =
-            jdbi.withExtension<CourseProgrammeReportCollectionOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                val reports = it.getAllReportsOfCourseOnProgramme(programmeId, courseId)
-                        .map { toCourseProgrammeReportOutputModel(it) }
-                toCourseProgrammeReportCollectionOutputModel(reports)
-            }
+    @Transactional
+    override fun getAllReportsOfCourseOnProgramme(programmeId: Int, courseId: Int): CourseProgrammeReportCollectionOutputModel {
+        val reports = courseDAO.getAllReportsOfCourseOnProgramme(programmeId, courseId)
+                .map { toCourseProgrammeReportOutputModel(it) }
+        return toCourseProgrammeReportCollectionOutputModel(reports)
+    }
 
-    override fun getSpecificReportOfCourseOnProgramme(programmeId: Int, courseId: Int, reportId: Int): CourseProgrammeReportOutputModel =
-            jdbi.withExtension<CourseProgrammeReportOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                toCourseProgrammeReportOutputModel(
-                        it.getSpecificReportOfCourseProgramme(programmeId, courseId, reportId)
-                                .orElseThrow { NotFoundException("No report of course with this id in this programme", "Search other report") }
-                )
-            }
+    @Transactional
+    override fun getSpecificReportOfCourseOnProgramme(programmeId: Int, courseId: Int, reportId: Int): CourseProgrammeReportOutputModel {
+        return toCourseProgrammeReportOutputModel(
+                courseDAO.getSpecificReportOfCourseProgramme(programmeId, courseId, reportId)
+                        .orElseThrow { NotFoundException("No report of course with this id in this programme", "Search other report") }
+        )
+    }
 
-    override fun reportSpecificCourseOnProgramme(programmeId: Int, courseId: Int, inputCourseReport: CourseProgrammeReportInputModel, principal: Principal): CourseProgrammeReportOutputModel =
-            jdbi.withExtension<CourseProgrammeReportOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                val courseProgrammeReport = it.reportSpecificCourseOnProgramme(programmeId, courseId, toCourseProgrammeReport(programmeId, courseId, inputCourseReport, principal.name))
+    @Transactional
+    override fun reportSpecificCourseOnProgramme(programmeId: Int, courseId: Int, inputCourseReport: CourseProgrammeReportInputModel, principal: Principal): CourseProgrammeReportOutputModel {
+        val courseProgrammeReport = courseDAO.reportSpecificCourseOnProgramme(programmeId, courseId, toCourseProgrammeReport(programmeId, courseId, inputCourseReport, principal.name))
 
-                publisher.publishEvent(ResourceCreatedEvent(
-                        principal.name,
-                        COURSE_PROGRAMME_REPORT_TABLE,
-                        courseProgrammeReport.logId
-                ))
-                toCourseProgrammeReportOutputModel(courseProgrammeReport)
-            }
+        publisher.publishEvent(ResourceCreatedEvent(
+                principal.name,
+                COURSE_PROGRAMME_REPORT_TABLE,
+                courseProgrammeReport.logId
+        ))
+        return toCourseProgrammeReportOutputModel(courseProgrammeReport)
+    }
 
-    override fun updateCourseProgrammeFromReport(programmeId: Int, courseId: Int, reportId: Int, principal: Principal): CourseProgrammeOutputModel =
-            jdbi.inTransaction<CourseProgrammeOutputModel, Exception> {
-                val courseDAO = it.attach(CourseDAOJdbi::class.java)
-
-                val course = courseDAO.getSpecificCourse(courseId)
-                        .orElseThrow { NotFoundException("The course is not valid", "Contact admins") }
-                val courseProgramme = courseDAO.getSpecificCourseOfProgramme(programmeId, courseId)
-                        .orElseThrow { NotFoundException("Can't specified course in programme", "Try other ids") }
-                val report = courseDAO.getSpecificReportOfCourseProgramme(programmeId, courseId, reportId)
-                        .orElseThrow { NotFoundException("Can't find the specified report for this course in programme", "Search other report") }
+    @Transactional
+    override fun updateCourseProgrammeFromReport(programmeId: Int, courseId: Int, reportId: Int, principal: Principal): CourseProgrammeOutputModel {
+        val course = courseDAO.getSpecificCourse(courseId)
+                .orElseThrow { NotFoundException("The course is not valid", "Contact admins") }
+        val courseProgramme = courseDAO.getSpecificCourseOfProgramme(programmeId, courseId)
+                .orElseThrow { NotFoundException("Can't specified course in programme", "Try other ids") }
+        val report = courseDAO.getSpecificReportOfCourseProgramme(programmeId, courseId, reportId)
+                .orElseThrow { NotFoundException("Can't find the specified report for this course in programme", "Search other report") }
 
 
-                val updatedCourseProgramme = CourseProgramme(
-                        programmeId = programmeId,
-                        courseId = courseProgramme.courseId,
-                        version = courseProgramme.version.inc(),
-                        createdBy = report.reportedBy,
-                        lecturedTerm = report.lecturedTerm ?: courseProgramme.lecturedTerm,
-                        optional = report.optional ?: courseProgramme.optional,
-                        credits = report.credits ?: courseProgramme.credits
-                )
+        val updatedCourseProgramme = CourseProgramme(
+                programmeId = programmeId,
+                courseId = courseProgramme.courseId,
+                version = courseProgramme.version.inc(),
+                createdBy = report.reportedBy,
+                lecturedTerm = report.lecturedTerm ?: courseProgramme.lecturedTerm,
+                optional = report.optional ?: courseProgramme.optional,
+                credits = report.credits ?: courseProgramme.credits
+        )
 
-                courseDAO.deleteReportOnCourseProgramme(programmeId, courseId, reportId)
-                val action: ActionType
-                val toRet = if(report.deleteFlag) {
-                    courseDAO.deleteSpecificCourseProgramme(programmeId, courseId)
-                    action = ActionType.DELETE
-                    toCourseProgrammeOutputModel(courseProgramme, course)
-                } else {
-                    val res = courseDAO.updateCourseProgramme(programmeId, courseId, updatedCourseProgramme)
-                    courseDAO.createCourseProgrammeVersion(toCourseProgrammeVersion(updatedCourseProgramme))
-                    action = ActionType.ALTER
-                    toCourseProgrammeOutputModel(res, course)
-                }
-                publisher.publishEvent(ResourceApprovedEvent(
-                        principal.name,
-                        ActionType.APPROVE_STAGE,
-                        COURSE_PROGRAMME_REPORT_TABLE,
-                        report.logId,
-                        report.reportedBy,
-                        action,
-                        COURSE_PROGRAMME_TABLE,
-                        courseProgramme.logId
-                ))
-                toRet
-            }
+        courseDAO.deleteReportOnCourseProgramme(programmeId, courseId, reportId)
+        val action: ActionType
+        val toRet = if(report.deleteFlag) {
+            courseDAO.deleteSpecificCourseProgramme(programmeId, courseId)
+            action = ActionType.DELETE
+            toCourseProgrammeOutputModel(courseProgramme, course)
+        } else {
+            val res = courseDAO.updateCourseProgramme(programmeId, courseId, updatedCourseProgramme)
+            courseDAO.createCourseProgrammeVersion(toCourseProgrammeVersion(updatedCourseProgramme))
+            action = ActionType.ALTER
+            toCourseProgrammeOutputModel(res, course)
+        }
+        publisher.publishEvent(ResourceApprovedEvent(
+                principal.name,
+                ActionType.APPROVE_STAGE,
+                COURSE_PROGRAMME_REPORT_TABLE,
+                report.logId,
+                report.reportedBy,
+                action,
+                COURSE_PROGRAMME_TABLE,
+                courseProgramme.logId
+        ))
+        return toRet
+    }
 
-    override fun voteOnReportedCourseProgramme(programmeId: Int, courseId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int =
-            jdbi.inTransaction<Int, Exception> {
-                val courseDAO = it.attach(CourseDAOJdbi::class.java)
+    @Transactional
+    override fun voteOnReportedCourseProgramme(programmeId: Int, courseId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int {
+        val courseProgrammeReport = courseDAO.getSpecificReportOfCourseProgramme(programmeId, courseId, reportId)
+                .orElseThrow { NotFoundException("Can't find the specified report for this course in programme", "Search other report") }
+        val votes = if(Vote.valueOf(vote.vote) == Vote.Down) courseProgrammeReport.votes.dec() else courseProgrammeReport.votes.inc()
+        val success = courseDAO.updateVotesOnReportedCourseProgramme(programmeId, courseId, reportId, votes)
 
-                val courseProgrammeReport = courseDAO.getSpecificReportOfCourseProgramme(programmeId, courseId, reportId)
-                        .orElseThrow { NotFoundException("Can't find the specified report for this course in programme", "Search other report") }
-                val votes = if(Vote.valueOf(vote.vote) == Vote.Down) courseProgrammeReport.votes.dec() else courseProgrammeReport.votes.inc()
-                val success = courseDAO.updateVotesOnReportedCourseProgramme(programmeId, courseId, reportId, votes)
-
-                publisher.publishEvent(VoteOnResourceEvent(
-                        principal.name,
-                        courseProgrammeReport.reportedBy,
-                        PROGRAMME_REPORT_TABLE,
-                        courseProgrammeReport.logId,
-                        Vote.valueOf(vote.vote)
-                ))
-                success
-            }
+        publisher.publishEvent(VoteOnResourceEvent(
+                principal.name,
+                courseProgrammeReport.reportedBy,
+                PROGRAMME_REPORT_TABLE,
+                courseProgrammeReport.logId,
+                Vote.valueOf(vote.vote)
+        ))
+        return success
+    }
 
 
+    @Transactional
     override fun deleteSpecificReportOfCourseProgramme(programmeId: Int, courseId: Int, reportId: Int, principal: Principal): Int =
-            jdbi.withExtension<Int, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                it.deleteSpecificReportOfCourseProgramme(programmeId, courseId, reportId)
-            }
+            courseDAO.deleteSpecificReportOfCourseProgramme(programmeId, courseId, reportId)
+
 
     // -------------------------------
     // Course Programme Version Methods
     // -------------------------------
 
-    override fun getAllVersionsOfCourseOnProgramme(programmeId: Int, courseId: Int): CourseProgrammeVersionCollectionOutputModel =
-            jdbi.withExtension<CourseProgrammeVersionCollectionOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                val courseProgrammeVersions = it.getAllVersionsOfCourseOnProgramme(programmeId, courseId).map { toCourseProgrammeVersionOutput(it) }
-                toCourseProgrammeVersionCollectionOutputModel(courseProgrammeVersions)
-            }
+    @Transactional
+    override fun getAllVersionsOfCourseOnProgramme(programmeId: Int, courseId: Int): CourseProgrammeVersionCollectionOutputModel {
+        val courseProgrammeVersions = courseDAO.getAllVersionsOfCourseOnProgramme(programmeId, courseId).map { toCourseProgrammeVersionOutput(it) }
+        return toCourseProgrammeVersionCollectionOutputModel(courseProgrammeVersions)
+    }
 
-    override fun getSpecificVersionOfCourseOnProgramme(programmeId: Int, courseId: Int, version: Int): CourseProgrammeVersionOutputModel =
-            jdbi.withExtension<CourseProgrammeVersionOutputModel, CourseDAOJdbi, Exception>(CourseDAOJdbi::class.java) {
-                toCourseProgrammeVersionOutput(
-                        it.getSpecificVersionOfCourseOnProgramme(programmeId, courseId, version)
-                                .orElseThrow { NotFoundException("No version of course with this id in this programme", "Search other version") }
-                )
-            }
+    @Transactional
+    override fun getSpecificVersionOfCourseOnProgramme(programmeId: Int, courseId: Int, version: Int): CourseProgrammeVersionOutputModel {
+        return toCourseProgrammeVersionOutput(
+                courseDAO.getSpecificVersionOfCourseOnProgramme(programmeId, courseId, version)
+                        .orElseThrow { NotFoundException("No version of course with this id in this programme", "Search other version") }
+        )
+    }
 
 
 }

@@ -6,10 +6,10 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseClassReportInputM
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.HomeworkReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.LectureReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.report.LectureReport
-import isel.leic.ps.eduWikiAPI.domain.outputModel.ClassOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.CourseClassOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.HomeworkOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.LectureOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.ClassOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.CourseClassOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.HomeworkOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.LectureOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ClassCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseClassCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.HomeworkCollectionOutputModel

@@ -1,28 +1,28 @@
 package isel.leic.ps.eduWikiAPI.configuration.security
 
-import isel.leic.ps.eduWikiAPI.domain.model.ReputationRole
 import isel.leic.ps.eduWikiAPI.domain.model.User
-import isel.leic.ps.eduWikiAPI.exceptions.UnconfirmedException
-import isel.leic.ps.eduWikiAPI.repository.ReputationDAOJdbi
-import isel.leic.ps.eduWikiAPI.repository.UserDAOJdbi
-import org.jdbi.v3.core.Jdbi
+import isel.leic.ps.eduWikiAPI.repository.interfaces.ReputationDAO
+import isel.leic.ps.eduWikiAPI.repository.interfaces.UserDAO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
-import java.util.*
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UserDetailsServiceImpl : UserDetailsService {
 
     @Autowired
-    lateinit var jdbi: Jdbi
+    lateinit var userDAO: UserDAO
+    @Autowired
+    lateinit var reputationDAO: ReputationDAO
 
+    @Transactional
     override fun loadUserByUsername(username: String): UserDetails =
             toUserDetails(
-                    jdbi.withExtension<Optional<User>, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) { it.getUser(username) }
+                    userDAO.getUser(username)
                             .orElseThrow { UsernameNotFoundException("User $username does not exist") }
             )
 
@@ -31,10 +31,8 @@ class UserDetailsServiceImpl : UserDetailsService {
             .withUsername(user.username)
             .disabled(!user.confirmed)
             .password(BCryptPasswordEncoder().encode(user.password)) //TODO: WRONG!! PASSWORD MUST BE ENCRYPTED ALREADY!!!
-            .authorities(jdbi.withExtension<Optional<ReputationRole>, ReputationDAOJdbi, Exception>(ReputationDAOJdbi::class.java) { it.getReputationRoleOfUser(user.username) }
-                    .orElseThrow {
-                        UsernameNotFoundException("Could not find a valid role for user ${user.username}")
-                    }
+            .authorities(reputationDAO.getReputationRoleOfUser(user.username)
+                    .orElseThrow { UsernameNotFoundException("Could not find a valid role for user ${user.username}") }
             )
             .build()
 }

@@ -5,7 +5,6 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.UserInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserProgrammeInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.UserReportInputModel
 import isel.leic.ps.eduWikiAPI.service.interfaces.UserService
-import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import isel.leic.ps.eduWikiAPI.domain.mappers.*
@@ -20,7 +19,9 @@ import isel.leic.ps.eduWikiAPI.exceptions.ExceededValidationException
 import isel.leic.ps.eduWikiAPI.exceptions.NotFoundException
 import isel.leic.ps.eduWikiAPI.exceptions.UnknownDataException
 import isel.leic.ps.eduWikiAPI.repository.*
+import isel.leic.ps.eduWikiAPI.repository.interfaces.*
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.transaction.annotation.Transactional
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import java.util.*
@@ -30,174 +31,128 @@ import java.util.regex.Pattern
 class UserServiceImpl : UserService {
 
     @Autowired
-    lateinit var jdbi: Jdbi
-    @Autowired
     lateinit var eventPublisher: ApplicationEventPublisher
+    @Autowired
+    lateinit var reputationDAO: ReputationDAO
+    @Autowired
+    lateinit var userDAO: UserDAO
+    @Autowired
+    lateinit var programmeDAO: ProgrammeDAO
+    @Autowired
+    lateinit var classDAO: ClassDAO
+    @Autowired
+    lateinit var courseDAO: CourseDAO
+    @Autowired
+    lateinit var termDAO: TermDAO
+    @Autowired
+    lateinit var tokenDAO: TokenDAO
 
-
+    @Transactional
     override fun getAuthenticatedUser(username: String): AuthUserOutputModel =
-            jdbi.withExtension<AuthUserOutputModel, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
-                toAuthUserOutputModel(it.getUser(username).get())
-            }
+            toAuthUserOutputModel(userDAO.getUser(username).orElseThrow { NotFoundException("User not found", "Try another username") })
 
+    @Transactional
     override fun getUser(username: String): UserOutputModel =
-            jdbi.withExtension<UserOutputModel, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
-                toUserOutputModel(
-                        it.getUser(username)
-                                .orElseThrow {
-                                    NotFoundException(
-                                            msg = "Can't find User",
-                                            action = "Check username again or try again later"
-                                    )
-                                }
-                )
-            }
-
-    fun isEmailValid(email: String): Boolean {
-        return Pattern.compile(
-                "^(([\\w-]+\\.)+[\\w-]+|([a-zA-Z]|[\\w-]{2,}))@"
-                        + "((([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
-                        + "[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\."
-                        + "([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
-                        + "[0-9]{1,2}|25[0-5]|2[0-4][0-9]))|"
-                        + "([a-zA-Z]+[\\w-]+\\.)+[a-zA-Z]{2,4})$"
-        ).matcher(email).matches()
-    }
-
-    override fun saveUser(inputUser: UserInputModel): AuthUserOutputModel {
-        val user = toUser(inputUser)
-        val valid = isEmailValid(user.organizationEmail)
-        if (!valid) {
-            throw BadRequestException(msg = "invalid organization email", action = "Get an actual organization email")
-        }
-        return jdbi.inTransaction<AuthUserOutputModel, Exception> {
-            val userDao = it.attach(UserDAOJdbi::class.java)
-            val repDao = it.attach(ReputationDAOJdbi::class.java)
-            val user1 = userDao.createUser(user)
-            val reputation = Reputation(
-                    reputationPoints = 0,
-                    reputationRole = "ROLE_UNCONFIRMED",
-                    username = user1.username
+            toUserOutputModel(
+                    userDAO.getUser(username)
+                            .orElseThrow { NotFoundException("User not found", "Try another username") }
             )
-            repDao.createUserReputation(reputation)
-            eventPublisher.publishEvent(OnRegistrationEvent(user1))
-            toAuthUserOutputModel(user1)
-        }
+
+    @Transactional
+    override fun saveUser(inputUser: UserInputModel): AuthUserOutputModel {
+        if(!isEmailValid(inputUser.organizationEmail))
+            throw BadRequestException("invalid organization email", "Get an actual organization email")
+
+        val user1 = userDAO.createUser(toUser(inputUser))
+        reputationDAO.createUserReputation(Reputation(
+                reputationPoints = 0,
+                reputationRole = "ROLE_UNCONFIRMED",
+                username = user1.username
+        ))
+        eventPublisher.publishEvent(OnRegistrationEvent(user1))
+        return toAuthUserOutputModel(user1)
     }
 
+    @Transactional
     override fun confirmUser(username: String, token: UUID): AuthUserOutputModel {
-        return jdbi.inTransaction<AuthUserOutputModel, Exception> {
-            val userDao = it.attach(UserDAOJdbi::class.java)
-            val repDao = it.attach(ReputationDAOJdbi::class.java)
-            val tokenDAO = it.attach(TokenDAOJdbi::class.java)
             val validationToken = tokenDAO.getToken(token)
-                    .orElseThrow {
-                        NotFoundException(
-                                msg = "Invalid token",
-                                action = "Verify if the token is the same as the one in the email we sent"
-                        )
-                    }
-            val currentTImestamp = Timestamp.valueOf(LocalDateTime.now())
+                    .orElseThrow { NotFoundException("Invalid token", "Verify if the token is the same as the one in the email we sent") }
+            val currentTimestamp = Timestamp.valueOf(LocalDateTime.now())
             tokenDAO.deleteToken(token)
-            if(currentTImestamp.after(validationToken.date)){
-                userDao.deleteUser(username)
+            if(currentTimestamp.after(validationToken.date)) {
+                userDAO.deleteUser(username)
                 throw ExceededValidationException()
             }
-            val role = repDao.getRoleByHierarchyLevel(1)
-                    .orElseThrow {
-                        NotFoundException(
-                                msg = "No role found",
-                                action = "Try othr Hierarchy level"
-                        ) }
-            repDao.updateUserRole(username, role.minPoints, role.reputationRoleId)
-            val userChanged = userDao.confirmUser(username)
-            toAuthUserOutputModel(userChanged)
-        }
+            val role = reputationDAO.getRoleByHierarchyLevel(1)
+                    .orElseThrow {NotFoundException("No role found", "Try othr Hierarchy level") }
+            reputationDAO.updateUserRole(username, role.minPoints, role.reputationRoleId)
+            val userChanged = userDAO.confirmUser(username)
+            return toAuthUserOutputModel(userChanged)
     }
 
+    @Transactional
     override fun deleteUser(username: String): Int =
-            jdbi.withExtension<Int, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
-                it.deleteUser(username)
-            }
+            userDAO.deleteUser(username)
 
-    override fun getCoursesOfUser(username: String): CourseCollectionOutputModel =
-            jdbi.inTransaction<CourseCollectionOutputModel, Exception> {
-                val userDao = it.attach(UserDAOJdbi::class.java)
-                val courseDAO = it.attach(CourseDAOJdbi::class.java)
-                val coursesIds = userDao.getCoursesOfUser(username)
-                val courses =coursesIds.map {
+    @Transactional
+    override fun getCoursesOfUser(username: String): CourseCollectionOutputModel {
+                val coursesIds = userDAO.getCoursesOfUser(username)
+                val courses = coursesIds.map {
                     toCourseOutputModel(courseDAO.getSpecificCourse(it).get())
                 }
-                toCourseCollectionOutputModel(courses)
+                return toCourseCollectionOutputModel(courses)
             }
 
-    override fun getClassesOfUser(username: String): ClassCollectionOutputModel =
-            jdbi.inTransaction<ClassCollectionOutputModel, NotFoundException> {
-                val userDao = it.attach(UserDAOJdbi::class.java)
-                val classDAO = it.attach(ClassDAOJdbi::class.java)
-                val termDAO = it.attach(TermDAOJdbi::class.java)
-
-                val courseClasses = userDao.getClassesOfUser(username)
-                val classes =courseClasses.map {
+    @Transactional
+    override fun getClassesOfUser(username: String): ClassCollectionOutputModel {
+                val courseClasses = userDAO.getClassesOfUser(username)
+                val classes = courseClasses.map {
                     val courseClass = classDAO.getCourseClassFromId(it.courseClassId)
                     val term = termDAO.getTerm(courseClass.termId).get()
                     toClassOutputModel(classDAO.getSpecificClass(it.courseId).get(), term)
                 }
-                toClassCollectionOutputModel(classes)
+                return toClassCollectionOutputModel(classes)
             }
 
-    override fun getProgrammeOfUser(username: String): ProgrammeOutputModel =
-            jdbi.inTransaction<ProgrammeOutputModel, Exception> {
-                val userDao = it.attach(UserDAOJdbi::class.java)
-                val programmeDAO = it.attach(ProgrammeDAOJdbi::class.java)
-                val programmeId = userDao.getProgrammeOfUser(username)
-                toProgrammeOutput(
+    @Transactional
+    override fun getProgrammeOfUser(username: String): ProgrammeOutputModel {
+                val programmeId = userDAO.getProgrammeOfUser(username)
+                return toProgrammeOutput(
                         programmeDAO.getSpecificProgramme(programmeId)
-                                .orElseThrow {
-                                    UnknownDataException(
-                                            msg = "Something happened when accessing your programme",
-                                            action = "Try Again Later"
-                                    )
-                                }
+                                .orElseThrow { UnknownDataException("Something happened when accessing your programme", "Try Again Later") }
                 )
             }
 
-    override fun addProgrammeToUSer(username: String, input: UserProgrammeInputModel): ProgrammeOutputModel =
-            jdbi.inTransaction<ProgrammeOutputModel, Exception> {
-                val userDAOJdbi = it.attach(UserDAOJdbi::class.java)
-                val programmeDAOJdbi = it.attach(ProgrammeDAOJdbi::class.java)
-                val added = userDAOJdbi.addProgrammeToUser(username, input.programmeId)
-                toProgrammeOutput(
-                        programmeDAOJdbi.getSpecificProgramme(added.programmeId)
+    @Transactional
+    override fun addProgrammeToUSer(username: String, input: UserProgrammeInputModel): ProgrammeOutputModel {
+                val added = userDAO.addProgrammeToUser(username, input.programmeId)
+                return toProgrammeOutput(
+                        programmeDAO.getSpecificProgramme(added.programmeId)
                                 .orElseThrow {
                                     UnknownDataException(
                                             msg = "Can't add programme, maybe you are already following other programme",
                                             action = "Check if you're following other programme, or try again later"
-
                                     )
                                 }
                 )
             }
 
+    @Transactional
     override fun addCourseToUser(username: String, input: UserCourseClassInputModel): UserCourseOutputModel {
         val userCourseClass = toUserCourseClass(username, input)
-        return jdbi.withExtension<UserCourseOutputModel, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
-            toUserCourseOutputModel(it.addCourseToUser(userCourseClass))
-        }
+        return toUserCourseOutputModel(userDAO.addCourseToUser(userCourseClass))
     }
 
+    @Transactional
     override fun addClassToUser(username: String, input: UserCourseClassInputModel): UserCourseClassOutputModel {
         val userCourseClass = toUserCourseClass(username, input)
-        return jdbi.withExtension<UserCourseClassOutputModel, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
-            toUserCourseClassOutputModel(it.addClassToUser(userCourseClass))
-        }
+        return toUserCourseClassOutputModel(userDAO.addClassToUser(userCourseClass))
     }
 
     //TODO Support changes of password ???????
+    @Transactional
     override fun updateUser(input: UserInputModel): AuthUserOutputModel {
-        return jdbi.inTransaction<AuthUserOutputModel, Exception> {
-            val userDao = it.attach(UserDAOJdbi::class.java)
-            val current = userDao.getUser(input.username).get()
+            val current = userDAO.getUser(input.username).get()
             val newUser = User(
                     username = current.username,
                     password = input.password ?: current.password,
@@ -206,59 +161,64 @@ class UserServiceImpl : UserService {
                     personalEmail = input.personalEmail ?: current.personalEmail
 
             )
-            toAuthUserOutputModel(userDao.updateUser(newUser))
+            return toAuthUserOutputModel(userDAO.updateUser(newUser))
         }
-    }
 
+    @Transactional
     override fun deleteAllCoursesOfUser(username: String): Int =
-            jdbi.withExtension<Int, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
-                it.deleteAllCoursesOfUser(username)
-            }
+            userDAO.deleteAllCoursesOfUser(username)
 
+    @Transactional
     override fun deleteProgrammeOfUser(username: String): Int =
-            jdbi.withExtension<Int, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
-                it.deleteProgramme(username)
-            }
+            userDAO.deleteProgramme(username)
 
+    @Transactional
     override fun deleteSpecificCourseOfUser(username: String, courseId: Int): Int =
-            jdbi.withExtension<Int, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
-                it.deleteSpecificCourseOfUser(username, courseId)
-            }
+            userDAO.deleteSpecificCourseOfUser(username, courseId)
 
+
+    @Transactional
     override fun reportUser(username: String, reportedBy: String, reportInput: UserReportInputModel): UserReportOutputModel {
         val report = toUserReport(username, reportedBy, reportInput)
-        return jdbi.withExtension<UserReportOutputModel, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
-            toUserReportOutput(it.reportUser(report))
-        }
+        return toUserReportOutput(userDAO.reportUser(report))
     }
 
+    @Transactional
     override fun deleteAllClassesOfUser(username: String): Int =
-            jdbi.withExtension<Int, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
-                it.deleteAllClassesOfUser(username)
-            }
+            userDAO.deleteAllClassesOfUser(username)
 
+    @Transactional
     override fun deleteSpecificClassOfUser(username: String, courseClassId: Int): Int =
-            jdbi.withExtension<Int, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
-                it.deleteSpecificClassOfUser(username, courseClassId)
-            }
+            userDAO.deleteSpecificClassOfUser(username, courseClassId)
 
+    @Transactional
     override fun approveReport(username: String, reportId: Int): Int {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    @Transactional
     override fun getAllReportsOfUser(username: String): List<UserReportOutputModel> =
-            jdbi.withExtension<List<UserReportOutputModel>, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
-                it.getAllReportsOfUser(username).map { toUserReportOutput(it) }
-            }
+            userDAO.getAllReportsOfUser(username).map { toUserReportOutput(it) }
 
+    @Transactional
     override fun getSpecificReportOfUser(username: String, reportId: Int): UserReportOutputModel =
-            jdbi.withExtension<UserReportOutputModel, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
-                toUserReportOutput(it.getSpecficReportOfUser(username, reportId))
-            }
+            toUserReportOutput(userDAO.getSpecficReportOfUser(username, reportId))
 
+
+    @Transactional
     override fun deleteReportOnUser(username: String, reportId: Int): Int =
-            jdbi.withExtension<Int, UserDAOJdbi, Exception>(UserDAOJdbi::class.java) {
-                it.deleteSpecificReportOfUser(username, reportId)
-            }
+            userDAO.deleteSpecificReportOfUser(username, reportId)
+
+
+    fun isEmailValid(email: String?): Boolean {
+        return email != null && Pattern.compile(
+                "^(([\\w-]+\\.)+[\\w-]+|([a-zA-Z]|[\\w-]{2,}))@"
+                        + "((([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
+                        + "[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\."
+                        + "([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
+                        + "[0-9]{1,2}|25[0-5]|2[0-4][0-9]))|"
+                        + "([a-zA-Z]+[\\w-]+\\.)+[a-zA-Z]{2,4})$"
+        ).matcher(email).matches()
+    }
 
 }
