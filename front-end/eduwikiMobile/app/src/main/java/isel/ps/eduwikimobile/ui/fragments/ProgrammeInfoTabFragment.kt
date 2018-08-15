@@ -20,15 +20,15 @@ class ProgrammeInfoTabFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater!!.inflate(R.layout.programme_info_fragment, container, false)
-        val programme = app.store
+        val programme = app.programme
 
         val programmeAcademicDegree = view.findViewById<TextView>(R.id.academic_degree)
         val programmeDuration = view.findViewById<TextView>(R.id.duration)
         val programmeTotalCredits = view.findViewById<TextView>(R.id.total_credits)
 
         programmeAcademicDegree.text = programme!!.academicDegree
-        programmeDuration.text = programme!!.duration.toString()  + " semesters"
-        programmeTotalCredits.text = programme!!.totalCredits.toString()
+        programmeDuration.text = programme.duration.toString()  + " semesters"
+        programmeTotalCredits.text = programme.totalCredits.toString()
 
         return view
 

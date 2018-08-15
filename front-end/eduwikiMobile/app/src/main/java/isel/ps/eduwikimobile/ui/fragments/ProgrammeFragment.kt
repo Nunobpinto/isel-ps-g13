@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.view.ViewPager
-import android.view.Display
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,11 +29,12 @@ class ProgrammeFragment : Fragment(){
 
         val bundle: Bundle = arguments
         val programme = bundle.getParcelable<Programme>("item_selected")
-        app.store = programme
+
+        app.programme = programme
         app.programmeId = programme.programmeId
 
-        val viewPager = view.findViewById<ViewPager>(R.id.view_pager)
-        val tabLayout = view.findViewById<TabLayout>(R.id.tab_layout)
+        val viewPager = view.findViewById<ViewPager>(R.id.programme_view_pager)
+        val tabLayout = view.findViewById<TabLayout>(R.id.programme_tab_layout)
 
         val programmeName = view.findViewById<TextView>(R.id.programme_full_name)
 

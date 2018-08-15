@@ -2,12 +2,11 @@ package isel.ps.eduwikimobile.service
 
 import com.android.volley.VolleyError
 import isel.ps.eduwikimobile.exceptions.AppException
-import isel.ps.eduwikimobile.paramsContainer.CourseCollectionParametersContainer
-import isel.ps.eduwikimobile.paramsContainer.ProgrammeCollectionParametersContainer
+import isel.ps.eduwikimobile.paramsContainer.*
 import isel.ps.eduwikimobile.repository.EduWikiRepository
 import isel.ps.eduwikimobile.repository.IEduWikiRepository
 
-class Service() : IService {
+class Service : IService {
 
     private var remoteRepository: IEduWikiRepository
 
@@ -29,12 +28,27 @@ class Service() : IService {
                     { error: VolleyError -> params.errorCb(AppException(error.message!!)) }
             )
 
-    override fun getCoursesOfSpecificProgramme(params: CourseCollectionParametersContainer) =
+    override fun getCoursesOfSpecificProgramme(params: CourseProgrammeCollectionParametersContainer) =
             remoteRepository.getCoursesOfSpeficiProgramme(
-                    params.programmeId!!,
+                    params.programmeId,
                     params.app,
                     { courses -> params.successCb(courses) },
                     { error: VolleyError -> params.errorCb(AppException(error.message!!)) }
             )
+
+    override fun getAllClasses(params: ClassCollectionParametersContainer) =
+            remoteRepository.getAllClasses(
+                    params.app,
+                    { classes -> params.successCb(classes) },
+                    { error: VolleyError -> params.errorCb(AppException(error.message!!)) }
+            )
+
+    override fun getOrganization(params: OrganizationParametersContainer) {
+        remoteRepository.getOrganization(
+                params.app,
+                { organization -> params.successCb(organization) },
+                { error: VolleyError -> params.errorCb(AppException(error.message!!))  }
+        )
+    }
 
 }

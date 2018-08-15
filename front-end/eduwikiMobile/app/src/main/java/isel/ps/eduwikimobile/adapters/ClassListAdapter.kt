@@ -7,13 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import isel.ps.eduwikimobile.R
-import isel.ps.eduwikimobile.domain.model.single.Course
+import isel.ps.eduwikimobile.domain.model.single.Class
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 
-class CourseListAdapter(var context: Context, var list: MutableList<Course>) : RecyclerView.Adapter<CourseListAdapter.ListViewHolder>() {
+class ClassListAdapter (var context: Context, var list: MutableList<Class>) : RecyclerView.Adapter<ClassListAdapter.ListViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ListViewHolder {
-        val view: View = LayoutInflater.from(parent!!.context).inflate(R.layout.course_item_row, parent, false)
+        val view: View = LayoutInflater.from(parent!!.context).inflate(R.layout.class_item_row, parent, false)
         val newHolder = ListViewHolder(view)
 
         newHolder.setListItemClickListener(object : ListItemClickListener {
@@ -33,12 +33,12 @@ class CourseListAdapter(var context: Context, var list: MutableList<Course>) : R
 
     inner class ListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
-        var courseShortName: TextView
+        var classShortName: TextView
 
         private lateinit var listener: ListItemClickListener
 
         init {
-            courseShortName = itemView.findViewById(R.id.course_short_name)
+            classShortName = itemView.findViewById(R.id.class_short_name)
             itemView.setOnClickListener(this)
         }
 
@@ -49,7 +49,7 @@ class CourseListAdapter(var context: Context, var list: MutableList<Course>) : R
         fun getItem(position: Int) = list[position]
 
         fun bindView(position: Int) {
-            courseShortName.text = list[position].shortName
+            classShortName.text = list[position].className
         }
 
         override fun onClick(v: View) {
@@ -57,5 +57,4 @@ class CourseListAdapter(var context: Context, var list: MutableList<Course>) : R
         }
 
     }
-
 }
