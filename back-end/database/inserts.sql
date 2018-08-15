@@ -249,23 +249,6 @@ insert into user_account (user_username, user_password, user_given_name, user_fa
 insert into user_account (user_username, user_password, user_given_name, user_family_name, user_confirmed, user_personal_email, user_organization_email)
     values ('jg', 1234, 'João', 'Gameiro', true, 'jg@gmail.com', 'jg@isel.pt');
 
-
--- Reputation Roles
-
-insert into reputation_role (reputation_role_id, max_points, min_points, hierarchy_level)
-  values ('ROLE_BEGINNER', 50, 1, 1);
-
-insert into reputation_role (reputation_role_id, max_points, min_points, hierarchy_level)
-  values ('ROLE_ADMIN', 100, 51, 2);
-  
-insert into reputation_role (reputation_role_id, max_points, min_points, hierarchy_level)
-  values ('ROLE_UNCONFIRMED', -1, -1, -1);
-
--- Reputation Matcher
-
-insert into reputation_matcher (uri_match, reputation_role_id)
-	values ('/**','ROLE_BEGINNER');
-
 -- Reputation Insert
 
 insert into reputation (points, role, user_username)
