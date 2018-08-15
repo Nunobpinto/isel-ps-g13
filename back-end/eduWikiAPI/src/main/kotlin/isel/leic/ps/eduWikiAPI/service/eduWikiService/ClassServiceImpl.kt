@@ -1,4 +1,4 @@
-package isel.leic.ps.eduWikiAPI.service
+package isel.leic.ps.eduWikiAPI.service.eduWikiService
 
 import isel.leic.ps.eduWikiAPI.domain.enums.ActionType
 import isel.leic.ps.eduWikiAPI.domain.inputModel.*
@@ -41,9 +41,8 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.ClassVersionOut
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.HomeworkVersionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.LectureVersionOutputModel
 import isel.leic.ps.eduWikiAPI.eventListeners.events.*
-import isel.leic.ps.eduWikiAPI.exceptions.NotFoundException
-import isel.leic.ps.eduWikiAPI.exceptions.UnknownDataException
-import isel.leic.ps.eduWikiAPI.repository.*
+import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.NotFoundException
+import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.UnknownDataException
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_REPORT_TABLE
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_STAGE_TABLE
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_TABLE
@@ -57,14 +56,13 @@ import isel.leic.ps.eduWikiAPI.repository.LectureDAOImpl.Companion.LECTURE_REPOR
 import isel.leic.ps.eduWikiAPI.repository.LectureDAOImpl.Companion.LECTURE_STAGE_TABLE
 import isel.leic.ps.eduWikiAPI.repository.LectureDAOImpl.Companion.LECTURE_TABLE
 import isel.leic.ps.eduWikiAPI.repository.interfaces.*
-import isel.leic.ps.eduWikiAPI.service.interfaces.ClassService
-import isel.leic.ps.eduWikiAPI.service.interfaces.ResourceStorageService
+import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.ClassService
+import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.ResourceStorageService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
-import java.lang.Exception
 import java.security.Principal
 
 @Service

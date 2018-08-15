@@ -1,4 +1,4 @@
-package isel.leic.ps.eduWikiAPI.service
+package isel.leic.ps.eduWikiAPI.service.eduWikiService
 
 import isel.leic.ps.eduWikiAPI.domain.enums.ActionType
 import isel.leic.ps.eduWikiAPI.domain.inputModel.CourseInputModel
@@ -34,8 +34,7 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.CourseVersionOu
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.ExamVersionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.WorkAssignmentVersionOutputModel
 import isel.leic.ps.eduWikiAPI.eventListeners.events.*
-import isel.leic.ps.eduWikiAPI.exceptions.NotFoundException
-import isel.leic.ps.eduWikiAPI.repository.*
+import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.NotFoundException
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_REPORT_TABLE
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_STAGE_TABLE
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_TABLE
@@ -48,9 +47,8 @@ import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_A
 import isel.leic.ps.eduWikiAPI.repository.interfaces.CourseDAO
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ExamDAO
 import isel.leic.ps.eduWikiAPI.repository.interfaces.WorkAssignmentDAO
-import isel.leic.ps.eduWikiAPI.service.interfaces.CourseService
-import isel.leic.ps.eduWikiAPI.service.interfaces.ResourceStorageService
-import org.jdbi.v3.core.Jdbi
+import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.CourseService
+import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.ResourceStorageService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service

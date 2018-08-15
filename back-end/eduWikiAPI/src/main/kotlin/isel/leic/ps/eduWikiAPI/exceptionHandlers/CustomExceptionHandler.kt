@@ -1,7 +1,7 @@
 package isel.leic.ps.eduWikiAPI.exceptionHandlers
 
 import isel.leic.ps.eduWikiAPI.domain.outputModel.error.ErrorOutputModel
-import isel.leic.ps.eduWikiAPI.exceptions.*
+import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.*
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus

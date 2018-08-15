@@ -1,4 +1,4 @@
-package isel.leic.ps.eduWikiAPI.service.interfaces
+package isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.OrganizationInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.VoteInputModel
@@ -10,7 +10,6 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.Organizati
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.OrganizationReportOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.OrganizationVersionOutputModel
 import java.security.Principal
-import java.util.*
 
 interface OrganizationService {
 

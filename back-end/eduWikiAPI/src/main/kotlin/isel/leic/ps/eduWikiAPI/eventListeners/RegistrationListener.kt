@@ -1,13 +1,10 @@
 package isel.leic.ps.eduWikiAPI.eventListeners
 
 import isel.leic.ps.eduWikiAPI.domain.model.ValidationToken
-import isel.leic.ps.eduWikiAPI.mailSender.EmailService
-import isel.leic.ps.eduWikiAPI.repository.TokenDAOImpl
+import isel.leic.ps.eduWikiAPI.service.mailSender.EmailService
 import isel.leic.ps.eduWikiAPI.eventListeners.events.OnRegistrationEvent
 import isel.leic.ps.eduWikiAPI.repository.interfaces.TokenDAO
-import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.event.TransactionalEventListener
