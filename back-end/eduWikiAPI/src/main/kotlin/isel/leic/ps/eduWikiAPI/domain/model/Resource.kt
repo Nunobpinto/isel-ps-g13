@@ -1,10 +1,10 @@
 package isel.leic.ps.eduWikiAPI.domain.model
 
-import isel.leic.ps.eduWikiAPI.repository.ResourceDAOJdbi.Companion.RESOURCE_BYTE_SEQUENCE
-import isel.leic.ps.eduWikiAPI.repository.ResourceDAOJdbi.Companion.RESOURCE_CONTENT_TYPE
-import isel.leic.ps.eduWikiAPI.repository.ResourceDAOJdbi.Companion.RESOURCE_ORIGINAL_FILENAME
-import isel.leic.ps.eduWikiAPI.repository.ResourceDAOJdbi.Companion.RESOURCE_UUID
-import isel.leic.ps.eduWikiAPI.repository.ResourceDAOJdbi.Companion.RESOURCE_SIZE
+import isel.leic.ps.eduWikiAPI.repository.ResourceDAOImpl.Companion.RESOURCE_BYTE_SEQUENCE
+import isel.leic.ps.eduWikiAPI.repository.ResourceDAOImpl.Companion.RESOURCE_CONTENT_TYPE
+import isel.leic.ps.eduWikiAPI.repository.ResourceDAOImpl.Companion.RESOURCE_ORIGINAL_FILENAME
+import isel.leic.ps.eduWikiAPI.repository.ResourceDAOImpl.Companion.RESOURCE_UUID
+import isel.leic.ps.eduWikiAPI.repository.ResourceDAOImpl.Companion.RESOURCE_SIZE
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.util.*
 

@@ -12,20 +12,20 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.Organizati
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.OrganizationReportOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.OrganizationVersionOutputModel
 
-fun toOrganization(organizationInputModel: OrganizationInputModel/*, user: String*/) = Organization(
+fun toOrganization(organizationInputModel: OrganizationInputModel, user: String) = Organization(
         fullName = organizationInputModel.fullName,
         shortName = organizationInputModel.shortName,
         address = organizationInputModel.address,
-        //createdBy = user,
+        createdBy = user,
         contact = organizationInputModel.contact
 )
 
-fun toOrganizationReport(organizationId: Int, input: OrganizationReportInputModel/*, principal: String*/) = OrganizationReport(
+fun toOrganizationReport(organizationId: Int, input: OrganizationReportInputModel, principal: String) = OrganizationReport(
         fullName = input.fullName,
         shortName = input.shortName,
         address = input.address,
         contact = input.contact,
-        //reportedBy = principal,
+        reportedBy = principal,
         organizationId = organizationId
 )
 

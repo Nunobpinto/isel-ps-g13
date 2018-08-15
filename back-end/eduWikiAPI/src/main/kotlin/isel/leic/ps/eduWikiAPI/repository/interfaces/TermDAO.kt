@@ -8,7 +8,7 @@ interface TermDAO {
      * Main entities queries
      */
 
-    fun getTerm(termId: Int) : Optional<Term>?
+    fun getTerm(termId: Int) : Optional<Term>
 
     fun getAllTerms() : List<Term>
 }

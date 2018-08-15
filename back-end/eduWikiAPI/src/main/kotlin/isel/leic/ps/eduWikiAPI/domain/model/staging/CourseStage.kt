@@ -1,13 +1,13 @@
 package isel.leic.ps.eduWikiAPI.domain.model.staging
 
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_STAGE_ID
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_STAGE_CREATED_BY
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_STAGE_FULL_NAME
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_STAGE_LOG_ID
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_STAGE_ORG_ID
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_STAGE_SHORT_NAME
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_STAGE_TIMESTAMP
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_STAGE_VOTES
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_STAGE_ID
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_STAGE_CREATED_BY
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_STAGE_FULL_NAME
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_STAGE_LOG_ID
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_STAGE_ORG_ID
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_STAGE_SHORT_NAME
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_STAGE_TIMESTAMP
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_STAGE_VOTES
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.sql.Timestamp
 import java.time.LocalDateTime

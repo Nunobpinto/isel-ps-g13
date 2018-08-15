@@ -1,8 +1,8 @@
 package isel.leic.ps.eduWikiAPI.domain.model
 
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_TERM_COURSE_ID
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_TERM_TERM_ID
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOJdbi.Companion.COURSE_TERM_TIMESTAMP
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_TERM_COURSE_ID
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_TERM_TERM_ID
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_TERM_TIMESTAMP
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.sql.Timestamp
 import java.time.LocalDateTime

@@ -1,11 +1,10 @@
 package isel.leic.ps.eduWikiAPI.domain.model
 
 import org.jdbi.v3.core.mapper.reflect.ColumnName
-import isel.leic.ps.eduWikiAPI.repository.TokenDAOJdbi.Companion.VALIDATION_TOKEN_ID
-import isel.leic.ps.eduWikiAPI.repository.TokenDAOJdbi.Companion.VALIDATION_TOKEN
-import isel.leic.ps.eduWikiAPI.repository.TokenDAOJdbi.Companion.VALIDATION_TOKEN_DATE
+import isel.leic.ps.eduWikiAPI.repository.TokenDAOImpl.Companion.VALIDATION_TOKEN_ID
+import isel.leic.ps.eduWikiAPI.repository.TokenDAOImpl.Companion.VALIDATION_TOKEN
+import isel.leic.ps.eduWikiAPI.repository.TokenDAOImpl.Companion.VALIDATION_TOKEN_DATE
 import java.sql.Timestamp
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 import java.util.*

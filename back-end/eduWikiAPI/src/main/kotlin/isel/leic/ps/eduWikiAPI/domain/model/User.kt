@@ -1,12 +1,12 @@
 package isel.leic.ps.eduWikiAPI.domain.model
 
-import isel.leic.ps.eduWikiAPI.repository.UserDAOJdbi.Companion.USER_FAMILY_NAME
-import isel.leic.ps.eduWikiAPI.repository.UserDAOJdbi.Companion.USER_GIVEN_NAME
-import isel.leic.ps.eduWikiAPI.repository.UserDAOJdbi.Companion.USER_ORG_EMAIL
-import isel.leic.ps.eduWikiAPI.repository.UserDAOJdbi.Companion.USER_PASSWORD
-import isel.leic.ps.eduWikiAPI.repository.UserDAOJdbi.Companion.USER_PERSONAL_EMAIL
-import isel.leic.ps.eduWikiAPI.repository.UserDAOJdbi.Companion.USER_USERNAME
-import isel.leic.ps.eduWikiAPI.repository.UserDAOJdbi.Companion.USER_CONFIRMED_FLAG
+import isel.leic.ps.eduWikiAPI.repository.UserDAOImpl.Companion.USER_FAMILY_NAME
+import isel.leic.ps.eduWikiAPI.repository.UserDAOImpl.Companion.USER_GIVEN_NAME
+import isel.leic.ps.eduWikiAPI.repository.UserDAOImpl.Companion.USER_ORG_EMAIL
+import isel.leic.ps.eduWikiAPI.repository.UserDAOImpl.Companion.USER_PASSWORD
+import isel.leic.ps.eduWikiAPI.repository.UserDAOImpl.Companion.USER_PERSONAL_EMAIL
+import isel.leic.ps.eduWikiAPI.repository.UserDAOImpl.Companion.USER_USERNAME
+import isel.leic.ps.eduWikiAPI.repository.UserDAOImpl.Companion.USER_CONFIRMED_FLAG
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 
 data class User (

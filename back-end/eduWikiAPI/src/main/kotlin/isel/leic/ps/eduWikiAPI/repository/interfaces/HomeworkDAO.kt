@@ -1,7 +1,6 @@
 package isel.leic.ps.eduWikiAPI.repository.interfaces
 
 import isel.leic.ps.eduWikiAPI.domain.model.Homework
-import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.domain.model.report.HomeworkReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.HomeworkStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.HomeworkVersion
@@ -35,7 +34,7 @@ interface HomeworkDAO {
 
     fun createReportOnHomework(homeworkReport: HomeworkReport): HomeworkReport
 
-    fun updateVotesOnReportedLecture(lectureId: Any, reportId: Int, votes: Int): Int
+    fun updateVotesOnReportedHomework(homeworkId: Int, reportId: Int, votes: Int): Int
 
     fun deleteSpecificReportOnHomeworkOfCourseInClass(courseClassId: Int, homeworkId: Int, reportId: Int): Int
 

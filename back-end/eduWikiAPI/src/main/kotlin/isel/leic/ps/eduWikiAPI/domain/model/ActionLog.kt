@@ -1,12 +1,12 @@
 package isel.leic.ps.eduWikiAPI.domain.model
 
 import isel.leic.ps.eduWikiAPI.domain.enums.ActionType
-import isel.leic.ps.eduWikiAPI.repository.ReputationDAOJdbi.Companion.ACTION_LOG_ACTION
-import isel.leic.ps.eduWikiAPI.repository.ReputationDAOJdbi.Companion.ACTION_LOG_ENTITY
-import isel.leic.ps.eduWikiAPI.repository.ReputationDAOJdbi.Companion.ACTION_LOG_ID
-import isel.leic.ps.eduWikiAPI.repository.ReputationDAOJdbi.Companion.ACTION_LOG_LOG_ID
-import isel.leic.ps.eduWikiAPI.repository.ReputationDAOJdbi.Companion.ACTION_LOG_TIMESTAMP
-import isel.leic.ps.eduWikiAPI.repository.ReputationDAOJdbi.Companion.ACTION_LOG_USER
+import isel.leic.ps.eduWikiAPI.repository.ReputationDAOImpl.Companion.ACTION_LOG_ACTION
+import isel.leic.ps.eduWikiAPI.repository.ReputationDAOImpl.Companion.ACTION_LOG_ENTITY
+import isel.leic.ps.eduWikiAPI.repository.ReputationDAOImpl.Companion.ACTION_LOG_ID
+import isel.leic.ps.eduWikiAPI.repository.ReputationDAOImpl.Companion.ACTION_LOG_LOG_ID
+import isel.leic.ps.eduWikiAPI.repository.ReputationDAOImpl.Companion.ACTION_LOG_TIMESTAMP
+import isel.leic.ps.eduWikiAPI.repository.ReputationDAOImpl.Companion.ACTION_LOG_USER
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.sql.Timestamp
 

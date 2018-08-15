@@ -1,13 +1,13 @@
 package isel.leic.ps.eduWikiAPI.domain.model.report;
 
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_ID
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_NAME
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_REPORTED_BY
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_REPORT_ID
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_REPORT_LOG_ID
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_TERM_ID
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_TIMESTAMP
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOJdbi.Companion.CLASS_VOTES
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_NAME
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_REPORTED_BY
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_REPORT_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_REPORT_LOG_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_TERM_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_TIMESTAMP
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_VOTES
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.sql.Timestamp
 import java.time.LocalDateTime

@@ -1,7 +1,7 @@
 package isel.leic.ps.eduWikiAPI.domain.model
 
-import isel.leic.ps.eduWikiAPI.repository.ReputationDAOJdbi.Companion.REPUTATION_MATCHER_ID
-import isel.leic.ps.eduWikiAPI.repository.ReputationDAOJdbi.Companion.REPUTATION_MATCHER_URI
+import isel.leic.ps.eduWikiAPI.repository.ReputationDAOImpl.Companion.REPUTATION_MATCHER_ID
+import isel.leic.ps.eduWikiAPI.repository.ReputationDAOImpl.Companion.REPUTATION_MATCHER_URI
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 
 class ReputationMatcher(

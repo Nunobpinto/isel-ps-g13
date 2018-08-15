@@ -1,9 +1,9 @@
 package isel.leic.ps.eduWikiAPI.domain.model
 
-import isel.leic.ps.eduWikiAPI.repository.ReputationDAOJdbi.Companion.REPUTATION_ROLE_HIERARCHY_LEVEL
-import isel.leic.ps.eduWikiAPI.repository.ReputationDAOJdbi.Companion.REPUTATION_ROLE_ID
-import isel.leic.ps.eduWikiAPI.repository.ReputationDAOJdbi.Companion.REPUTATION_ROLE_MAX_POINTS
-import isel.leic.ps.eduWikiAPI.repository.ReputationDAOJdbi.Companion.REPUTATION_ROLE_MIN_POINTS
+import isel.leic.ps.eduWikiAPI.repository.ReputationDAOImpl.Companion.REPUTATION_ROLE_HIERARCHY_LEVEL
+import isel.leic.ps.eduWikiAPI.repository.ReputationDAOImpl.Companion.REPUTATION_ROLE_ID
+import isel.leic.ps.eduWikiAPI.repository.ReputationDAOImpl.Companion.REPUTATION_ROLE_MAX_POINTS
+import isel.leic.ps.eduWikiAPI.repository.ReputationDAOImpl.Companion.REPUTATION_ROLE_MIN_POINTS
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 import org.springframework.security.core.GrantedAuthority
 
