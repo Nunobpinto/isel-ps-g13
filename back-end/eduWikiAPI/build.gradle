@@ -44,25 +44,31 @@ configurations.all {
 }
 
 dependencies {
+//	Security dependencies
 	compile('org.springframework.security:spring-security-core:5.0.6.RELEASE')
 	compile('org.springframework.security:spring-security-config:5.0.6.RELEASE')
 	compile('org.springframework.security:spring-security-web:5.0.6.RELEASE')
+//	Basic dependencies
 	compile('org.springframework.boot:spring-boot-starter-web')
+//	Data access dependencies
 	compile('org.springframework.boot:spring-boot-starter-jdbc')
-	compile('org.jdbi:jdbi3-testing:3.2.0')
     compile('org.jdbi:jdbi3-core:3.2.0')
 	compile('org.jdbi:jdbi3-kotlin:3.2.0')
 	compile('org.jdbi:jdbi3-postgres:3.2.1')
 	compile('org.jdbi:jdbi3-sqlobject:3.3.0')
 	compile('org.jdbi:jdbi3-kotlin-sqlobject:3.3.0')
+	runtime('org.postgresql:postgresql')
 	compile('com.fasterxml.jackson.module:jackson-module-kotlin')
+//	Programming languages dependencies
 	compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	compile("org.jetbrains.kotlin:kotlin-reflect")
+//	Swagger documentation dependencies
 	compile('io.springfox:springfox-swagger2:2.7.0')
 	compile('io.springfox:springfox-swagger-ui:2.7.0')
-	compile group: 'org.springframework', name: 'spring-context-support', version: '5.0.1.RELEASE'
-	compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.0.3.RELEASE'
-	runtime('org.postgresql:postgresql')
+//	Mail sender dependencies
+	compile('org.springframework:spring-context-support:5.0.1.RELEASE')
+	compile('org.springframework.boot:spring-boot-starter-mail:2.0.3.RELEASE')
+//	Unit testing dependencies
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('com.h2database:h2:1.4.197')
 }
