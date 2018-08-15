@@ -1,16 +1,17 @@
-package isel.ps.eduwikimobile.domain.model
+package isel.ps.eduwikimobile.domain.model.collection
 
 import android.os.Parcel
 import android.os.Parcelable
+import isel.ps.eduwikimobile.domain.model.single.Programme
 
-data class ProgrammeCollection (
-        val programmes: List<Programme>
-): Parcelable {
-    constructor(parcel: Parcel) : this(parcel.createTypedArrayList(Programme)) {
+class ProgrammeCollection (
+        val programmeList: Array<Programme>
+) : Parcelable {
+    constructor(parcel: Parcel) : this(parcel.createTypedArray(Programme)) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeTypedList(programmes)
+        parcel.writeTypedArray(programmeList, flags)
     }
 
     override fun describeContents(): Int {
