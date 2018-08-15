@@ -1,43 +1,37 @@
-package isel.ps.eduwikimobile.domain.model
+package isel.ps.eduwikimobile.domain.model.single
 
 import android.os.Parcel
 import android.os.Parcelable
 import java.sql.Timestamp
 
-data class Programme (
-        val programmeId: Int = 0,
-        val version: Int = 1,
-        val username: String = "",
+data class Course (
+        val courseId: Int = 0,
+        val organizationId: Int = 0,
+        val version: Int = 0,
+        val createdBy: String = "",
         val fullName: String = "",
         val shortName: String = "",
-        val academicDegree: String = "",
-        val totalCredits: Int = 0,
-        val duration: Int = 0,
         val votes: Int = 0,
         val timestamp: Timestamp? = null
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
             parcel.readInt(),
             parcel.readInt(),
-            parcel.readString(),
-            parcel.readString(),
-            parcel.readString(),
-            parcel.readString(),
             parcel.readInt(),
-            parcel.readInt(),
+            parcel.readString(),
+            parcel.readString(),
+            parcel.readString(),
             parcel.readInt(),
             TODO("timestamp")) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(programmeId)
+        parcel.writeInt(courseId)
+        parcel.writeInt(organizationId)
         parcel.writeInt(version)
-        parcel.writeString(username)
+        parcel.writeString(createdBy)
         parcel.writeString(fullName)
         parcel.writeString(shortName)
-        parcel.writeString(academicDegree)
-        parcel.writeInt(totalCredits)
-        parcel.writeInt(duration)
         parcel.writeInt(votes)
     }
 
@@ -45,13 +39,17 @@ data class Programme (
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<Programme> {
-        override fun createFromParcel(parcel: Parcel): Programme {
-            return Programme(parcel)
+    companion object CREATOR : Parcelable.Creator<Course> {
+        override fun createFromParcel(parcel: Parcel): Course {
+            return Course(parcel)
         }
 
-        override fun newArray(size: Int): Array<Programme?> {
+        override fun newArray(size: Int): Array<Course?> {
             return arrayOfNulls(size)
         }
+    }
+
+    override fun toString(): String {
+        return "Course"
     }
 }
