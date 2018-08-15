@@ -1,9 +1,6 @@
 package isel.leic.ps.eduWikiAPI.configuration.security.authorization
 
-import isel.leic.ps.eduWikiAPI.repository.interfaces.ReputationDAO
-import org.jdbi.v3.core.Jdbi
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
+import isel.leic.ps.eduWikiAPI.configuration.security.authorization.ReputationRole.*
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -15,14 +12,22 @@ import org.springframework.security.web.FilterInvocation
 @Component
 class AuthorizationConfig {
 
-    @Autowired
-    lateinit var reputationDAO: ReputationDAO
+    companion object {
+        // Defines which roles include include other roles
+        val ROLE_HIERARCHY = "$ROLE_ADMIN > $ROLE_BEGINNER > $ROLE_UNCONFIRMED"
+        // Defines access control for each resource in API
+        val REPUTATION_MATCHERS = mapOf(
+                "/**" to ROLE_BEGINNER
+        )
+    }
 
     fun configureRequestAuthorizations(http: HttpSecurity) {
         // Define role hierarchy
         http.authorizeRequests().expressionHandler(webExpressionHandler())
         // Match roles to URIs
-        reputationDAO.getReputationMatchers().forEach { http.authorizeRequests().antMatchers(it.UriMatch).hasRole(it.reputationId.removePrefix("ROLE_")) }
+        REPUTATION_MATCHERS.forEach {
+            http.authorizeRequests().antMatchers(it.key).hasRole(it.value.name.removePrefix("ROLE_"))
+        }
     }
 
     private fun webExpressionHandler(): SecurityExpressionHandler<FilterInvocation> {
@@ -34,15 +39,7 @@ class AuthorizationConfig {
     @Bean
     fun roleHierarchy(): RoleHierarchyImpl {
         val roleHierarchy = RoleHierarchyImpl()
-
-        var roleHierarchyString = ""
-        val roles = reputationDAO.getAllReputationRoles()
-        roles.forEachIndexed { index, reputationRole ->
-            roleHierarchyString += reputationRole.reputationRoleId
-            if(index < roles.size - 1) roleHierarchyString += " > "
-        }
-
-        roleHierarchy.setHierarchy(roleHierarchyString)
+        roleHierarchy.setHierarchy(ROLE_HIERARCHY)
         return roleHierarchy
     }
 

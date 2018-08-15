@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.service
 
+import isel.leic.ps.eduWikiAPI.configuration.security.authorization.ReputationRole
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserCourseClassInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserProgrammeInputModel
@@ -83,9 +84,8 @@ class UserServiceImpl : UserService {
                 userDAO.deleteUser(username)
                 throw ExceededValidationException()
             }
-            val role = reputationDAO.getRoleByHierarchyLevel(1)
-                    .orElseThrow {NotFoundException("No role found", "Try othr Hierarchy level") }
-            reputationDAO.updateUserRole(username, role.minPoints, role.reputationRoleId)
+            val role = ReputationRole.ROLE_BEGINNER
+            reputationDAO.updateUserRole(username, role.minPoints, role.name)
             val userChanged = userDAO.confirmUser(username)
             return toAuthUserOutputModel(userChanged)
     }

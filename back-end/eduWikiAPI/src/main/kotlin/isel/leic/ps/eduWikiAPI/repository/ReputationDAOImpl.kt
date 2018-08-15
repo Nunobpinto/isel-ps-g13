@@ -1,6 +1,5 @@
 package isel.leic.ps.eduWikiAPI.repository
 
-import isel.leic.ps.eduWikiAPI.domain.model.ReputationMatcher
 import isel.leic.ps.eduWikiAPI.domain.enums.ActionType
 import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ReputationDAO
@@ -55,20 +54,11 @@ class ReputationDAOImpl : ReputationDAO {
     @Autowired
     lateinit var jdbi: Jdbi
 
-    override fun getReputationRoleOfUser(username: String): Optional<ReputationRole> =
+    override fun getReputationRoleOfUser(username: String): Optional<String> =
             jdbi.open().attach(ReputationDAOJdbi::class.java).getReputationRoleOfUser(username)
-
-    override fun getAllReputationRoles(): List<ReputationRole> =
-            jdbi.open().attach(ReputationDAOJdbi::class.java).getAllReputationRoles()
-
-    override fun getReputationMatchers(): List<ReputationMatcher> =
-            jdbi.open().attach(ReputationDAOJdbi::class.java).getReputationMatchers()
 
     override fun getUserReputationDetails(user: String): Optional<ReputationDetails> =
             jdbi.open().attach(ReputationDAOJdbi::class.java).getUserReputationDetails(user)
-
-    override fun getRoleByHierarchyLevel(level: Int): Optional<ReputationRole> =
-            jdbi.open().attach(ReputationDAOJdbi::class.java).getRoleByHierarchyLevel(level)
 
     override fun createUserReputation(reputation: Reputation): Reputation =
             jdbi.open().attach(ReputationDAOJdbi::class.java).createUserReputation(reputation)
@@ -92,23 +82,12 @@ class ReputationDAOImpl : ReputationDAO {
 
     internal interface ReputationDAOJdbi : ReputationDAO {
         @SqlQuery(
-                "SELECT " +
-                        "rr.$REPUTATION_ROLE_ID, " +
-                        "rr.$REPUTATION_ROLE_MAX_POINTS, " +
-                        "rr.$REPUTATION_ROLE_MIN_POINTS, " +
-                        "rr.$REPUTATION_ROLE_HIERARCHY_LEVEL " +
-                        "FROM $USER_TABLE as u " +
-                        "INNER JOIN $REPUTATION_TABLE as r ON r.$REPUTATION_USER = u.$USER_USERNAME " +
-                        "INNER JOIN $REPUTATION_ROLE_TABLE as rr ON r.$REPUTATION_ROLE = rr.$REPUTATION_ROLE_ID " +
-                        "WHERE u.$USER_USERNAME = :username"
+                "SELECT R.$REPUTATION_ROLE " +
+                        "FROM $USER_TABLE as U " +
+                        "INNER JOIN $REPUTATION_TABLE as R ON R.$REPUTATION_USER = U.$USER_USERNAME " +
+                        "WHERE U.$USER_USERNAME = :username"
         )
-        override fun getReputationRoleOfUser(username: String): Optional<ReputationRole>
-
-        @SqlQuery("SELECT * FROM $REPUTATION_ROLE_TABLE ORDER BY $REPUTATION_ROLE_HIERARCHY_LEVEL DESC")
-        override fun getAllReputationRoles(): List<ReputationRole>
-
-        @SqlQuery("SELECT * FROM $REPUTATION_MATCHER_TABLE")
-        override fun getReputationMatchers(): List<ReputationMatcher>
+        override fun getReputationRoleOfUser(username: String): Optional<String>
 
         @SqlUpdate(
                 "INSERT INTO $REPUTATION_TABLE (" +
@@ -122,9 +101,6 @@ class ReputationDAOImpl : ReputationDAO {
                         ")")
         @GetGeneratedKeys
         override fun createUserReputation(reputation: Reputation): Reputation
-
-        @SqlQuery("SELECT * FROM $REPUTATION_ROLE_TABLE WHERE $REPUTATION_ROLE_HIERARCHY_LEVEL = :level")
-        override fun getRoleByHierarchyLevel(level: Int): Optional<ReputationRole>
 
         @SqlUpdate("UPDATE $REPUTATION_TABLE " +
                 "SET $REPUTATION_ROLE = :role, " +

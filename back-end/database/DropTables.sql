@@ -108,10 +108,6 @@ DROP TABLE IF EXISTS user_programme;
 
 DROP TABLE IF EXISTS reputation;
 
-DROP TABLE IF EXISTS reputation_matcher;
-
-DROP TABLE IF EXISTS reputation_role;
-
 DROP TABLE IF EXISTS course_term;
 
 DROP TABLE IF EXISTS course_class;

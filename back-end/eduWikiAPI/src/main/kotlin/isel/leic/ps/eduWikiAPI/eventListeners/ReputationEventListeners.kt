@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.eventListeners
 
+import isel.leic.ps.eduWikiAPI.configuration.security.authorization.ReputationRole
 import isel.leic.ps.eduWikiAPI.domain.enums.ActionType
 import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.eventListeners.events.*
@@ -27,7 +28,7 @@ class ReputationEventListeners {
         const val APPROVED_REPORT_POINTS = 5
         const val REJECTED_REPORT_POINTS = - 5
     }
-    
+
     @Autowired
     lateinit var reputationDAO: ReputationDAO
 
@@ -169,63 +170,7 @@ class ReputationEventListeners {
         // Change creator's reputation based on vote
         val pointsGiven = if(actionLog.actionType == ActionType.VOTE_UP) VOTE_UP_POINTS else VOTE_DOWN_POINTS
         changeUserReputation(actionLog.actionId, event.owner, event.voter, pointsGiven, event)
-        /*
-        publisher.publishEvent(ReputationUpdateEvent(
-        owner = event.owner,
-        givenBy = event.voter,
-        pointsGiven = pointsGiven,
-        actionId = actionLog.actionId
-        ))
-        */
     }
-
-    /*
-        @Async
-        @TransactionalEventListener/*(phase = TransactionPhase.BEFORE_COMMIT)*/
-        fun handleReputationUpdateEvent(event: ReputationUpdateEvent) {
-            jdbi.useTransaction<Exception> {
-                val reputationDAO = it.attach(ReputationDAOJdbi::class.java)
-                // Get owner's reputation details
-                val ownerRepDetails = reputationDAO.getUserReputationDetails(event.owner)
-                        .orElseThrow { ReputationUpdateException("Could not get ${event.owner} reputation details", event) }
-
-                // Log reputation change
-                reputationDAO.registerReputationLog(
-                        ownerRepDetails.user,
-                        ownerRepDetails.repId,
-                        event.pointsGiven,
-                        event.givenBy,
-                        event.actionId
-                )
-
-                val newPoints = ownerRepDetails.points + event.pointsGiven
-                val roles = reputationDAO.getAllReputationRoles().filter { it.hierarchyLevel > 0 }
-
-                when {
-                // If reputation is lower than minimum value, reset it
-                    newPoints < MIN_ALLOWED_POINTS -> {
-                        val firstRole = roles.last()
-                        ownerRepDetails.role = firstRole.reputationRoleId
-                        ownerRepDetails.points = firstRole.minPoints
-                    }
-                // If reputation has reached peak, stop increasing
-                    newPoints > roles.first().maxPoints -> {
-                        val maxRole = roles.first()
-                        ownerRepDetails.role = maxRole.reputationRoleId
-                        ownerRepDetails.points = maxRole.maxPoints
-                    }
-                // Resolve new role if that's the case
-                    else -> {
-                        val newRole = roles.find { newPoints <= it.maxPoints && newPoints >= it.minPoints }
-                                ?: throw ReputationUpdateException("Error finding new role for reputation $newPoints", event)
-                        ownerRepDetails.role = newRole.reputationRoleId
-                        ownerRepDetails.points = newPoints
-                    }
-                }
-                reputationDAO.updateUserReputation(ownerRepDetails)
-            }
-        }
-    */
 
     private fun changeUserReputation(actionId: Int, owner: String, givenBy: String, pointsGiven: Int, event: Any) {
         // Get owner's reputation details
@@ -242,26 +187,26 @@ class ReputationEventListeners {
         )
 
         val newPoints = ownerRepDetails.points + pointsGiven
-        val roles = reputationDAO.getAllReputationRoles().filter { it.hierarchyLevel > 0 }
+        val roles = ReputationRole.values().filter { it.hierarchyLevel > 0 }
 
         when {
         // If reputation is lower than minimum value, reset it
             newPoints < MIN_ALLOWED_POINTS -> {
                 val firstRole = roles.last()
-                ownerRepDetails.role = firstRole.reputationRoleId
+                ownerRepDetails.role = firstRole.name
                 ownerRepDetails.points = firstRole.minPoints
             }
         // If reputation has reached peak, stop increasing
             newPoints > roles.first().maxPoints -> {
                 val maxRole = roles.first()
-                ownerRepDetails.role = maxRole.reputationRoleId
+                ownerRepDetails.role = maxRole.name
                 ownerRepDetails.points = maxRole.maxPoints
             }
         // Resolve new role if that's the case
             else -> {
                 val newRole = roles.find { newPoints <= it.maxPoints && newPoints >= it.minPoints }
                         ?: throw ReputationUpdateException("Error finding new role for reputation $newPoints", event)
-                ownerRepDetails.role = newRole.reputationRoleId
+                ownerRepDetails.role = newRole.name
                 ownerRepDetails.points = newPoints
             }
         }

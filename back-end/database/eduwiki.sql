@@ -211,24 +211,10 @@ CREATE TABLE IF NOT EXISTS user_account (
   PRIMARY KEY (user_username)
 );
 
-CREATE TABLE IF NOT EXISTS reputation_role (
-  reputation_role_id VARCHAR,
-  max_points INTEGER NOT NULL, 
-  min_points INTEGER NOT NULL, 
-  hierarchy_level INTEGER NOT NULL,
-  PRIMARY KEY (reputation_role_id)
-);
-
-CREATE TABLE IF NOT EXISTS reputation_matcher (
-  uri_match VARCHAR NOT NULL,
-  reputation_role_id VARCHAR REFERENCES reputation_role,
-  PRIMARY KEY (uri_match, reputation_role_id)
-);
-
 CREATE TABLE IF NOT EXISTS reputation (
   reputation_id SERIAL,
   points INTEGER NOT NULL,
-  role VARCHAR REFERENCES reputation_role NOT NULL, 
+  role VARCHAR NOT NULL, 
   user_username varchar(20) REFERENCES user_account ON DELETE CASCADE,
   PRIMARY KEY (reputation_id, user_username)
 );
