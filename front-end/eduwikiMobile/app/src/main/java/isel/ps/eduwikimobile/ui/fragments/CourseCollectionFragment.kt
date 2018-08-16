@@ -46,13 +46,13 @@ class CourseCollectionFragment : Fragment() {
         return view
     }
 
-    fun fetchCourseItems() {
+    private fun fetchCourseItems() {
         AppController.actionHandler(
                 AppController.ALL_COURSES,
                 CourseCollectionParametersContainer(
                         app = activity.applicationContext as EduWikiApplication,
                         successCb = { courses ->
-                            courseList.addAll(courses.courseProgrammeList)
+                            courseList.addAll(courses.courseList)
                             cAdapter.notifyDataSetChanged()
                             recyclerView.visibility = View.VISIBLE;
                             courses_progress_bar.visibility = View.GONE;

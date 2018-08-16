@@ -44,7 +44,7 @@ class ProgrammeCollectionFragment : Fragment() {
         return view
     }
 
-    fun fetchProgrammeItems() {
+    private fun fetchProgrammeItems() {
         AppController.actionHandler(
                 AppController.ALL_PROGRAMMES,
                 ProgrammeCollectionParametersContainer(

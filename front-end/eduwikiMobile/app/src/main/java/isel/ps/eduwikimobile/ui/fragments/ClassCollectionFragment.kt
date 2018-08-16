@@ -11,33 +11,33 @@ import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
-import isel.ps.eduwikimobile.adapters.CourseListAdapter
+import isel.ps.eduwikimobile.adapters.ClassListAdapter
 import isel.ps.eduwikimobile.controller.AppController
-import isel.ps.eduwikimobile.domain.model.single.Course
-import isel.ps.eduwikimobile.paramsContainer.CourseProgrammeCollectionParametersContainer
-import kotlinx.android.synthetic.main.courses_fragment.*
+import isel.ps.eduwikimobile.domain.model.single.Class
+import isel.ps.eduwikimobile.paramsContainer.ClassCollectionParametersContainer
+import kotlinx.android.synthetic.main.classes_fragment.*
 
-class CoursesOfProgrammeFragment : Fragment() {
+class ClassCollectionFragment : Fragment() {
 
     lateinit var app: EduWikiApplication
     private lateinit var recyclerView: RecyclerView
-    private lateinit var coursesOfProgrammeList: MutableList<Course>
-    private lateinit var cAdapter: CourseListAdapter
+    private lateinit var classList: MutableList<Class>
+    private lateinit var classAdapter: ClassListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         app = activity.applicationContext as EduWikiApplication
-        coursesOfProgrammeList = ArrayList()
+        classList = ArrayList()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view: View = inflater.inflate(R.layout.courses_fragment, container, false)
+        val view: View = inflater.inflate(R.layout.classes_fragment, container, false)
         recyclerView = view.findViewById(R.id.recycler_view)
 
-        fetchCoursesOfProgramme(app.programmeId!!)
+        fetchClassItems()
 
-        cAdapter = CourseListAdapter(context, coursesOfProgrammeList)
-        recyclerView.adapter = cAdapter
+        classAdapter = ClassListAdapter(context, classList)
+        recyclerView.adapter = classAdapter
 
         val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(activity)
         recyclerView.layoutManager = layoutManager
@@ -46,17 +46,16 @@ class CoursesOfProgrammeFragment : Fragment() {
         return view
     }
 
-    private fun fetchCoursesOfProgramme(programmeId: Int) {
+    private fun fetchClassItems() {
         AppController.actionHandler(
-                AppController.ALL_COURSES_OF_SPECIFIC_PROGRAMME,
-                CourseProgrammeCollectionParametersContainer(
-                        programmeId = programmeId,
+                AppController.ALL_CLASSES,
+                ClassCollectionParametersContainer(
                         app = activity.applicationContext as EduWikiApplication,
-                        successCb = { courses ->
-                            coursesOfProgrammeList.addAll(courses.courseProgrammeList)
-                            cAdapter.notifyDataSetChanged()
+                        successCb = { classes ->
+                            classList.addAll(classes.classList)
+                            classAdapter.notifyDataSetChanged()
                             recyclerView.visibility = View.VISIBLE;
-                            courses_progress_bar.visibility = View.GONE;
+                            classes_progress_bar.visibility = View.GONE;
                         },
                         errorCb = { error -> Toast.makeText(app, "Error" + error.message, LENGTH_LONG).show() }
                 )

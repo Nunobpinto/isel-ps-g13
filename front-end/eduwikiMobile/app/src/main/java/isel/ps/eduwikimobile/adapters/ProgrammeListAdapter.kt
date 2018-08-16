@@ -12,10 +12,7 @@ import isel.ps.eduwikimobile.ui.activities.MainActivity
 
 class ProgrammeListAdapter(var context: Context, var list: MutableList<Programme>) : RecyclerView.Adapter<ProgrammeListAdapter.ListViewHolder>() {
 
-    var parent: ViewGroup? = null
-
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ListViewHolder {
-        this.parent = parent
         val view: View = LayoutInflater.from(parent!!.context).inflate(R.layout.programme_item_row, parent, false)
         val newHolder = ListViewHolder(view)
 

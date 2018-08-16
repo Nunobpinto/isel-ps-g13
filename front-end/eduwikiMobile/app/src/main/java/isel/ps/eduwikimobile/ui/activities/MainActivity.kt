@@ -6,7 +6,6 @@ import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
-import android.view.Display
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.ui.fragments.*
 
@@ -42,7 +41,7 @@ class MainActivity : AppCompatActivity() {
             R.id.navigation_classes -> {
                 toolbar.title = "Classes"
                 toolbar.subtitle = ""
-                fragment = ClassesFragment()
+                fragment = ClassCollectionFragment()
                 loadFragment(fragment)
                 return@OnNavigationItemSelectedListener true
             }
@@ -75,10 +74,10 @@ class MainActivity : AppCompatActivity() {
         map = HashMap()
         map.put("Programme", ProgrammeFragment())
         map.put("Course", CourseFragment())
+        map.put("Class", ClassFragment())
     }
 
     fun <T> navigateToListItem (item: T) {
-        val name = item.toString()
         val mFragment = map[item.toString()]
         val mBundle = Bundle()
         mBundle.putParcelable("item_selected", item as Parcelable);

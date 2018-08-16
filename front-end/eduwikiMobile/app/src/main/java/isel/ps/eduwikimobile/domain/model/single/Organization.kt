@@ -4,46 +4,37 @@ import android.os.Parcel
 import android.os.Parcelable
 import java.sql.Timestamp
 
-data class Course (
-        val courseId: Int = 0,
+data class Organization (
         val organizationId: Int = 0,
-        val programmeId: Int? = null,
         val version: Int = 0,
         val createdBy: String = "",
         val fullName: String = "",
         val shortName: String = "",
-        val lecturedTerm: String? = null,
-        val optional: Boolean? = null,
-        val credits: Int? = null,
+        val address: String = "",
+        val contact: String = "",
         val votes: Int = 0,
         val timestamp: Timestamp? = null
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
             parcel.readInt(),
             parcel.readInt(),
-            parcel.readValue(Int::class.java.classLoader) as? Int,
-            parcel.readInt(),
             parcel.readString(),
             parcel.readString(),
             parcel.readString(),
             parcel.readString(),
-            parcel.readValue(Boolean::class.java.classLoader) as? Boolean,
-            parcel.readValue(Int::class.java.classLoader) as? Int,
+            parcel.readString(),
             parcel.readInt(),
             TODO("timestamp")) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(courseId)
         parcel.writeInt(organizationId)
-        parcel.writeValue(programmeId)
         parcel.writeInt(version)
         parcel.writeString(createdBy)
         parcel.writeString(fullName)
         parcel.writeString(shortName)
-        parcel.writeString(lecturedTerm)
-        parcel.writeValue(optional)
-        parcel.writeValue(credits)
+        parcel.writeString(address)
+        parcel.writeString(contact)
         parcel.writeInt(votes)
     }
 
@@ -51,17 +42,13 @@ data class Course (
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<Course> {
-        override fun createFromParcel(parcel: Parcel): Course {
-            return Course(parcel)
+    companion object CREATOR : Parcelable.Creator<Organization> {
+        override fun createFromParcel(parcel: Parcel): Organization {
+            return Organization(parcel)
         }
 
-        override fun newArray(size: Int): Array<Course?> {
+        override fun newArray(size: Int): Array<Organization?> {
             return arrayOfNulls(size)
         }
-    }
-
-    override fun toString(): String {
-        return "Course"
     }
 }
