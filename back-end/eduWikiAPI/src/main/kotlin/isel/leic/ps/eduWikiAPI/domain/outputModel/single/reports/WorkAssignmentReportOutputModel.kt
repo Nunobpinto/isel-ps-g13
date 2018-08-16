@@ -8,6 +8,7 @@ import java.util.*
 data class WorkAssignmentReportOutputModel (
         val reportId: Int = -1,
         val workAssignmentId: Int = 0,
+        val phase: String = "",
         val sheetId: UUID? = null,
         val supplementId: UUID? = null,
         val dueDate: LocalDate? = null,

@@ -11,8 +11,7 @@ import java.util.*
 data class ExamStageOutputModel (
         val stagedId: Int = 0,
         val version: Int = 0,
-        @JsonProperty("createdBy")
-        val username: String = "",
+        val createdBy: String = "",
         val fullName: String = "",
         val sheet: String = "",
         val dueDate: LocalDate = LocalDate.now(),

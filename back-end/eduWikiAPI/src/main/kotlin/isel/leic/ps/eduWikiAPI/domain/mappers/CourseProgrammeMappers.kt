@@ -107,7 +107,7 @@ fun toCourseProgrammeStageOutputModel(courseProgrammeStage: CourseProgrammeStage
         courseId = courseProgrammeStage.courseId,
         votes = courseProgrammeStage.votes,
         timestamp = courseProgrammeStage.timestamp,
-        username = courseProgrammeStage.createdBy,
+        createdBy = courseProgrammeStage.createdBy,
         programmeId = courseProgrammeStage.programmeId,
         optional = courseProgrammeStage.optional,
         credits = courseProgrammeStage.credits,

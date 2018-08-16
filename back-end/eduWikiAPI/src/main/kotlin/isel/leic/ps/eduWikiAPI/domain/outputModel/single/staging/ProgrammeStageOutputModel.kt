@@ -6,8 +6,7 @@ import java.time.LocalDateTime
 
 class ProgrammeStageOutputModel(
         val stagedId: Int = 0,
-        @JsonProperty("createdBy")
-        val username: String = "",
+        val createdBy: String = "",
         val fullName: String = "",
         val shortName: String = "",
         val academicDegree: String = "",

@@ -7,6 +7,7 @@ import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_A
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_VERSION_INDIVIDUAL
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_VERSION_LATE_DELIVERY
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_VERSION_MULTIPLE_DELIVERIES
+import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_VERSION_PHASE
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_VERSION_REQUIRES_REPORT
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_VERSION_SHEET_ID
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_VERSION_SUPPLEMENT
@@ -22,6 +23,8 @@ data class WorkAssignmentVersion (
         val version: Int = 1,
         @ColumnName(WORK_ASSIGNMENT_VERSION_WORK_ASSIGN_ID)
         val workAssignmentId: Int = 0,
+        @ColumnName(WORK_ASSIGNMENT_VERSION_PHASE)
+        val phase: String? = null,
         @ColumnName(WORK_ASSIGNMENT_VERSION_SHEET_ID)
         val sheetId: UUID = UUID.randomUUID(),
         @ColumnName(WORK_ASSIGNMENT_VERSION_SUPPLEMENT)

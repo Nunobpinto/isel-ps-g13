@@ -8,6 +8,7 @@ import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_A
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_LATE_DELIVERY
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_LOG_ID
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_MULTIPLE_DELIVERIES
+import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_PHASE
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_REQUIRES_REPORT
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_SHEET_ID
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_SUPPLEMENT
@@ -30,6 +31,8 @@ data class WorkAssignment (
         val votes: Int = 0,
         @ColumnName(WORK_ASSIGNMENT_CREATED_BY)
         val createdBy: String = "",
+        @ColumnName(WORK_ASSIGNMENT_PHASE)
+        val phase: String? = null,
         @ColumnName(WORK_ASSIGNMENT_SHEET_ID)
         val sheetId:  UUID = UUID.randomUUID(),
         @ColumnName(WORK_ASSIGNMENT_SUPPLEMENT)

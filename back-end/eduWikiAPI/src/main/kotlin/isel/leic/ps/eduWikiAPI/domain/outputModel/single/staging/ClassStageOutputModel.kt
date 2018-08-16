@@ -7,8 +7,7 @@ import java.time.LocalDateTime
 data class ClassStageOutputModel(
         val stagedId: Int = 0,
         val version: Int = 0,
-        @JsonProperty("createdBy")
-        val username: String = "",
+        val createdBy: String = "",
         val className: String = "",
         val lecturedTerm: String = "",
         val termId: Int = 0,

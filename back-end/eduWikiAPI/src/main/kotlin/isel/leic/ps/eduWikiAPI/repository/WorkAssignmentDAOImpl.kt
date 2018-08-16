@@ -50,6 +50,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         const val WORK_ASSIGNMENT_VOTES = "votes"
         const val WORK_ASSIGNMENT_TIMESTAMP = "time_stamp"
         const val WORK_ASSIGNMENT_CREATED_BY = "created_by"
+        const val WORK_ASSIGNMENT_PHASE = "phase"
         const val WORK_ASSIGNMENT_LOG_ID = "log_id"
 
         // WORK ASSIGNMENT STAGE FIELDS
@@ -62,6 +63,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         const val WORK_ASSIGNMENT_STAGE_LATE_DELIVERY = "late_delivery"
         const val WORK_ASSIGNMENT_STAGE_MULTIPLE_DELIVERIES = "multipleDeliveries"
         const val WORK_ASSIGNMENT_STAGE_REQUIRES_REPORT = "requires_report"
+        const val WORK_ASSIGNMENT_STAGE_PHASE = "phase"
         const val WORK_ASSIGNMENT_STAGE_VOTES = "votes"
         const val WORK_ASSIGNMENT_STAGE_TIMESTAMP = "time_stamp"
         const val WORK_ASSIGNMENT_STAGE_LOG_ID = "log_id"
@@ -72,6 +74,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         const val WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID = "work_assignment_id"
         const val WORK_ASSIGNMENT_REPORTED_BY = "reported_by"
         const val WORK_ASSIGNMENT_REPORT_SHEET_ID = "sheet_id"
+        const val WORK_ASSIGNMENT_REPORT_PHASE = "phase"
         const val WORK_ASSIGNMENT_REPORT_SUPPLEMENT = "supplement_id"
         const val WORK_ASSIGNMENT_REPORT_DUE_DATE = "due_date"
         const val WORK_ASSIGNMENT_REPORT_INDIVIDUAL = "individual"
@@ -87,6 +90,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         const val WORK_ASSIGNMENT_VERSION_ID = "work_assignment_version"
         const val WORK_ASSIGNMENT_VERSION_CREATED_BY = "created_by"
         const val WORK_ASSIGNMENT_VERSION_SHEET_ID = "sheet_id"
+        const val WORK_ASSIGNMENT_VERSION_PHASE = "phase"
         const val WORK_ASSIGNMENT_VERSION_SUPPLEMENT = "supplement_id"
         const val WORK_ASSIGNMENT_VERSION_DUE_DATE = "due_date"
         const val WORK_ASSIGNMENT_VERSION_INDIVIDUAL = "individual"
@@ -164,6 +168,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         @SqlQuery(
                 "SELECT W.$WORK_ASSIGNMENT_ID," +
                         "W.$WORK_ASSIGNMENT_VERSION," +
+                        "W.$WORK_ASSIGNMENT_PHASE, " +
                         "W.$WORK_ASSIGNMENT_CREATED_BY, " +
                         "W.$WORK_ASSIGNMENT_VOTES, " +
                         "W.$WORK_ASSIGNMENT_SHEET_ID, " +
@@ -191,6 +196,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         @SqlUpdate(
                 "UPDATE $WORK_ASSIGNMENT_TABLE SET " +
                         "$WORK_ASSIGNMENT_VERSION = :workAssignment.version, " +
+                        "$WORK_ASSIGNMENT_PHASE = :workAssignment.phase" +
                         "$WORK_ASSIGNMENT_CREATED_BY = :workAssignment.createdBy, " +
                         "$WORK_ASSIGNMENT_SHEET_ID = :workAssignment.sheetId, " +
                         "$WORK_ASSIGNMENT_SUPPLEMENT = :workAssignment.supplementId, " +
@@ -230,6 +236,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_VERSION, " +
                         "W.$WORK_ASSIGNMENT_VOTES," +
                         "W.$WORK_ASSIGNMENT_CREATED_BY, " +
+                        "W.$WORK_ASSIGNMENT_PHASE, " +
                         "W.$WORK_ASSIGNMENT_SHEET_ID, " +
                         "W.$WORK_ASSIGNMENT_SUPPLEMENT, " +
                         "W.$WORK_ASSIGNMENT_DUE_DATE," +
@@ -250,6 +257,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         @SqlQuery(
                 "SELECT W.$WORK_ASSIGNMENT_STAGE_ID, " +
                         "W.$WORK_ASSIGNMENT_STAGE_CREATED_BY, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_PHASE, " +
                         "W.$WORK_ASSIGNMENT_STAGE_SHEET_ID, " +
                         "W.$WORK_ASSIGNMENT_STAGE_SUPPLEMENT, " +
                         "W.$WORK_ASSIGNMENT_STAGE_DUE_DATE, " +
@@ -271,6 +279,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         @SqlQuery(
                 "SELECT W.$WORK_ASSIGNMENT_STAGE_ID, " +
                         "W.$WORK_ASSIGNMENT_STAGE_SHEET_ID," +
+                        "W.$WORK_ASSIGNMENT_STAGE_PHASE, " +
                         "W.$WORK_ASSIGNMENT_STAGE_SUPPLEMENT, " +
                         "W.$WORK_ASSIGNMENT_STAGE_DUE_DATE, " +
                         "W.$WORK_ASSIGNMENT_STAGE_INDIVIDUAL, " +
@@ -293,6 +302,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         @SqlQuery(
                 "SELECT W.$WORK_ASSIGNMENT_REPORT_ID, " +
                         "W.$WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID, " +
+                        "W.$WORK_ASSIGNMENT_REPORT_PHASE, " +
                         "W.$WORK_ASSIGNMENT_REPORT_SHEET_ID, " +
                         "W.$WORK_ASSIGNMENT_REPORT_SUPPLEMENT, " +
                         "W.$WORK_ASSIGNMENT_REPORT_DUE_DATE, " +
@@ -318,6 +328,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "$WORK_ASSIGNMENT_ID, " +
                         "$WORK_ASSIGNMENT_VERSION, " +
                         "$WORK_ASSIGNMENT_CREATED_BY, " +
+                        "$WORK_ASSIGNMENT_PHASE, " +
                         "$WORK_ASSIGNMENT_SHEET_ID, " +
                         "$WORK_ASSIGNMENT_SUPPLEMENT, " +
                         "$WORK_ASSIGNMENT_DUE_DATE, " +
@@ -328,7 +339,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "$WORK_ASSIGNMENT_VOTES, " +
                         "$WORK_ASSIGNMENT_TIMESTAMP) " +
                         "VALUES(:courseMiscUnitId, :workAssignment.version, :workAssignment.createdBy, " +
-                        ":workAssignment.sheetId, :workAssignment.supplementId, :workAssignment.dueDate," +
+                        ":workAssignment.phase, :workAssignment.sheetId, :workAssignment.supplementId, :workAssignment.dueDate," +
                         ":workAssignment.individual, :workAssignment.lateDelivery, :workAssignment.multipleDeliveries, " +
                         ":workAssignment.requiresReport, :workAssignment.votes, :workAssignment.timestamp)"
         )
@@ -349,6 +360,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                 "INSERT INTO $WORK_ASSIGNMENT_REPORT_TABLE (" +
                         "$WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID, " +
                         "$WORK_ASSIGNMENT_REPORT_SHEET_ID, " +
+                        "$WORK_ASSIGNMENT_REPORT_PHASE, " +
                         "$WORK_ASSIGNMENT_REPORT_SUPPLEMENT, " +
                         "$WORK_ASSIGNMENT_REPORT_DUE_DATE, " +
                         "$WORK_ASSIGNMENT_REPORT_INDIVIDUAL, " +
@@ -358,10 +370,11 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "$WORK_ASSIGNMENT_REPORTED_BY, " +
                         "$WORK_ASSIGNMENT_REPORT_VOTES, " +
                         "$WORK_ASSIGNMENT_REPORT_TIMESTAMP) " +
-                        "VALUES(:workAssignmentId, :workAssignmentReport.sheetId, :workAssignmentReport.supplementId, " +
-                        ":workAssignmentReport.dueDate, :workAssignmentReport.individual, :workAssignmentReport.lateDelivery, " +
-                        ":workAssignmentReport.multipleDeliveries, :workAssignmentReport.requiresReport, " +
-                        ":workAssignmentReport.reportedBy, :workAssignmentReport.votes, :workAssignmentReport.timestamp)"
+                        "VALUES(:workAssignmentId, :workAssignmentReport.sheetId, :workAssignmentReport.phase," +
+                        ":workAssignmentReport.supplementId, :workAssignmentReport.dueDate, :workAssignmentReport.individual," +
+                        ":workAssignmentReport.lateDelivery, :workAssignmentReport.multipleDeliveries, " +
+                        ":workAssignmentReport.requiresReport, :workAssignmentReport.reportedBy, " +
+                        ":workAssignmentReport.votes, :workAssignmentReport.timestamp)"
         )
         @GetGeneratedKeys
         override fun addReportToWorkAssignmentOnCourseInTerm(workAssignmentId: Int, workAssignmentReport: WorkAssignmentReport): WorkAssignmentReport
@@ -375,6 +388,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         @SqlQuery(
                 "SELECT W.$WORK_ASSIGNMENT_REPORT_ID, " +
                         "W.$WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID, " +
+                        "W.$WORK_ASSIGNMENT_REPORT_PHASE, " +
                         "W.$WORK_ASSIGNMENT_REPORT_SHEET_ID, " +
                         "W.$WORK_ASSIGNMENT_REPORT_SUPPLEMENT, " +
                         "W.$WORK_ASSIGNMENT_REPORT_DUE_DATE, " +
@@ -400,6 +414,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                 "INSERT INTO $WORK_ASSIGNMENT_VERSION_TABLE ( " +
                         "$WORK_ASSIGNMENT_VERSION_WORK_ASSIGN_ID," +
                         "$WORK_ASSIGNMENT_VERSION, " +
+                        "$WORK_ASSIGNMENT_VERSION_PHASE, " +
                         "$WORK_ASSIGNMENT_VERSION_SHEET_ID, " +
                         "$WORK_ASSIGNMENT_VERSION_SUPPLEMENT, " +
                         "$WORK_ASSIGNMENT_VERSION_DUE_DATE, " +
@@ -411,7 +426,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "$WORK_ASSIGNMENT_VERSION_TIMESTAMP " +
                         ") " +
                         "VALUES (:workAssignmentVersion.workAssignmentId, :workAssignmentVersion.version, " +
-                        ":workAssignmentVersion.sheetId, :workAssignmentVersion.supplementId, " +
+                        ":workAssignmentVersion.phase ,:workAssignmentVersion.sheetId, :workAssignmentVersion.supplementId, " +
                         ":workAssignmentVersion.dueDate, :workAssignmentVersion.individual, " +
                         ":workAssignmentVersion.lateDelivery, :workAssignmentVersion.multipleDeliveries, " +
                         ":workAssignmentVersion.requiresReport, :workAssignmentVersion.createdBy, :workAssignmentVersion.timestamp)"
@@ -422,6 +437,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         @SqlUpdate(
                 "INSERT INTO $WORK_ASSIGNMENT_STAGE_TABLE (" +
                         "$WORK_ASSIGNMENT_STAGE_ID, " +
+                        "$WORK_ASSIGNMENT_STAGE_PHASE, " +
                         "$WORK_ASSIGNMENT_STAGE_SHEET_ID, " +
                         "$WORK_ASSIGNMENT_STAGE_SUPPLEMENT, " +
                         "$WORK_ASSIGNMENT_STAGE_DUE_DATE, " +
@@ -432,7 +448,8 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "$WORK_ASSIGNMENT_STAGE_CREATED_BY, " +
                         "$WORK_ASSIGNMENT_STAGE_VOTES, " +
                         "$WORK_ASSIGNMENT_STAGE_TIMESTAMP) " +
-                        "VALUES(:stageId, :workAssignmentStage.sheetId, :workAssignmentStage.supplementId, :workAssignmentStage.dueDate," +
+                        "VALUES(:stageId, :workAssignmentStage.sheetId, :workAssignmentStage.phase," +
+                        ":workAssignmentStage.supplementId, :workAssignmentStage.dueDate," +
                         ":workAssignmentStage.individual, :workAssignmentStage.lateDelivery, " +
                         ":workAssignmentStage.multipleDeliveries, :workAssignmentStage.requiresReport, " +
                         ":workAssignmentStage.createdBy, :workAssignmentStage.votes, :workAssignmentStage.timestamp)"
@@ -460,6 +477,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                 "SELECT * " +
                         "W.$WORK_ASSIGNMENT_VERSION_WORK_ASSIGN_ID," +
                         "W.$WORK_ASSIGNMENT_VERSION, " +
+                        "W.$WORK_ASSIGNMENT_VERSION_PHASE, " +
                         "W.$WORK_ASSIGNMENT_VERSION_SHEET_ID, " +
                         "W.$WORK_ASSIGNMENT_VERSION_SUPPLEMENT, " +
                         "W.$WORK_ASSIGNMENT_VERSION_DUE_DATE, " +
@@ -480,6 +498,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                 "SELECT * " +
                         "W.$WORK_ASSIGNMENT_VERSION_WORK_ASSIGN_ID," +
                         "W.$WORK_ASSIGNMENT_VERSION, " +
+                        "W.$WORK_ASSIGNMENT_VERSION_PHASE, " +
                         "W.$WORK_ASSIGNMENT_VERSION_SHEET_ID, " +
                         "W.$WORK_ASSIGNMENT_VERSION_SUPPLEMENT, " +
                         "W.$WORK_ASSIGNMENT_VERSION_DUE_DATE, " +

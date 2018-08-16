@@ -7,8 +7,7 @@ import java.time.LocalDateTime
 import java.util.*
 
 data class HomeworkVersionOutputModel(
-        @JsonProperty("createdBy")
-        val username: String = "",
+        val createdBy: String = "",
         val version: Int = 1,
         val homeworkId: Int = 0,
         val sheetId: UUID = UUID.randomUUID(),
