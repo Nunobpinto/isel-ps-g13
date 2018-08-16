@@ -36,6 +36,7 @@ import isel.leic.ps.eduWikiAPI.repository.interfaces.CourseDAO
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ProgrammeDAO
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ReputationDAO
 import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.ProgrammeService
+import isel.leic.ps.eduWikiAPI.utils.resolveApproval
 import isel.leic.ps.eduWikiAPI.utils.resolveVote
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationEventPublisher
@@ -199,6 +200,8 @@ class ProgrammeServiceImpl : ProgrammeService {
     override fun createProgrammeFromStaged(stageId: Int, principal: Principal): ProgrammeOutputModel {
         val programmeStage = programmeDAO.getSpecificStageEntryOfProgramme(stageId)
                 .orElseThrow { NotFoundException("No Programme Staged Found", "Try with other id") }
+        resolveApproval(principal.name, programmeStage.createdBy)
+
         val createdProgramme = programmeDAO.createProgramme(stagedToProgramme(programmeStage))
         programmeDAO.deleteSpecificStagedProgramme(stageId)
         programmeDAO.createProgrammeVersion(toProgrammeVersion(createdProgramme))
@@ -285,6 +288,7 @@ class ProgrammeServiceImpl : ProgrammeService {
                 .orElseThrow { NotFoundException("No programme found", "Try with other id") }
         val report = programmeDAO.getSpecificReportOfProgramme(programmeId, reportId)
                 .orElseThrow { NotFoundException("No report found", "Try with other id") }
+        resolveApproval(principal.name, report.reportedBy)
 
         val res = programmeDAO.updateProgramme(programmeId, Programme(
                 version = programme.version.inc(),
@@ -462,6 +466,7 @@ class ProgrammeServiceImpl : ProgrammeService {
     override fun createCourseProgrammeFromStaged(programmeId: Int, stageId: Int, principal: Principal): CourseProgrammeOutputModel {
         val courseProgrammeStage = courseDAO.getSpecificStagedCourseProgramme(programmeId, stageId)
                 .orElseThrow { NotFoundException("No staged version of course with this id in this programme", "Search other staged version") }
+        resolveApproval(principal.name, courseProgrammeStage.createdBy)
 
         val courseProgramme = courseDAO.addCourseToProgramme(programmeId, stagedToCourseProgramme(programmeId, courseProgrammeStage))
         courseDAO.deleteStagedCourseProgramme(stageId)
@@ -557,6 +562,7 @@ class ProgrammeServiceImpl : ProgrammeService {
                 .orElseThrow { NotFoundException("Can't specified course in programme", "Try other ids") }
         val report = courseDAO.getSpecificReportOfCourseProgramme(programmeId, courseId, reportId)
                 .orElseThrow { NotFoundException("Can't find the specified report for this course in programme", "Search other report") }
+        resolveApproval(principal.name, report.reportedBy)
 
 
         val updatedCourseProgramme = CourseProgramme(
@@ -583,7 +589,7 @@ class ProgrammeServiceImpl : ProgrammeService {
         }
         publisher.publishEvent(ResourceApprovedEvent(
                 principal.name,
-                ActionType.APPROVE_STAGE,
+                ActionType.APPROVE_REPORT,
                 COURSE_PROGRAMME_REPORT_TABLE,
                 report.logId,
                 report.reportedBy,

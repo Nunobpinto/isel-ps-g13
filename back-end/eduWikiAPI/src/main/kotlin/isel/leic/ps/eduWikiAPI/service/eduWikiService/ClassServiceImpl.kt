@@ -59,6 +59,7 @@ import isel.leic.ps.eduWikiAPI.repository.LectureDAOImpl.Companion.LECTURE_TABLE
 import isel.leic.ps.eduWikiAPI.repository.interfaces.*
 import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.ClassService
 import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.ResourceStorageService
+import isel.leic.ps.eduWikiAPI.utils.resolveApproval
 import isel.leic.ps.eduWikiAPI.utils.resolveVote
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationEventPublisher
@@ -236,6 +237,7 @@ class ClassServiceImpl : ClassService {
                 .orElseThrow { NotFoundException("No class found", "Try other ID") }
         val report = classDAO.getSpecificReportFromClass(classId, reportId)
                 .orElseThrow { NotFoundException("No class report found", "Try other ID") }
+        resolveApproval(principal.name, report.reportedBy)
 
         val updatedClass = classDAO.updateClass(Class(
                 classId = classId,
@@ -309,6 +311,8 @@ class ClassServiceImpl : ClassService {
         //TODO: Don't delete stage, flag it!
         val classStaged = classDAO.getSpecificStagedClass(stageId)
                 .orElseThrow { NotFoundException("No class stage found", "Try other ID") }
+        resolveApproval(principal.name, classStaged.createdBy)
+
         val createdClass = classDAO.createClass(stagedToClass(classStaged))
         classDAO.deleteSpecificStagedClass(stageId)
         classDAO.createClassVersion(toClassVersion(createdClass))
@@ -487,6 +491,7 @@ class ClassServiceImpl : ClassService {
                 .orElseThrow { NotFoundException("No course in class found", "Try other id") }
         val courseClassReport = classDAO.getSpecificReportOfCourseInClass(reportId, classId, courseId)
                 .orElseThrow { NotFoundException("No course in class report found", "Try other id") }
+        resolveApproval(principal.name, courseClassReport.reportedBy)
 
         classDAO.deleteSpecificReportOnCourseClass(courseClass.courseClassId, reportId)
         classDAO.deleteSpecificCourseInClass(classId, courseId)
@@ -594,6 +599,7 @@ class ClassServiceImpl : ClassService {
                 .orElseThrow { NotFoundException("No class found", "Try other id") }
         val courseClassStage = classDAO.getSpecificStagedCourseInClass(classId, stageId)
                 .orElseThrow { NotFoundException("No staged course in class found", "Try other staged id") }
+        resolveApproval(principal.name, courseClassStage.createdBy)
 
         val created = classDAO.addCourseToClass(stagedToCourseClass(courseClassStage))
         val term = getTerm(klass.termId)
@@ -811,6 +817,7 @@ class ClassServiceImpl : ClassService {
                 .orElseThrow { NotFoundException("No Lecture found", "Try another id") }
         val lectureReport = lectureDAO.getSpecificReportOfLectureFromCourseInClass(courseClassId, lectureId, reportId)
                 .orElseThrow { NotFoundException("No Lecture report found", "Try another id") }
+        resolveApproval(principal.name, lectureReport.reportedBy)
 
         val res = lectureDAO.updateLecture(Lecture(
                 lectureId = lectureId,
@@ -922,6 +929,8 @@ class ClassServiceImpl : ClassService {
                 .courseClassId
         val stagedLecture = lectureDAO.getSpecificStagedLectureOfCourseInClass(courseClassId, stageId)
                 .orElseThrow { NotFoundException("No Lecture stage found", "Try another id") }
+        resolveApproval(principal.name, stagedLecture.createdBy)
+
         val createdLecture = lectureDAO.createLectureOnCourseInClass(courseClassId, stagedToLecture(stagedLecture))
         lectureDAO.deleteSpecificStagedLectureOfCourseInClass(courseClassId, stageId)
         lectureDAO.createLectureVersion(toLectureVersion(createdLecture))
@@ -1090,6 +1099,8 @@ class ClassServiceImpl : ClassService {
                 .courseClassId
         val stagedHomework = homeworkDAO.getSpecificStagedHomeworkOfCourseInClass(courseClassId, stageId)
                 .orElseThrow { NotFoundException("No staged homework", "Try with other stage id") }
+        resolveApproval(principal.name, stagedHomework.createdBy)
+
 
         val createdHomework = homeworkDAO.createHomeworkOnCourseInClass(courseClassId, stagedToHomework(stagedHomework))
         homeworkDAO.deleteSpecificStagedHomeworkOfCourseInClass(courseClassId, stageId)
@@ -1205,6 +1216,7 @@ class ClassServiceImpl : ClassService {
                 .orElseThrow { NotFoundException("No homework found", "Try other id") }
         val homeworkReport = homeworkDAO.getSpecificReportOfHomeworkFromCourseInClass(courseClassId, homeworkId, reportId)
                 .orElseThrow { NotFoundException("No homework report found", "Try other id") }
+        resolveApproval(principal.name, homeworkReport.reportedBy)
 
         val res = homeworkDAO.updateHomework(Homework(
                 homeworkId = homeworkId,

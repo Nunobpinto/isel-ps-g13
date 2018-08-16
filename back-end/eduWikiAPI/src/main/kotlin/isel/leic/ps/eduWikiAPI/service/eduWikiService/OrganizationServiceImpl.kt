@@ -21,6 +21,7 @@ import isel.leic.ps.eduWikiAPI.repository.OrganizationDAOImpl.Companion.ORGANIZA
 import isel.leic.ps.eduWikiAPI.repository.OrganizationDAOImpl.Companion.ORGANIZATION_VERSION_TABLE
 import isel.leic.ps.eduWikiAPI.repository.interfaces.OrganizationDAO
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ReputationDAO
+import isel.leic.ps.eduWikiAPI.utils.resolveApproval
 import isel.leic.ps.eduWikiAPI.utils.resolveVote
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -198,6 +199,8 @@ class OrganizationServiceImpl : OrganizationService {
                 .orElseThrow { NotFoundException("No organization found", "Try other ID") }
         val report = organizationDAO.getSpecificReportOnOrganization(organizationId, reportId)
                 .orElseThrow { NotFoundException("No organization found", "Try other ID") }
+        resolveApproval(principal.name, report.reportedBy)
+
         val updatedOrganization = organizationDAO.updateOrganization(Organization(
                 organizationId = prevOrganization.organizationId,
                 version = prevOrganization.version.inc(),
@@ -213,7 +216,7 @@ class OrganizationServiceImpl : OrganizationService {
 
         publisher.publishEvent(ResourceApprovedEvent(
                 principal.name,
-                ActionType.APPROVE_STAGE,
+                ActionType.APPROVE_REPORT,
                 ORGANIZATION_REPORT_TABLE,
                 report.logId,
                 report.reportedBy,

@@ -10,3 +10,7 @@ fun resolveVote(voter: String, owner: String, pastActions: List<ActionLog>) {
     if(pastActions.any { it.actionType == ActionType.VOTE_DOWN || it.actionType == ActionType.VOTE_UP })
         throw ForbiddenException("Can't vote more than once on same resource", "Try voting on something else")
 }
+
+fun resolveApproval(admin: String, owner: String) {
+    if(admin == owner) throw ForbiddenException("You can't approve your own stages/reports", "Since you're and admin, you can now create and update resources directly")
+}

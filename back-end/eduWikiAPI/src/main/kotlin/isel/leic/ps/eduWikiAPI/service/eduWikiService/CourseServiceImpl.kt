@@ -50,6 +50,7 @@ import isel.leic.ps.eduWikiAPI.repository.interfaces.ReputationDAO
 import isel.leic.ps.eduWikiAPI.repository.interfaces.WorkAssignmentDAO
 import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.CourseService
 import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.ResourceStorageService
+import isel.leic.ps.eduWikiAPI.utils.resolveApproval
 import isel.leic.ps.eduWikiAPI.utils.resolveVote
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationEventPublisher
@@ -198,6 +199,8 @@ class CourseServiceImpl : CourseService {
     override fun createCourseFromStaged(stageId: Int, principal: Principal): CourseOutputModel {
         val courseStage = courseDAO.getCourseSpecificStageEntry(stageId)
                 .orElseThrow { NotFoundException("No staged course found", "Try again with other stage id") }
+        resolveApproval(principal.name, courseStage.createdBy)
+
         val createdCourse = courseDAO.createCourse(stagedToCourse(courseStage))
         courseDAO.deleteStagedCourse(stageId)
         courseDAO.createCourseVersion(toCourseVersion(createdCourse))
@@ -305,6 +308,7 @@ class CourseServiceImpl : CourseService {
                 .orElseThrow { NotFoundException("No course found", "Try another id") }
         val report = courseDAO.getSpecificReportOfCourse(courseId, reportId)
                 .orElseThrow { NotFoundException("No report found", "Try again with other report id") }
+        resolveApproval(principal.name, report.reportedBy)
 
         val updatedCourse = courseDAO.updateCourse(Course(
                 courseId = courseId,
@@ -340,7 +344,7 @@ class CourseServiceImpl : CourseService {
         publisher.publishEvent(ResourceRejectedEvent(
                 principal.name,
                 courseReport.reportedBy,
-                ActionType.APPROVE_REPORT,
+                ActionType.REJECT_REPORT,
                 COURSE_REPORT_TABLE,
                 courseReport.logId
         ))
@@ -500,6 +504,7 @@ class CourseServiceImpl : CourseService {
     override fun createExamFromStaged(courseId: Int, termId: Int, stageId: Int, principal: Principal): ExamOutputModel {
         val examStage = examDAO.getStageEntryFromExamOnSpecificTermOfCourse(courseId, termId, stageId)
                 .orElseThrow { NotFoundException("No exam staged found", "Try again with other staged id") }
+        resolveApproval(principal.name, examStage.createdBy)
 
         val exam = examDAO.createExamOnCourseInTerm(courseId, termId, stagedToExam(examStage))
         examDAO.createExamVersion(toExamVersion(exam))
@@ -611,6 +616,7 @@ class CourseServiceImpl : CourseService {
                 .orElseThrow { NotFoundException("No exam found", "Try again with other ids") }
         val report = examDAO.getSpecificReportOnExamOnSpecificTermOfCourse(courseId, termId, examId, reportId)
                 .orElseThrow { NotFoundException("No report found", "Try again with other ids") }
+        resolveApproval(principal.name, report.reportedBy)
 
         val updatedExam = examDAO.updateExam(examId, Exam(
                 examId = exam.examId,
@@ -788,6 +794,7 @@ class CourseServiceImpl : CourseService {
     override fun createWorkAssignmentFromStaged(courseId: Int, termId: Int, stageId: Int, principal: Principal): WorkAssignmentOutputModel {
         val workAssignmentStage = workAssignmentDAO.getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId, termId, stageId)
                 .orElseThrow { NotFoundException("No Work Assignment Staged found", "Try again with other stage id") }
+        resolveApproval(principal.name, workAssignmentStage.createdBy)
 
         val workAssignment = workAssignmentDAO.createWorkAssignmentOnCourseInTerm(courseId, termId, stagedToWorkAssignment(workAssignmentStage))
         workAssignmentDAO.createWorkAssignmentVersion(toWorkAssignmentVersion(workAssignment))
@@ -909,6 +916,8 @@ class CourseServiceImpl : CourseService {
                 .orElseThrow { NotFoundException("No report found", "Try again with other report id") }
         val report = workAssignmentDAO.getSpecificReportOfWorkAssignment(termId, courseId, workAssignmentId, reportId)
                 .orElseThrow { NotFoundException("No report found", "Try again with other report id") }
+        resolveApproval(principal.name, report.reportedBy)
+
         val updatedWorkAssignment = workAssignmentDAO.updateWorkAssignment(workAssignmentId, WorkAssignment(
                 workAssignmentId = workAssignmentId,
                 version = workAssignment.version.inc(),
