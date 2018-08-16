@@ -14,59 +14,37 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestControllerAdvice
 class CustomExceptionHandler : ResponseEntityExceptionHandler() {
 
-    @ExceptionHandler(value = [(NoSuchElementException::class)])
-    fun handleNoSuchElementException(
-            ex: NoSuchElementException,
-            request: WebRequest
-    ): ResponseEntity<ErrorOutputModel> {
-        val httpHeaders = HttpHeaders()
-        httpHeaders.contentType = MediaType.APPLICATION_PROBLEM_JSON_UTF8
-        return ResponseEntity(
-                ErrorOutputModel(
-                        title = "Not Found",
-                        detail = ex.message ?: "Could not find the resource you wanted",
-                        status = 404,
-                        type = "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
-                ),
-                httpHeaders,
-                HttpStatus.NOT_FOUND
-        )
-    }
-
-    @ExceptionHandler(value = [(OwnAccessDeniedException::class)])
-    fun handleAccessDeniedException(
-            ex: OwnAccessDeniedException,
-            request: WebRequest
-    ): ResponseEntity<ErrorOutputModel> {
-        val httpHeaders = HttpHeaders()
-        httpHeaders.contentType = MediaType.APPLICATION_PROBLEM_JSON_UTF8
-        return ResponseEntity(
-                ErrorOutputModel(
-                        title = "Forbidden",
-                        detail = ex.msg,
-                        status = 403,
-                        type = "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
-                ),
-                httpHeaders,
-                HttpStatus.FORBIDDEN)
-    }
-
     @ExceptionHandler(value = [(NotFoundException::class)])
-    fun handleNotFoundException(
-            ex: NotFoundException,
-            request: WebRequest
-    ): ResponseEntity<ErrorOutputModel> {
+    fun handleNotFoundException(ex: NotFoundException): ResponseEntity<ErrorOutputModel> {
         val httpHeaders = HttpHeaders()
         httpHeaders.contentType = MediaType.APPLICATION_PROBLEM_JSON_UTF8
         return ResponseEntity(
                 ErrorOutputModel(
-                        title = "Not Found",
-                        detail = "Could not find the resource you wanted",
+                        title = ex.title,
+                        detail = ex.detail,
                         status = 404,
                         type = "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
                 ),
                 httpHeaders,
                 HttpStatus.NOT_FOUND)
+    }
+
+    @ExceptionHandler(value = [(ForbiddenException::class)])
+    fun handleAccessDeniedException(
+            ex: ForbiddenException,
+            request: WebRequest
+    ): ResponseEntity<ErrorOutputModel> {
+        val httpHeaders = HttpHeaders()
+        httpHeaders.contentType = MediaType.APPLICATION_PROBLEM_JSON_UTF8
+        return ResponseEntity(
+                ErrorOutputModel(
+                        title = ex.title,
+                        detail = ex.detail,
+                        status = 403,
+                        type = "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
+                ),
+                httpHeaders,
+                HttpStatus.FORBIDDEN)
     }
 
     @ExceptionHandler(value = [(BadRequestException::class)])
@@ -78,8 +56,8 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         httpHeaders.contentType = MediaType.APPLICATION_PROBLEM_JSON_UTF8
         return ResponseEntity(
                 ErrorOutputModel(
-                        title = "Invalid Syntax",
-                        detail = ex.msg,
+                        title = ex.title,
+                        detail = ex.detail,
                         status = 400,
                         type = "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
                 ),
@@ -96,8 +74,8 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         httpHeaders.contentType = MediaType.APPLICATION_PROBLEM_JSON_UTF8
         return ResponseEntity(
                 ErrorOutputModel(
-                        title = "Not Authenticated",
-                        detail = "Authentication Required",
+                        title = ex.title,
+                        detail = ex.detail,
                         status = 401,
                         type = "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
                 ),
@@ -114,49 +92,13 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         httpHeaders.contentType = MediaType.APPLICATION_PROBLEM_JSON_UTF8
         return ResponseEntity(
                 ErrorOutputModel(
-                        title = "Conflict",
-                        detail = ex.msg,
+                        title = ex.title,
+                        detail = ex.detail,
                         status = 409,
                         type = "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
                 ),
                 httpHeaders,
                 HttpStatus.CONFLICT)
-    }
-
-    @ExceptionHandler(value = [(IllegalArgumentException::class)])
-    fun handleIllegalArgumentException(
-            ex: IllegalArgumentException,
-            request: WebRequest
-    ): ResponseEntity<ErrorOutputModel> {
-        val httpHeaders = HttpHeaders()
-        httpHeaders.contentType = MediaType.APPLICATION_PROBLEM_JSON_UTF8
-        return ResponseEntity(
-                ErrorOutputModel(
-                        title = "Invalid Syntax",
-                        detail = "Error in request parameters",
-                        status = 400,
-                        type = "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
-                ),
-                httpHeaders,
-                HttpStatus.BAD_REQUEST)
-    }
-
-    @ExceptionHandler(value = [(EmptyResultDataAccessException::class)])
-    fun handleEmptyDataException(
-            ex: EmptyResultDataAccessException,
-            request: WebRequest
-    ): ResponseEntity<ErrorOutputModel> {
-        val httpHeaders = HttpHeaders()
-        httpHeaders.contentType = MediaType.APPLICATION_PROBLEM_JSON_UTF8
-        return ResponseEntity(
-                ErrorOutputModel(
-                        title = "Not Found",
-                        detail = "Could not find the resource you wanted",
-                        status = 404,
-                        type = "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
-                ),
-                httpHeaders,
-                HttpStatus.NOT_FOUND)
     }
 
     @ExceptionHandler(value = [(UnconfirmedException::class)])
@@ -168,8 +110,8 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         httpHeaders.contentType = MediaType.APPLICATION_PROBLEM_JSON_UTF8
         return ResponseEntity(
                 ErrorOutputModel(
-                        title = "Unconfirmed Account",
-                        detail = "Please confirm your organization email",
+                        title = ex.title,
+                        detail = ex.detail,
                         status = 401,
                         type = "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
                 ),
@@ -186,8 +128,8 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         httpHeaders.contentType = MediaType.APPLICATION_PROBLEM_JSON_UTF8
         return ResponseEntity(
                 ErrorOutputModel(
-                        title = "Error in database",
-                        detail = ex.msg,
+                        title = ex.title,
+                        detail = ex.detail,
                         status = 500,
                         type = "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
                 ),
@@ -213,5 +155,34 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
                 HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
+    @ExceptionHandler(value = [(NoSuchElementException::class), (EmptyResultDataAccessException::class)])
+    fun handleNoSuchElementException(ex: RuntimeException): ResponseEntity<ErrorOutputModel> {
+        val httpHeaders = HttpHeaders()
+        httpHeaders.contentType = MediaType.APPLICATION_PROBLEM_JSON_UTF8
+        return ResponseEntity(
+                ErrorOutputModel(
+                        title = "Not Found",
+                        detail = ex.message ?: "Could not find the resource you wanted",
+                        status = 404,
+                        type = "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
+                ),
+                httpHeaders,
+                HttpStatus.NOT_FOUND
+        )
+    }
 
+    @ExceptionHandler(value = [(IllegalArgumentException::class)])
+    fun handleIllegalArgumentException(ex: IllegalArgumentException): ResponseEntity<ErrorOutputModel> {
+        val httpHeaders = HttpHeaders()
+        httpHeaders.contentType = MediaType.APPLICATION_PROBLEM_JSON_UTF8
+        return ResponseEntity(
+                ErrorOutputModel(
+                        title = "Invalid Syntax",
+                        detail = "Error in request parameters",
+                        status = 400,
+                        type = "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
+                ),
+                httpHeaders,
+                HttpStatus.BAD_REQUEST)
+    }
 }
