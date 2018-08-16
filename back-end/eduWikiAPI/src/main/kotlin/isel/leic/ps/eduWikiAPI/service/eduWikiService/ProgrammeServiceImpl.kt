@@ -34,7 +34,9 @@ import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_S
 import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_TABLE
 import isel.leic.ps.eduWikiAPI.repository.interfaces.CourseDAO
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ProgrammeDAO
+import isel.leic.ps.eduWikiAPI.repository.interfaces.ReputationDAO
 import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.ProgrammeService
+import isel.leic.ps.eduWikiAPI.utils.resolveVote
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -48,6 +50,8 @@ class ProgrammeServiceImpl : ProgrammeService {
     lateinit var programmeDAO: ProgrammeDAO
     @Autowired
     lateinit var courseDAO: CourseDAO
+    @Autowired
+    lateinit var reputationDAO: ReputationDAO
     @Autowired
     lateinit var publisher: ApplicationEventPublisher
 
@@ -87,6 +91,8 @@ class ProgrammeServiceImpl : ProgrammeService {
     override fun voteOnProgramme(programmeId: Int, vote: VoteInputModel, principal: Principal): Int {
         val programme = programmeDAO.getSpecificProgramme(programmeId)
                 .orElseThrow { NotFoundException("No Programme Found", "Try with other id") }
+        resolveVote(principal.name, programme.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, PROGRAMME_TABLE, programme.logId))
+
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) programme.votes.dec() else programme.votes.inc()
         val success = programmeDAO.updateVotesOnProgramme(programmeId, votes)
 
@@ -162,6 +168,8 @@ class ProgrammeServiceImpl : ProgrammeService {
     override fun voteOnStagedProgramme(stageId: Int, vote: VoteInputModel, principal: Principal): Int {
         val programmeStage = programmeDAO.getSpecificStageEntryOfProgramme(stageId)
                 .orElseThrow { NotFoundException("No Programme Staged Found", "Try with other id") }
+        resolveVote(principal.name, programmeStage.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, PROGRAMME_STAGE_TABLE, programmeStage.logId))
+
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) programmeStage.votes.dec() else programmeStage.votes.inc()
         val success = programmeDAO.updateVotesOnStagedProgramme(stageId, votes)
 
@@ -256,6 +264,7 @@ class ProgrammeServiceImpl : ProgrammeService {
     override fun voteOnReportedProgramme(programmeId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int {
         val programmeReport = programmeDAO.getSpecificReportOfProgramme(reportId, programmeId)
                 .orElseThrow { NotFoundException("No report found", "Try with other id") }
+        resolveVote(principal.name, programmeReport.reportedBy, reputationDAO.getActionLogsByUserAndResource(principal.name, PROGRAMME_REPORT_TABLE, programmeReport.logId))
 
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) programmeReport.votes.dec() else programmeReport.votes.inc()
         val success = programmeDAO.updateVotesOnReportedProgramme(programmeId, reportId, votes)
@@ -335,8 +344,8 @@ class ProgrammeServiceImpl : ProgrammeService {
                 programmeDAO.getSpecificVersionOfProgramme(programmeId, version)
                         .orElseThrow {
                             NotFoundException(
-                                    msg = "No version found",
-                                    action = "Try other version"
+                                    title = "No version found",
+                                    detail = "Try other version"
                             )
                         })
     }
@@ -389,6 +398,7 @@ class ProgrammeServiceImpl : ProgrammeService {
     override fun voteOnCourseProgramme(programmeId: Int, courseId: Int, vote: VoteInputModel, principal: Principal): Int {
         val courseProgramme = courseDAO.getSpecificCourseOfProgramme(programmeId, courseId)
                 .orElseThrow { NotFoundException("This course in this programme does not exist", "Try again") }
+        resolveVote(principal.name, courseProgramme.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, COURSE_PROGRAMME_TABLE, courseProgramme.logId))
 
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) courseProgramme.votes.dec() else courseProgramme.votes.inc()
         val success = courseDAO.updateVotesOnCourseProgramme(programmeId, courseId, votes)
@@ -476,6 +486,8 @@ class ProgrammeServiceImpl : ProgrammeService {
     override fun voteOnStagedCourseProgramme(programmeId: Int, stageId: Int, vote: VoteInputModel, principal: Principal): Int {
         val courseProgrammeStage = courseDAO.getSpecificStagedCourseProgramme(programmeId, stageId)
                 .orElseThrow { NotFoundException("Either the stage or programme id are not valid", "Try other ids") }
+        resolveVote(principal.name, courseProgrammeStage.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, COURSE_PROGRAMME_STAGE_TABLE, courseProgrammeStage.logId))
+
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) courseProgrammeStage.votes.dec() else courseProgrammeStage.votes.inc()
         val success = courseDAO.updateVotesOnStagedCourseProgramme(programmeId, stageId, votes)
 
@@ -586,6 +598,8 @@ class ProgrammeServiceImpl : ProgrammeService {
     override fun voteOnReportedCourseProgramme(programmeId: Int, courseId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int {
         val courseProgrammeReport = courseDAO.getSpecificReportOfCourseProgramme(programmeId, courseId, reportId)
                 .orElseThrow { NotFoundException("Can't find the specified report for this course in programme", "Search other report") }
+        resolveVote(principal.name, courseProgrammeReport.reportedBy, reputationDAO.getActionLogsByUserAndResource(principal.name, COURSE_PROGRAMME_REPORT_TABLE, courseProgrammeReport.logId))
+
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) courseProgrammeReport.votes.dec() else courseProgrammeReport.votes.inc()
         val success = courseDAO.updateVotesOnReportedCourseProgramme(programmeId, courseId, reportId, votes)
 

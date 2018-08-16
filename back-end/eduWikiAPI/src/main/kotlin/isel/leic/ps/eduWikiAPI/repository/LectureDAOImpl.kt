@@ -7,6 +7,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.staging.LectureStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.LectureVersion
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_MISC_UNIT_COURSE_CLASS_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_MISC_UNIT_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_MISC_UNIT_STAGE_COURSE_CLASS_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_MISC_UNIT_STAGE_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_MISC_UNIT_STAGE_TABLE
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_MISC_UNIT_TABLE
@@ -35,6 +36,7 @@ class LectureDAOImpl : LectureDAO {
         const val LECTURE_VERSION_TABLE = "lecture_version"
         // LECTURE FIELDS
         const val LECTURE_ID = "lecture_id"
+        const val LECTURE_VERSION = "lecture_version"
         const val LECTURE_LOG_ID = "log_id"
         const val LECTURE_WEEK_DAY = "weekday"
         const val LECTURE_BEGINS = "begins"
@@ -57,7 +59,6 @@ class LectureDAOImpl : LectureDAO {
         // LECTURE STAGE FIELDS
         const val LECTURE_STAGE_ID = "lecture_stage_id"
         const val LECTURE_STAGE_LOG_ID = "log_id"
-        const val LECTURE_STAGE_VERSION = "lecture_version"
         const val LECTURE_STAGE_WEEK_DAY = "weekday"
         const val LECTURE_STAGE_BEGINS = "begins"
         const val LECTURE_STAGE_DURATION = "duration"
@@ -66,7 +67,14 @@ class LectureDAOImpl : LectureDAO {
         const val LECTURE_STAGE_TIMESTAMP = "time_stamp"
         const val LECTURE_STAGE_CREATED_BY = "created_by"
         // LECTURE VERSION FIELDS
-        const val LECTURE_VERSION = "lecture_version"
+        const val LECTURE_VERSION_ID = "lecture_version"
+        const val LECTURE_VERSION_LECTURE_ID = "lecture_id"
+        const val LECTURE_VERSION_WEEK_DAY = "weekday"
+        const val LECTURE_VERSION_BEGINS = "begins"
+        const val LECTURE_VERSION_DURATION = "duration"
+        const val LECTURE_VERSION_LOCATION = "location"
+        const val LECTURE_VERSION_TIMESTAMP = "time_stamp"
+        const val LECTURE_VERSION_CREATED_BY = "created_by"
     }
 
     @Qualifier("MainJdbi")
@@ -143,7 +151,8 @@ class LectureDAOImpl : LectureDAO {
                         "L.$LECTURE_DURATION, " +
                         "L.$LECTURE_LOCATION, " +
                         "L.$LECTURE_VOTES, " +
-                        "L.$LECTURE_TIMESTAMP " +
+                        "L.$LECTURE_TIMESTAMP, " +
+                        "L.$LECTURE_LOG_ID " +
                         "FROM $LECTURE_TABLE AS L " +
                         "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +
                         "ON L.$LECTURE_ID = C.$CLASS_MISC_UNIT_ID " +
@@ -161,7 +170,8 @@ class LectureDAOImpl : LectureDAO {
                         "L.$LECTURE_DURATION, " +
                         "L.$LECTURE_LOCATION, " +
                         "L.$LECTURE_VOTES, " +
-                        "L.$LECTURE_TIMESTAMP " +
+                        "L.$LECTURE_TIMESTAMP, " +
+                        "L.$LECTURE_LOG_ID " +
                         "FROM $LECTURE_TABLE AS L " +
                         "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +
                         "ON L.$LECTURE_ID = C.$CLASS_MISC_UNIT_ID " +
@@ -213,7 +223,8 @@ class LectureDAOImpl : LectureDAO {
                         "L.$LECTURE_REPORT_LOCATION, " +
                         "L.$LECTURE_REPORTED_BY, " +
                         "L.$LECTURE_REPORT_VOTES, " +
-                        "L.$LECTURE_REPORT_TIMESTAMP " +
+                        "L.$LECTURE_REPORT_TIMESTAMP, " +
+                        "L.$LECTURE_REPORT_LOG_ID " +
                         "FROM $LECTURE_REPORT_TABLE AS L " +
                         "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +
                         "ON L.$LECTURE_REPORT_LECTURE_ID = C.$CLASS_MISC_UNIT_ID " +
@@ -231,7 +242,8 @@ class LectureDAOImpl : LectureDAO {
                         "L.$LECTURE_REPORT_LOCATION," +
                         "L.$LECTURE_REPORTED_BY," +
                         "L.$LECTURE_REPORT_VOTES," +
-                        "L.$LECTURE_REPORT_TIMESTAMP" +
+                        "L.$LECTURE_REPORT_TIMESTAMP, " +
+                        "L.$LECTURE_REPORT_LOG_ID " +
                         "FROM $LECTURE_REPORT_TABLE AS L" +
                         "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C" +
                         "ON L.$LECTURE_REPORT_LECTURE_ID = C.$CLASS_MISC_UNIT_ID" +
@@ -314,7 +326,8 @@ class LectureDAOImpl : LectureDAO {
                         "L.$LECTURE_STAGE_DURATION, " +
                         "L.$LECTURE_STAGE_CREATED_BY, " +
                         "L.$LECTURE_STAGE_TIMESTAMP, " +
-                        "L.$LECTURE_STAGE_VOTES " +
+                        "L.$LECTURE_STAGE_VOTES, " +
+                        "L.$LECTURE_STAGE_LOG_ID " +
                         "FROM $LECTURE_STAGE_TABLE AS L " +
                         "INNER JOIN $CLASS_MISC_UNIT_STAGE_TABLE AS C " +
                         "ON L.$LECTURE_STAGE_ID = C.$CLASS_MISC_UNIT_STAGE_ID " +
@@ -329,7 +342,8 @@ class LectureDAOImpl : LectureDAO {
                         "L.$LECTURE_STAGE_DURATION, " +
                         "L.$LECTURE_STAGE_CREATED_BY, " +
                         "L.$LECTURE_STAGE_TIMESTAMP, " +
-                        "L.$LECTURE_STAGE_VOTES " +
+                        "L.$LECTURE_STAGE_VOTES, " +
+                        "L.$LECTURE_STAGE_LOG_ID " +
                         "FROM $LECTURE_STAGE_TABLE AS L " +
                         "INNER JOIN $CLASS_MISC_UNIT_STAGE_TABLE AS C " +
                         "ON L.$LECTURE_STAGE_ID = C.$CLASS_MISC_UNIT_STAGE_ID" +
@@ -361,50 +375,39 @@ class LectureDAOImpl : LectureDAO {
         }
 
         @SqlQuery(
-                "SELECT L.$LECTURE_ID," +
-                        "L.$LECTURE_VERSION, " +
-                        "L.$LECTURE_CREATED_BY, " +
-                        "L.$LECTURE_WEEK_DAY, " +
-                        "L.$LECTURE_BEGINS" +
-                        "L.$LECTURE_DURATION, " +
-                        "L.$LECTURE_LOCATION, " +
-                        "L.$LECTURE_VOTES, " +
-                        "L.$LECTURE_TIMESTAMP, " +
+                "SELECT L.$LECTURE_VERSION_ID," +
+                        "L.$LECTURE_VERSION_LECTURE_ID, " +
+                        "L.$LECTURE_VERSION_CREATED_BY, " +
+                        "L.$LECTURE_VERSION_WEEK_DAY, " +
+                        "L.$LECTURE_VERSION_BEGINS" +
+                        "L.$LECTURE_VERSION_DURATION, " +
+                        "L.$LECTURE_VERSION_LOCATION, " +
+                        "L.$LECTURE_VERSION_TIMESTAMP " +
                         "FROM $LECTURE_VERSION_TABLE AS L " +
                         "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C" +
-                        "ON L.$LECTURE_ID = C.$CLASS_MISC_UNIT_ID" +
+                        "ON L.$LECTURE_VERSION_LECTURE_ID = C.$CLASS_MISC_UNIT_ID" +
                         "WHERE C.$CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
-                        "AND L.$LECTURE_ID = :lectureId"
+                        "AND L.$LECTURE_VERSION_LECTURE_ID = :lectureId"
         )
         override fun getAllVersionsOfLectureOfCourseInclass(courseClassId: Int, lectureId: Int): List<LectureVersion>
 
         @SqlQuery(
-                "SELECT L.$LECTURE_ID, " +
-                        "L.$LECTURE_VERSION, " +
-                        "L.$LECTURE_CREATED_BY, " +
-                        "L.$LECTURE_WEEK_DAY, " +
-                        "L.$LECTURE_BEGINS, " +
-                        "L.$LECTURE_DURATION, " +
-                        "L.$LECTURE_LOCATION, " +
-                        "L.$LECTURE_VOTES, " +
-                        "L.$LECTURE_TIMESTAMP " +
+                "SELECT L.$LECTURE_VERSION_ID," +
+                        "L.$LECTURE_VERSION_LECTURE_ID, " +
+                        "L.$LECTURE_VERSION_CREATED_BY, " +
+                        "L.$LECTURE_VERSION_WEEK_DAY, " +
+                        "L.$LECTURE_VERSION_BEGINS" +
+                        "L.$LECTURE_VERSION_DURATION, " +
+                        "L.$LECTURE_VERSION_LOCATION, " +
+                        "L.$LECTURE_VERSION_TIMESTAMP " +
                         "FROM $LECTURE_VERSION_TABLE AS L " +
                         "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +
-                        "ON L.$LECTURE_ID = C.$CLASS_MISC_UNIT_ID " +
+                        "ON L.$LECTURE_VERSION_LECTURE_ID = C.$CLASS_MISC_UNIT_ID " +
                         "WHERE C.$CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
-                        "AND L.$LECTURE_ID = :lectureId" +
-                        "AND L.$LECTURE_VERSION = :version"
+                        "AND L.$LECTURE_VERSION_LECTURE_ID = :lectureId" +
+                        "AND L.$LECTURE_VERSION_ID = :version"
         )
         override fun getSpecificVersionOfLectureOfCourseInClass(courseClassId: Int, lectureId: Int, version: Int): Optional<LectureVersion>
-
-        @SqlUpdate(
-                "DELETE FROM $LECTURE_VERSION_TABLE " +
-                        "USING $CLASS_MISC_UNIT_TABLE " +
-                        "WHERE $LECTURE_ID = $CLASS_MISC_UNIT_ID " +
-                        "AND $CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
-                        "AND $LECTURE_ID = :lectureId " +
-                        "AND $LECTURE_VERSION = :version"
-        )
 
         override fun deleteSpecificStagedLectureOfCourseInClass(courseClassId: Int, stageId: Int): Int =
                 createClassDAO().deleteSpecificStagedClassMiscUnitFromTypeOfCourseInClass(courseClassId, stageId, ClassMiscUnitType.LECTURE)

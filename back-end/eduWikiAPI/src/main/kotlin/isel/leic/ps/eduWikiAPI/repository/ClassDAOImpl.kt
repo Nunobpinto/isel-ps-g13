@@ -57,7 +57,10 @@ class ClassDAOImpl : ClassDAO {
         const val CLASS_MISC_UNIT_TYPE = "misc_type"
         const val CLASS_MISC_UNIT_ID = "class_misc_unit_id"
         const val CLASS_MISC_UNIT_COURSE_CLASS_ID = "course_class_id"
+        // CLASS_MISC_UNIT_STAGE FIELDS
         const val CLASS_MISC_UNIT_STAGE_ID = "class_misc_unit_stage_id"
+        const val CLASS_MISC_UNIT_STAGE_TYPE = "misc_type"
+        const val CLASS_MISC_UNIT_STAGE_COURSE_CLASS_ID = "course_class_id"
         // COURSE_CLASS_FIELDS
         const val COURSE_CLASS_ID = "course_class_id"
         const val COURSE_CLASS_TERM_ID = "term_id"
@@ -531,8 +534,8 @@ class ClassDAOImpl : ClassDAO {
 
         @SqlUpdate(
                 "INSERT INTO $CLASS_MISC_UNIT_STAGE_TABLE ( " +
-                        "$CLASS_MISC_UNIT_TYPE, " +
-                        "$CLASS_MISC_UNIT_COURSE_CLASS_ID " +
+                        "$CLASS_MISC_UNIT_STAGE_TYPE, " +
+                        "$CLASS_MISC_UNIT_STAGE_COURSE_CLASS_ID " +
                         ") " +
                         "VALUES(:miscType, :courseClassId)"
         )
@@ -541,16 +544,16 @@ class ClassDAOImpl : ClassDAO {
 
         @SqlUpdate(
                 "DELETE FROM $CLASS_MISC_UNIT_STAGE_TABLE " +
-                        "WHERE $CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
-                        "AND $CLASS_MISC_UNIT_TYPE = :miscType"
+                        "WHERE $CLASS_MISC_UNIT_STAGE_COURSE_CLASS_ID = :courseClassId " +
+                        "AND $CLASS_MISC_UNIT_STAGE_TYPE = :miscType"
         )
         override fun deleteAllStagedClassMiscUnitsFromTypeOfCourseInClass(courseClassId: Int, miscType: ClassMiscUnitType): Int
 
         @SqlUpdate(
                 "DELETE FROM $CLASS_MISC_UNIT_STAGE_TABLE " +
-                        "WHERE $CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
+                        "WHERE $CLASS_MISC_UNIT_STAGE_COURSE_CLASS_ID = :courseClassId " +
                         "AND $CLASS_MISC_UNIT_STAGE_ID = :stageId " +
-                        "AND $CLASS_MISC_UNIT_TYPE = :miscType"
+                        "AND $CLASS_MISC_UNIT_STAGE_TYPE = :miscType"
         )
         override fun deleteSpecificStagedClassMiscUnitFromTypeOfCourseInClass(courseClassId: Int, stageId: Int, miscType: ClassMiscUnitType): Int
 

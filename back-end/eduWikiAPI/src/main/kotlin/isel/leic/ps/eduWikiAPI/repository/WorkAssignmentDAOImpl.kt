@@ -174,7 +174,8 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_MULTIPLE_DELIVERIES, " +
                         "W.$WORK_ASSIGNMENT_REQUIRES_REPORT, " +
                         "W.$WORK_ASSIGNMENT_VOTES, " +
-                        "W.$WORK_ASSIGNMENT_TIMESTAMP " +
+                        "W.$WORK_ASSIGNMENT_TIMESTAMP, " +
+                        "W.$WORK_ASSIGNMENT_LOG_ID" +
                         "FROM $WORK_ASSIGNMENT_TABLE AS W " +
                         "INNER JOIN $COURSE_MISC_UNIT_TABLE AS C " +
                         "ON W.$WORK_ASSIGNMENT_ID = C.$COURSE_MISC_UNIT_ID " +
@@ -236,7 +237,8 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_LATE_DELIVERY," +
                         "W.$WORK_ASSIGNMENT_MULTIPLE_DELIVERIES, " +
                         "W.$WORK_ASSIGNMENT_REQUIRES_REPORT, " +
-                        "W.$WORK_ASSIGNMENT_TIMESTAMP " +
+                        "W.$WORK_ASSIGNMENT_TIMESTAMP, " +
+                        "W.$WORK_ASSIGNMENT_LOG_ID" +
                         "FROM $WORK_ASSIGNMENT_TABLE AS W " +
                         "INNER JOIN $COURSE_MISC_UNIT_TABLE AS C " +
                         "ON W.$WORK_ASSIGNMENT_ID = C.$COURSE_MISC_UNIT_ID " +
@@ -256,7 +258,8 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_STAGE_MULTIPLE_DELIVERIES, " +
                         "W.$WORK_ASSIGNMENT_STAGE_REQUIRES_REPORT, " +
                         "W.$WORK_ASSIGNMENT_STAGE_VOTES," +
-                        "W.$WORK_ASSIGNMENT_STAGE_TIMESTAMP " +
+                        "W.$WORK_ASSIGNMENT_STAGE_TIMESTAMP, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_LOG_ID" +
                         "FROM $WORK_ASSIGNMENT_STAGE_TABLE AS W " +
                         "INNER JOIN $COURSE_MISC_UNIT_STAGE_TABLE AS C " +
                         "ON W.$WORK_ASSIGNMENT_STAGE_ID = C.$COURSE_MISC_UNIT_STAGE_ID " +
@@ -276,7 +279,8 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_STAGE_REQUIRES_REPORT, " +
                         "W.$WORK_ASSIGNMENT_STAGE_CREATED_BY, " +
                         "W.$WORK_ASSIGNMENT_STAGE_VOTES, " +
-                        "W.$WORK_ASSIGNMENT_STAGE_TIMESTAMP " +
+                        "W.$WORK_ASSIGNMENT_STAGE_TIMESTAMP, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_LOG_ID" +
                         "FROM $WORK_ASSIGNMENT_STAGE_TABLE AS W " +
                         "INNER JOIN $COURSE_MISC_UNIT_STAGE_TABLE AS C " +
                         "ON W.$WORK_ASSIGNMENT_STAGE_ID = C.$COURSE_MISC_UNIT_STAGE_ID " +
@@ -298,7 +302,8 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_REPORT_REQUIRES_REPORT, " +
                         "W.$WORK_ASSIGNMENT_REPORTED_BY, " +
                         "W.$WORK_ASSIGNMENT_REPORT_VOTES, " +
-                        "W.$WORK_ASSIGNMENT_REPORT_TIMESTAMP " +
+                        "W.$WORK_ASSIGNMENT_REPORT_TIMESTAMP, " +
+                        "W.$WORK_ASSIGNMENT_REPORT_LOG_ID" +
                         "FROM $WORK_ASSIGNMENT_REPORT_TABLE AS W" +
                         "INNER JOIN $COURSE_MISC_UNIT_TABLE AS C " +
                         "ON W.$WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID = C.$COURSE_MISC_UNIT_ID " +
@@ -379,7 +384,8 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_REPORT_REQUIRES_REPORT, " +
                         "W.$WORK_ASSIGNMENT_REPORTED_BY, " +
                         "W.$WORK_ASSIGNMENT_REPORT_VOTES, " +
-                        "W.$WORK_ASSIGNMENT_REPORT_TIMESTAMP " +
+                        "W.$WORK_ASSIGNMENT_REPORT_TIMESTAMP, " +
+                        "W.$WORK_ASSIGNMENT_REPORT_LOG_ID" +
                         "FROM $WORK_ASSIGNMENT_REPORT_TABLE AS W" +
                         "INNER JOIN $COURSE_MISC_UNIT_TABLE AS C " +
                         "ON W.$WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID = C.$COURSE_MISC_UNIT_ID " +

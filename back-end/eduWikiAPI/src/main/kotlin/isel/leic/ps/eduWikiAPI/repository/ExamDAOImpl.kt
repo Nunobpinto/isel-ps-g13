@@ -303,7 +303,8 @@ class ExamDAOImpl : ExamDAO {
                         "E.$EXAM_PHASE, " +
                         "E.$EXAM_LOCATION, " +
                         "E.$EXAM_VOTES, " +
-                        "E.$EXAM_TIMESTAMP " +
+                        "E.$EXAM_TIMESTAMP, " +
+                        "E.$EXAM_LOG_ID " +
                         "FROM $EXAM_TABLE AS E " +
                         "INNER JOIN $COURSE_MISC_UNIT_TABLE AS C " +
                         "ON E.$EXAM_ID = C.$COURSE_MISC_UNIT_ID " +
@@ -323,6 +324,7 @@ class ExamDAOImpl : ExamDAO {
                         "E.$EXAM_LOCATION, " +
                         "E.$EXAM_VOTES," +
                         "E.$EXAM_TIMESTAMP, " +
+                        "E.$EXAM_LOG_ID " +
                         "FROM $EXAM_TABLE AS E " +
                         "INNER JOIN $COURSE_MISC_UNIT_TABLE AS C " +
                         "ON E.$EXAM_ID = C.$COURSE_MISC_UNIT_ID" +
@@ -341,7 +343,8 @@ class ExamDAOImpl : ExamDAO {
                         "E.$EXAM_STAGE_LOCATION, " +
                         "E.$EXAM_STAGE_CREATED_BY " +
                         "E.$EXAM_STAGE_VOTES, " +
-                        "E.$EXAM_STAGE_TIMESTAMP " +
+                        "E.$EXAM_STAGE_TIMESTAMP, " +
+                        "E.$EXAM_STAGE_LOG_ID " +
                         "FROM $EXAM_STAGE_TABLE AS E " +
                         "INNER JOIN $COURSE_MISC_UNIT_STAGE_TABLE AS C " +
                         "ON E.$EXAM_STAGE_ID = C.$COURSE_MISC_UNIT_STAGE_ID " +
@@ -359,7 +362,8 @@ class ExamDAOImpl : ExamDAO {
                         "E.$EXAM_STAGE_LOCATION, " +
                         "E.$EXAM_STAGE_CREATED_BY " +
                         "E.$EXAM_STAGE_VOTES, " +
-                        "E.$EXAM_STAGE_TIMESTAMP " +
+                        "E.$EXAM_STAGE_TIMESTAMP, " +
+                        "E.$EXAM_STAGE_LOG_ID " +
                         "FROM $EXAM_STAGE_TABLE AS E " +
                         "INNER JOIN $COURSE_MISC_UNIT_STAGE_TABLE AS C " +
                         "ON E.$EXAM_STAGE_ID = C.$COURSE_MISC_UNIT_STAGE_ID " +
@@ -427,7 +431,7 @@ class ExamDAOImpl : ExamDAO {
                         "V.$EXAM_VERSION_PHASE, " +
                         "V.$EXAM_VERSION_LOCATION, " +
                         "V.$EXAM_VERSION_CREATED_BY, " +
-                        "V.$EXAM_VERSION_TIMESTAMP, " +
+                        "V.$EXAM_VERSION_TIMESTAMP " +
                         "FROM $EXAM_VERSION_TABLE as V " +
                         "INNER JOIN $COURSE_MISC_UNIT_TABLE as C ON V.$EXAM_VERSION_EXAM_ID = C.$COURSE_MISC_UNIT_ID " +
                         "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId AND C.$COURSE_MISC_UNIT_TERM_ID = :termId AND C.$COURSE_MISC_UNIT_ID = :examId"
@@ -444,7 +448,7 @@ class ExamDAOImpl : ExamDAO {
                         "V.$EXAM_VERSION_PHASE, " +
                         "V.$EXAM_VERSION_LOCATION, " +
                         "V.$EXAM_VERSION_CREATED_BY, " +
-                        "V.$EXAM_VERSION_TIMESTAMP, " +
+                        "V.$EXAM_VERSION_TIMESTAMP " +
                         "FROM $EXAM_VERSION_TABLE as V " +
                         "INNER JOIN $COURSE_MISC_UNIT_TABLE as C ON V.$EXAM_VERSION_EXAM_ID = C.$COURSE_MISC_UNIT_ID " +
                         "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId AND C.$COURSE_MISC_UNIT_TERM_ID = :termId AND " +

@@ -20,6 +20,8 @@ import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.NotFoundException
 import isel.leic.ps.eduWikiAPI.repository.OrganizationDAOImpl.Companion.ORGANIZATION_REPORT_TABLE
 import isel.leic.ps.eduWikiAPI.repository.OrganizationDAOImpl.Companion.ORGANIZATION_VERSION_TABLE
 import isel.leic.ps.eduWikiAPI.repository.interfaces.OrganizationDAO
+import isel.leic.ps.eduWikiAPI.repository.interfaces.ReputationDAO
+import isel.leic.ps.eduWikiAPI.utils.resolveVote
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.context.ApplicationEventPublisher
@@ -31,6 +33,8 @@ class OrganizationServiceImpl : OrganizationService {
 
     @Autowired
     lateinit var organizationDAO: OrganizationDAO
+    @Autowired
+    lateinit var reputationDAO: ReputationDAO
     @Autowired
     lateinit var publisher: ApplicationEventPublisher
 
@@ -97,6 +101,8 @@ class OrganizationServiceImpl : OrganizationService {
     override fun voteOnOrganization(organizationId: Int, vote: VoteInputModel, principal: Principal): Int {
         val organization = organizationDAO.getSpecificOrganization(organizationId)
                 .orElseThrow { NotFoundException("No organization found", "Try other ID") }
+        resolveVote(principal.name, organization.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, ORGANIZATION_TABLE, organization.logId))
+
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) organization.votes - 1 else organization.votes + 1
         val success = organizationDAO.updateVotesOnOrganization(organizationId, votes)
 
@@ -157,6 +163,8 @@ class OrganizationServiceImpl : OrganizationService {
     override fun voteOnOrganizationReport(organizationId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int {
         val organizationReport = organizationDAO.getSpecificReportOnOrganization(organizationId, reportId)
                 .orElseThrow { NotFoundException("No report found", "Try other ID") }
+        resolveVote(principal.name, organizationReport.reportedBy, reputationDAO.getActionLogsByUserAndResource(principal.name, ORGANIZATION_REPORT_TABLE, organizationReport.logId))
+
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) organizationReport.votes - 1 else organizationReport.votes + 1
         val success = organizationDAO.updateVotesOnOrganizationReport(organizationId, reportId, votes)
 

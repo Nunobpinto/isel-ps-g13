@@ -46,9 +46,11 @@ import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_A
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_TABLE
 import isel.leic.ps.eduWikiAPI.repository.interfaces.CourseDAO
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ExamDAO
+import isel.leic.ps.eduWikiAPI.repository.interfaces.ReputationDAO
 import isel.leic.ps.eduWikiAPI.repository.interfaces.WorkAssignmentDAO
 import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.CourseService
 import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.ResourceStorageService
+import isel.leic.ps.eduWikiAPI.utils.resolveVote
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -67,6 +69,8 @@ class CourseServiceImpl : CourseService {
     lateinit var courseDAO: CourseDAO
     @Autowired
     lateinit var examDAO: ExamDAO
+    @Autowired
+    lateinit var reputationDAO: ReputationDAO
     @Autowired
     lateinit var workAssignmentDAO: WorkAssignmentDAO
 
@@ -107,6 +111,7 @@ class CourseServiceImpl : CourseService {
     override fun voteOnCourse(courseId: Int, vote: VoteInputModel, principal: Principal): Int {
         val course = courseDAO.getSpecificCourse(courseId)
                 .orElseThrow { NotFoundException("No Course found", "Try another id") }
+        resolveVote(principal.name, course.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, COURSE_TABLE, course.logId))
 
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) course.votes.dec() else course.votes.inc()
         val success = courseDAO.updateVotesOnCourse(courseId, votes)
@@ -214,6 +219,8 @@ class CourseServiceImpl : CourseService {
     override fun voteOnStagedCourse(stageId: Int, vote: VoteInputModel, principal: Principal): Int {
         val courseStage = courseDAO.getCourseSpecificStageEntry(stageId)
                 .orElseThrow { NotFoundException("No staged course found", "Try again with other stage id") }
+        resolveVote(principal.name, courseStage.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, COURSE_STAGE_TABLE, courseStage.logId))
+
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) courseStage.votes.dec() else courseStage.votes.inc()
         val success = courseDAO.updateVotesOnStagedCourse(stageId, votes)
 
@@ -277,6 +284,7 @@ class CourseServiceImpl : CourseService {
     override fun voteOnReportedCourse(courseId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int {
         val courseReport = courseDAO.getSpecificReportOfCourse(courseId, reportId)
                 .orElseThrow { NotFoundException("No report found", "Try again with other report id") }
+        resolveVote(principal.name, courseReport.reportedBy, reputationDAO.getActionLogsByUserAndResource(principal.name, COURSE_REPORT_TABLE, courseReport.logId))
 
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) courseReport.votes.dec() else courseReport.votes.inc()
         val success = courseDAO.updateVotesOnReportedCourse(reportId, votes)
@@ -422,6 +430,8 @@ class CourseServiceImpl : CourseService {
     override fun voteOnExam(termId: Int, courseId: Int, examId: Int, inputVote: VoteInputModel, principal: Principal): Int {
         val exam = examDAO.getSpecificExamFromSpecificTermOfCourse(courseId, termId, examId)
                 .orElseThrow { NotFoundException("No exam found", "Try again with other exam id") }
+        resolveVote(principal.name, exam.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, EXAM_TABLE, exam.logId))
+
         val votes = if(Vote.valueOf(inputVote.vote) == Vote.Down) exam.votes.dec() else exam.votes.inc()
         val success = examDAO.updateVotesOnExam(examId, votes)
 
@@ -512,6 +522,8 @@ class CourseServiceImpl : CourseService {
     override fun voteOnStagedExam(termId: Int, courseId: Int, stageId: Int, vote: VoteInputModel, principal: Principal): Int {
         val examStage = examDAO.getStageEntryFromExamOnSpecificTermOfCourse(courseId, termId, stageId)
                 .orElseThrow { NotFoundException("No exam staged found", "Try again with other staged id") }
+        resolveVote(principal.name, examStage.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, EXAM_STAGE_TABLE, examStage.logId))
+
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) examStage.votes.dec() else examStage.votes.inc()
         val success = examDAO.updateVotesOnStagedExam(stageId, votes)
         publisher.publishEvent(VoteOnResourceEvent(
@@ -578,6 +590,7 @@ class CourseServiceImpl : CourseService {
     override fun voteOnReportedExamOnCourseInTerm(termId: Int, courseId: Int, examId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int {
         val examReport = examDAO.getSpecificReportOnExamOnSpecificTermOfCourse(courseId, termId, examId, reportId)
                 .orElseThrow { NotFoundException("No report found", "Try again with other report id") }
+        resolveVote(principal.name, examReport.reportedBy, reputationDAO.getActionLogsByUserAndResource(principal.name, EXAM_REPORT_TABLE, examReport.logId))
 
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) examReport.votes.dec() else examReport.votes.inc()
         val success = examDAO.updateVotesOnReportedExam(reportId, votes)
@@ -705,6 +718,7 @@ class CourseServiceImpl : CourseService {
     override fun voteOnWorkAssignment(termId: Int, courseId: Int, workAssignmentId: Int, vote: VoteInputModel, principal: Principal): Int {
         val workAssignment = workAssignmentDAO.getSpecificWorkAssignmentOfCourseInTerm(courseId, termId, workAssignmentId)
                 .orElseThrow { NotFoundException("No Work Assignment found", "Try again with other work assignment id") }
+        resolveVote(principal.name, workAssignment.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, WORK_ASSIGNMENT_TABLE, workAssignment.logId))
 
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) workAssignment.votes.dec() else workAssignment.votes.inc()
         val success = workAssignmentDAO.updateVotesOnWorkAssignment(workAssignmentId, votes)
@@ -796,6 +810,8 @@ class CourseServiceImpl : CourseService {
     override fun voteOnStagedWorkAssignment(termId: Int, courseId: Int, stageId: Int, vote: VoteInputModel, principal: Principal): Int {
         val workAssignmentStage = workAssignmentDAO.getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId, termId, stageId)
                 .orElseThrow { NotFoundException("No Work Assignment Staged found", "Try again with other stage id") }
+        resolveVote(principal.name, workAssignmentStage.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, WORK_ASSIGNMENT_STAGE_TABLE, workAssignmentStage.logId))
+
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) workAssignmentStage.votes.dec() else workAssignmentStage.votes.inc()
         val success = workAssignmentDAO.updateStagedWorkAssignmentVotes(stageId, votes)
 
@@ -866,6 +882,8 @@ class CourseServiceImpl : CourseService {
     override fun voteOnReportedWorkAssignmentOnCourseInTerm(termId: Int, courseId: Int, workAssignmentId: Int, reportId: Int, inputVote: VoteInputModel, principal: Principal): Int {
         val report = workAssignmentDAO.getSpecificReportOfWorkAssignment(termId, courseId, workAssignmentId, reportId)
                 .orElseThrow { NotFoundException("No report found", "Try again with other report id") }
+        resolveVote(principal.name, report.reportedBy, reputationDAO.getActionLogsByUserAndResource(principal.name, WORK_ASSIGNMENT_REPORT_TABLE, report.logId))
+
         val votes = if(Vote.valueOf(inputVote.vote) == Vote.Down) report.votes.dec() else report.votes.inc()
         val success = workAssignmentDAO.updateVotesOnReportedWorkAssignment(reportId, votes)
 

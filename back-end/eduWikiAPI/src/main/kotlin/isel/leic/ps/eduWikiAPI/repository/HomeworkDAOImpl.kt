@@ -226,7 +226,7 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "H.$HOMEWORK_STAGE_MULTIPLE_DELIVERIES, " +
                         "H.$HOMEWORK_STAGE_TIMESTAMP, " +
                         "H.$HOMEWORK_STAGE_VOTES, " +
-                        "H.$HOMEWORK_STAGE_CREATED_BY " +
+                        "H.$HOMEWORK_STAGE_CREATED_BY, " +
                         "H.$HOMEWORK_STAGE_LOG_ID " +
                         "FROM $HOMEWORK_STAGE_TABLE AS H " +
                         "INNER JOIN $CLASS_MISC_UNIT_STAGE_TABLE AS C " +
@@ -243,7 +243,7 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "H.$HOMEWORK_STAGE_MULTIPLE_DELIVERIES, " +
                         "H.$HOMEWORK_STAGE_TIMESTAMP, " +
                         "H.$HOMEWORK_STAGE_VOTES, " +
-                        "H.$HOMEWORK_STAGE_CREATED_BY " +
+                        "H.$HOMEWORK_STAGE_CREATED_BY, " +
                         "H.$HOMEWORK_STAGE_LOG_ID " +
                         "FROM $HOMEWORK_STAGE_TABLE AS H " +
                         "INNER JOIN $CLASS_MISC_UNIT_STAGE_TABLE AS C " +
@@ -315,7 +315,7 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "H.$HOMEWORK_REPORT_MULTIPLE_DELIVERIES, " +
                         "H.$HOMEWORK_REPORTED_BY, " +
                         "H.$HOMEWORK_REPORT_VOTES, " +
-                        "H.$HOMEWORK_REPORT_TIMESTAMP " +
+                        "H.$HOMEWORK_REPORT_TIMESTAMP, " +
                         "H.$HOMEWORK_REPORT_LOG_ID " +
                         "FROM $HOMEWORK_REPORT_TABLE AS H " +
                         "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +
@@ -334,7 +334,7 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "H.$HOMEWORK_REPORT_MULTIPLE_DELIVERIES, " +
                         "H.$HOMEWORK_REPORTED_BY, " +
                         "H.$HOMEWORK_REPORT_VOTES, " +
-                        "H.$HOMEWORK_REPORT_TIMESTAMP " +
+                        "H.$HOMEWORK_REPORT_TIMESTAMP, " +
                         "H.$HOMEWORK_REPORT_LOG_ID " +
                         "FROM $HOMEWORK_TABLE AS H " +
                         "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +

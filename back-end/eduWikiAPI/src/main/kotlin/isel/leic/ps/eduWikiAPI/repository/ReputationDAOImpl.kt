@@ -80,6 +80,9 @@ class ReputationDAOImpl : ReputationDAO {
     override fun getActionLogsByResource(approvedEntity: String, approvedLogId: Int): List<ActionLog> =
             jdbi.open().attach(ReputationDAOJdbi::class.java).getActionLogsByResource(approvedEntity, approvedLogId)
 
+    override fun getActionLogsByUserAndResource(user: String, approvedEntity: String, approvedLogId: Int): List<ActionLog> =
+            jdbi.open().attach(ReputationDAOJdbi::class.java).getActionLogsByUserAndResource(user, approvedEntity, approvedLogId)
+
     internal interface ReputationDAOJdbi : ReputationDAO {
         @SqlQuery(
                 "SELECT R.$REPUTATION_ROLE " +
@@ -150,6 +153,13 @@ class ReputationDAOImpl : ReputationDAO {
                         "WHERE $ACTION_LOG_ENTITY = :approvedEntity AND $ACTION_LOG_LOG_ID = :approvedLogId"
         )
         override fun getActionLogsByResource(approvedEntity: String, approvedLogId: Int): List<ActionLog>
+
+        @SqlQuery(
+                "SELECT * FROM $ACTION_LOG_TABLE " +
+                        "WHERE $ACTION_LOG_ENTITY = :approvedEntity AND $ACTION_LOG_LOG_ID = :approvedLogId AND $ACTION_LOG_USER = :user"
+        )
+        override fun getActionLogsByUserAndResource(user: String, approvedEntity: String, approvedLogId: Int): List<ActionLog>
+
     }
 
 }

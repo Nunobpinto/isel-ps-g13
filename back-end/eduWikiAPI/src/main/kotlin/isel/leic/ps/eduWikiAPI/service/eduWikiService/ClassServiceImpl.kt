@@ -41,6 +41,7 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.ClassVersionOut
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.HomeworkVersionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.LectureVersionOutputModel
 import isel.leic.ps.eduWikiAPI.eventListeners.events.*
+import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.ForbiddenException
 import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.NotFoundException
 import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.UnknownDataException
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_REPORT_TABLE
@@ -58,6 +59,7 @@ import isel.leic.ps.eduWikiAPI.repository.LectureDAOImpl.Companion.LECTURE_TABLE
 import isel.leic.ps.eduWikiAPI.repository.interfaces.*
 import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.ClassService
 import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.ResourceStorageService
+import isel.leic.ps.eduWikiAPI.utils.resolveVote
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -82,6 +84,8 @@ class ClassServiceImpl : ClassService {
     lateinit var lectureDAO: LectureDAO
     @Autowired
     lateinit var homeworkDAO: HomeworkDAO
+    @Autowired
+    lateinit var reputationDAO: ReputationDAO
 
     /**
      * Class Methods
@@ -131,6 +135,8 @@ class ClassServiceImpl : ClassService {
     override fun voteOnClass(classId: Int, vote: VoteInputModel, principal: Principal): Int {
         val klass = classDAO.getSpecificClass(classId)
                 .orElseThrow { NotFoundException("No class with specified id found", "Try another id") }
+        resolveVote(principal.name, klass.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, CLASS_TABLE, klass.logId))
+
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) klass.votes.dec() else klass.votes.inc()
         val success = classDAO.updateClassVotes(classId, votes)
         publisher.publishEvent(VoteOnResourceEvent(
@@ -209,6 +215,8 @@ class ClassServiceImpl : ClassService {
     override fun voteOnReportClass(classId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int {
         val classReport = classDAO.getSpecificReportFromClass(classId, reportId)
                 .orElseThrow { NotFoundException("No class report found", "Try other ID") }
+        resolveVote(principal.name, classReport.reportedBy, reputationDAO.getActionLogsByUserAndResource(principal.name, CLASS_REPORT_TABLE, classReport.logId))
+
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) classReport.votes.dec() else classReport.votes.inc()
         val success = classDAO.updateReportedClassVotes(classId, reportId, votes)
         publisher.publishEvent(VoteOnResourceEvent(
@@ -321,6 +329,8 @@ class ClassServiceImpl : ClassService {
     override fun voteOnStagedClass(stageId: Int, vote: VoteInputModel, principal: Principal): Int {
         val classStage = classDAO.getSpecificStagedClass(stageId)
                 .orElseThrow { NotFoundException("No class stage found", "Try other ID") }
+        resolveVote(principal.name, classStage.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, CLASS_STAGE_TABLE, classStage.logId))
+
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) classStage.votes.dec() else classStage.votes.inc()
         val success = classDAO.updateStagedClassVotes(stageId, votes)
         publisher.publishEvent(VoteOnResourceEvent(
@@ -415,6 +425,8 @@ class ClassServiceImpl : ClassService {
     override fun voteOnCourseInClass(classId: Int, courseId: Int, vote: VoteInputModel, principal: Principal): Int {
         val courseClass = classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("No course and class association found", "Try other id") }
+        resolveVote(principal.name, courseClass.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, COURSE_CLASS_TABLE, courseClass.logId))
+
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) courseClass.votes.dec() else courseClass.votes.inc()
         val success = classDAO.updateCourseClassVotes(classId, courseId, votes)
         publisher.publishEvent(VoteOnResourceEvent(
@@ -515,6 +527,7 @@ class ClassServiceImpl : ClassService {
     override fun voteOnReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int {
         val courseClassReport = classDAO.getSpecificReportOfCourseInClass(reportId, classId, courseId)
                 .orElseThrow { NotFoundException("No course in class report found", "Try other id") }
+        resolveVote(principal.name, courseClassReport.reportedBy, reputationDAO.getActionLogsByUserAndResource(principal.name, COURSE_CLASS_REPORT_TABLE, courseClassReport.logId))
 
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) courseClassReport.votes.dec() else courseClassReport.votes.inc()
         val success = classDAO.updateReportedCourseClassVotes(classId, courseId, reportId, votes)
@@ -603,6 +616,7 @@ class ClassServiceImpl : ClassService {
     override fun voteOnStagedCourseInClass(classId: Int, stageId: Int, vote: VoteInputModel, principal: Principal): Int {
         val courseClassStage = classDAO.getSpecificStagedCourseInClass(classId, stageId)
                 .orElseThrow { NotFoundException("No staged course in class found", "Try other staged id") }
+        resolveVote(principal.name, courseClassStage.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, COURSE_CLASS_STAGE_TABLE, courseClassStage.logId))
 
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) courseClassStage.votes.dec() else courseClassStage.votes.inc()
         val success = classDAO.updateStagedCourseClassVotes(classId, stageId, votes)
@@ -676,10 +690,12 @@ class ClassServiceImpl : ClassService {
 
     @Transactional
     override fun voteOnLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int, vote: VoteInputModel, principal: Principal): Int {
-        val lecture = lectureDAO.getSpecificLectureFromCourseInClass(classDAO.getCourseClass(classId, courseId)
-                .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
-                .courseClassId, lectureId)
-                .orElseThrow { NotFoundException("No Lecture found", "Try another id") }
+        val lecture = lectureDAO.getSpecificLectureFromCourseInClass(
+                classDAO.getCourseClass(classId, courseId).orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }.courseClassId,
+                lectureId
+        ).orElseThrow { NotFoundException("No Lecture found", "Try another id") }
+        resolveVote(principal.name, lecture.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, LECTURE_TABLE, lecture.logId))
+
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) lecture.votes.dec() else lecture.votes.inc()
         val success = lectureDAO.updateVotesOnLecture(lectureId, votes)
         publisher.publishEvent(VoteOnResourceEvent(
@@ -772,6 +788,8 @@ class ClassServiceImpl : ClassService {
                 .courseClassId
         val lectureReport = lectureDAO.getSpecificReportOfLectureFromCourseInClass(courseClassId, lectureId, reportId)
                 .orElseThrow { NotFoundException("No Lecture found", "Try another id") }
+        resolveVote(principal.name, lectureReport.reportedBy, reputationDAO.getActionLogsByUserAndResource(principal.name, LECTURE_REPORT_TABLE, lectureReport.logId))
+
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) lectureReport.votes.dec() else lectureReport.votes.inc()
         val success = lectureDAO.updateVotesOnReportedLecture(lectureId, reportId, votes)
         publisher.publishEvent(VoteOnResourceEvent(
@@ -883,6 +901,8 @@ class ClassServiceImpl : ClassService {
                 .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
                 .courseClassId, stageId)
                 .orElseThrow { NotFoundException("No Lecture stage found", "Try another id") }
+        resolveVote(principal.name, lectureStage.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, LECTURE_STAGE_TABLE, lectureStage.logId))
+
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) lectureStage.votes.dec() else lectureStage.votes.inc()
         val success = lectureDAO.updateVotesOnStagedLecture(stageId, votes)
         publisher.publishEvent(VoteOnResourceEvent(
@@ -994,6 +1014,8 @@ class ClassServiceImpl : ClassService {
                 .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
                 .courseClassId, homeworkId)
                 .orElseThrow { NotFoundException("No homework found", "Try other id") }
+        resolveVote(principal.name, homework.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, HOMEWORK_TABLE, homework.logId))
+
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) homework.votes.dec() else homework.votes.inc()
         val success = homeworkDAO.updateVotesOnHomework(homeworkId, votes)
         publisher.publishEvent(VoteOnResourceEvent(
@@ -1092,8 +1114,9 @@ class ClassServiceImpl : ClassService {
                 .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
                 .courseClassId, stageId)
                 .orElseThrow { NotFoundException("No staged homework", "Try with other stage id") }
-        val votes = if(Vote.valueOf(vote.vote) == Vote.Down) homeworkStage.votes.dec() else homeworkStage.votes.inc()
+        resolveVote(principal.name, homeworkStage.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, HOMEWORK_STAGE_TABLE, homeworkStage.logId))
 
+        val votes = if(Vote.valueOf(vote.vote) == Vote.Down) homeworkStage.votes.dec() else homeworkStage.votes.inc()
         val success = homeworkDAO.updateVotesOnStagedHomework(stageId, votes)
 
         publisher.publishEvent(VoteOnResourceEvent(
@@ -1215,6 +1238,7 @@ class ClassServiceImpl : ClassService {
                 .courseClassId
         val homeworkReport = homeworkDAO.getSpecificReportOfHomeworkFromCourseInClass(courseClassId, homeworkId, reportId)
                 .orElseThrow { NotFoundException("No homework report found", "Try other id") }
+        resolveVote(principal.name, homeworkReport.reportedBy, reputationDAO.getActionLogsByUserAndResource(principal.name, HOMEWORK_REPORT_TABLE, homeworkReport.logId))
 
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) homeworkReport.votes.dec() else homeworkReport.votes.inc()
         val success = homeworkDAO.updateVotesOnReportedHomework(homeworkId, reportId, votes)

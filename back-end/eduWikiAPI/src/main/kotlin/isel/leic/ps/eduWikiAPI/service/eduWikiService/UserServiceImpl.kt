@@ -129,8 +129,8 @@ class UserServiceImpl : UserService {
                         programmeDAO.getSpecificProgramme(added.programmeId)
                                 .orElseThrow {
                                     UnknownDataException(
-                                            msg = "Can't add programme, maybe you are already following other programme",
-                                            action = "Check if you're following other programme, or try again later"
+                                            title = "Can't add programme, maybe you are already following other programme",
+                                            detail = "Check if you're following other programme, or try again later"
                                     )
                                 }
                 )
