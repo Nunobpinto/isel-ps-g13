@@ -24,7 +24,7 @@ data class WorkAssignmentVersion (
         @ColumnName(WORK_ASSIGNMENT_VERSION_WORK_ASSIGN_ID)
         val workAssignmentId: Int = 0,
         @ColumnName(WORK_ASSIGNMENT_VERSION_PHASE)
-        val phase: String? = null,
+        val phase: String = "",
         @ColumnName(WORK_ASSIGNMENT_VERSION_SHEET_ID)
         val sheetId: UUID = UUID.randomUUID(),
         @ColumnName(WORK_ASSIGNMENT_VERSION_SUPPLEMENT)

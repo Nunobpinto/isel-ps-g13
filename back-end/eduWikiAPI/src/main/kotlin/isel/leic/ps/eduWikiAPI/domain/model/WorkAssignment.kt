@@ -32,7 +32,7 @@ data class WorkAssignment (
         @ColumnName(WORK_ASSIGNMENT_CREATED_BY)
         val createdBy: String = "",
         @ColumnName(WORK_ASSIGNMENT_PHASE)
-        val phase: String? = null,
+        val phase: String = "",
         @ColumnName(WORK_ASSIGNMENT_SHEET_ID)
         val sheetId:  UUID = UUID.randomUUID(),
         @ColumnName(WORK_ASSIGNMENT_SUPPLEMENT)

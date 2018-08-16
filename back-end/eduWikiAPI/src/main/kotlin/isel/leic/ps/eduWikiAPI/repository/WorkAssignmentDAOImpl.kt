@@ -45,7 +45,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         const val WORK_ASSIGNMENT_DUE_DATE = "due_date"
         const val WORK_ASSIGNMENT_INDIVIDUAL = "individual"
         const val WORK_ASSIGNMENT_LATE_DELIVERY = "late_delivery"
-        const val WORK_ASSIGNMENT_MULTIPLE_DELIVERIES = "multipleDeliveries"
+        const val WORK_ASSIGNMENT_MULTIPLE_DELIVERIES = "multiple_deliveries"
         const val WORK_ASSIGNMENT_REQUIRES_REPORT = "requires_report"
         const val WORK_ASSIGNMENT_VOTES = "votes"
         const val WORK_ASSIGNMENT_TIMESTAMP = "time_stamp"
@@ -61,7 +61,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         const val WORK_ASSIGNMENT_STAGE_DUE_DATE = "due_date"
         const val WORK_ASSIGNMENT_STAGE_INDIVIDUAL = "individual"
         const val WORK_ASSIGNMENT_STAGE_LATE_DELIVERY = "late_delivery"
-        const val WORK_ASSIGNMENT_STAGE_MULTIPLE_DELIVERIES = "multipleDeliveries"
+        const val WORK_ASSIGNMENT_STAGE_MULTIPLE_DELIVERIES = "multiple_deliveries"
         const val WORK_ASSIGNMENT_STAGE_REQUIRES_REPORT = "requires_report"
         const val WORK_ASSIGNMENT_STAGE_PHASE = "phase"
         const val WORK_ASSIGNMENT_STAGE_VOTES = "votes"
@@ -79,7 +79,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         const val WORK_ASSIGNMENT_REPORT_DUE_DATE = "due_date"
         const val WORK_ASSIGNMENT_REPORT_INDIVIDUAL = "individual"
         const val WORK_ASSIGNMENT_REPORT_LATE_DELIVERY = "late_delivery"
-        const val WORK_ASSIGNMENT_REPORT_MULTIPLE_DELIVERIES = "multipleDeliveries"
+        const val WORK_ASSIGNMENT_REPORT_MULTIPLE_DELIVERIES = "multiple_deliveries"
         const val WORK_ASSIGNMENT_REPORT_REQUIRES_REPORT = "requires_report"
         const val WORK_ASSIGNMENT_REPORT_VOTES = "votes"
         const val WORK_ASSIGNMENT_REPORT_TIMESTAMP = "time_stamp"
@@ -95,7 +95,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         const val WORK_ASSIGNMENT_VERSION_DUE_DATE = "due_date"
         const val WORK_ASSIGNMENT_VERSION_INDIVIDUAL = "individual"
         const val WORK_ASSIGNMENT_VERSION_LATE_DELIVERY = "late_delivery"
-        const val WORK_ASSIGNMENT_VERSION_MULTIPLE_DELIVERIES = "multipleDeliveries"
+        const val WORK_ASSIGNMENT_VERSION_MULTIPLE_DELIVERIES = "multiple_deliveries"
         const val WORK_ASSIGNMENT_VERSION_REQUIRES_REPORT = "requires_report"
         const val WORK_ASSIGNMENT_VERSION_TIMESTAMP = "time_stamp"
     }
@@ -209,6 +209,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "$WORK_ASSIGNMENT_TIMESTAMP = :workAssignment.timestamp " +
                         "WHERE $WORK_ASSIGNMENT_ID = :workAssignmentId"
         )
+        @GetGeneratedKeys
         override fun updateWorkAssignment(workAssignmentId: Int, workAssignment: WorkAssignment): WorkAssignment
 
         @SqlUpdate(
@@ -232,9 +233,9 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         override fun deleteReportOnWorkAssignment(termId: Int, courseId: Int, workAssignmentId: Int, reportId: Int): Int
 
         @SqlQuery(
-                "SELECT W.$WORK_ASSIGNMENT_ID " +
+                "SELECT W.$WORK_ASSIGNMENT_ID, " +
                         "W.$WORK_ASSIGNMENT_VERSION, " +
-                        "W.$WORK_ASSIGNMENT_VOTES," +
+                        "W.$WORK_ASSIGNMENT_VOTES, " +
                         "W.$WORK_ASSIGNMENT_CREATED_BY, " +
                         "W.$WORK_ASSIGNMENT_PHASE, " +
                         "W.$WORK_ASSIGNMENT_SHEET_ID, " +
@@ -245,7 +246,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_MULTIPLE_DELIVERIES, " +
                         "W.$WORK_ASSIGNMENT_REQUIRES_REPORT, " +
                         "W.$WORK_ASSIGNMENT_TIMESTAMP, " +
-                        "W.$WORK_ASSIGNMENT_LOG_ID" +
+                        "W.$WORK_ASSIGNMENT_LOG_ID " +
                         "FROM $WORK_ASSIGNMENT_TABLE AS W " +
                         "INNER JOIN $COURSE_MISC_UNIT_TABLE AS C " +
                         "ON W.$WORK_ASSIGNMENT_ID = C.$COURSE_MISC_UNIT_ID " +
@@ -267,7 +268,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_STAGE_REQUIRES_REPORT, " +
                         "W.$WORK_ASSIGNMENT_STAGE_VOTES," +
                         "W.$WORK_ASSIGNMENT_STAGE_TIMESTAMP, " +
-                        "W.$WORK_ASSIGNMENT_STAGE_LOG_ID" +
+                        "W.$WORK_ASSIGNMENT_STAGE_LOG_ID " +
                         "FROM $WORK_ASSIGNMENT_STAGE_TABLE AS W " +
                         "INNER JOIN $COURSE_MISC_UNIT_STAGE_TABLE AS C " +
                         "ON W.$WORK_ASSIGNMENT_STAGE_ID = C.$COURSE_MISC_UNIT_STAGE_ID " +
@@ -278,7 +279,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
 
         @SqlQuery(
                 "SELECT W.$WORK_ASSIGNMENT_STAGE_ID, " +
-                        "W.$WORK_ASSIGNMENT_STAGE_SHEET_ID," +
+                        "W.$WORK_ASSIGNMENT_STAGE_SHEET_ID, " +
                         "W.$WORK_ASSIGNMENT_STAGE_PHASE, " +
                         "W.$WORK_ASSIGNMENT_STAGE_SUPPLEMENT, " +
                         "W.$WORK_ASSIGNMENT_STAGE_DUE_DATE, " +
@@ -289,7 +290,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_STAGE_CREATED_BY, " +
                         "W.$WORK_ASSIGNMENT_STAGE_VOTES, " +
                         "W.$WORK_ASSIGNMENT_STAGE_TIMESTAMP, " +
-                        "W.$WORK_ASSIGNMENT_STAGE_LOG_ID" +
+                        "W.$WORK_ASSIGNMENT_STAGE_LOG_ID " +
                         "FROM $WORK_ASSIGNMENT_STAGE_TABLE AS W " +
                         "INNER JOIN $COURSE_MISC_UNIT_STAGE_TABLE AS C " +
                         "ON W.$WORK_ASSIGNMENT_STAGE_ID = C.$COURSE_MISC_UNIT_STAGE_ID " +
@@ -314,7 +315,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_REPORT_VOTES, " +
                         "W.$WORK_ASSIGNMENT_REPORT_TIMESTAMP, " +
                         "W.$WORK_ASSIGNMENT_REPORT_LOG_ID" +
-                        "FROM $WORK_ASSIGNMENT_REPORT_TABLE AS W" +
+                        "FROM $WORK_ASSIGNMENT_REPORT_TABLE AS W " +
                         "INNER JOIN $COURSE_MISC_UNIT_TABLE AS C " +
                         "ON W.$WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID = C.$COURSE_MISC_UNIT_ID " +
                         "WHERE C.$COURSE_MISC_UNIT_ID = :workAssignmentId" +
@@ -400,7 +401,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_REPORT_VOTES, " +
                         "W.$WORK_ASSIGNMENT_REPORT_TIMESTAMP, " +
                         "W.$WORK_ASSIGNMENT_REPORT_LOG_ID" +
-                        "FROM $WORK_ASSIGNMENT_REPORT_TABLE AS W" +
+                        "FROM $WORK_ASSIGNMENT_REPORT_TABLE AS W " +
                         "INNER JOIN $COURSE_MISC_UNIT_TABLE AS C " +
                         "ON W.$WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID = C.$COURSE_MISC_UNIT_ID " +
                         "WHERE C.$COURSE_MISC_UNIT_ID = :workAssignmentId" +
@@ -488,7 +489,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_VERSION_CREATED_BY, " +
                         "W.$WORK_ASSIGNMENT_VERSION_TIMESTAMP " +
                         "FROM $WORK_ASSIGNMENT_VERSION_TABLE AS W " +
-                        "INNER JOIN $COURSE_MISC_UNIT_TABLE as C ON W.$WORK_ASSIGNMENT_VERSION_WORK_ASSIGN_ID = C.$COURSE_MISC_UNIT_ID " +
+                        "INNER JOIN $COURSE_MISC_UNIT_TABLE AS C ON W.$WORK_ASSIGNMENT_VERSION_WORK_ASSIGN_ID = C.$COURSE_MISC_UNIT_ID " +
                         "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId AND C.$COURSE_MISC_UNIT_TERM_ID = :termId " +
                         "C.$COURSE_MISC_UNIT_ID = :workAssignment"
         )
@@ -509,7 +510,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_VERSION_CREATED_BY, " +
                         "W.$WORK_ASSIGNMENT_VERSION_TIMESTAMP " +
                         "FROM $WORK_ASSIGNMENT_VERSION_TABLE AS W " +
-                        "INNER JOIN $COURSE_MISC_UNIT_TABLE as C ON W.$WORK_ASSIGNMENT_VERSION_WORK_ASSIGN_ID = C.$COURSE_MISC_UNIT_ID " +
+                        "INNER JOIN $COURSE_MISC_UNIT_TABLE AS C ON W.$WORK_ASSIGNMENT_VERSION_WORK_ASSIGN_ID = C.$COURSE_MISC_UNIT_ID " +
                         "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId AND C.$COURSE_MISC_UNIT_TERM_ID = :termId " +
                         "AND C.$COURSE_MISC_UNIT_ID = :workAssignment AND W.$WORK_ASSIGNMENT_VERSION_ID = :version"
         )

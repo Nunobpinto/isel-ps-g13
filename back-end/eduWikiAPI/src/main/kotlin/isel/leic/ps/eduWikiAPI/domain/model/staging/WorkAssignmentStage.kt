@@ -25,7 +25,7 @@ data class WorkAssignmentStage (
         @ColumnName(WORK_ASSIGNMENT_STAGE_LOG_ID)
         val logId: Int = 0,
         @ColumnName(WORK_ASSIGNMENT_STAGE_PHASE)
-        val phase: String? = null,
+        val phase: String = "",
         @ColumnName(WORK_ASSIGNMENT_STAGE_SHEET_ID)
         val sheetId: UUID = UUID.randomUUID(),
         @ColumnName(WORK_ASSIGNMENT_STAGE_SUPPLEMENT)
