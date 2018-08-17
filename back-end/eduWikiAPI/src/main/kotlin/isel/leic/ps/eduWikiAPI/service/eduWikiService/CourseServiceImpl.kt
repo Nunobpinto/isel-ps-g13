@@ -105,7 +105,7 @@ class CourseServiceImpl : CourseService {
     override fun getSpecificClassOfSpecificCourseInTerm(courseId: Int, termId: Int, classId: Int): ClassOutputModel =
             toClassOutputModel(
                     courseDAO.getSpecificClassOfSpecificCourseInTerm(courseId, termId, classId)
-                            .orElseThrow({ NotFoundException("No class found", "Try again with other class id") }),
+                            .orElseThrow { NotFoundException("No class found", "Try again with other class id") } ,
                     termDAO.getTerm(termId).orElseThrow { NotFoundException("No term found", "Try again with other term id") }
     )
 
