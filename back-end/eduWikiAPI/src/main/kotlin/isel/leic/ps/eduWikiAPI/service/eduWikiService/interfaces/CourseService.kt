@@ -7,10 +7,7 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.WorkAssignmentInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ExamReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.WorkAssignmentReportInputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.single.CourseOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.single.ExamOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.single.TermOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.single.WorkAssignmentOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ClassCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ExamCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.WorkAssignmentCollectionOutputModel
@@ -21,6 +18,7 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.CourseStag
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.CourseVersionCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.ExamVersionCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.WorkAssignmentVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.CourseReportOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.ExamReportOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.WorkAssignmentReportOutputModel
@@ -54,6 +52,10 @@ interface CourseService {
     fun getAllWorkAssignmentsFromSpecificTermOfCourse(courseId: Int, termId: Int): WorkAssignmentCollectionOutputModel
 
     fun getSpecificWorkAssignmentFromSpecificTermOfCourse(workAssignmentId: Int, courseId: Int, termId: Int): WorkAssignmentOutputModel
+
+    fun getClassesOfSpecificCourseInTerm(courseId: Int, termId: Int): ClassCollectionOutputModel
+
+    fun getSpecificClassOfSpecificCourseInTerm(courseId: Int, termId: Int, classId: Int): ClassOutputModel
 
     fun createCourse(inputCourse: CourseInputModel, principal: Principal): CourseOutputModel
 

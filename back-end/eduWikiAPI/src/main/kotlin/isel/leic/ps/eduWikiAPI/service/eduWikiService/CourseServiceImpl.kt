@@ -10,10 +10,7 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ExamReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.WorkAssignmentReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.mappers.*
 import isel.leic.ps.eduWikiAPI.domain.model.*
-import isel.leic.ps.eduWikiAPI.domain.outputModel.single.CourseOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.single.ExamOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.single.TermOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.single.WorkAssignmentOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ClassCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ExamCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.WorkAssignmentCollectionOutputModel
@@ -24,6 +21,7 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.CourseStag
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.CourseVersionCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.ExamVersionCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.WorkAssignmentVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.CourseReportOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.ExamReportOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.WorkAssignmentReportOutputModel
@@ -41,13 +39,11 @@ import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_TABLE
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_REPORT_TABLE
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_STAGE_TABLE
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_TABLE
+import isel.leic.ps.eduWikiAPI.repository.TermDAOImpl
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_REPORT_TABLE
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_STAGE_TABLE
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_TABLE
-import isel.leic.ps.eduWikiAPI.repository.interfaces.CourseDAO
-import isel.leic.ps.eduWikiAPI.repository.interfaces.ExamDAO
-import isel.leic.ps.eduWikiAPI.repository.interfaces.ReputationDAO
-import isel.leic.ps.eduWikiAPI.repository.interfaces.WorkAssignmentDAO
+import isel.leic.ps.eduWikiAPI.repository.interfaces.*
 import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.CourseService
 import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.ResourceStorageService
 import isel.leic.ps.eduWikiAPI.utils.resolveApproval
@@ -71,6 +67,8 @@ class CourseServiceImpl : CourseService {
     @Autowired
     lateinit var examDAO: ExamDAO
     @Autowired
+    lateinit var termDAO: TermDAO
+    @Autowired
     lateinit var reputationDAO: ReputationDAO
     @Autowired
     lateinit var workAssignmentDAO: WorkAssignmentDAO
@@ -88,12 +86,28 @@ class CourseServiceImpl : CourseService {
     }
 
     @Transactional
-    override fun getSpecificCourse(courseId: Int): CourseOutputModel {
-        return toCourseOutputModel(
-                courseDAO.getSpecificCourse(courseId)
-                        .orElseThrow { NotFoundException("No course found", "Try again with other course id") }
-        )
+    override fun getSpecificCourse(courseId: Int): CourseOutputModel =
+            toCourseOutputModel(
+                    courseDAO.getSpecificCourse(courseId)
+                            .orElseThrow { NotFoundException("No course found", "Try again with other course id") }
+            )
+
+
+    @Transactional
+    override fun getClassesOfSpecificCourseInTerm(courseId: Int, termId: Int): ClassCollectionOutputModel {
+        val classes =
+                courseDAO.getClassesOfSpecificCourseInTerm(courseId, termId)
+                        .map { toClassOutputModel(it, termDAO.getTerm(termId).orElseThrow { NotFoundException("No term found", "Try again with other term id") }) }
+        return toClassCollectionOutputModel(classes)
     }
+
+    @Transactional
+    override fun getSpecificClassOfSpecificCourseInTerm(courseId: Int, termId: Int, classId: Int): ClassOutputModel =
+            toClassOutputModel(
+                    courseDAO.getSpecificClassOfSpecificCourseInTerm(courseId, termId, classId)
+                            .orElseThrow({ NotFoundException("No class found", "Try again with other class id") }),
+                    termDAO.getTerm(termId).orElseThrow { NotFoundException("No term found", "Try again with other term id") }
+    )
 
     @Transactional
     override fun createCourse(inputCourse: CourseInputModel, principal: Principal): CourseOutputModel {
@@ -114,7 +128,7 @@ class CourseServiceImpl : CourseService {
                 .orElseThrow { NotFoundException("No Course found", "Try another id") }
         resolveVote(principal.name, course.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, COURSE_TABLE, course.logId))
 
-        val votes = if(Vote.valueOf(vote.vote) == Vote.Down) course.votes.dec() else course.votes.inc()
+        val votes = if (Vote.valueOf(vote.vote) == Vote.Down) course.votes.dec() else course.votes.inc()
         val success = courseDAO.updateVotesOnCourse(courseId, votes)
 
         publisher.publishEvent(VoteOnResourceEvent(
@@ -137,8 +151,8 @@ class CourseServiceImpl : CourseService {
                 createdBy = principal.name,
                 version = course.version.inc(),
                 organizationId = course.organizationId,
-                fullName = if(inputCourse.fullName.isEmpty()) course.fullName else inputCourse.fullName,
-                shortName = if(inputCourse.shortName.isEmpty()) course.shortName else inputCourse.shortName
+                fullName = if (inputCourse.fullName.isEmpty()) course.fullName else inputCourse.fullName,
+                shortName = if (inputCourse.shortName.isEmpty()) course.shortName else inputCourse.shortName
         ))
         courseDAO.createCourseVersion(toCourseVersion(updatedCourse))
 
@@ -224,7 +238,7 @@ class CourseServiceImpl : CourseService {
                 .orElseThrow { NotFoundException("No staged course found", "Try again with other stage id") }
         resolveVote(principal.name, courseStage.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, COURSE_STAGE_TABLE, courseStage.logId))
 
-        val votes = if(Vote.valueOf(vote.vote) == Vote.Down) courseStage.votes.dec() else courseStage.votes.inc()
+        val votes = if (Vote.valueOf(vote.vote) == Vote.Down) courseStage.votes.dec() else courseStage.votes.inc()
         val success = courseDAO.updateVotesOnStagedCourse(stageId, votes)
 
         publisher.publishEvent(VoteOnResourceEvent(
@@ -289,7 +303,7 @@ class CourseServiceImpl : CourseService {
                 .orElseThrow { NotFoundException("No report found", "Try again with other report id") }
         resolveVote(principal.name, courseReport.reportedBy, reputationDAO.getActionLogsByUserAndResource(principal.name, COURSE_REPORT_TABLE, courseReport.logId))
 
-        val votes = if(Vote.valueOf(vote.vote) == Vote.Down) courseReport.votes.dec() else courseReport.votes.inc()
+        val votes = if (Vote.valueOf(vote.vote) == Vote.Down) courseReport.votes.dec() else courseReport.votes.inc()
         val success = courseDAO.updateVotesOnReportedCourse(reportId, votes)
 
         publisher.publishEvent(VoteOnResourceEvent(
@@ -436,7 +450,7 @@ class CourseServiceImpl : CourseService {
                 .orElseThrow { NotFoundException("No exam found", "Try again with other exam id") }
         resolveVote(principal.name, exam.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, EXAM_TABLE, exam.logId))
 
-        val votes = if(Vote.valueOf(inputVote.vote) == Vote.Down) exam.votes.dec() else exam.votes.inc()
+        val votes = if (Vote.valueOf(inputVote.vote) == Vote.Down) exam.votes.dec() else exam.votes.inc()
         val success = examDAO.updateVotesOnExam(examId, votes)
 
         publisher.publishEvent(VoteOnResourceEvent(
@@ -529,7 +543,7 @@ class CourseServiceImpl : CourseService {
                 .orElseThrow { NotFoundException("No exam staged found", "Try again with other staged id") }
         resolveVote(principal.name, examStage.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, EXAM_STAGE_TABLE, examStage.logId))
 
-        val votes = if(Vote.valueOf(vote.vote) == Vote.Down) examStage.votes.dec() else examStage.votes.inc()
+        val votes = if (Vote.valueOf(vote.vote) == Vote.Down) examStage.votes.dec() else examStage.votes.inc()
         val success = examDAO.updateVotesOnStagedExam(stageId, votes)
         publisher.publishEvent(VoteOnResourceEvent(
                 principal.name,
@@ -597,7 +611,7 @@ class CourseServiceImpl : CourseService {
                 .orElseThrow { NotFoundException("No report found", "Try again with other report id") }
         resolveVote(principal.name, examReport.reportedBy, reputationDAO.getActionLogsByUserAndResource(principal.name, EXAM_REPORT_TABLE, examReport.logId))
 
-        val votes = if(Vote.valueOf(vote.vote) == Vote.Down) examReport.votes.dec() else examReport.votes.inc()
+        val votes = if (Vote.valueOf(vote.vote) == Vote.Down) examReport.votes.dec() else examReport.votes.inc()
         val success = examDAO.updateVotesOnReportedExam(reportId, votes)
 
         publisher.publishEvent(VoteOnResourceEvent(
@@ -726,7 +740,7 @@ class CourseServiceImpl : CourseService {
                 .orElseThrow { NotFoundException("No Work Assignment found", "Try again with other work assignment id") }
         resolveVote(principal.name, workAssignment.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, WORK_ASSIGNMENT_TABLE, workAssignment.logId))
 
-        val votes = if(Vote.valueOf(vote.vote) == Vote.Down) workAssignment.votes.dec() else workAssignment.votes.inc()
+        val votes = if (Vote.valueOf(vote.vote) == Vote.Down) workAssignment.votes.dec() else workAssignment.votes.inc()
         val success = workAssignmentDAO.updateVotesOnWorkAssignment(workAssignmentId, votes)
 
         publisher.publishEvent(VoteOnResourceEvent(
@@ -819,7 +833,7 @@ class CourseServiceImpl : CourseService {
                 .orElseThrow { NotFoundException("No Work Assignment Staged found", "Try again with other stage id") }
         resolveVote(principal.name, workAssignmentStage.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, WORK_ASSIGNMENT_STAGE_TABLE, workAssignmentStage.logId))
 
-        val votes = if(Vote.valueOf(vote.vote) == Vote.Down) workAssignmentStage.votes.dec() else workAssignmentStage.votes.inc()
+        val votes = if (Vote.valueOf(vote.vote) == Vote.Down) workAssignmentStage.votes.dec() else workAssignmentStage.votes.inc()
         val success = workAssignmentDAO.updateStagedWorkAssignmentVotes(stageId, votes)
 
         publisher.publishEvent(VoteOnResourceEvent(
@@ -891,7 +905,7 @@ class CourseServiceImpl : CourseService {
                 .orElseThrow { NotFoundException("No report found", "Try again with other report id") }
         resolveVote(principal.name, report.reportedBy, reputationDAO.getActionLogsByUserAndResource(principal.name, WORK_ASSIGNMENT_REPORT_TABLE, report.logId))
 
-        val votes = if(Vote.valueOf(inputVote.vote) == Vote.Down) report.votes.dec() else report.votes.inc()
+        val votes = if (Vote.valueOf(inputVote.vote) == Vote.Down) report.votes.dec() else report.votes.inc()
         val success = workAssignmentDAO.updateVotesOnReportedWorkAssignment(reportId, votes)
 
         publisher.publishEvent(VoteOnResourceEvent(
