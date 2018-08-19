@@ -1,6 +1,6 @@
 import React from 'react'
-import Profile from './components/user/Profile'
-import OtherUser from './components/user/OtherUser'
+import Profile from './components/users/Profile'
+import OtherUser from './components/users/OtherUser'
 import OrganizationVersion from './components/organization/OrganizationVersion'
 import ProgrammeVersion from './components/programmes/ProgrammeVersion'
 import CourseVersion from './components/courses/CourseVersion'
@@ -10,8 +10,9 @@ import Programme from './components/programmes/Programme'
 import Register from './components/auth/Register'
 import Courses from './components/courses/Courses'
 import Course from './components/courses/Course'
-import Home from './components/Home/Home'
+import Home from './components/home/Home'
 import Logout from './components/auth/Logout'
+import ProtectedRoute from './components/auth/ProtectedRoute'
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom'
 
 export default () => (
@@ -20,19 +21,19 @@ export default () => (
       <Switch>
         <Route exact path='/' component={Home} />
         <Route exact path='/register' component={Register} />
-        <Route exact path='/organization' render={props => <Organization {...props} />} />
-        <Route exact path='/programmes' render={props => <Programmes {...props} />} />
-        <Route exact path='/programmes/:id' render={props => <Programme {...props} />} />
-        <Route exact path='/courses' render={props => <Courses {...props} />} />
-        <Route exact path='/courses/:id' render={props => <Course {...props} />} />
-        <Route exact path='/classes' render={props => <Courses {...props} />} />
-        <Route exact path='/classes/:id' render={props => <Course {...props} />} />
-        <Route exact path='/programmes/:programmeId/versions/:version' component={ProgrammeVersion} />
-        <Route exact path='/organization/:id/versions/:version' component={OrganizationVersion} />
-        <Route exact path='/courses/:courseId/versions/:version' component={CourseVersion} />
-        <Route exact path='/logout' component={Logout} />
-        <Route exact path='/user' component={Profile} />
-        <Route exact path='/users/:username' component={OtherUser} />
+        <ProtectedRoute exact path='/organization' component={Organization} />
+        <ProtectedRoute exact path='/programmes' component={props => <Programmes {...props} />} />
+        <ProtectedRoute exact path='/programmes5/:id' component={Programme} />
+        <ProtectedRoute exact path='/courses' component={Courses} />
+        <ProtectedRoute exact path='/courses/:id' component={Course} />
+        <ProtectedRoute exact path='/classes' component={Courses} />
+        <ProtectedRoute exact path='/classes/:id' component={Course} />
+        <ProtectedRoute exact path='/programmes/:programmeId/versions/:version' component={ProgrammeVersion} />
+        <ProtectedRoute exact path='/organization/:id/versions/:version' component={OrganizationVersion} />
+        <ProtectedRoute exact path='/courses/:courseId/versions/:version' component={CourseVersion} />
+        <ProtectedRoute exact path='/logout' component={Logout} />
+        <ProtectedRoute exact path='/user' component={Profile} />
+        <ProtectedRoute exact path='/users/:username' component={OtherUser} />
         <Redirect from='*' to='/' />
       </Switch>
     </BrowserRouter>

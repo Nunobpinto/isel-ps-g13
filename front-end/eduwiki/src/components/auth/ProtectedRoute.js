@@ -13,7 +13,7 @@ export default ({ component: Component }) => (
     checkAuth() ? (
       <Component {...props} />
     ) : (
-      <Redirect to={{ pathname: '/login' }} />
+      <Redirect to={{ pathname: '/', state: {from: props.location} }} />
     )
   )} />
 )

@@ -101,6 +101,9 @@ class LoginForm extends React.Component {
       this.tryLogin(credentials)
         .then(_ => {
           cookies.set('auth', credentials, {maxAge: 9999})
+          if (this.props.destination) {
+            return this.props.history.push(this.props.destination.from.pathname)
+          }
           this.props.history.push('/')
         })
         .catch(error => {

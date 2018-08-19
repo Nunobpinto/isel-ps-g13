@@ -77,7 +77,7 @@ export default class extends React.Component {
         }
       })
       .then(list => {
-        this.setState({ reports: list })
+        this.setState({ reports: list.programmeReportList })
       })
   }
 

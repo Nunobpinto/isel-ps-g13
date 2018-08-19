@@ -42,7 +42,7 @@ export default class extends React.Component {
         return resp.json()
       })
       .then(versions => {
-        const programmeVersions = versions.filter(version => version.version !== versionNumber)
+        const programmeVersions = versions.programmeVersionList.filter(version => version.version !== versionNumber)
         this.setState({versions: programmeVersions})
       })
   }

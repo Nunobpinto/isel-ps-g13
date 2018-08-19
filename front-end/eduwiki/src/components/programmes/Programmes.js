@@ -248,10 +248,10 @@ export default class extends React.Component {
             throw new Error(`unexpected content type ${ct}`)
           })
           .then(stagedProgrammes => this.setState({
-            programmes: programmes,
-            viewProgrammes: programmes,
-            staged: stagedProgrammes,
-            viewStaged: stagedProgrammes
+            programmes: programmes.programmeList,
+            viewProgrammes: programmes.programmeList,
+            staged: stagedProgrammes.programmeStageList,
+            viewStaged: stagedProgrammes.programmeStageList
           }))
           .catch(stagedError => this.setState({
             programmes: programmes,
