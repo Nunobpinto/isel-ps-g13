@@ -6,7 +6,8 @@ export default class extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      courses: []
+      courses: [],
+      error: 'Follow a course'
     }
   }
   render () {
@@ -20,11 +21,13 @@ export default class extends React.Component {
             </p>
           ]}
         >
-          <ul>
-            {this.state.courses.map(course => (
-              <li>{course.fullName} ({course.shortName})</li>
-            ))}
-          </ul>
+          {this.state.error
+            ? <p>{this.state.error}</p>
+            : <ul>
+              {this.state.courses.map(course => (
+                <li>{course.fullName} ({course.shortName})</li>
+              ))}
+            </ul>}
         </Card>
       </div>
     )
@@ -42,7 +45,10 @@ export default class extends React.Component {
         if (resp.status >= 400) throw new Error('Error!!!')
         return resp.json()
       })
-      .then(json => this.setState({courses: json.courseList}))
-      .catch(_ => message.error('Something bad happened, please try again'))
+      .then(json => this.setState({
+        courses: json.courseList,
+        error: undefined
+      }))
+      .catch(_ => this.setState({error: 'Try following a course or try later'}))
   }
 }

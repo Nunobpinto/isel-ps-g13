@@ -86,7 +86,7 @@ fun toProgrammeStageOutputModel(programmeStage: ProgrammeStage) = ProgrammeStage
         academicDegree = programmeStage.academicDegree,
         timestamp = programmeStage.timestamp,
         totalCredits = programmeStage.totalCredits,
-        username = programmeStage.createdBy
+        createdBy = programmeStage.createdBy
 )
 
 fun toProgrammeReportOutputModel(programmeReport: ProgrammeReport) = ProgrammeReportOutputModel(

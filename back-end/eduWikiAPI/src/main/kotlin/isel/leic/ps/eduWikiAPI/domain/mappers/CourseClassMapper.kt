@@ -61,7 +61,7 @@ fun toCourseClassStageOutputModel(courseClassStage: CourseClassStage) = CourseCl
         courseId = courseClassStage.courseId,
         timestamp = courseClassStage.timestamp,
         votes = courseClassStage.votes,
-        username = courseClassStage.createdBy
+        createdBy = courseClassStage.createdBy
 )
 
 fun toCourseClassCollectionOutputModel(courseClasseList: List<CourseClassOutputModel>) = CourseClassCollectionOutputModel(

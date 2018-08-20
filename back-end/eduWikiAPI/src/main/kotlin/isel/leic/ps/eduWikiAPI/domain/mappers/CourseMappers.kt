@@ -81,7 +81,7 @@ fun toCourseStageOutputModel(courseStage: CourseStage) = CourseStageOutputModel(
         timestamp = courseStage.timestamp,
         fullName = courseStage.fullName,
         shortName = courseStage.shortName,
-        username = courseStage.createdBy
+        createdBy = courseStage.createdBy
 )
 
 fun toCourseVersionOutputModel(courseVersion: CourseVersion) = CourseVersionOutputModel(

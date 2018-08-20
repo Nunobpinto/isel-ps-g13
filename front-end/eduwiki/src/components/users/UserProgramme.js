@@ -9,7 +9,8 @@ export default class extends React.Component {
       programme: {
         fullName: '',
         shortName: ''
-      }
+      },
+      error: 'Follow a programme'
     }
   }
   render () {
@@ -23,7 +24,13 @@ export default class extends React.Component {
             </p>
           ]}
         >
-          <p>{`${this.state.programme.fullName} (${this.state.programme.shortName})`}</p>
+          {this.state.error
+            ? <p>{this.state.error}</p>
+            : <p onClick={() => this.props.history.push(`/programmes/${this.state.programme.programmeId}`)}>
+              {`${this.state.programme.fullName} (${this.state.programme.shortName})`}
+            </p>
+          }
+
         </Card>
       </div>
     )
@@ -42,7 +49,10 @@ export default class extends React.Component {
         if (resp.status >= 400) throw new Error('Error!!!')
         return resp.json()
       })
-      .then(json => this.setState({programme: json}))
-      .catch(_ => message.error('Something bad happened, please try again'))
+      .then(json => this.setState({
+        programme: `${json.fullName} (${json.shortName})`,
+        error: undefined
+      }))
+      .catch(_ => this.setState({error: 'Try following a programme or try later'}))
   }
 }

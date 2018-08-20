@@ -325,7 +325,7 @@ export default class extends React.Component {
                     votes: json.votes,
                     progError: undefined,
                     courseError: undefined,
-                    courses: courses
+                    courses: courses.courseProgrammeList
                   })
                 }
                 return resp.json()
@@ -344,7 +344,7 @@ export default class extends React.Component {
                   votes: json.votes,
                   progError: undefined,
                   courseError: undefined,
-                  courses: courses,
+                  courses: courses.courseProgrammeList,
                   canBeFollowed: (userProgramme.programmeId !== json.programmeId),
                   userFollowing: (userProgramme.programmeId === json.programmeId)
                 })

@@ -8,6 +8,7 @@ class WorkAssignmentReportInputModel (
         @JsonProperty("work_assignment_id")
         val workAssignmentId: Int = 0,
         val sheetId: UUID = UUID.randomUUID(),
+        val phase: String? = null,
         val supplementId: UUID = UUID.randomUUID(),
         @JsonProperty("due_date")
         val dueDate: LocalDate? = null,

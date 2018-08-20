@@ -9,6 +9,19 @@ import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseProgrammeVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_CREATED_BY
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_LOG_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_NAME
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_TABLE
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_TERM_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_TIMESTAMP
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_VERSION
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_VOTES
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_CLASS_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_COURSE_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_TABLE
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.TermDAOImpl.Companion.TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.TermDAOImpl.Companion.TERM_SHORT_NAME
 import isel.leic.ps.eduWikiAPI.repository.TermDAOImpl.Companion.TERM_TABLE
@@ -28,6 +41,7 @@ import java.util.*
 
 @Repository
 class CourseDAOImpl : CourseDAO {
+
 
     companion object {
         //TABLE NAMES
@@ -163,6 +177,12 @@ class CourseDAOImpl : CourseDAO {
 
     override fun getSpecificTermOfCourse(courseId: Int, termId: Int): Optional<Term> =
             jdbi.open().attach(CourseDAOJdbi::class.java).getSpecificTermOfCourse(courseId, termId)
+
+    override fun getClassesOfSpecificCourseInTerm(courseId: Int, termId: Int): List<Class> =
+            jdbi.open().attach(CourseDAOJdbi::class.java).getClassesOfSpecificCourseInTerm(courseId, termId)
+
+    override fun getSpecificClassOfSpecificCourseInTerm(courseId: Int, termId: Int, classId: Int): Optional<Class> =
+            jdbi.open().attach(CourseDAOJdbi::class.java).getSpecificClassOfSpecificCourseInTerm(courseId, termId, classId)
 
     override fun updateCourse(course: Course): Course =
             jdbi.open().attach(CourseDAOJdbi::class.java).updateCourse(course)
@@ -306,6 +326,41 @@ class CourseDAOImpl : CourseDAO {
                 "SELECT * FROM $COURSE_TABLE WHERE $COURSE_ID = :courseId"
         )
         override fun getSpecificCourse(courseId: Int): Optional<Course>
+
+        @SqlQuery(
+                "SELECT C.$CLASS_ID, " +
+                        "C.$CLASS_VERSION, " +
+                        "C.$CLASS_CREATED_BY, " +
+                        "C.$CLASS_NAME, " +
+                        "C.$CLASS_TERM_ID, " +
+                        "C.$CLASS_VOTES, " +
+                        "C.$CLASS_TIMESTAMP, " +
+                        "C.$CLASS_LOG_ID " +
+                        "FROM $CLASS_TABLE AS C " +
+                        "INNER JOIN $COURSE_CLASS_TABLE AS CC " +
+                        "ON C.$CLASS_ID = CC.$COURSE_CLASS_CLASS_ID " +
+                        "WHERE CC.$COURSE_CLASS_COURSE_ID = :courseId " +
+                        "AND CC.$COURSE_CLASS_TERM_ID = :termId "
+        )
+        override fun getClassesOfSpecificCourseInTerm(courseId: Int, termId: Int): List<Class>
+
+        @SqlQuery(
+                "SELECT C.$CLASS_ID, " +
+                        "C.$CLASS_VERSION, " +
+                        "C.$CLASS_CREATED_BY, " +
+                        "C.$CLASS_NAME, " +
+                        "C.$CLASS_TERM_ID, " +
+                        "C.$CLASS_VOTES, " +
+                        "C.$CLASS_TIMESTAMP, " +
+                        "C.$CLASS_LOG_ID " +
+                        "FROM $CLASS_TABLE AS C " +
+                        "INNER JOIN $COURSE_CLASS_TABLE AS CC " +
+                        "ON C.$CLASS_ID = CC.$COURSE_CLASS_CLASS_ID " +
+                        "WHERE CC.$COURSE_CLASS_COURSE_ID = :courseId " +
+                        "AND CC.$COURSE_CLASS_TERM_ID = :termId " +
+                        "AND CC.$COURSE_CLASS_CLASS_ID = :classId"
+        )
+        override fun getSpecificClassOfSpecificCourseInTerm(courseId: Int, termId: Int, classId: Int): Optional<Class>
 
         @SqlUpdate(
                 "DELETE FROM $COURSE_TABLE WHERE $COURSE_ID = :courseId"

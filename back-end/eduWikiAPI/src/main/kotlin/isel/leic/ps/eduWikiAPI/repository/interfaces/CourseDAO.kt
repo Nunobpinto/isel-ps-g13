@@ -26,6 +26,10 @@ interface CourseDAO {
 
     fun getSpecificTermOfCourse(courseId: Int, termId: Int): Optional<Term>
 
+    fun getClassesOfSpecificCourseInTerm(courseId: Int, termId: Int): List<Class>
+
+    fun getSpecificClassOfSpecificCourseInTerm(courseId: Int, termId: Int, classId: Int): Optional<Class>
+
     fun updateCourse(course: Course): Course
 
     fun createCourse(course: Course): Course

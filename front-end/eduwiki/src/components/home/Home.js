@@ -19,7 +19,7 @@ export default (props, context) => {
     <div>
       <div className='container'>
         <img alt='EduWiki Logo' id='home-logo' src='logo_color.png' />
-        <Login history={props.history} />
+        <Login history={props.history} destination={props.location.state} />
       </div>
       <h1>Current web pages</h1>
       <ul>

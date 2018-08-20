@@ -9,8 +9,7 @@ data class CourseProgrammeStageOutputModel (
         val courseId: Int = 0,
         val programmeId: Int = 0,
         val organizationId: Int = 0,
-        @JsonProperty( "createdBy")
-        val username: String = "",
+        val createdBy: String = "",
         val lecturedTerm: String = "",
         val optional: Boolean = false,
         val credits: Int = 0,

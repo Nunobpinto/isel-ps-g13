@@ -30,6 +30,19 @@ class CourseController {
     @GetMapping("/{courseId}")
     fun getSpecificCourse(@PathVariable courseId: Int) = courseService.getSpecificCourse(courseId)
 
+    @GetMapping("/{courseId}/terms/{termId}/classes")
+    fun getClassesOfSpecificCourseInTerm(
+            @PathVariable courseId: Int,
+            @PathVariable termId: Int
+    ) = courseService.getClassesOfSpecificCourseInTerm(courseId, termId)
+
+    @GetMapping("/{courseId}/terms/{termId}/classes/{classId}")
+    fun getClassesOfSpecificCourseInTerm(
+            @PathVariable courseId: Int,
+            @PathVariable termId: Int,
+            @PathVariable classId: Int
+    ) = courseService.getSpecificClassOfSpecificCourseInTerm(courseId, termId, classId)
+
     @PostMapping
     fun createCourse(@RequestBody inputCourse: CourseInputModel, principal: Principal) = courseService.createCourse(inputCourse, principal)
 

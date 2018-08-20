@@ -124,6 +124,7 @@ CREATE TABLE IF NOT EXISTS work_assignment (
   work_assignment_id INTEGER REFERENCES course_misc_unit ON DELETE CASCADE,
   work_assignment_version INTEGER NOT NULL DEFAULT 1,
   created_by VARCHAR(20) NOT NULL,
+  phase VARCHAR(5) NOT NULL,
   sheet_id UUID NOT NULL,
   supplement_id UUID,
   due_date date NOT NULL,
@@ -349,6 +350,7 @@ CREATE TABLE IF NOT EXISTS class_misc_unit_stage (
 
 CREATE TABLE IF NOT EXISTS work_assignment_stage (
   work_assignment_stage_id INTEGER REFERENCES course_misc_unit_stage ON DELETE CASCADE,
+  phase VARCHAR(5) NOT NULL,
   sheet_id UUID NOT NULL,
   supplement_id UUID NOT NULL,
   due_date date NOT NULL,
@@ -494,6 +496,7 @@ CREATE TABLE IF NOT EXISTS course_class_report (
 CREATE TABLE IF NOT EXISTS work_assignment_report (
   work_assignment_report_id SERIAL,
   work_assignment_id INTEGER REFERENCES course_misc_unit ON DELETE CASCADE,
+  phase VARCHAR(5) NOT NULL,
   sheet_id UUID,
   supplement_id UUID,
   due_date date,
@@ -627,6 +630,7 @@ CREATE TABLE IF NOT EXISTS class_version (
 CREATE TABLE IF NOT EXISTS work_assignment_version (
   work_assignment_id INTEGER,
   work_assignment_version INTEGER,
+  phase VARCHAR(5) NOT NULL,
   sheet_id UUID NOT NULL,
   supplement_id UUID NOT NULL,
   due_date date NOT NULL,

@@ -5,11 +5,10 @@ import java.sql.Time
 import java.sql.Timestamp
 import java.time.*
 
-data class LectureStageOutputModel (
+data class LectureStageOutputModel(
         val stagedId: Int = 0,
         val version: Int = 0,
-        @JsonProperty("createdBy")
-    val username: String = "",
+        val createdBy: String = "",
         val weekDay: DayOfWeek = DayOfWeek.MONDAY,
         val begins: LocalTime = LocalTime.now(),
         val duration: Duration = Duration.ZERO,

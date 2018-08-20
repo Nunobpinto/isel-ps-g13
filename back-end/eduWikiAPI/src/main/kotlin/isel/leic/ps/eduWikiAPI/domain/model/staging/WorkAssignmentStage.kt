@@ -12,6 +12,7 @@ import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_A
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_STAGE_SUPPLEMENT
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_STAGE_VOTES
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_STAGE_LOG_ID
+import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_STAGE_PHASE
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.sql.Timestamp
 import java.time.LocalDate
@@ -23,6 +24,8 @@ data class WorkAssignmentStage (
         val stageId: Int = -1,
         @ColumnName(WORK_ASSIGNMENT_STAGE_LOG_ID)
         val logId: Int = 0,
+        @ColumnName(WORK_ASSIGNMENT_STAGE_PHASE)
+        val phase: String = "",
         @ColumnName(WORK_ASSIGNMENT_STAGE_SHEET_ID)
         val sheetId: UUID = UUID.randomUUID(),
         @ColumnName(WORK_ASSIGNMENT_STAGE_SUPPLEMENT)

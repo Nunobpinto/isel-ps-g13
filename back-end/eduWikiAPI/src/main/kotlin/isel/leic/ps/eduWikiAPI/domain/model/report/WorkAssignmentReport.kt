@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.domain.model.report
 
+import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_REPORT_PHASE
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_REPORT_TIMESTAMP
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_REPORT_DUE_DATE
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_REPORT_ID
@@ -26,6 +27,8 @@ data class WorkAssignmentReport (
         val logId: Int = 0,
         @ColumnName(WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID)
         val workAssignmentId: Int = 0,
+        @ColumnName(WORK_ASSIGNMENT_REPORT_PHASE)
+        val phase: String? = null,
         @ColumnName(WORK_ASSIGNMENT_REPORT_SHEET_ID)
         val sheetId: UUID = UUID.randomUUID(),
         @ColumnName(WORK_ASSIGNMENT_REPORT_SUPPLEMENT)

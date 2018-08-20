@@ -71,7 +71,7 @@ fun toHomeworkOutputModel(homework: Homework) = HomeworkOutputModel(
 )
 
 fun toHomeworkVersionOutputModel(homeworkVersion: HomeworkVersion) = HomeworkVersionOutputModel(
-        username = homeworkVersion.createdBy,
+        createdBy = homeworkVersion.createdBy,
         sheetId = homeworkVersion.sheetId,
         dueDate = homeworkVersion.dueDate,
         lateDelivery = homeworkVersion.lateDelivery,
@@ -81,7 +81,7 @@ fun toHomeworkVersionOutputModel(homeworkVersion: HomeworkVersion) = HomeworkVer
 )
 
 fun toHomeworkStagedOutputModel(homeworkStage: HomeworkStage) = HomeworkStageOutputModel(
-        username = homeworkStage.createdBy,
+        createdBy = homeworkStage.createdBy,
         sheetId = homeworkStage.sheetId,
         dueDate = homeworkStage.dueDate,
         lateDelivery = homeworkStage.lateDelivery,

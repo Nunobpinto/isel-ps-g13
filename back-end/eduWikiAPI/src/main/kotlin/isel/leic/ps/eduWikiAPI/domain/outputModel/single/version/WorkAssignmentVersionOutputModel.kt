@@ -8,6 +8,7 @@ import java.util.*
 data class WorkAssignmentVersionOutputModel (
         val version: Int = 1,
         val workAssignmentId: Int = 0,
+        val phase: String = "",
         val sheetId: UUID = UUID.randomUUID(),
         val supplementId: UUID = UUID.randomUUID(),
         val dueDate: LocalDate = LocalDate.now(),

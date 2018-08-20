@@ -8,9 +8,9 @@ import java.util.*
 
 class WorkAssignmentStageOutputModel(
         val stagedId: Int = 0,
-        @JsonProperty("createdBy")
-        val username: String = "",
+        val createdBy: String = "",
         val dueDate: LocalDate = LocalDate.now(),
+        val phase: String = "",
         val individual: Boolean = false,
         val lateDelivery: Boolean = false,
         val multipleDeliveries: Boolean = false,
