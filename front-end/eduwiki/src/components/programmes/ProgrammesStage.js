@@ -41,8 +41,17 @@ export default class extends React.Component {
         return resp.json()
       })
       .then(programme => {
-        this.props.history.push('/programmes/' + programme.programmeId)
+        message.success('Successfully approved staged programme')
+        this.setState(prevState => {
+          const newArray = prevState.staged.filter(programme => programme.stageId !== prevState.stageID)
+          return ({
+            staged: newArray,
+            viewStaged: newArray,
+            approveStage: false
+          })
+        })
       })
+      .catch(_ => message.error('Cannot approve this staged programme'))
   }
   deleteStaged () {
     const stagedUri = `http://localhost:8080/programmes/stage/${this.state.stageID}`
@@ -58,6 +67,7 @@ export default class extends React.Component {
         if (resp.status >= 400) {
           throw new Error('error!!!')
         }
+        message.success('Successfully deleted staged programme')
         this.setState(prevState => {
           const newArray = prevState.staged.filter(programme => programme.stageId !== prevState.stageID)
           return ({
@@ -67,9 +77,7 @@ export default class extends React.Component {
           })
         })
       })
-      .then(programme => {
-        this.props.history.push('/programmes/' + programme.programmeId)
-      })
+      .catch(_ => message.error('Cannot delete this staged programme'))
   }
   render () {
     return (
@@ -92,23 +100,24 @@ export default class extends React.Component {
               <p>Total Credits: {item.totalCredits}</p>
               <p>Duration: {item.duration}</p>
               <p>Created by: {item.createdBy}</p>
+              <p>Votes: {item.votes}</p>
               <IconText
                 type='check'
                 onClick={() =>
                   this.setState({
                     approveStage: true,
-                    stageID: item.stageId
+                    stageID: item.stagedId
                   })}
-                text={item.votes}
+                text='Approve staged Programme'
               />
               <IconText
                 type='close'
                 onClick={() =>
                   this.setState({
                     deleteStage: true,
-                    stageID: item.stageId
+                    stageID: item.stagedId
                   })}
-                text={item.votes}
+                text='Delete staged Programme'
               />
             </List.Item>
           )}

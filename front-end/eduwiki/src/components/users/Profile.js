@@ -3,8 +3,9 @@ import fetch from 'isomorphic-fetch'
 import MyLayout from '../layout/Layout'
 import ProgrammesStage from '../programmes/ProgrammesStage'
 import UserActivity from './UserActivity'
-import {Layout, Menu, message} from 'antd'
+import {Layout, Menu, message, Calendar} from 'antd'
 import Cookies from 'universal-cookie'
+import CoursesStage from '../courses/CoursesStage';
 const cookies = new Cookies()
 const {Content} = Layout
 
@@ -68,7 +69,10 @@ export default class extends React.Component {
               </Menu>
               <Content style={{ padding: '0 24px', minHeight: 280 }}>
                 {this.state.showProgrammeStage &&
-                  <ProgrammesStage history={this.props.history} />
+                  <ProgrammesStage />
+                }
+                {this.state.showCourseStage &&
+                  <CoursesStage />
                 }
               </Content>
             </Layout>

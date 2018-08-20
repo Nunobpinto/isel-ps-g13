@@ -3,8 +3,9 @@ import fetch from 'isomorphic-fetch'
 import { Link } from 'react-router-dom'
 import IconText from '../comms/IconText'
 import Layout from '../layout/Layout'
-import { Button, Form, Input, List, Card } from 'antd'
+import { Button, Form, Input, List, message } from 'antd'
 import Cookies from 'universal-cookie'
+import CreateProgramme from './CreateProgramme'
 const cookies = new Cookies()
 
 export default class extends React.Component {
@@ -29,16 +30,13 @@ export default class extends React.Component {
       createProgrammeFlag: false
     }
     this.handleChange = this.handleChange.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
     this.voteUp = this.voteUp.bind(this)
     this.voteDown = this.voteDown.bind(this)
     this.voteUpStaged = this.voteUpStaged.bind(this)
     this.voteDownStaged = this.voteDownStaged.bind(this)
-    this.createProgrammeForm = this.createProgrammeForm.bind(this)
     this.createStagedProgramme = this.createStagedProgramme.bind(this)
     this.filterStagedByName = this.filterStagedByName.bind(this)
     this.filterProgrammesByName = this.filterProgrammesByName.bind(this)
-    this.showElements = this.showElements.bind(this)
   }
 
   filterProgrammesByName (ev) {
@@ -63,25 +61,6 @@ export default class extends React.Component {
     this.setState({
       [ev.target.name]: ev.target.value
     })
-  }
-
-  handleSubmit (ev) {
-    ev.preventDefault()
-    this.setState({
-      full_name: this.state.full_name,
-      short_name: this.state.short_name,
-      academic_degree: this.state.academic_degree,
-      total_credits: this.state.total_credits,
-      duration: this.state.duration,
-      created_by: this.state.createdBy,
-      organization_id: 1,
-      createProgrammeFlag: true
-    })
-  }
-
-  showElements (id) {
-    const element = document.getElementById(id)
-    element.className = 'show_staged_resources'
   }
 
   render () {
@@ -137,10 +116,11 @@ export default class extends React.Component {
                 />
               </div>
             }
-            <Button icon='plus' id='create_btn' type='primary' onClick={() => { this.showElements('stagedProgrammes') }}>Create Programme</Button>
+            <Button icon='plus' id='create_btn' type='primary' onClick={() => this.setState({stagedProgrammeView: true})}>Create Programme</Button>
           </div>
           <div className='right-div'>
-            <div id='stagedProgrammes' className='hide_staged_resources'>
+            {this.state.stagedProgrammeView &&
+            <div id='stagedProgrammes'>
               <h1>All staged programmes</h1>
               <p> Filter By Name : </p>
               <Input.Search
@@ -164,8 +144,8 @@ export default class extends React.Component {
                       id='like_btn'
                       onClick={() =>
                         this.setState({
-                          voteUpStaged: true,
-                          stageID: item.stageId
+                          stageID: item.stagedId,
+                          voteUpStaged: true
                         })}
                       text={item.votes}
                     />
@@ -175,43 +155,19 @@ export default class extends React.Component {
                       onClick={() =>
                         this.setState({
                           voteDownStaged: true,
-                          stageID: item.stageId
+                          stageID: item.stagedId
                         })}
                     />
                   </List.Item>
                 )}
               />
-              <Button type='primary' onClick={() => { this.showElements('formToCreateProgramme') }}>Still want to create?</Button>
+              <Button type='primary' onClick={() => this.setState({createProgrammeForm: true})}>Still want to create?</Button>
+              {this.state.createProgrammeForm && <CreateProgramme action={this.createStagedProgramme} />}
             </div>
-            {this.createProgrammeForm()}
+            }
           </div>
         </div>
       </Layout>
-    )
-  }
-
-  createProgrammeForm () {
-    return (
-      <div id='formToCreateProgramme' class='hide_staged_resources'>
-        <Form>
-          Full name: <br />
-          <Input name='full_name' onChange={this.handleChange} />
-          <br />
-          Short name: <br />
-          <Input name='short_name' onChange={this.handleChange} />
-          <br />
-          Academic Degree: <br />
-          <Input name='academic_degree' onChange={this.handleChange} />
-          <br />
-          Total Credits: <br />
-          <input type='number' name='total_credits' onChange={this.handleChange} />
-          <br />
-          Duration: <br />
-          <input type='number' name='duration' onChange={this.handleChange} />
-          <br />
-          <Button type='primary' onClick={this.handleSubmit}>Create</Button>
-        </Form>
-      </div>
     )
   }
 
@@ -266,38 +222,44 @@ export default class extends React.Component {
       })
   }
 
-  createStagedProgramme () {
-    const data = {
-      full_name: this.state.full_name,
-      short_name: this.state.short_name,
-      academic_degree: this.state.academic_degree,
-      total_credits: this.state.total_credits,
-      duration: this.state.duration,
-      organization_id: 1
-    }
+  createStagedProgramme (data) {
     const body = {
+      programme_full_name: data.full_name,
+      programme_short_name: data.short_name,
+      programme_academic_degree: data.academic_degree,
+      programme_total_credits: data.total_credits,
+      programme_duration: data.duration
+    }
+    const options = {
       method: 'POST',
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
         'Authorization': 'Basic ' + cookies.get('auth')
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(body)
     }
     const url = 'http://localhost:8080/programmes/stage'
-    fetch(url, body)
+    fetch(url, options)
       .then(resp => {
         if (resp.status >= 400) {
           throw new Error('Unable to access content')
         }
+        return resp.json()
+      })
+      .then(staged => {
         const newItem = {
-          fullName: data.full_name,
-          shortName: data.short_name,
-          academicDegree: data.academic_degree,
-          totalCredits: data.total_credits,
-          duration: data.duration,
-          organizationId: 1
+          fullName: staged.full_name,
+          shortName: staged.short_name,
+          academicDegree: staged.academic_degree,
+          totalCredits: staged.total_credits,
+          duration: staged.duration,
+          votes: staged.votes,
+          timestamp: staged.timestamp,
+          stagedId: staged.stagedId,
+          createdBy: staged.createdBy
         }
+        message.success('Successfully created staged programme')
         this.setState(prevState => ({
           staged: [...prevState.staged, newItem],
           viewStaged: [...prevState.staged, newItem],
@@ -305,6 +267,7 @@ export default class extends React.Component {
         }))
       })
       .catch(error => {
+        message.error('Error ocurred while creating the programme')
         this.setState({ progError: error, createProgrammeFlag: false })
       })
   }
@@ -377,8 +340,7 @@ export default class extends React.Component {
 
   voteUpStaged () {
     const voteInput = {
-      vote: 'Up',
-      created_by: 'ze'
+      vote: 'Up'
     }
     const stageID = this.state.stageID
     const url = `http://localhost:8080/programmes/stage/${stageID}/vote`
@@ -396,6 +358,7 @@ export default class extends React.Component {
         if (resp.status >= 400) {
           throw new Error('Unable to access content')
         }
+        message.success('Successfully voted up')
         this.setState(prevState => {
           let newArray = [...prevState.staged]
           const index = newArray.findIndex(programme => programme.stageID === stageID)
@@ -406,6 +369,7 @@ export default class extends React.Component {
           })
         })
       })
+      .catch(_ => message.error('Cannot vote'))
   }
 
   voteDownStaged () {
@@ -429,6 +393,7 @@ export default class extends React.Component {
         if (resp.status >= 400) {
           throw new Error('Unable to access content')
         }
+        message.success('Successfully voted down')
         this.setState(prevState => {
           let newArray = [...prevState.staged]
           const index = newArray.findIndex(programme => programme.stageID === stageID)
@@ -439,12 +404,11 @@ export default class extends React.Component {
           })
         })
       })
+      .catch(_ => message.error('Cannot vote'))
   }
 
   componentDidUpdate () {
-    if (this.state.createProgrammeFlag) {
-      this.createStagedProgramme()
-    } else if (this.state.voteDown) {
+    if (this.state.voteDown) {
       this.voteDown()
     } else if (this.state.voteUp) {
       this.voteUp()
