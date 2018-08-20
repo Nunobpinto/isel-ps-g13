@@ -22,8 +22,8 @@ export default () => (
         <Route exact path='/' component={Home} />
         <Route exact path='/register' component={Register} />
         <ProtectedRoute exact path='/organization' component={Organization} />
-        <ProtectedRoute exact path='/programmes' component={props => <Programmes {...props} />} />
-        <ProtectedRoute exact path='/programmes5/:id' component={Programme} />
+        <ProtectedRoute exact path='/programmes' component={Programmes} />
+        <ProtectedRoute exact path='/programmes/:id' component={Programme} />
         <ProtectedRoute exact path='/courses' component={Courses} />
         <ProtectedRoute exact path='/courses/:id' component={Course} />
         <ProtectedRoute exact path='/classes' component={Courses} />
@@ -34,7 +34,6 @@ export default () => (
         <ProtectedRoute exact path='/logout' component={Logout} />
         <ProtectedRoute exact path='/user' component={Profile} />
         <ProtectedRoute exact path='/users/:username' component={OtherUser} />
-        <Redirect from='*' to='/' />
       </Switch>
     </BrowserRouter>
   </div>

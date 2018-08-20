@@ -13,6 +13,9 @@ class LoginForm extends React.Component {
       username: '',
       password: ''
     }
+    if (this.props.destination) {
+      message.warning('You need to be logged in to see what you wanted')
+    }
     this.handleSubmit = this.handleSubmit.bind(this)
     this.tryLogin = this.tryLogin.bind(this)
   }
