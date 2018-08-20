@@ -13,6 +13,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ClassCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ExamCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.TermCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.WorkAssignmentCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.CourseReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.ExamReportCollectionOutputModel
@@ -390,10 +391,8 @@ class CourseServiceImpl : CourseService {
     // ----------------------------
 
     @Transactional
-    override fun getTermsOfCourse(courseId: Int): List<TermOutputModel> {
-        return courseDAO.getTermsOfCourse(courseId).map {
-            toTermOutputModel(it)
-        }
+    override fun getTermsOfCourse(courseId: Int): TermCollectionOutputModel {
+        return toTermCollectionOutputModel(courseDAO.getTermsOfCourse(courseId).map { toTermOutputModel(it) })
     }
 
     @Transactional

@@ -10,6 +10,7 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.WorkAssignmentReportInp
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ClassCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ExamCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.TermCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.WorkAssignmentCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.CourseReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.ExamReportCollectionOutputModel
@@ -41,7 +42,7 @@ interface CourseService {
 
     fun getSpecificCourse(courseId: Int): CourseOutputModel
 
-    fun getTermsOfCourse(courseId: Int): List<TermOutputModel>
+    fun getTermsOfCourse(courseId: Int): TermCollectionOutputModel
 
     fun getSpecificTermOfCourse(courseId: Int, termId: Int): TermOutputModel
 
