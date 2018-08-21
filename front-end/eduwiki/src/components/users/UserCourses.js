@@ -1,6 +1,6 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
-import {Card, message} from 'antd'
+import {Card} from 'antd'
 
 export default class extends React.Component {
   constructor (props) {

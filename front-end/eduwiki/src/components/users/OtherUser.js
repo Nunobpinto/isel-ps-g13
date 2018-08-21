@@ -2,12 +2,12 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
 import MyLayout from '../layout/Layout'
-import ProgrammesStage from '../programmes/ProgrammesStage'
-import UserActivity from './UserActivity'
-import {Layout, Menu, message} from 'antd'
+import ReportUser from './ReportUser'
+import {message, Layout} from 'antd'
 import Cookies from 'universal-cookie'
 const cookies = new Cookies()
-const {Content} = Layout
+
+const { Content, Sider } = Layout
 
 export default class extends React.Component {
   constructor (props) {
@@ -27,17 +27,15 @@ export default class extends React.Component {
   render () {
     return (
       <MyLayout>
-        <div >
-          <div className='left_side'>
+        <Layout style={{ padding: '24px 0', background: '#fff' }}>
+          <Sider width={200} style={{ background: '#fff' }}>
             <img src='defaultUser.png' />
-          </div>
-          <div className='centre_div'>
             <h1><strong>Username</strong> : {this.state.user.username}</h1>
-          </div>
-          <div className='right_side'>
-            <h1>Reputation</h1>
-          </div>
-        </div>
+          </Sider>
+          <Content style={{ padding: '0 24px', minHeight: 280 }}>
+            <ReportUser username={this.state.user.username} />
+          </Content>
+        </Layout>
       </MyLayout>
     )
   }

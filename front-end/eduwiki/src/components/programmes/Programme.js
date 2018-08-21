@@ -310,9 +310,28 @@ export default class extends React.Component {
           .then(courses => {
             const userProgrammeUri = 'http://localhost:8080/user/programme'
             fetch(userProgrammeUri, header)
-              .then(resp => {
-                if (resp.status >= 400) {
-                  return this.setState({
+              .then(resp => resp.json())
+              .then(userProgramme => {
+                if (userProgramme) {
+                  this.setState({
+                    full_name: json.fullName,
+                    short_name: json.shortName,
+                    academic_degree: json.academicDegree,
+                    total_credits: json.totalCredits,
+                    id: json.programmeId,
+                    versionNumber: json.version,
+                    duration: json.duration,
+                    createdBy: json.createdBy,
+                    timestamp: json.timestamp,
+                    votes: json.votes,
+                    progError: undefined,
+                    courseError: undefined,
+                    courses: courses.courseProgrammeList,
+                    canBeFollowed: (userProgramme.programmeId !== json.programmeId),
+                    userFollowing: (userProgramme.programmeId === json.programmeId)
+                  })
+                } else {
+                  this.setState({
                     full_name: json.fullName,
                     short_name: json.shortName,
                     academic_degree: json.academicDegree,
@@ -328,30 +347,10 @@ export default class extends React.Component {
                     courses: courses.courseProgrammeList
                   })
                 }
-                return resp.json()
-              })
-              .then(userProgramme =>
-                this.setState({
-                  full_name: json.fullName,
-                  short_name: json.shortName,
-                  academic_degree: json.academicDegree,
-                  total_credits: json.totalCredits,
-                  id: json.programmeId,
-                  versionNumber: json.version,
-                  duration: json.duration,
-                  createdBy: json.createdBy,
-                  timestamp: json.timestamp,
-                  votes: json.votes,
-                  progError: undefined,
-                  courseError: undefined,
-                  courses: courses.courseProgrammeList,
-                  canBeFollowed: (userProgramme.programmeId !== json.programmeId),
-                  userFollowing: (userProgramme.programmeId === json.programmeId)
-                })
+              }
               )
-          }
-          )
-          .catch(err => this.setState({courseError: err}))
+              .catch(err => this.setState({courseError: err}))
+          })
       })
       .catch(error => {
         this.setState({

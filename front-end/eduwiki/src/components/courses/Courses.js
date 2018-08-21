@@ -3,7 +3,8 @@ import fetch from 'isomorphic-fetch'
 import { Link } from 'react-router-dom'
 import IconText from '../comms/IconText'
 import Layout from '../layout/Layout'
-import { Button, Input, Form, List, Card } from 'antd'
+import CreateCourse from './CreateCourse'
+import { Button, Input, message, List, Card } from 'antd'
 import Cookies from 'universal-cookie'
 const cookies = new Cookies()
 
@@ -126,71 +127,58 @@ export default class extends React.Component {
                 />
               </div>
             }
-            <Button icon='plus' id='create_btn' type='primary' onClick={() => { this.showElements('stagedCourses') }}>Create Course</Button>
+            <Button icon='plus' id='create_btn' type='primary' onClick={() => this.setState({stagedCourseView: true})}>Create Course</Button>
           </div>
           <div class='right-div'>
-            <div id='stagedCourses' class='hide_staged_resources'>
-              <h1>All staged Courses</h1>
-              <p> Filter By Name : </p>
-              <Input.Search
-                name='stagedNameFilter'
-                placeholder='Search name'
-                onChange={this.filterStagedByName}
+            {
+              this.state.stagedCourseView &&
+              <div id='stagedCourses'>
+                <h1>All staged Courses</h1>
+                <p> Filter By Name : </p>
+                <Input.Search
+                  name='stagedNameFilter'
+                  placeholder='Search name'
+                  onChange={this.filterStagedByName}
 
-              />
-              <List id='staged-list'
-                grid={{ gutter: 50, column: 2 }}
-                dataSource={this.state.viewStaged}
-                renderItem={item => (
-                  <List.Item>
-                    <Card title={item.fullName}>
-                      <p>Short Name : {item.shortName}</p>
-                      <p>Created By : {item.createdBy}</p>
-                    </Card>
-                    <IconText
-                      type='like-o'
-                      id='like_btn'
-                      onClick={() =>
-                        this.setState({
-                          voteUpStaged: true,
-                          stageID: item.stageId
-                        })}
-                      text={item.votes}
-                    />
-                    <IconText
-                      type='dislike-o'
-                      id='dislike_btn'
-                      onClick={() =>
-                        this.setState({
-                          voteDownStaged: true,
-                          stageID: item.stageId
-                        })}
-                    />
-                  </List.Item>
-                )}
-              />
-              <Button type='primary' onClick={() => { this.showElements('formToCreateCourse') }}>Still want to create?</Button>
-            </div>
-            {this.createCourseForm()}
+                />
+                <List id='staged-list'
+                  grid={{ gutter: 50, column: 2 }}
+                  dataSource={this.state.viewStaged}
+                  renderItem={item => (
+                    <List.Item>
+                      <Card title={item.fullName}>
+                        <p>Short Name : {item.shortName}</p>
+                        <p>Created By : {item.createdBy}</p>
+                      </Card>
+                      <IconText
+                        type='like-o'
+                        id='like_btn'
+                        onClick={() =>
+                          this.setState({
+                            voteUpStaged: true,
+                            stageID: item.stageId
+                          })}
+                        text={item.votes}
+                      />
+                      <IconText
+                        type='dislike-o'
+                        id='dislike_btn'
+                        onClick={() =>
+                          this.setState({
+                            voteDownStaged: true,
+                            stageID: item.stageId
+                          })}
+                      />
+                    </List.Item>
+                  )}
+                />
+                <Button type='primary' onClick={() => this.setState({createCourseForm: true})}>Still want to create?</Button>
+                {this.state.createCourseForm && <CreateCourse action={this.createStagedCourse} />}
+              </div>
+            }
           </div>
         </div>
       </Layout>
-    )
-  }
-
-  createCourseForm () {
-    return (
-      <div id='formToCreateCourse' class='hide_staged_resources'>
-        <Form>
-          Full name: <br />
-          <Input name='full_name' onChange={this.handleChange} />
-          <br />
-          Short name: <br />
-          <Input name='short_name' onChange={this.handleChange} />
-          <br />
-          <Button type='primary' onClick={this.handleSubmit}>Create</Button>
-        </Form>
-      </div>
     )
   }
 
@@ -227,14 +215,14 @@ export default class extends React.Component {
             throw new Error(`unexpected content type ${ct}`)
           })
           .then(stagedCourses => this.setState({
-            courses: courses,
-            viewCourses: courses,
-            staged: stagedCourses,
-            viewStaged: stagedCourses
+            courses: courses.courseList,
+            viewCourses: courses.courseList,
+            staged: stagedCourses.courseStageList,
+            viewStaged: stagedCourses.courseStageList
           }))
           .catch(stagedError => this.setState({
-            courses: courses,
-            viewCourses: courses,
+            courses: courses.courseList,
+            viewCourses: courses.courseList,
             stagedError: stagedError
           }))
       })
@@ -245,32 +233,40 @@ export default class extends React.Component {
       })
   }
 
-  createStagedCourse () {
-    const data = {
-      full_name: this.state.full_name,
-      short_name: this.state.short_name,
-      organization_id: 1
-    }
+  createStagedCourse (data) {
     const body = {
+      course_full_name: data.full_name,
+      course_short_name: data.short_name,
+      organization_id: data.organization_id
+    }
+    const options = {
       method: 'POST',
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
         'Authorization': 'Basic ' + cookies.get('auth')
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(body)
     }
     const url = 'http://localhost:8080/courses/stage'
-    fetch(url, body)
+    fetch(url, options)
       .then(resp => {
         if (resp.status >= 400) {
           throw new Error('Unable to access content')
         }
+        return resp.json()
+      })
+      .then(json => {
         const newItem = {
           fullName: data.full_name,
           shortName: data.short_name,
-          organizationId: 1
+          organizationId: data.organization_id,
+          votes: json.votes,
+          timestamp: json.timestamp,
+          stagedId: json.stagedId,
+          createdBy: json.createdBy
         }
+        message.success('Successfully created course')
         this.setState(prevState => ({
           staged: [...prevState.staged, newItem],
           viewStaged: [...prevState.staged, newItem],
@@ -278,14 +274,14 @@ export default class extends React.Component {
         }))
       })
       .catch(error => {
+        message.error('Successfully created course')
         this.setState({ progError: error, createStagedFlag: false })
       })
   }
 
   voteUp () {
     const voteInput = {
-      vote: 'Up',
-      created_by: 'ze'
+      vote: 'Up'
     }
     const courseId = this.state.courseID
     const url = `http://localhost:8080/courses/${courseId}/vote`
@@ -317,8 +313,7 @@ export default class extends React.Component {
 
   voteDown () {
     const voteInput = {
-      vote: 'Down',
-      created_by: 'ze'
+      vote: 'Down'
     }
     const courseId = this.state.courseID
     const url = `http://localhost:8080/courses/${courseId}/vote`
@@ -350,8 +345,7 @@ export default class extends React.Component {
 
   voteUpStaged () {
     const voteInput = {
-      vote: 'Up',
-      created_by: 'ze'
+      vote: 'Up'
     }
     const stageID = this.state.stageID
     const url = `http://localhost:8080/courses/stage/${stageID}/vote`
@@ -369,6 +363,7 @@ export default class extends React.Component {
         if (resp.status >= 400) {
           throw new Error('Unable to access content')
         }
+        message.success('Successfully voted up')
         this.setState(prevState => {
           let newArray = [...prevState.staged]
           const index = newArray.findIndex(course => course.stageId === stageID)
@@ -379,12 +374,12 @@ export default class extends React.Component {
           })
         })
       })
+      .catch(_ => message.error('Cannot vote'))
   }
 
   voteDownStaged () {
     const voteInput = {
-      vote: 'Down',
-      created_by: 'ze'
+      vote: 'Down'
     }
     const stageID = this.state.stageID
     const url = `http://localhost:8080/courses/stage/${stageID}/vote`
@@ -412,6 +407,7 @@ export default class extends React.Component {
           })
         })
       })
+      .catch(_ => message.error('Cannot vote'))
   }
 
   componentDidUpdate () {

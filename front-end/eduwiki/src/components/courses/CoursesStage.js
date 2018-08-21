@@ -90,7 +90,7 @@ export default class extends React.Component {
                 onClick={() =>
                   this.setState({
                     approveStage: true,
-                    stageID: item.stageId
+                    stageID: item.stagedId
                   })}
                 text={item.votes}
               />
@@ -99,7 +99,7 @@ export default class extends React.Component {
                 onClick={() =>
                   this.setState({
                     deleteStage: true,
-                    stageID: item.stageId
+                    stageID: item.stagedId
                   })}
                 text={item.votes}
               />

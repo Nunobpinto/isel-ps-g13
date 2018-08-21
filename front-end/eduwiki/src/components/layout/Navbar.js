@@ -25,7 +25,12 @@ export default class extends React.Component {
       <div>
         <Row gutter={16}>
           <Col span={6}>
-            <img className='app_icon' src='/logo.png' alt='EduWiki Logo' />
+            <a href='/'>
+              <img
+                className='app_icon'
+                src='/logo.png'
+                alt='EduWiki Logo' />
+            </a>
             <TransparentButton
               destiny='/user'
               message={this.state.username} />
