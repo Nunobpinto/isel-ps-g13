@@ -2,22 +2,6 @@
 CREATE SCHEMA IF NOT EXISTS isel;
 
 --------------------------
--- Auxiliary Types
---------------------------
-
-CREATE TYPE isel.term_type AS ENUM ('WINTER', 'SUMMER');
-
-CREATE TYPE isel.course_misc_unit_type AS ENUM ('WORK_ASSIGNMENT', 'EXAM_TEST');
-
-CREATE TYPE isel.class_misc_unit_type AS ENUM ('HOMEWORK', 'LECTURE');
-
-CREATE TYPE isel.exam_type AS ENUM ('EXAM', 'TEST');
-
-CREATE TYPE isel.weekday AS ENUM ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY');
-
-CREATE TYPE isel.action_Type AS ENUM ('CREATE', 'ALTER', 'DELETE', 'VOTE_UP', 'VOTE_DOWN', 'APPROVE_REPORT', 'APPROVE_STAGE', 'REJECT_REPORT', 'REJECT_STAGE');
-
---------------------------
 -- Create Main Tables
 --------------------------
 

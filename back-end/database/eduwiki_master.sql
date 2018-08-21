@@ -1,3 +1,22 @@
+--------------------------
+-- Auxiliary Types
+--------------------------
+
+CREATE TYPE term_type AS ENUM ('WINTER', 'SUMMER');
+
+CREATE TYPE course_misc_unit_type AS ENUM ('WORK_ASSIGNMENT', 'EXAM_TEST');
+
+CREATE TYPE class_misc_unit_type AS ENUM ('HOMEWORK', 'LECTURE');
+
+CREATE TYPE exam_type AS ENUM ('EXAM', 'TEST');
+
+CREATE TYPE weekday AS ENUM ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY');
+
+CREATE TYPE action_Type AS ENUM ('CREATE', 'ALTER', 'DELETE', 'VOTE_UP', 'VOTE_DOWN', 'APPROVE_REPORT', 'APPROVE_STAGE', 'REJECT_REPORT', 'REJECT_STAGE');
+
+--------------------------
+-- Create Schema
+--------------------------
 
 CREATE SCHEMA IF NOT EXISTS master;
 
