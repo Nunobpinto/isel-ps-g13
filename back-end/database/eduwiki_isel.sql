@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS isel.course_programme (
   course_credits INTEGER NOT NULL,
   time_stamp timestamp NOT NULL,
   created_by VARCHAR(20) NOT NULL,
-  votes INTEGER DEFAULT 0,
+  votes INTEGER DEFAULT 0, 
   log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (course_id, programme_id)
 );
@@ -454,7 +454,7 @@ CREATE TABLE IF NOT EXISTS isel.course_programme_report (
 
 CREATE TABLE IF NOT EXISTS isel.course_report (
   course_report_id SERIAL, 
-  course_id INTEGER REFERENCES course ON DELETE CASCADE,
+  course_id INTEGER REFERENCES isel.course ON DELETE CASCADE,
   course_full_name varchar(100),
   course_short_name varchar(10),
   reported_by VARCHAR(20) NOT NULL,
