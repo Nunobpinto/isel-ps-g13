@@ -14,7 +14,7 @@ class AuthorizationConfig {
 
     companion object {
         // Defines which roles include include other roles
-        val ROLE_HIERARCHY = "$ROLE_ADMIN > $ROLE_BEGINNER > $ROLE_UNCONFIRMED"
+        val ROLE_HIERARCHY = "$ROLE_DEV > $ROLE_ADMIN > $ROLE_BEGINNER > $ROLE_UNCONFIRMED"
         // Defines access control for each resource in API
         val REPUTATION_MATCHERS = mapOf(
                 "/**" to ROLE_BEGINNER
