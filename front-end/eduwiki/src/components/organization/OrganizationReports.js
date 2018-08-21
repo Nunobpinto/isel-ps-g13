@@ -1,16 +1,15 @@
 import React from 'react'
-import fetch from 'isomorphic-fetch'
-import { List } from 'antd'
+import { List, message } from 'antd'
 import IconText from '../comms/IconText'
 import Cookies from 'universal-cookie'
+import fetcher from '../../fetcher'
 const cookies = new Cookies()
 
 export default class extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      reports: [],
-      orgID: props.id
+      reports: []
     }
     this.voteUp = this.voteUp.bind(this)
     this.voteDown = this.voteDown.bind(this)
@@ -61,42 +60,37 @@ export default class extends React.Component {
     )
   }
   componentDidMount () {
-    const url = 'http://localhost:8080/organizations/' + this.state.orgID + '/reports'
+    const url = 'http://localhost:8080/organization/reports'
     const options = {
-      headers: { 'Access-Control-Allow-Origin': '*' }
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
+      }
     }
-    fetch(url, options)
-      .then(resp => {
-        if (resp.ok) {
-          return resp.json()
-        }
-      })
-      .then(list => {
-        this.setState({ reports: list })
-      })
+    fetcher(url, options)
+      .then(list => this.setState({ reports: list.organizationReportList }))
+      .catch(_ => message.error('Error obtaining reports'))
   }
 
   voteUp () {
     const voteInput = {
-      vote: 'Up',
-      created_by: 'ze'
+      vote: 'Up'
     }
     const reportId = this.state.reportId
-    const orgID = this.state.orgID
-    const url = `http://localhost:8080/organizations/${orgID}/reports/${reportId}/vote`
+    const url = `http://localhost:8080/organization/reports/${reportId}/vote`
     const body = {
       method: 'POST',
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
     }
-    fetch(url, body)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
+    fetcher(url, body)
+      .then(_ =>
         this.setState(prevState => {
           let newArray = [...prevState.reports]
           const index = newArray.findIndex(report => report.reportId === reportId)
@@ -106,30 +100,31 @@ export default class extends React.Component {
             voteUp: false
           })
         })
+      )
+      .catch(_ => {
+        message.error('Cannot vote up')
+        this.setState({voteUp: false})
       })
   }
 
   voteDown () {
     const voteInput = {
-      vote: 'Down',
-      created_by: 'ze'
+      vote: 'Down'
     }
     const reportId = this.state.reportId
-    const orgID = this.state.orgID
-    const url = `http://localhost:8080/organizations/${orgID}/reports/${reportId}/vote`
+    const url = `http://localhost:8080/organization/reports/${reportId}/vote`
     const body = {
       method: 'POST',
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
     }
-    fetch(url, body)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
+    fetcher(url, body)
+      .then(_ =>
         this.setState(prevState => {
           let newArray = [...prevState.reports]
           const index = newArray.findIndex(report => report.reportId === reportId)
@@ -139,6 +134,10 @@ export default class extends React.Component {
             voteDown: false
           })
         })
+      )
+      .catch(_ => {
+        message.error('Cannot vote down')
+        this.setState({voteDown: false})
       })
   }
 

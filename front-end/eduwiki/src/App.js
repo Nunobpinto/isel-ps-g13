@@ -13,7 +13,7 @@ import Course from './components/courses/Course'
 import Home from './components/home/Home'
 import Logout from './components/auth/Logout'
 import ProtectedRoute from './components/auth/ProtectedRoute'
-import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom'
+import { BrowserRouter, Route, Switch } from 'react-router-dom'
 
 export default () => (
   <div>
@@ -29,7 +29,7 @@ export default () => (
         <ProtectedRoute exact path='/classes' component={Courses} />
         <ProtectedRoute exact path='/classes/:id' component={Course} />
         <ProtectedRoute exact path='/programmes/:programmeId/versions/:version' component={ProgrammeVersion} />
-        <ProtectedRoute exact path='/organization/:id/versions/:version' component={OrganizationVersion} />
+        <ProtectedRoute exact path='/organization/versions/:version' component={OrganizationVersion} />
         <ProtectedRoute exact path='/courses/:courseId/versions/:version' component={CourseVersion} />
         <ProtectedRoute exact path='/logout' component={Logout} />
         <ProtectedRoute exact path='/user' component={Profile} />

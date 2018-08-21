@@ -1,7 +1,7 @@
 import React from 'react'
-import fetch from 'isomorphic-fetch'
+import fetcher from '../../fetcher'
 import Layout from '../layout/Layout'
-import {Row, Col, Card, Button, Icon} from 'antd'
+import {Row, Col, Card, Button, Icon, message} from 'antd'
 import Cookies from 'universal-cookie'
 const cookies = new Cookies()
 
@@ -59,29 +59,22 @@ export default class extends React.Component {
   }
 
   componentDidMount () {
-    const url = `http://localhost:8080/organizations/${this.props.match.params.id}/versions/${this.props.match.params.version}`
+    const url = `http://localhost:8080/organization/versions/${this.props.match.params.version}`
     const headers = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetch(url, headers)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
-        const ct = resp.headers.get('content-type') || ''
-        if (ct === 'application/json' || ct.startsWith('application/json;')) {
-          return resp.json()
-        }
-        throw new Error(`unexpected content type ${ct}`)
-      })
+    fetcher(url, headers)
       .then(json => this.setState({
         organization: json,
-        id: json.organizationId,
         version: json.version
       }))
-      .catch(err => this.setState({err: err}))
+      .catch(err => {
+        message.error('Error obtaining this version')
+        this.setState({err: err})
+      })
   }
 }
