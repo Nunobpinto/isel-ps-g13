@@ -59,7 +59,6 @@ class CourseDAOImpl : CourseDAO {
 
         // COURSE FIELDS
         const val COURSE_ID = "course_id"
-        const val COURSE_ORGANIZATION_ID = "organization_id"
         const val COURSE_LOG_ID = "log_id"
         const val COURSE_VERSION = "course_version"
         const val COURSE_FULL_NAME = "course_full_name"
@@ -80,7 +79,6 @@ class CourseDAOImpl : CourseDAO {
 
         // COURSE STAGE FIELDS
         const val COURSE_STAGE_ID = "course_stage_id"
-        const val COURSE_STAGE_ORG_ID = "organization_id"
         const val COURSE_STAGE_LOG_ID = "log_id"
         const val COURSE_STAGE_CREATED_BY = "created_by"
         const val COURSE_STAGE_FULL_NAME = "course_full_name"
@@ -91,7 +89,6 @@ class CourseDAOImpl : CourseDAO {
         // COURSE VERSION FIELDS
         const val COURSE_VERSION_COURSE_ID = "course_id"
         const val COURSE_VERSION_ID = "course_version"
-        const val COURSE_VERSION_ORG_ID = "organization_id"
         const val COURSE_VERSION_CREATED_BY = "created_by"
         const val COURSE_VERSION_FULL_NAME = "course_full_name"
         const val COURSE_VERSION_SHORT_NAME = "course_short_name"
@@ -318,12 +315,12 @@ class CourseDAOImpl : CourseDAO {
 
     interface CourseDAOJdbi : CourseDAO {
         @SqlQuery(
-                "SELECT * FROM $COURSE_TABLE"
+                "SELECT * FROM :schema.$COURSE_TABLE"
         )
         override fun getAllCourses(): List<Course>
 
         @SqlQuery(
-                "SELECT * FROM $COURSE_TABLE WHERE $COURSE_ID = :courseId"
+                "SELECT * FROM :schema.$COURSE_TABLE WHERE $COURSE_ID = :courseId"
         )
         override fun getSpecificCourse(courseId: Int): Optional<Course>
 
@@ -363,13 +360,12 @@ class CourseDAOImpl : CourseDAO {
         override fun getSpecificClassOfSpecificCourseInTerm(courseId: Int, termId: Int, classId: Int): Optional<Class>
 
         @SqlUpdate(
-                "DELETE FROM $COURSE_TABLE WHERE $COURSE_ID = :courseId"
+                "DELETE FROM :schema.$COURSE_TABLE WHERE $COURSE_ID = :courseId"
         )
         override fun deleteSpecificCourse(courseId: Int): Int
 
         @SqlUpdate(
-                "UPDATE $COURSE_TABLE SET " +
-                        "$COURSE_ORGANIZATION_ID = :course.orgId, " +
+                "UPDATE :schema.$COURSE_TABLE SET " +
                         "$COURSE_VERSION = :course.version, " +
                         "$COURSE_CREATED_BY = :course.createdBy, " +
                         "$COURSE_FULL_NAME = :course.fullName, " +
@@ -382,8 +378,7 @@ class CourseDAOImpl : CourseDAO {
         override fun updateCourse(course: Course): Course
 
         @SqlUpdate(
-                "INSERT INTO $COURSE_TABLE ( " +
-                        "$COURSE_ORGANIZATION_ID, " +
+                "INSERT INTO :schema.$COURSE_TABLE ( " +
                         "$COURSE_VERSION, " +
                         "$COURSE_CREATED_BY, " +
                         "$COURSE_FULL_NAME, " +
@@ -391,46 +386,45 @@ class CourseDAOImpl : CourseDAO {
                         "$COURSE_VOTES, " +
                         "$COURSE_TIMESTAMP " +
                         ") " +
-                        "VALUES(:course.organizationId, :course.version, :course.createdBy, " +
+                        "VALUES(:course.version, :course.createdBy, " +
                         ":course.fullName, :course.shortName, :course.votes, :course.timestamp)"
         )
         @GetGeneratedKeys
         override fun createCourse(course: Course): Course
 
         @SqlUpdate(
-                "UPDATE $COURSE_TABLE SET $COURSE_VOTES = :votes " +
+                "UPDATE :schema.$COURSE_TABLE SET $COURSE_VOTES = :votes " +
                         "WHERE $COURSE_ID = :courseId"
         )
         override fun updateVotesOnCourse(courseId: Int, votes: Int): Int
 
         @SqlUpdate(
-                "DELETE FROM $COURSE_STAGE_TABLE WHERE $COURSE_STAGE_ID = :courseStageId"
+                "DELETE FROM :schema.$COURSE_STAGE_TABLE WHERE $COURSE_STAGE_ID = :courseStageId"
         )
         override fun deleteStagedCourse(courseStageId: Int): Int
 
         @SqlUpdate(
-                "INSERT INTO $COURSE_STAGE_TABLE ( " +
-                        "$COURSE_STAGE_ORG_ID, " +
+                "INSERT INTO :schema.$COURSE_STAGE_TABLE ( " +
                         "$COURSE_STAGE_FULL_NAME, " +
                         "$COURSE_STAGE_SHORT_NAME, " +
                         "$COURSE_STAGE_CREATED_BY, " +
                         "$COURSE_STAGE_VOTES, " +
                         "$COURSE_STAGE_TIMESTAMP " +
                         ") " +
-                        "VALUES(:courseStage.organizationId, :courseStage.fullName, :courseStage.shortName, " +
+                        "VALUES(:courseStage.fullName, :courseStage.shortName, " +
                         ":courseStage.createdBy, :courseStage.votes, :courseStage.timestamp)"
         )
         @GetGeneratedKeys
         override fun createStagingCourse(courseStage: CourseStage): CourseStage
 
         @SqlUpdate(
-                "UPDATE $COURSE_STAGE_TABLE SET $COURSE_STAGE_VOTES = :votes " +
+                "UPDATE :schema.$COURSE_STAGE_TABLE SET $COURSE_STAGE_VOTES = :votes " +
                         "WHERE $COURSE_STAGE_ID = :stageId"
         )
         override fun updateVotesOnStagedCourse(stageId: Int, votes: Int): Int
 
         @SqlUpdate(
-                "INSERT INTO $COURSE_REPORT_TABLE ( " +
+                "INSERT INTO :schema.$COURSE_REPORT_TABLE ( " +
                         "$COURSE_REPORT_COURSE_ID, " +
                         "$COURSE_REPORT_FULL_NAME, " +
                         "$COURSE_REPORT_SHORT_NAME, " +
@@ -445,31 +439,31 @@ class CourseDAOImpl : CourseDAO {
         override fun reportCourse(courseId: Int, courseReport: CourseReport): CourseReport
 
         @SqlUpdate(
-                "DELETE FROM $COURSE_REPORT_TABLE " +
+                "DELETE FROM :schema.$COURSE_REPORT_TABLE " +
                         "WHERE $COURSE_REPORT_ID = :reportId"
         )
         override fun deleteReportOnCourse(reportId: Int): Int
 
         @SqlQuery(
-                "SELECT * FROM $COURSE_REPORT_TABLE " +
+                "SELECT * FROM :schema.$COURSE_REPORT_TABLE " +
                         "WHERE $COURSE_REPORT_COURSE_ID = :courseId"
         )
         override fun getAllReportsOnCourse(courseId: Int): List<CourseReport>
 
         @SqlQuery(
-                "SELECT * FROM $COURSE_REPORT_TABLE " +
+                "SELECT * FROM :schema.$COURSE_REPORT_TABLE " +
                         "WHERE $COURSE_REPORT_COURSE_ID = :courseId " +
                         "AND $COURSE_REPORT_ID = :reportId"
         )
         override fun getSpecificReportOfCourse(courseId: Int, reportId: Int): Optional<CourseReport>
 
         @SqlQuery(
-                "SELECT * FROM $COURSE_STAGE_TABLE"
+                "SELECT * FROM :schema.$COURSE_STAGE_TABLE"
         )
         override fun getAllCourseStageEntries(): List<CourseStage>
 
         @SqlQuery(
-                "SELECT * FROM $COURSE_STAGE_TABLE " +
+                "SELECT * FROM :schema.$COURSE_STAGE_TABLE " +
                         "WHERE $COURSE_STAGE_ID = :courseStageId"
         )
         override fun getCourseSpecificStageEntry(courseStageId: Int): Optional<CourseStage>
@@ -480,8 +474,8 @@ class CourseDAOImpl : CourseDAO {
                         "T.$TERM_YEAR, " +
                         "T.$TERM_TYPE, " +
                         "T.$TERM_TIMESTAMP " +
-                        "FROM $TERM_TABLE AS T " +
-                        "INNER JOIN $COURSE_TERM_TABLE AS C " +
+                        "FROM :schema.$TERM_TABLE AS T " +
+                        "INNER JOIN :schema.$COURSE_TERM_TABLE AS C " +
                         "ON T.$TERM_ID = C.$COURSE_TERM_TERM_ID " +
                         "WHERE C.$COURSE_ID = :courseId"
         )
@@ -492,8 +486,8 @@ class CourseDAOImpl : CourseDAO {
                         "T.$TERM_SHORT_NAME, " +
                         "T.$TERM_YEAR, " +
                         "T.$TERM_TYPE " +
-                        "FROM $TERM_TABLE AS T " +
-                        "INNER JOIN $COURSE_TERM_TABLE AS C " +
+                        "FROM :schema.$TERM_TABLE AS T " +
+                        "INNER JOIN :schema.$COURSE_TERM_TABLE AS C " +
                         "ON T.$TERM_ID = C.$TERM_ID " +
                         "WHERE C.$COURSE_TERM_COURSE_ID = :courseId " +
                         "AND C.$COURSE_TERM_TERM_ID = :termId"
@@ -501,26 +495,26 @@ class CourseDAOImpl : CourseDAO {
         override fun getSpecificTermOfCourse(courseId: Int, termId: Int): Optional<Term>
 
         @SqlUpdate(
-                "UPDATE $COURSE_REPORT_TABLE SET $COURSE_REPORT_VOTES = :votes " +
+                "UPDATE :schema.$COURSE_REPORT_TABLE SET $COURSE_REPORT_VOTES = :votes " +
                         "WHERE $COURSE_REPORT_ID = :reportId"
         )
         override fun updateVotesOnReportedCourse(reportId: Int, votes: Int): Int
 
         @SqlQuery(
-                "SELECT * FROM $COURSE_PROGRAMME_TABLE " +
+                "SELECT * FROM :schema.$COURSE_PROGRAMME_TABLE " +
                         "WHERE $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId"
         )
         override fun getAllCoursesOnSpecificProgramme(programmeId: Int): List<CourseProgramme>
 
         @SqlQuery(
-                "SELECT * FROM $COURSE_PROGRAMME_TABLE " +
+                "SELECT * FROM :schema.$COURSE_PROGRAMME_TABLE " +
                         "WHERE $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId " +
                         "AND $COURSE_PROGRAMME_COURSE_ID = :courseId"
         )
         override fun getSpecificCourseOfProgramme(programmeId: Int, courseId: Int): Optional<CourseProgramme>
 
         @SqlUpdate(
-                "INSERT INTO $COURSE_PROGRAMME_TABLE ( " +
+                "INSERT INTO :schema.$COURSE_PROGRAMME_TABLE ( " +
                         "$COURSE_PROGRAMME_COURSE_ID, " +
                         "$COURSE_PROGRAMME_PROGRAMME_ID, " +
                         "$COURSE_PROGRAMME_LECTURED_TERM, " +
@@ -535,7 +529,7 @@ class CourseDAOImpl : CourseDAO {
         override fun addCourseToProgramme(programmeId: Int, courseProgramme: CourseProgramme): CourseProgramme
 
         @SqlUpdate(
-                "INSERT INTO $COURSE_PROGRAMME_REPORT_TABLE ( " +
+                "INSERT INTO :schema.$COURSE_PROGRAMME_REPORT_TABLE ( " +
                         "$COURSE_PROGRAMME_REPORT_COURSE_ID, " +
                         "$COURSE_PROGRAMME_REPORT_PROGRAMME_ID, " +
                         "$COURSE_PROGRAMME_REPORT_LECTURED_TERM, " +
@@ -559,28 +553,27 @@ class CourseDAOImpl : CourseDAO {
         ): CourseProgrammeReport
 
         @SqlQuery(
-                "SELECT * FROM $COURSE_VERSION_TABLE WHERE $COURSE_VERSION_COURSE_ID = :courseId"
+                "SELECT * FROM :schema.$COURSE_VERSION_TABLE WHERE $COURSE_VERSION_COURSE_ID = :courseId"
         )
         override fun getAllVersionsOfSpecificCourse(courseId: Int): List<CourseVersion>
 
         @SqlQuery(
-                "SELECT * FROM $COURSE_VERSION_TABLE " +
+                "SELECT * FROM :schema.$COURSE_VERSION_TABLE " +
                         "WHERE $COURSE_VERSION_COURSE_ID = :courseId " +
                         "AND $COURSE_VERSION_ID = :version"
         )
         override fun getVersionOfSpecificCourse(courseId: Int, version: Int): Optional<CourseVersion>
 
         @SqlUpdate(
-                "INSERT INTO $COURSE_VERSION_TABLE ( " +
+                "INSERT INTO :schema.$COURSE_VERSION_TABLE ( " +
                         "$COURSE_VERSION_COURSE_ID, " +
-                        "$COURSE_VERSION_ORG_ID, " +
                         "$COURSE_VERSION_ID, " +
                         "$COURSE_VERSION_FULL_NAME, " +
                         "$COURSE_VERSION_SHORT_NAME, " +
                         "$COURSE_VERSION_CREATED_BY, " +
                         "$COURSE_VERSION_TIMESTAMP " +
                         ") " +
-                        "VALUES (:courseVersion.courseId, :courseVersion.orgId, :courseVersion.version, " +
+                        "VALUES (:courseVersion.courseId, :courseVersion.version, " +
                         ":courseVersion.fullName, :courseVersion.shortName, " +
                         ":courseVersion.createdBy, :courseVersion.timestamp)"
         )
@@ -588,7 +581,7 @@ class CourseDAOImpl : CourseDAO {
         override fun createCourseVersion(courseVersion: CourseVersion): CourseVersion
 
         @SqlUpdate(
-                "UPDATE $COURSE_PROGRAMME_TABLE SET " +
+                "UPDATE :schema.$COURSE_PROGRAMME_TABLE SET " +
                         "$COURSE_PROGRAMME_VOTES = :votes " +
                         "WHERE $COURSE_PROGRAMME_COURSE_ID = :courseId " +
                         "AND $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId"
@@ -596,7 +589,7 @@ class CourseDAOImpl : CourseDAO {
         override fun updateVotesOnCourseProgramme(programmeId: Int, courseId: Int, votes: Int): Int
 
         @SqlUpdate(
-                "UPDATE $COURSE_PROGRAMME_TABLE SET " +
+                "UPDATE :schema.$COURSE_PROGRAMME_TABLE SET " +
                         "$COURSE_PROGRAMME_VERSION = :course.version, " +
                         "$COURSE_PROGRAMME_CREATED_BY = :course.createdBy, " +
                         "$COURSE_PROGRAMME_LECTURED_TERM = :course.lecturedTerm, " +
@@ -611,7 +604,7 @@ class CourseDAOImpl : CourseDAO {
         override fun updateCourseProgramme(programmeId: Int, courseId: Int, course: CourseProgramme): CourseProgramme
 
         @SqlUpdate(
-                "INSERT INTO $COURSE_PROGRAMME_STAGE_TABLE ( " +
+                "INSERT INTO :schema.$COURSE_PROGRAMME_STAGE_TABLE ( " +
                         "$COURSE_PROGRAMME_STAGE_COURSE_ID, " +
                         "$COURSE_PROGRAMME_STAGE_PROGRAMME_ID, " +
                         "$COURSE_PROGRAMME_STAGE_LECTURED_TERM, " +
@@ -630,20 +623,20 @@ class CourseDAOImpl : CourseDAO {
         override fun createStagingCourseOfProgramme(courseProgrammeStage: CourseProgrammeStage): CourseProgrammeStage
 
         @SqlQuery(
-                "SELECT * FROM $COURSE_PROGRAMME_STAGE_TABLE " +
+                "SELECT * FROM :schema.$COURSE_PROGRAMME_STAGE_TABLE " +
                         "WHERE $COURSE_PROGRAMME_STAGE_ID = :stageId" +
                         "AND $COURSE_PROGRAMME_STAGE_PROGRAMME_ID = :programmeId"
         )
         override fun getSpecificStagedCourseProgramme(programmeId: Int, stageId: Int): Optional<CourseProgrammeStage>
 
         @SqlUpdate(
-                "DELETE FROM $COURSE_PROGRAMME_STAGE_TABLE " +
+                "DELETE FROM :schema.$COURSE_PROGRAMME_STAGE_TABLE " +
                         "WHERE $COURSE_PROGRAMME_STAGE_ID = :stageId"
         )
         override fun deleteStagedCourseProgramme(stageId: Int): Int
 
         @SqlUpdate(
-                "UPDATE $COURSE_PROGRAMME_STAGE_TABLE " +
+                "UPDATE :schema.$COURSE_PROGRAMME_STAGE_TABLE " +
                         "SET $COURSE_PROGRAMME_STAGE_VOTES = :votes " +
                         "WHERE $COURSE_PROGRAMME_STAGE_ID = :stageId " +
                         "AND $COURSE_PROGRAMME_STAGE_PROGRAMME_ID = :programmeId"
@@ -651,14 +644,14 @@ class CourseDAOImpl : CourseDAO {
         override fun updateVotesOnStagedCourseProgramme(programmeId: Int, stageId: Int, votes: Int): Int
 
         @SqlQuery(
-                "SELECT * FROM $COURSE_PROGRAMME_VERSION_TABLE " +
+                "SELECT * FROM :schema.$COURSE_PROGRAMME_VERSION_TABLE " +
                         "WHERE $COURSE_PROGRAMME_VERSION_PROGRAMME_ID = :programmeId " +
                         "AND $COURSE_PROGRAMME_VERSION_COURSE_ID = :courseId"
         )
         override fun getAllVersionsOfCourseOnProgramme(programmeId: Int, courseId: Int): List<CourseProgrammeVersion>
 
         @SqlQuery(
-                "SELECT * FROM $COURSE_PROGRAMME_VERSION_TABLE " +
+                "SELECT * FROM :schema.$COURSE_PROGRAMME_VERSION_TABLE " +
                         "WHERE $COURSE_PROGRAMME_VERSION_PROGRAMME_ID = :programmeId " +
                         "AND $COURSE_PROGRAMME_VERSION_COURSE_ID = :courseId " +
                         "AND $COURSE_PROGRAMME_VERSION_ID = :version"
@@ -666,7 +659,7 @@ class CourseDAOImpl : CourseDAO {
         override fun getSpecificVersionOfCourseOnProgramme(programmeId: Int, courseId: Int, version: Int): Optional<CourseProgrammeVersion>
 
         @SqlUpdate(
-                "INSERT INTO $COURSE_PROGRAMME_VERSION_TABLE (" +
+                "INSERT INTO :schema.$COURSE_PROGRAMME_VERSION_TABLE (" +
                         "$COURSE_PROGRAMME_VERSION_COURSE_ID, " +
                         "$COURSE_PROGRAMME_VERSION_PROGRAMME_ID, " +
                         "$COURSE_PROGRAMME_VERSION_ID, " +
@@ -684,14 +677,14 @@ class CourseDAOImpl : CourseDAO {
         override fun createCourseProgrammeVersion(courseProgrammeVersion: CourseProgrammeVersion): CourseProgrammeVersion
 
         @SqlQuery(
-                "SELECT * FROM $COURSE_PROGRAMME_REPORT_TABLE " +
+                "SELECT * FROM :schema.$COURSE_PROGRAMME_REPORT_TABLE " +
                         "WHERE $COURSE_PROGRAMME_REPORT_PROGRAMME_ID = :programmeId " +
                         "AND $COURSE_PROGRAMME_REPORT_COURSE_ID = :courseId"
         )
         override fun getAllReportsOfCourseOnProgramme(programmeId: Int, courseId: Int): List<CourseProgrammeReport>
 
         @SqlQuery(
-                "SELECT * FROM $COURSE_PROGRAMME_REPORT_TABLE " +
+                "SELECT * FROM :schema.$COURSE_PROGRAMME_REPORT_TABLE " +
                         "WHERE $COURSE_PROGRAMME_REPORT_ID= :reportId " +
                         "AND $COURSE_PROGRAMME_REPORT_PROGRAMME_ID = :programmeId " +
                         "AND $COURSE_PROGRAMME_REPORT_COURSE_ID = :courseId"
@@ -699,7 +692,7 @@ class CourseDAOImpl : CourseDAO {
         override fun getSpecificReportOfCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Optional<CourseProgrammeReport>
 
         @SqlUpdate(
-                "DELETE FROM $COURSE_PROGRAMME_REPORT_TABLE " +
+                "DELETE FROM :schema.$COURSE_PROGRAMME_REPORT_TABLE " +
                         "WHERE $COURSE_PROGRAMME_REPORT_ID = :reportId " +
                         "AND $COURSE_PROGRAMME_REPORT_COURSE_ID = :courseId " +
                         "AND $COURSE_PROGRAMME_REPORT_PROGRAMME_ID = :programmeId"
@@ -707,7 +700,7 @@ class CourseDAOImpl : CourseDAO {
         override fun deleteReportOnCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int
 
         @SqlUpdate(
-                "UPDATE $COURSE_PROGRAMME_REPORT_TABLE " +
+                "UPDATE :schema.$COURSE_PROGRAMME_REPORT_TABLE " +
                         "SET $COURSE_PROGRAMME_REPORT_VOTES = :votes " +
                         "WHERE $COURSE_PROGRAMME_REPORT_ID = :reportId " +
                         "AND $COURSE_PROGRAMME_REPORT_PROGRAMME_ID = :programmeId " +
@@ -716,27 +709,27 @@ class CourseDAOImpl : CourseDAO {
         override fun updateVotesOnReportedCourseProgramme(programmeId: Int, courseId: Int, reportId: Int, votes: Int): Int
 
         @SqlQuery(
-                "SELECT * FROM $COURSE_PROGRAMME_STAGE_TABLE " +
+                "SELECT * FROM :schema.$COURSE_PROGRAMME_STAGE_TABLE " +
                         "WHERE $COURSE_PROGRAMME_STAGE_PROGRAMME_ID = :programmeId"
         )
         override fun getAllCourseStageEntriesOfSpecificProgramme(programmeId: Int): List<CourseProgrammeStage>
 
         @SqlUpdate(
-                "DELETE FROM $COURSE_PROGRAMME_TABLE " +
+                "DELETE FROM :schema.$COURSE_PROGRAMME_TABLE " +
                         "WHERE $COURSE_PROGRAMME_PROGRAMME_ID = :programmeId " +
                         "AND $COURSE_PROGRAMME_COURSE_ID = :courseId"
         )
         override fun deleteSpecificCourseProgramme(programmeId: Int, courseId: Int): Int
 
         @SqlUpdate(
-                "DELETE FROM $COURSE_PROGRAMME_STAGE_TABLE " +
+                "DELETE FROM :schema.$COURSE_PROGRAMME_STAGE_TABLE " +
                         "WHERE $COURSE_PROGRAMME_STAGE_PROGRAMME_ID = :programmeId " +
                         "AND $COURSE_PROGRAMME_STAGE_ID = :stageId"
         )
         override fun deleteSpecificStagedCourseProgramme(programmeId: Int, stageId: Int): Int
 
         @SqlUpdate(
-                "DELETE FROM $COURSE_PROGRAMME_REPORT_TABLE " +
+                "DELETE FROM :schema.$COURSE_PROGRAMME_REPORT_TABLE " +
                         "WHERE $COURSE_PROGRAMME_REPORT_ID = :reportId " +
                         "AND $COURSE_PROGRAMME_REPORT_PROGRAMME_ID = :programmeId " +
                         "AND $COURSE_PROGRAMME_REPORT_COURSE_ID = :courseId"
@@ -744,7 +737,7 @@ class CourseDAOImpl : CourseDAO {
         override fun deleteSpecificReportOfCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int
 
         @SqlUpdate(
-                "INSERT INTO $COURSE_MISC_UNIT_TABLE ( " +
+                "INSERT INTO :schema.$COURSE_MISC_UNIT_TABLE ( " +
                         "$COURSE_MISC_UNIT_TYPE, " +
                         "$COURSE_MISC_UNIT_COURSE_ID, " +
                         "$COURSE_MISC_UNIT_TERM_ID " +
@@ -755,7 +748,7 @@ class CourseDAOImpl : CourseDAO {
         override fun createCourseMiscUnit(courseId: Int, termId: Int, miscType: CourseMiscUnitType): CourseMiscUnit
 
         @SqlUpdate(
-                "INSERT INTO $COURSE_TERM_TABLE ( " +
+                "INSERT INTO :schema.$COURSE_TERM_TABLE ( " +
                         "$COURSE_TERM_COURSE_ID, " +
                         "$COURSE_TERM_TERM_ID, " +
                         "$COURSE_TERM_TIMESTAMP " +
@@ -766,7 +759,7 @@ class CourseDAOImpl : CourseDAO {
         override fun createCourseTerm(courseId: Int, termId: Int, timestamp: Timestamp): CourseTerm
 
         @SqlUpdate(
-                "INSERT INTO $COURSE_MISC_UNIT_STAGE_TABLE ( " +
+                "INSERT INTO :schema.$COURSE_MISC_UNIT_STAGE_TABLE ( " +
                         "$COURSE_MISC_UNIT_STAGE_COURSE_ID, " +
                         "$COURSE_MISC_UNIT_STAGE_TERM_ID, " +
                         "$COURSE_MISC_UNIT_STAGE_TYPE " +
@@ -777,7 +770,7 @@ class CourseDAOImpl : CourseDAO {
         override fun createStagingCourseMiscUnit(courseId: Int, termId: Int, miscType: CourseMiscUnitType): CourseMiscUnitStage
 
         @SqlUpdate(
-                "DELETE FROM $COURSE_MISC_UNIT_TABLE " +
+                "DELETE FROM :schema.$COURSE_MISC_UNIT_TABLE " +
                         "WHERE $COURSE_MISC_UNIT_ID = :courseMiscUnitId " +
                         "AND $COURSE_MISC_UNIT_COURSE_ID = :courseId " +
                         "AND $COURSE_MISC_UNIT_TERM_ID = :termId"
@@ -786,7 +779,7 @@ class CourseDAOImpl : CourseDAO {
 
 
         @SqlUpdate(
-                "DELETE FROM $COURSE_MISC_UNIT_TABLE " +
+                "DELETE FROM :schema.$COURSE_MISC_UNIT_TABLE " +
                         "WHERE $COURSE_MISC_UNIT_COURSE_ID = :courseId " +
                         "AND $COURSE_MISC_UNIT_TERM_ID = :termId " +
                         "AND $COURSE_MISC_UNIT_TYPE = :miscType"
@@ -794,7 +787,7 @@ class CourseDAOImpl : CourseDAO {
         override fun deleteAllCourseMiscUnitsFromTypeOfCourseInTerm(courseId: Int, termId: Int, miscType: CourseMiscUnitType): Int
 
         @SqlUpdate(
-                "DELETE FROM $COURSE_MISC_UNIT_STAGE_TABLE " +
+                "DELETE FROM :schema.$COURSE_MISC_UNIT_STAGE_TABLE " +
                         "WHERE $COURSE_MISC_UNIT_STAGE_COURSE_ID = :stageId " +
                         "WHERE $COURSE_MISC_UNIT_STAGE_COURSE_ID = :courseId " +
                         "AND $COURSE_MISC_UNIT_STAGE_TERM_ID = :termId "

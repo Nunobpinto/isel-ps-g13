@@ -151,8 +151,8 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "H.$HOMEWORK_VOTES, " +
                         "H.$HOMEWORK_TIMESTAMP, " +
                         "H.$HOMEWORK_LOG_ID " +
-                        "FROM $HOMEWORK_TABLE AS H " +
-                        "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +
+                        "FROM :schema.$HOMEWORK_TABLE AS H " +
+                        "INNER JOIN :schema.$CLASS_MISC_UNIT_TABLE AS C " +
                         "ON H.$HOMEWORK_ID = C.$CLASS_MISC_UNIT_ID " +
                         "WHERE C.$COURSE_CLASS_ID = :courseClassId"
         )
@@ -169,8 +169,8 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "H.$HOMEWORK_VOTES, " +
                         "H.$HOMEWORK_TIMESTAMP, " +
                         "H.$HOMEWORK_LOG_ID " +
-                        "FROM $HOMEWORK_TABLE AS H " +
-                        "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +
+                        "FROM :schema.$HOMEWORK_TABLE AS H " +
+                        "INNER JOIN :schema.$CLASS_MISC_UNIT_TABLE AS C " +
                         "ON H.$HOMEWORK_ID = C.$CLASS_MISC_UNIT_ID " +
                         "WHERE C.$COURSE_CLASS_ID = :courseClassId " +
                         "AND H.$HOMEWORK_ID = :homeworkId"
@@ -178,7 +178,7 @@ class HomeworkDAOImpl : HomeworkDAO {
         override fun getSpecificHomeworkFromSpecificCourseInClass(courseClassId: Int, homeworkId: Int): Optional<Homework>
 
         @SqlUpdate(
-                "INSERT INTO $HOMEWORK_TABLE ( " +
+                "INSERT INTO :schema.$HOMEWORK_TABLE ( " +
                         "$HOMEWORK_ID, " +
                         "$HOMEWORK_VERSION, " +
                         "$HOMEWORK_CREATED_BY, " +
@@ -203,9 +203,9 @@ class HomeworkDAOImpl : HomeworkDAO {
         }
 
         @SqlUpdate(
-                "UPDATE $HOMEWORK_TABLE AS H " +
+                "UPDATE :schema.$HOMEWORK_TABLE AS H " +
                         "SET $HOMEWORK_VOTES = :votes " +
-                        "FROM $CLASS_MISC_UNIT_TABLE AS C " +
+                        "FROM :schema.$CLASS_MISC_UNIT_TABLE AS C " +
                         "WHERE H.$HOMEWORK_ID = C.$CLASS_MISC_UNIT_ID " +
                         "AND H.$HOMEWORK_ID = :homeworkId"
         )
@@ -228,8 +228,8 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "H.$HOMEWORK_STAGE_VOTES, " +
                         "H.$HOMEWORK_STAGE_CREATED_BY, " +
                         "H.$HOMEWORK_STAGE_LOG_ID " +
-                        "FROM $HOMEWORK_STAGE_TABLE AS H " +
-                        "INNER JOIN $CLASS_MISC_UNIT_STAGE_TABLE AS C " +
+                        "FROM :schema.$HOMEWORK_STAGE_TABLE AS H " +
+                        "INNER JOIN :schema.$CLASS_MISC_UNIT_STAGE_TABLE AS C " +
                         "ON H.$HOMEWORK_STAGE_ID = C.$CLASS_MISC_UNIT_STAGE_ID " +
                         "WHERE C.$CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId"
         )
@@ -245,8 +245,8 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "H.$HOMEWORK_STAGE_VOTES, " +
                         "H.$HOMEWORK_STAGE_CREATED_BY, " +
                         "H.$HOMEWORK_STAGE_LOG_ID " +
-                        "FROM $HOMEWORK_STAGE_TABLE AS H " +
-                        "INNER JOIN $CLASS_MISC_UNIT_STAGE_TABLE AS C " +
+                        "FROM :schema.$HOMEWORK_STAGE_TABLE AS H " +
+                        "INNER JOIN :schema.$CLASS_MISC_UNIT_STAGE_TABLE AS C " +
                         "ON H.$HOMEWORK_STAGE_ID = C.$CLASS_MISC_UNIT_STAGE_ID " +
                         "WHERE C.$CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
                         "AND H.$HOMEWORK_STAGE_ID = :stageId"
@@ -254,7 +254,7 @@ class HomeworkDAOImpl : HomeworkDAO {
         override fun getSpecificStagedHomeworkOfCourseInClass(courseClassId: Int, stageId: Int): Optional<HomeworkStage>
 
         @SqlUpdate(
-                "INSERT INTO $HOMEWORK_STAGE_TABLE ( " +
+                "INSERT INTO :schema.$HOMEWORK_STAGE_TABLE ( " +
                         "$HOMEWORK_STAGE_ID, " +
                         "$HOMEWORK_STAGE_SHEET_ID, " +
                         "$HOMEWORK_STAGE_DUE_DATE, " +
@@ -281,7 +281,7 @@ class HomeworkDAOImpl : HomeworkDAO {
                 createClassDAO().deleteSpecificStagedClassMiscUnitFromTypeOfCourseInClass(courseClassId, stageId, ClassMiscUnitType.HOMEWORK)
 
         @SqlUpdate(
-                "INSERT INTO $HOMEWORK_VERSION_TABLE ( " +
+                "INSERT INTO :schema.$HOMEWORK_VERSION_TABLE ( " +
                         "$HOMEWORK_VERSION_HOMEWORK_ID, " +
                         "$HOMEWORK_VERSION_ID, " +
                         "$HOMEWORK_VERSION_CREATED_BY, " +
@@ -299,8 +299,8 @@ class HomeworkDAOImpl : HomeworkDAO {
         override fun createHomeworkVersion(homeworkVersion: HomeworkVersion): HomeworkVersion
 
         @SqlUpdate(
-                "UPDATE $HOMEWORK_STAGE_TABLE as H SET H.$HOMEWORK_STAGE_VOTES = :votes " +
-                        "FROM $CLASS_MISC_UNIT_STAGE_TABLE as C" +
+                "UPDATE :schema.$HOMEWORK_STAGE_TABLE as H SET H.$HOMEWORK_STAGE_VOTES = :votes " +
+                        "FROM :schema.$CLASS_MISC_UNIT_STAGE_TABLE as C" +
                         "WHERE H.$HOMEWORK_STAGE_ID = C.$CLASS_MISC_UNIT_STAGE_ID " +
                         "AND H.$HOMEWORK_STAGE_ID = :stageId"
         )
@@ -317,8 +317,8 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "H.$HOMEWORK_REPORT_VOTES, " +
                         "H.$HOMEWORK_REPORT_TIMESTAMP, " +
                         "H.$HOMEWORK_REPORT_LOG_ID " +
-                        "FROM $HOMEWORK_REPORT_TABLE AS H " +
-                        "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +
+                        "FROM :schema.$HOMEWORK_REPORT_TABLE AS H " +
+                        "INNER JOIN :schema.$CLASS_MISC_UNIT_TABLE AS C " +
                         "ON H.$HOMEWORK_REPORT_HOMEWORK_ID = C.$CLASS_MISC_UNIT_ID " +
                         "WHERE C.$CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
                         "AND H.$HOMEWORK_REPORT_HOMEWORK_ID = :homeworkId"
@@ -336,8 +336,8 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "H.$HOMEWORK_REPORT_VOTES, " +
                         "H.$HOMEWORK_REPORT_TIMESTAMP, " +
                         "H.$HOMEWORK_REPORT_LOG_ID " +
-                        "FROM $HOMEWORK_TABLE AS H " +
-                        "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +
+                        "FROM :schema.$HOMEWORK_TABLE AS H " +
+                        "INNER JOIN :schema.$CLASS_MISC_UNIT_TABLE AS C " +
                         "ON H.$HOMEWORK_REPORT_HOMEWORK_ID = C.$CLASS_MISC_UNIT_ID " +
                         "WHERE C.$CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
                         "AND H.$HOMEWORK_REPORT_HOMEWORK_ID = :homeworkId " +
@@ -346,7 +346,7 @@ class HomeworkDAOImpl : HomeworkDAO {
         override fun getSpecificReportOfHomeworkFromCourseInClass(courseClassId: Int, homeworkId: Int, reportId: Int): Optional<HomeworkReport>
 
         @SqlUpdate(
-                "INSERT INTO $HOMEWORK_REPORT_TABLE ( " +
+                "INSERT INTO :schema.$HOMEWORK_REPORT_TABLE ( " +
                         "$HOMEWORK_REPORT_HOMEWORK_ID, " +
                         "$HOMEWORK_REPORT_SHEET_ID, " +
                         "$HOMEWORK_REPORT_DUE_DATE, " +
@@ -364,7 +364,7 @@ class HomeworkDAOImpl : HomeworkDAO {
         override fun createReportOnHomework(homeworkReport: HomeworkReport): HomeworkReport
 
         @SqlUpdate(
-                "UPDATE $HOMEWORK_TABLE SET " +
+                "UPDATE :schema.$HOMEWORK_TABLE SET " +
                         "$HOMEWORK_VERSION = :homework.version, " +
                         "$HOMEWORK_CREATED_BY = :homework.createdBy, " +
                         "$HOMEWORK_SHEET_ID = :homework.sheetId, " +
@@ -379,7 +379,7 @@ class HomeworkDAOImpl : HomeworkDAO {
         override fun updateHomework(homework: Homework): Homework
 
         @SqlUpdate(
-                "DELETE FROM $HOMEWORK_REPORT_TABLE " +
+                "DELETE FROM :schema.$HOMEWORK_REPORT_TABLE " +
                         "USING $CLASS_MISC_UNIT_TABLE " +
                         "WHERE $HOMEWORK_REPORT_HOMEWORK_ID = $CLASS_MISC_UNIT_ID " +
                         "AND $CLASS_MISC_UNIT_COURSE_CLASS_ID = :homeworkId " +
@@ -388,7 +388,7 @@ class HomeworkDAOImpl : HomeworkDAO {
         override fun updateVotesOnReportedHomework(homeworkId: Int, reportId: Int, votes: Int): Int
 
         @SqlUpdate(
-                "DELETE FROM $HOMEWORK_REPORT_TABLE " +
+                "DELETE FROM :schema.$HOMEWORK_REPORT_TABLE " +
                         "USING $CLASS_MISC_UNIT_TABLE " +
                         "WHERE $HOMEWORK_REPORT_HOMEWORK_ID = $CLASS_MISC_UNIT_ID " +
                         "AND $CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
@@ -406,8 +406,8 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "H.$HOMEWORK_VERSION_LATE_DELIVERY, " +
                         "H.$HOMEWORK_VERSION_TIMESTAMP, " +
                         "H.$HOMEWORK_VERSION_MULTIPLE_DELIVERIES " +
-                        "FROM $HOMEWORK_VERSION_TABLE AS H " +
-                        "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +
+                        "FROM :schema.$HOMEWORK_VERSION_TABLE AS H " +
+                        "INNER JOIN :schema.$CLASS_MISC_UNIT_TABLE AS C " +
                         "ON H.$HOMEWORK_VERSION_ID = C.$CLASS_MISC_UNIT_ID " +
                         "WHERE C.$CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
                         "AND H.$HOMEWORK_VERSION_ID = :homeworkId"
@@ -423,8 +423,8 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "H.$HOMEWORK_VERSION_LATE_DELIVERY, " +
                         "H.$HOMEWORK_VERSION_TIMESTAMP, " +
                         "H.$HOMEWORK_VERSION_MULTIPLE_DELIVERIES " +
-                        "FROM $HOMEWORK_VERSION_TABLE AS H " +
-                        "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +
+                        "FROM :schema.$HOMEWORK_VERSION_TABLE AS H " +
+                        "INNER JOIN :schema.$CLASS_MISC_UNIT_TABLE AS C " +
                         "ON H.$HOMEWORK_VERSION_HOMEWORK_ID = C.$CLASS_MISC_UNIT_ID " +
                         "WHERE C.$CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
                         "AND H.$HOMEWORK_VERSION_HOMEWORK_ID = :homeworkId " +

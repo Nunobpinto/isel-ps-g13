@@ -11,13 +11,10 @@ import java.util.*
 
 @RestController
 @RequestMapping("/users")
-class AuthController {
+class UsersController {
 
     @Autowired
     lateinit var userService: UserService
-
-    @Autowired
-    lateinit var emailService: EmailService
 
     @GetMapping("/{username}")
     fun getUser(@PathVariable username: String) = userService.getUser(username)

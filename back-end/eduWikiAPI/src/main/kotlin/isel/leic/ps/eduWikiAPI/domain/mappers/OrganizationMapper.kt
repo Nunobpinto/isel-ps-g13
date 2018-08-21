@@ -16,40 +16,40 @@ fun toOrganization(organizationInputModel: OrganizationInputModel, user: String)
         fullName = organizationInputModel.fullName,
         shortName = organizationInputModel.shortName,
         address = organizationInputModel.address,
+        website = organizationInputModel.website,
         createdBy = user,
         contact = organizationInputModel.contact
 )
 
-fun toOrganizationReport(organizationId: Int, input: OrganizationReportInputModel, principal: String) = OrganizationReport(
+fun toOrganizationReport(input: OrganizationReportInputModel, principal: String) = OrganizationReport(
         fullName = input.fullName,
         shortName = input.shortName,
         address = input.address,
         contact = input.contact,
-        reportedBy = principal,
-        organizationId = organizationId
+        website = input.website,
+        reportedBy = principal
 )
 
 fun toOrganizationVersion(organization: Organization) = OrganizationVersion(
-        organizationId = organization.organizationId,
         version = organization.version,
         createdBy = organization.createdBy,
         fullName = organization.fullName,
         shortName = organization.shortName,
         contact = organization.contact,
         address = organization.address,
+        website = organization.website,
         timestamp = organization.timestamp
 )
 
 fun toOrganizationOutputModel(organization: Organization) = OrganizationOutputModel(
-        organizationId = organization.organizationId,
         version = organization.version,
-        votes = organization.votes,
         contact = organization.contact,
         address = organization.address,
+        shortName = organization.shortName,
         fullName = organization.fullName,
+        website = organization.website,
         timestamp = organization.timestamp,
-        createdBy = organization.createdBy,
-        shortName = organization.shortName
+        createdBy = organization.createdBy
 )
 
 fun toOrganizationReportOutputModel(organizationReport: OrganizationReport) = OrganizationReportOutputModel(
@@ -57,20 +57,20 @@ fun toOrganizationReportOutputModel(organizationReport: OrganizationReport) = Or
         shortName = organizationReport.shortName,
         address = organizationReport.address,
         contact = organizationReport.contact,
+        website = organizationReport.website,
         reportedBy = organizationReport.reportedBy,
-        organizationId = organizationReport.organizationId,
         reportId = organizationReport.reportId,
         votes = organizationReport.votes
 )
 
 fun toOrganizationVersionOutputModel(organizationVersion: OrganizationVersion) = OrganizationVersionOutputModel(
         version = organizationVersion.version,
-        organizationId = organizationVersion.organizationId,
         createdBy = organizationVersion.createdBy,
         fullName = organizationVersion.fullName,
         shortName = organizationVersion.shortName,
         address = organizationVersion.address,
         contact = organizationVersion.contact,
+        website = organizationVersion.website,
         timestamp = organizationVersion.timestamp
 )
 

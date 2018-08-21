@@ -153,8 +153,8 @@ class LectureDAOImpl : LectureDAO {
                         "L.$LECTURE_VOTES, " +
                         "L.$LECTURE_TIMESTAMP, " +
                         "L.$LECTURE_LOG_ID " +
-                        "FROM $LECTURE_TABLE AS L " +
-                        "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +
+                        "FROM :schema.$LECTURE_TABLE AS L " +
+                        "INNER JOIN :schema.$CLASS_MISC_UNIT_TABLE AS C " +
                         "ON L.$LECTURE_ID = C.$CLASS_MISC_UNIT_ID " +
                         "WHERE C.$COURSE_CLASS_ID = :courseClassId " +
                         "AND C.$CLASS_MISC_UNIT_TYPE = 'LECTURE'"
@@ -172,8 +172,8 @@ class LectureDAOImpl : LectureDAO {
                         "L.$LECTURE_VOTES, " +
                         "L.$LECTURE_TIMESTAMP, " +
                         "L.$LECTURE_LOG_ID " +
-                        "FROM $LECTURE_TABLE AS L " +
-                        "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +
+                        "FROM :schema.$LECTURE_TABLE AS L " +
+                        "INNER JOIN :schema.$CLASS_MISC_UNIT_TABLE AS C " +
                         "ON L.$LECTURE_ID = C.$CLASS_MISC_UNIT_ID " +
                         "WHERE C.$COURSE_CLASS_ID = :courseClassId " +
                         "AND L.$LECTURE_ID = :lectureId"
@@ -181,7 +181,7 @@ class LectureDAOImpl : LectureDAO {
         override fun getSpecificLectureFromCourseInClass(courseClassId: Int, lectureId: Int): Optional<Lecture>
 
         @SqlUpdate(
-                "INSERT INTO $LECTURE_TABLE (" +
+                "INSERT INTO :schema.$LECTURE_TABLE (" +
                         "$LECTURE_ID, " +
                         "$LECTURE_VERSION, " +
                         "$LECTURE_CREATED_BY, " +
@@ -204,8 +204,8 @@ class LectureDAOImpl : LectureDAO {
         }
 
         @SqlUpdate(
-                "UPDATE $LECTURE_TABLE AS L set L.$LECTURE_VOTES = :votes " +
-                        "FROM $CLASS_MISC_UNIT_TABLE AS C " +
+                "UPDATE :schema.$LECTURE_TABLE AS L set L.$LECTURE_VOTES = :votes " +
+                        "FROM :schema.$CLASS_MISC_UNIT_TABLE AS C " +
                         "WHERE L.$LECTURE_ID = C.$CLASS_MISC_UNIT_ID " +
                         "AND L.$LECTURE_ID = :lectureId"
         )
@@ -225,8 +225,8 @@ class LectureDAOImpl : LectureDAO {
                         "L.$LECTURE_REPORT_VOTES, " +
                         "L.$LECTURE_REPORT_TIMESTAMP, " +
                         "L.$LECTURE_REPORT_LOG_ID " +
-                        "FROM $LECTURE_REPORT_TABLE AS L " +
-                        "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +
+                        "FROM :schema.$LECTURE_REPORT_TABLE AS L " +
+                        "INNER JOIN :schema.$CLASS_MISC_UNIT_TABLE AS C " +
                         "ON L.$LECTURE_REPORT_LECTURE_ID = C.$CLASS_MISC_UNIT_ID " +
                         "WHERE C.$CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
                         "AND L.$LECTURE_ID = :lectureId"
@@ -244,8 +244,8 @@ class LectureDAOImpl : LectureDAO {
                         "L.$LECTURE_REPORT_VOTES," +
                         "L.$LECTURE_REPORT_TIMESTAMP, " +
                         "L.$LECTURE_REPORT_LOG_ID " +
-                        "FROM $LECTURE_REPORT_TABLE AS L" +
-                        "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C" +
+                        "FROM :schema.$LECTURE_REPORT_TABLE AS L" +
+                        "INNER JOIN :schema.$CLASS_MISC_UNIT_TABLE AS C" +
                         "ON L.$LECTURE_REPORT_LECTURE_ID = C.$CLASS_MISC_UNIT_ID" +
                         "WHERE C.$CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
                         "AND L.$LECTURE_REPORT_LECTURE_ID = :lectureId" +
@@ -254,7 +254,7 @@ class LectureDAOImpl : LectureDAO {
         override fun getSpecificReportOfLectureFromCourseInClass(courseClassId: Int, lectureId: Int, reportId: Int): Optional<LectureReport>
 
         @SqlUpdate(
-                "DELETE FROM $LECTURE_REPORT_TABLE " +
+                "DELETE FROM :schema.$LECTURE_REPORT_TABLE " +
                         "USING $CLASS_MISC_UNIT_TABLE " +
                         "WHERE $LECTURE_ID = $CLASS_MISC_UNIT_ID " +
                         "AND $CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
@@ -264,7 +264,7 @@ class LectureDAOImpl : LectureDAO {
         override fun deleteSpecificReportOnLectureOfCourseInClass(courseClassId: Int, lectureId: Int, reportId: Int): Int
 
         @SqlUpdate(
-                "INSERT INTO $LECTURE_REPORT_TABLE (" +
+                "INSERT INTO :schema.$LECTURE_REPORT_TABLE (" +
                         "$LECTURE_REPORT_LECTURE_ID, " +
                         "$LECTURE_REPORT_WEEK_DAY, " +
                         "$LECTURE_REPORT_BEGINS, " +
@@ -281,14 +281,14 @@ class LectureDAOImpl : LectureDAO {
         override fun createReportOnLecture(lectureReport: LectureReport): LectureReport
 
         @SqlUpdate(
-                "UPDATE $LECTURE_REPORT_TABLE set $LECTURE_VOTES = :votes " +
+                "UPDATE :schema.$LECTURE_REPORT_TABLE set $LECTURE_VOTES = :votes " +
                         "WHERE $LECTURE_ID = :lectureId" +
                         "AND $LECTURE_REPORT_REPORT_ID = :reportId"
         )
         override fun updateVotesOnReportedLecture(lectureId: Int, reportId: Int, votes: Int): Int
 
         @SqlUpdate(
-                "UPDATE $LECTURE_TABLE set " +
+                "UPDATE :schema.$LECTURE_TABLE set " +
                         "$LECTURE_VERSION = :lecture.version, " +
                         "$LECTURE_CREATED_BY = :lecture.createdBy, " +
                         "$LECTURE_WEEK_DAY = :lecture.weekDay, " +
@@ -303,7 +303,7 @@ class LectureDAOImpl : LectureDAO {
         override fun updateLecture(lecture: Lecture): Lecture
 
         @SqlUpdate(
-                "INSERT INTO $LECTURE_VERSION_TABLE (" +
+                "INSERT INTO :schema.$LECTURE_VERSION_TABLE (" +
                         "$LECTURE_ID, " +
                         "$LECTURE_VERSION, " +
                         "$LECTURE_CREATED_BY, " +
@@ -328,8 +328,8 @@ class LectureDAOImpl : LectureDAO {
                         "L.$LECTURE_STAGE_TIMESTAMP, " +
                         "L.$LECTURE_STAGE_VOTES, " +
                         "L.$LECTURE_STAGE_LOG_ID " +
-                        "FROM $LECTURE_STAGE_TABLE AS L " +
-                        "INNER JOIN $CLASS_MISC_UNIT_STAGE_TABLE AS C " +
+                        "FROM :schema.$LECTURE_STAGE_TABLE AS L " +
+                        "INNER JOIN :schema.$CLASS_MISC_UNIT_STAGE_TABLE AS C " +
                         "ON L.$LECTURE_STAGE_ID = C.$CLASS_MISC_UNIT_STAGE_ID " +
                         "WHERE C.$CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId"
         )
@@ -344,8 +344,8 @@ class LectureDAOImpl : LectureDAO {
                         "L.$LECTURE_STAGE_TIMESTAMP, " +
                         "L.$LECTURE_STAGE_VOTES, " +
                         "L.$LECTURE_STAGE_LOG_ID " +
-                        "FROM $LECTURE_STAGE_TABLE AS L " +
-                        "INNER JOIN $CLASS_MISC_UNIT_STAGE_TABLE AS C " +
+                        "FROM :schema.$LECTURE_STAGE_TABLE AS L " +
+                        "INNER JOIN :schema.$CLASS_MISC_UNIT_STAGE_TABLE AS C " +
                         "ON L.$LECTURE_STAGE_ID = C.$CLASS_MISC_UNIT_STAGE_ID" +
                         "WHERE C.$CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
                         "AND L.$LECTURE_STAGE_ID = :stageId"
@@ -353,7 +353,7 @@ class LectureDAOImpl : LectureDAO {
         override fun getSpecificStagedLectureOfCourseInClass(courseClassId: Int, stageId: Int): Optional<LectureStage>
 
         @SqlUpdate(
-                "INSERT INTO $LECTURE_STAGE_TABLE (" +
+                "INSERT INTO :schema.$LECTURE_STAGE_TABLE (" +
                         "$LECTURE_STAGE_ID, " +
                         "$LECTURE_STAGE_WEEK_DAY, " +
                         "$LECTURE_STAGE_BEGINS, " +
@@ -383,8 +383,8 @@ class LectureDAOImpl : LectureDAO {
                         "L.$LECTURE_VERSION_DURATION, " +
                         "L.$LECTURE_VERSION_LOCATION, " +
                         "L.$LECTURE_VERSION_TIMESTAMP " +
-                        "FROM $LECTURE_VERSION_TABLE AS L " +
-                        "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C" +
+                        "FROM :schema.$LECTURE_VERSION_TABLE AS L " +
+                        "INNER JOIN :schema.$CLASS_MISC_UNIT_TABLE AS C" +
                         "ON L.$LECTURE_VERSION_LECTURE_ID = C.$CLASS_MISC_UNIT_ID" +
                         "WHERE C.$CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
                         "AND L.$LECTURE_VERSION_LECTURE_ID = :lectureId"
@@ -400,8 +400,8 @@ class LectureDAOImpl : LectureDAO {
                         "L.$LECTURE_VERSION_DURATION, " +
                         "L.$LECTURE_VERSION_LOCATION, " +
                         "L.$LECTURE_VERSION_TIMESTAMP " +
-                        "FROM $LECTURE_VERSION_TABLE AS L " +
-                        "INNER JOIN $CLASS_MISC_UNIT_TABLE AS C " +
+                        "FROM :schema.$LECTURE_VERSION_TABLE AS L " +
+                        "INNER JOIN :schema.$CLASS_MISC_UNIT_TABLE AS C " +
                         "ON L.$LECTURE_VERSION_LECTURE_ID = C.$CLASS_MISC_UNIT_ID " +
                         "WHERE C.$CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
                         "AND L.$LECTURE_VERSION_LECTURE_ID = :lectureId" +
@@ -413,8 +413,8 @@ class LectureDAOImpl : LectureDAO {
                 createClassDAO().deleteSpecificStagedClassMiscUnitFromTypeOfCourseInClass(courseClassId, stageId, ClassMiscUnitType.LECTURE)
 
         @SqlUpdate(
-                "UPDATE $LECTURE_STAGE_TABLE AS L SET L.$LECTURE_STAGE_VOTES = :votes " +
-                        "FROM $CLASS_MISC_UNIT_STAGE_TABLE AS C" +
+                "UPDATE :schema.$LECTURE_STAGE_TABLE AS L SET L.$LECTURE_STAGE_VOTES = :votes " +
+                        "FROM :schema.$CLASS_MISC_UNIT_STAGE_TABLE AS C" +
                         "WHERE L.$LECTURE_STAGE_ID = C.$CLASS_MISC_UNIT_STAGE_ID " +
                         "AND L.$LECTURE_STAGE_ID = :stageId"
         )

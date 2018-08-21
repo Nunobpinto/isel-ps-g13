@@ -23,8 +23,6 @@ class ReputationDAOImpl : ReputationDAO {
         const val ACTION_LOG_TABLE = "action_log"
         const val REPUTATION_LOG_TABLE = "reputation_log"
         const val REPUTATION_TABLE = "reputation"
-        const val REPUTATION_ROLE_TABLE = "reputation_role"
-        const val REPUTATION_MATCHER_TABLE = "reputation_matcher"
         // FIELDS
         const val ACTION_LOG_ID = "action_id"
         const val ACTION_LOG_USER = "user_username"
@@ -42,12 +40,6 @@ class ReputationDAOImpl : ReputationDAO {
         const val REPUTATION_POINTS = "points"
         const val REPUTATION_USER = "user_username"
         const val REPUTATION_ROLE = "role"
-        const val REPUTATION_ROLE_ID = "reputation_role_id"
-        const val REPUTATION_ROLE_MAX_POINTS = "max_points"
-        const val REPUTATION_ROLE_MIN_POINTS = "min_points"
-        const val REPUTATION_ROLE_HIERARCHY_LEVEL = "hierarchy_level"
-        const val REPUTATION_MATCHER_URI = "uri_match"
-        const val REPUTATION_MATCHER_ID = "reputation_role_id"
     }
 
     @Qualifier("MainJdbi")
@@ -69,10 +61,8 @@ class ReputationDAOImpl : ReputationDAO {
     override fun updateUserReputation(reputationDetails: ReputationDetails): Int =
             jdbi.open().attach(ReputationDAOJdbi::class.java).updateUserReputation(reputationDetails)
 
-    override fun registerActionLog(user: String, action: ActionType, entity: String, logId: Int, timestamp: Timestamp): ActionLog {
-        val open = jdbi.open()
-        return open.attach(ReputationDAOJdbi::class.java).registerActionLog(user, action, entity, logId, timestamp)
-    }
+    override fun registerActionLog(user: String, action: ActionType, entity: String, logId: Int, timestamp: Timestamp): ActionLog =
+        jdbi.open().attach(ReputationDAOJdbi::class.java).registerActionLog(user, action, entity, logId, timestamp)
 
     override fun registerReputationLog(user: String, reputationId: Int, pointsGiven: Int, givenBy: String, actionId: Int): ReputationLog =
             jdbi.open().attach(ReputationDAOJdbi::class.java).registerReputationLog(user, reputationId, pointsGiven, givenBy, actionId)
@@ -86,14 +76,14 @@ class ReputationDAOImpl : ReputationDAO {
     internal interface ReputationDAOJdbi : ReputationDAO {
         @SqlQuery(
                 "SELECT R.$REPUTATION_ROLE " +
-                        "FROM $USER_TABLE as U " +
-                        "INNER JOIN $REPUTATION_TABLE as R ON R.$REPUTATION_USER = U.$USER_USERNAME " +
+                        "FROM :schema.$USER_TABLE as U " +
+                        "INNER JOIN :schema.$REPUTATION_TABLE as R ON R.$REPUTATION_USER = U.$USER_USERNAME " +
                         "WHERE U.$USER_USERNAME = :username"
         )
         override fun getReputationRoleOfUser(username: String): Optional<String>
 
         @SqlUpdate(
-                "INSERT INTO $REPUTATION_TABLE (" +
+                "INSERT INTO :schema.$REPUTATION_TABLE (" +
                         "$REPUTATION_POINTS," +
                         "$REPUTATION_ROLE," +
                         REPUTATION_USER +
@@ -105,14 +95,14 @@ class ReputationDAOImpl : ReputationDAO {
         @GetGeneratedKeys
         override fun createUserReputation(reputation: Reputation): Reputation
 
-        @SqlUpdate("UPDATE $REPUTATION_TABLE " +
+        @SqlUpdate("UPDATE :schema.$REPUTATION_TABLE " +
                 "SET $REPUTATION_ROLE = :role, " +
                 "$REPUTATION_POINTS = :reputationPoints " +
                 "WHERE $REPUTATION_USER = :username")
         override fun updateUserRole(username: String, reputationPoints: Int, role: String): Int
 
         @SqlUpdate(
-                "INSERT INTO $ACTION_LOG_TABLE (" +
+                "INSERT INTO :schema.$ACTION_LOG_TABLE (" +
                         "$ACTION_LOG_USER," +
                         "$ACTION_LOG_ACTION," +
                         "$ACTION_LOG_ENTITY," +
@@ -124,11 +114,11 @@ class ReputationDAOImpl : ReputationDAO {
         @GetGeneratedKeys
         override fun registerActionLog(user: String, action: ActionType, entity: String, logId: Int, timestamp: Timestamp): ActionLog
 
-        @SqlQuery("SELECT * FROM $REPUTATION_TABLE WHERE $REPUTATION_USER = :user")
+        @SqlQuery("SELECT * FROM :schema.$REPUTATION_TABLE WHERE $REPUTATION_USER = :user")
         override fun getUserReputationDetails(user: String): Optional<ReputationDetails>
 
         @SqlUpdate(
-                "INSERT INTO $REPUTATION_LOG_TABLE (" +
+                "INSERT INTO :schema.$REPUTATION_LOG_TABLE (" +
                         "$REPUTATION_LOG_ACTION, " +
                         "$REPUTATION_LOG_GIVEN_BY, " +
                         "$REPUTATION_LOG_POINTS, " +
@@ -141,7 +131,7 @@ class ReputationDAOImpl : ReputationDAO {
         override fun registerReputationLog(user: String, reputationId: Int, pointsGiven: Int, givenBy: String, actionId: Int): ReputationLog
 
         @SqlUpdate(
-                "UPDATE $REPUTATION_TABLE SET " +
+                "UPDATE :schema.$REPUTATION_TABLE SET " +
                         "$REPUTATION_ROLE = :reputationDetails.role, " +
                         "$REPUTATION_POINTS = :reputationDetails.points " +
                         "WHERE $REPUTATION_USER = :reputationDetails.user AND $REPUTATION_ID = :reputationDetails.repId"
@@ -149,13 +139,13 @@ class ReputationDAOImpl : ReputationDAO {
         override fun updateUserReputation(reputationDetails: ReputationDetails): Int
 
         @SqlQuery(
-                "SELECT * FROM $ACTION_LOG_TABLE " +
+                "SELECT * FROM :schema.$ACTION_LOG_TABLE " +
                         "WHERE $ACTION_LOG_ENTITY = :approvedEntity AND $ACTION_LOG_LOG_ID = :approvedLogId"
         )
         override fun getActionLogsByResource(approvedEntity: String, approvedLogId: Int): List<ActionLog>
 
         @SqlQuery(
-                "SELECT * FROM $ACTION_LOG_TABLE " +
+                "SELECT * FROM :schema.$ACTION_LOG_TABLE " +
                         "WHERE $ACTION_LOG_ENTITY = :approvedEntity AND $ACTION_LOG_LOG_ID = :approvedLogId AND $ACTION_LOG_USER = :user"
         )
         override fun getActionLogsByUserAndResource(user: String, approvedEntity: String, approvedLogId: Int): List<ActionLog>

@@ -107,10 +107,10 @@ class UserDAOImpl : UserDAO {
             jdbi.open().attach(UserDAOJdbi::class.java).deleteSpecificClassOfUser(username, courseClassId)
 
     interface UserDAOJdbi : UserDAO {
-        @SqlQuery("SELECT * FROM $USER_TABLE where $USER_USERNAME = :username")
+        @SqlQuery("SELECT * FROM :schema.$USER_TABLE where $USER_USERNAME = :username")
         override fun getUser(username: String): Optional<User>
 
-        @SqlUpdate("INSERT INTO $USER_TABLE (" +
+        @SqlUpdate("INSERT INTO :schema.$USER_TABLE (" +
                 "$USER_USERNAME," +
                 "$USER_PASSWORD," +
                 "$USER_GIVEN_NAME," +
@@ -130,22 +130,22 @@ class UserDAOImpl : UserDAO {
         @GetGeneratedKeys
         override fun createUser(user: User): User
 
-        @SqlUpdate("UPDATE $USER_TABLE " +
+        @SqlUpdate("UPDATE :schema.$USER_TABLE " +
                 "SET $USER_CONFIRMED_FLAG = true " +
                 "WHERE $USER_USERNAME = :username")
         @GetGeneratedKeys
         override fun confirmUser(username: String): User
 
-        @SqlQuery("SELECT $COURSE_ID FROM $USER_COURSE_CLASS_TABLE WHERE $USER_USERNAME = :username")
+        @SqlQuery("SELECT $COURSE_ID FROM :schema.$USER_COURSE_CLASS_TABLE WHERE $USER_USERNAME = :username")
         override fun getCoursesOfUser(username: String): List<Int>
 
-        @SqlQuery("SELECT * FROM $USER_COURSE_CLASS_TABLE WHERE $USER_USERNAME = :username")
+        @SqlQuery("SELECT * FROM :schema.$USER_COURSE_CLASS_TABLE WHERE $USER_USERNAME = :username")
         override fun getClassesOfUser(username: String): List<UserCourseClass>
 
-        @SqlQuery("SELECT $PROGRAMME_ID FROM $USER_PROGRAMME_TABLE WHERE $USER_USERNAME = :username")
+        @SqlQuery("SELECT $PROGRAMME_ID FROM :schema.$USER_PROGRAMME_TABLE WHERE $USER_USERNAME = :username")
         override fun getProgrammeOfUser(username: String): Int
 
-        @SqlUpdate("INSERT INTO $USER_COURSE_CLASS_TABLE (" +
+        @SqlUpdate("INSERT INTO :schema.$USER_COURSE_CLASS_TABLE (" +
                 "$USER_USERNAME," +
                 COURSE_CLASS_ID +
                 ") VALUES ( " +
@@ -155,7 +155,7 @@ class UserDAOImpl : UserDAO {
         @GetGeneratedKeys
         override fun addCourseToUser(userCourseClass: UserCourseClass): UserCourseClass
 
-        @SqlUpdate("Update $USER_COURSE_CLASS_TABLE" +
+        @SqlUpdate("UPDATE :schema.$USER_COURSE_CLASS_TABLE" +
                 " SET $COURSE_CLASS_ID = :userCourseClass.courseClassId " +
                 "WHERE $USER_USERNAME = :userCourseClass.username " +
                 "AND $COURSE_ID = :userCourseClass.courseId"
@@ -164,7 +164,7 @@ class UserDAOImpl : UserDAO {
         override fun addClassToUser(userCourseClass: UserCourseClass): UserCourseClass
 
 
-        @SqlUpdate("INSERT INTO $USER_PROGRAMME_TABLE (" +
+        @SqlUpdate("INSERT INTO :schema.$USER_PROGRAMME_TABLE (" +
                 "$USER_USERNAME," +
                 PROGRAMME_ID +
                 ") VALUES ( " +
@@ -174,15 +174,15 @@ class UserDAOImpl : UserDAO {
         @GetGeneratedKeys
         override fun addProgrammeToUser(username: String, programmeId: Int): UserProgramme
 
-        @SqlUpdate("DELETE FROM $USER_COURSE_CLASS_TABLE WHERE $USER_USERNAME = :username")
+        @SqlUpdate("DELETE FROM :schema.$USER_COURSE_CLASS_TABLE WHERE $USER_USERNAME = :username")
         override fun deleteAllCoursesOfUser(username: String): Int
 
-        @SqlUpdate("DELETE FROM $USER_COURSE_CLASS_TABLE " +
+        @SqlUpdate("DELETE FROM :schema.$USER_COURSE_CLASS_TABLE " +
                 "WHERE $USER_USERNAME = :username " +
                 "AND $COURSE_ID = :courseId")
         override fun deleteSpecificCourseOfUser(username: String, courseId: Int): Int
 
-        @SqlUpdate("INSERT INTO $USER_REPORT_TABLE (" +
+        @SqlUpdate("INSERT INTO :schema.$USER_REPORT_TABLE (" +
                 "$USER_USERNAME," +
                 "$REASON," +
                 "$REPORTED_BY," +
@@ -196,10 +196,10 @@ class UserDAOImpl : UserDAO {
         @GetGeneratedKeys
         override fun reportUser(report: UserReport): UserReport
 
-        @SqlUpdate("DELETE FROM $USER_PROGRAMME_TABLE WHERE $USER_USERNAME = :username")
+        @SqlUpdate("DELETE FROM :schema.$USER_PROGRAMME_TABLE WHERE $USER_USERNAME = :username")
         override fun deleteProgramme(username: String): Int
 
-        @SqlUpdate("Update $USER_TABLE" +
+        @SqlUpdate("UPDATE :schema.$USER_TABLE" +
                 " SET $USER_PASSWORD = :newUser.password," +
                 "$USER_GIVEN_NAME = :newUser.givenName," +
                 "$USER_FAMILY_NAME = :newUser.familyName," +
@@ -208,24 +208,24 @@ class UserDAOImpl : UserDAO {
         @GetGeneratedKeys
         override fun updateUser(newUser: User): User
 
-        @SqlUpdate("DELETE FROM $USER_TABLE WHERE $USER_USERNAME = :username")
+        @SqlUpdate("DELETE FROM :schema.$USER_TABLE WHERE $USER_USERNAME = :username")
         override fun deleteUser(username: String): Int
 
-        @SqlUpdate("DELETE FROM $USER_REPORT_TABLE WHERE $USER_USERNAME = :username AND $REPORT_ID = :reportId")
+        @SqlUpdate("DELETE FROM :schema.$USER_REPORT_TABLE WHERE $USER_USERNAME = :username AND $REPORT_ID = :reportId")
         override fun deleteSpecificReportOfUser(username: String, reportId: Int): Int
 
-        @SqlQuery("SELECT * FROM $USER_REPORT_TABLE WHERE $USER_USERNAME = :username")
+        @SqlQuery("SELECT * FROM :schema.$USER_REPORT_TABLE WHERE $USER_USERNAME = :username")
         override fun getAllReportsOfUser(username: String): List<UserReport>
 
-        @SqlQuery("SELECT * FROM $USER_REPORT_TABLE WHERE $USER_USERNAME = :username AND $REPORT_ID = :reportId")
+        @SqlQuery("SELECT * FROM :schema.$USER_REPORT_TABLE WHERE $USER_USERNAME = :username AND $REPORT_ID = :reportId")
         override fun getSpecficReportOfUser(username: String, reportId: Int): UserReport
 
-        @SqlUpdate("Update $USER_COURSE_CLASS_TABLE" +
+        @SqlUpdate("UPDATE :schema.$USER_COURSE_CLASS_TABLE" +
                 " SET $COURSE_CLASS_ID = NULL " +
                 "WHERE $USER_USERNAME = :username.username")
         override fun deleteAllClassesOfUser(username: String): Int
 
-        @SqlUpdate("Update $USER_COURSE_CLASS_TABLE" +
+        @SqlUpdate("UPDATE :schema.$USER_COURSE_CLASS_TABLE" +
                 " SET $COURSE_CLASS_ID = NULL " +
                 "WHERE $USER_USERNAME = :username.username " +
                 "AND $COURSE_CLASS_ID = :courseClassId"

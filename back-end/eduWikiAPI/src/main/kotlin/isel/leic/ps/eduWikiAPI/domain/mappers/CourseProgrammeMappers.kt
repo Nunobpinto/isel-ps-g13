@@ -65,7 +65,6 @@ fun toCourseProgrammeVersion(course: CourseProgramme) = CourseProgrammeVersion(
 
 fun toCourseProgrammeOutputModel(courseProgramme: CourseProgramme, course: Course) = CourseProgrammeOutputModel(
         courseId = courseProgramme.courseId,
-        organizationId = course.organizationId,
         version = courseProgramme.version,
         votes = courseProgramme.votes,
         timestamp = courseProgramme.timestamp,

@@ -41,6 +41,7 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.ClassVersionOut
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.HomeworkVersionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.LectureVersionOutputModel
 import isel.leic.ps.eduWikiAPI.eventListeners.events.*
+import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.BadRequestException
 import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.ForbiddenException
 import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.NotFoundException
 import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.UnknownDataException
@@ -68,6 +69,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import java.security.Principal
 
+@Transactional
 @Service
 class ClassServiceImpl : ClassService {
 
@@ -104,7 +106,6 @@ class ClassServiceImpl : ClassService {
     // Class Methods
     // ----------------------------
 
-    @Transactional
     override fun getAllClasses(): ClassCollectionOutputModel {
         val allClasses = classDAO.getAllClasses()
         val classList = allClasses.map {
@@ -113,14 +114,12 @@ class ClassServiceImpl : ClassService {
         return toClassCollectionOutputModel(classList)
     }
 
-    @Transactional
     override fun getSpecificClass(classId: Int): ClassOutputModel {
         val klass = classDAO.getSpecificClass(classId)
                 .orElseThrow { NotFoundException("No class found with id $classId", "Try other ID") }
         return toClassOutputModel(klass, getTerm(klass.termId))
     }
 
-    @Transactional
     override fun createClass(input: ClassInputModel, principal: Principal): ClassOutputModel {
         val klass = classDAO.createClass(toClass(input, principal.name))
         classDAO.createClassVersion(toClassVersion(klass))
@@ -132,7 +131,6 @@ class ClassServiceImpl : ClassService {
         return toClassOutputModel(klass, getTerm(klass.termId))
     }
 
-    @Transactional
     override fun voteOnClass(classId: Int, vote: VoteInputModel, principal: Principal): Int {
         val klass = classDAO.getSpecificClass(classId)
                 .orElseThrow { NotFoundException("No class with specified id found", "Try another id") }
@@ -150,7 +148,6 @@ class ClassServiceImpl : ClassService {
         return success
     }
 
-    @Transactional
     override fun partialUpdateOnClass(classId: Int, input: ClassInputModel, principal: Principal): ClassOutputModel {
         val oldClass = classDAO.getSpecificClass(classId)
                 .orElseThrow { NotFoundException("No class found with id $classId", "Try other ID") }
@@ -170,7 +167,6 @@ class ClassServiceImpl : ClassService {
         return toClassOutputModel(newClass, getTerm(newClass.termId))
     }
 
-    @Transactional
     override fun deleteSpecificClass(classId: Int, principal: Principal): Int {
         val klass = classDAO.getSpecificClass(classId)
                 .orElseThrow { NotFoundException("No class found with id $classId", "Try other ID") }
@@ -187,13 +183,11 @@ class ClassServiceImpl : ClassService {
     // Class Report Methods
     // ----------------------------
 
-    @Transactional
     override fun getAllReportsOfClass(classId: Int): ClassReportCollectionOutputModel {
         val reports = classDAO.getAllReportsFromClass(classId).map { toClassReportOutputModel(it) }
         return toClassReportCollectionOutputModel(reports)
     }
 
-    @Transactional
     override fun getSpecificReportOfClass(classId: Int, reportId: Int): ClassReportOutputModel {
         return toClassReportOutputModel(
                 classDAO.getSpecificReportFromClass(classId, reportId)
@@ -201,7 +195,6 @@ class ClassServiceImpl : ClassService {
         )
     }
 
-    @Transactional
     override fun createClassReport(classId: Int, report: ClassReportInputModel, principal: Principal): ClassReportOutputModel {
         val classReport = classDAO.reportClass(classId, toClassReport(classId, report, principal.name))
         publisher.publishEvent(ResourceCreatedEvent(
@@ -212,7 +205,6 @@ class ClassServiceImpl : ClassService {
         return toClassReportOutputModel(classReport)
     }
 
-    @Transactional
     override fun voteOnReportClass(classId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int {
         val classReport = classDAO.getSpecificReportFromClass(classId, reportId)
                 .orElseThrow { NotFoundException("No class report found", "Try other ID") }
@@ -230,7 +222,6 @@ class ClassServiceImpl : ClassService {
         return success
     }
 
-    @Transactional
     override fun updateClassFromReport(classId: Int, reportId: Int, principal: Principal): ClassOutputModel {
         //TODO: Add option to delete Class
         val klass = classDAO.getSpecificClass(classId)
@@ -261,7 +252,6 @@ class ClassServiceImpl : ClassService {
         return toClassOutputModel(updatedClass, termDAO.getTerm(updatedClass.termId).get())
     }
 
-    @Transactional
     override fun deleteSpecificReportInClass(classId: Int, reportId: Int, principal: Principal): Int {
         val klass = classDAO.getSpecificReportFromClass(classId, reportId)
                 .orElseThrow { NotFoundException("No class report found", "Try other ID") }
@@ -280,7 +270,6 @@ class ClassServiceImpl : ClassService {
     // Class Stage Methods
     // ----------------------------
 
-    @Transactional
     override fun getAllStagedClasses(): ClassStageCollectionOutputModel {
         val stagedClasses = classDAO.getAllStagedClasses().map {
             toClassStagedOutputModel(it, getTerm(it.termId))
@@ -288,14 +277,12 @@ class ClassServiceImpl : ClassService {
         return toClassStageCollectionOutputModel(stagedClasses)
     }
 
-    @Transactional
     override fun getSpecificStagedClass(stageId: Int): ClassStageOutputModel {
         val classStage = classDAO.getSpecificStagedClass(stageId)
                 .orElseThrow { NotFoundException("No class staged found", "Try other id") }
         return toClassStagedOutputModel(classStage, getTerm(classStage.termId))
     }
 
-    @Transactional
     override fun createStagingClass(classStageInputModel: ClassInputModel, principal: Principal): ClassStageOutputModel {
         val classStage = classDAO.createStagedClass(toClassStage(classStageInputModel, principal.name))
         publisher.publishEvent(ResourceCreatedEvent(
@@ -306,7 +293,6 @@ class ClassServiceImpl : ClassService {
         return toClassStagedOutputModel(classStage, getTerm(classStage.termId))
     }
 
-    @Transactional
     override fun createClassFromStaged(stageId: Int, principal: Principal): ClassOutputModel {
         //TODO: Don't delete stage, flag it!
         val classStaged = classDAO.getSpecificStagedClass(stageId)
@@ -329,7 +315,6 @@ class ClassServiceImpl : ClassService {
         return toClassOutputModel(createdClass, getTerm(createdClass.termId))
     }
 
-    @Transactional
     override fun voteOnStagedClass(stageId: Int, vote: VoteInputModel, principal: Principal): Int {
         val classStage = classDAO.getSpecificStagedClass(stageId)
                 .orElseThrow { NotFoundException("No class stage found", "Try other ID") }
@@ -347,7 +332,6 @@ class ClassServiceImpl : ClassService {
         return success
     }
 
-    @Transactional
     override fun deleteSpecificStagedClass(stageId: Int, principal: Principal): Int {
         val classStage = classDAO.getSpecificStagedClass(stageId)
                 .orElseThrow { NotFoundException("No class stage found", "Try other ID") }
@@ -366,7 +350,6 @@ class ClassServiceImpl : ClassService {
     // Class Version Methods
     // ----------------------------
 
-    @Transactional
     override fun getAllVersionsOfClass(classId: Int): ClassVersionCollectionOutputModel {
         val classVersions = classDAO.getAllVersionsOfSpecificClass(classId).map {
             toClassVersionOutputModel(it, getTerm(it.termId))
@@ -374,7 +357,6 @@ class ClassServiceImpl : ClassService {
         return toClassVersionCollectionOutputModel(classVersions)
     }
 
-    @Transactional
     override fun getSpecificVersionOfClass(classId: Int, versionId: Int): ClassVersionOutputModel {
         val classVersion = classDAO.getVersionOfSpecificClass(classId, versionId)
                 .orElseThrow { NotFoundException("No version found", "Try with other version number") }
@@ -384,7 +366,6 @@ class ClassServiceImpl : ClassService {
     /**
      * Course Class
      */
-    @Transactional
     override fun getAllCoursesOfClass(classId: Int): CourseClassCollectionOutputModel {
         val klass = classDAO.getSpecificClass(classId)
                 .orElseThrow { NotFoundException("No class found with this id", "Try other id") }
@@ -394,7 +375,6 @@ class ClassServiceImpl : ClassService {
         return toCourseClassCollectionOutputModel(courseClasses)
     }
 
-    @Transactional
     override fun getSpecificCourseOfClass(classId: Int, courseId: Int): CourseClassOutputModel {
         val klass = classDAO.getSpecificClass(classId)
                 .orElseThrow { NotFoundException("No class found with this id", "Try other id") }
@@ -404,7 +384,6 @@ class ClassServiceImpl : ClassService {
         return toCourseClassOutputModel(course, klass, courseClass, getTerm(courseClass.termId))
     }
 
-    @Transactional
     override fun addCourseToClass(classId: Int, courseId: Int, courseClassInputModel: CourseClassInputModel, principal: Principal): CourseClassOutputModel {
 
         val klass = classDAO.getSpecificClass(classId)
@@ -425,7 +404,6 @@ class ClassServiceImpl : ClassService {
         return toCourseClassOutputModel(course, klass, courseClass, term)
     }
 
-    @Transactional
     override fun voteOnCourseInClass(classId: Int, courseId: Int, vote: VoteInputModel, principal: Principal): Int {
         val courseClass = classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("No course and class association found", "Try other id") }
@@ -443,7 +421,6 @@ class ClassServiceImpl : ClassService {
         return success
     }
 
-    @Transactional
     override fun deleteSpecificCourseInClass(classId: Int, courseId: Int, principal: Principal): Int {
         val courseClass = classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("No course and class association found", "Try other id") }
@@ -456,7 +433,6 @@ class ClassServiceImpl : ClassService {
         return success
     }
 
-    @Transactional
     override fun getAllReportsOfCourseInClass(classId: Int, courseId: Int): CourseClassReportCollectionOutputModel {
         val courseClass = classDAO.getCourseClass(classId, courseId).get()
         val reports = classDAO.getAllReportsOfCourseInClass(
@@ -465,14 +441,12 @@ class ClassServiceImpl : ClassService {
         return toCourseClassReportCollectionOutputModel(reports)
     }
 
-    @Transactional
     override fun getSpecificReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int): CourseClassReportOutputModel {
         return toCourseClassReportOutputModel(classDAO.getSpecificReportOfCourseInClass(reportId, classId, courseId)
                 .orElseThrow { NotFoundException("No report found", "Try with other report ID") }
         )
     }
 
-    @Transactional
     override fun reportCourseInClass(classId: Int, courseId: Int, courseClassReportInputModel: CourseClassReportInputModel, principal: Principal): CourseClassReportOutputModel {
         val courseClass = classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("No course and class association found", "Try other id") }
@@ -485,7 +459,6 @@ class ClassServiceImpl : ClassService {
         return toCourseClassReportOutputModel(report)
     }
 
-    @Transactional
     override fun updateCourseInClassFromReport(classId: Int, courseId: Int, reportId: Int, principal: Principal): CourseClassOutputModel {
         val courseClass = classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("No course in class found", "Try other id") }
@@ -528,7 +501,6 @@ class ClassServiceImpl : ClassService {
         return res
     }
 
-    @Transactional
     override fun voteOnReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int {
         val courseClassReport = classDAO.getSpecificReportOfCourseInClass(reportId, classId, courseId)
                 .orElseThrow { NotFoundException("No course in class report found", "Try other id") }
@@ -546,7 +518,6 @@ class ClassServiceImpl : ClassService {
         return success
     }
 
-    @Transactional
     override fun deleteReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int, principal: Principal): Int {
         val courseClassReport = classDAO.getSpecificReportOfCourseInClass(reportId, classId, courseId)
                 .orElseThrow { NotFoundException("No course in class report found", "Try other id") }
@@ -562,19 +533,16 @@ class ClassServiceImpl : ClassService {
         return success
     }
 
-    @Transactional
     override fun getStageEntriesOfCoursesInClass(classId: Int): CourseClassStageCollectionOutputModel {
         val stageEntries = classDAO.getStageEntriesOfCoursesInClass(classId).map { toCourseClassStageOutputModel(it) }
         return toCourseClassStageCollectionOutputModel(stageEntries)
     }
 
-    @Transactional
     override fun getSpecificStagedCourseInClass(classId: Int, stageId: Int): CourseClassStageOutputModel {
         return toCourseClassStageOutputModel(classDAO.getSpecificStagedCourseInClass(classId, stageId)
                 .orElseThrow { NotFoundException("No staged course class", "Try other staged id") })
     }
 
-    @Transactional
     override fun createStagingCourseInClass(classId: Int, courseId: Int, principal: Principal): CourseClassStageOutputModel {
         val termId = classDAO.getTermIdFromSpecificClass(classId)
         courseDAO.getSpecificCourse(courseId)
@@ -593,7 +561,6 @@ class ClassServiceImpl : ClassService {
         return toCourseClassStageOutputModel(courseClassStage)
     }
 
-    @Transactional
     override fun addCourseInClassFromStaged(classId: Int, stageId: Int, principal: Principal): CourseClassOutputModel {
         val klass = classDAO.getSpecificClass(classId)
                 .orElseThrow { NotFoundException("No class found", "Try other id") }
@@ -618,7 +585,6 @@ class ClassServiceImpl : ClassService {
         return toCourseClassOutputModel(course, klass, created, term)
     }
 
-    @Transactional
     override fun voteOnStagedCourseInClass(classId: Int, stageId: Int, vote: VoteInputModel, principal: Principal): Int {
         val courseClassStage = classDAO.getSpecificStagedCourseInClass(classId, stageId)
                 .orElseThrow { NotFoundException("No staged course in class found", "Try other staged id") }
@@ -636,7 +602,6 @@ class ClassServiceImpl : ClassService {
         return success
     }
 
-    @Transactional
     override fun deleteSpecificStagedCourseInClass(classId: Int, stageId: Int, principal: Principal): Int {
         val courseClassStage = classDAO.getSpecificStagedCourseInClass(classId, stageId)
                 .orElseThrow { NotFoundException("No staged course in class found", "Try other staged id") }
@@ -655,7 +620,6 @@ class ClassServiceImpl : ClassService {
      * Lectures Methods
      */
 
-    @Transactional
     override fun getAllLecturesFromCourseInClass(classId: Int, courseId: Int): LectureCollectionOutputModel {
         val lectures = lectureDAO
                 .getAllLecturesFromCourseInClass(classDAO.getCourseClass(classId, courseId)
@@ -665,7 +629,6 @@ class ClassServiceImpl : ClassService {
         return toLectureCollectionOutputModel(lectures)
     }
 
-    @Transactional
     override fun getSpecificLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int): LectureOutputModel {
         return toLectureOutputModel(
                 lectureDAO.getSpecificLectureFromCourseInClass(
@@ -677,7 +640,6 @@ class ClassServiceImpl : ClassService {
         )
     }
 
-    @Transactional
     override fun createLectureOnCourseInClass(classId: Int, courseId: Int, lectureInputModel: LectureInputModel, principal: Principal): LectureOutputModel {
         val lecture = lectureDAO.createLectureOnCourseInClass(
                 classDAO.getCourseClass(classId, courseId)
@@ -694,7 +656,6 @@ class ClassServiceImpl : ClassService {
         return toLectureOutputModel(lecture)
     }
 
-    @Transactional
     override fun voteOnLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int, vote: VoteInputModel, principal: Principal): Int {
         val lecture = lectureDAO.getSpecificLectureFromCourseInClass(
                 classDAO.getCourseClass(classId, courseId).orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }.courseClassId,
@@ -714,7 +675,6 @@ class ClassServiceImpl : ClassService {
         return success
     }
 
-    @Transactional
     override fun deleteSpecificLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int, principal: Principal): Int {
         val courseClassId = classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
@@ -730,7 +690,6 @@ class ClassServiceImpl : ClassService {
         return success
     }
 
-    @Transactional
     override fun getAllReportsOfLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int): LectureReportCollectionOutputModel {
         val reports = lectureDAO.getAllReportsOfLectureFromCourseInClass(
                 classDAO.getCourseClass(classId, courseId)
@@ -741,7 +700,6 @@ class ClassServiceImpl : ClassService {
         return toLectureReportCollectionOutputModel(reports)
     }
 
-    @Transactional
     override fun getSpecificReportOfLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int, reportId: Int): LectureReportOutputModel {
         return toLectureReportOutputModel(lectureDAO.getSpecificReportOfLectureFromCourseInClass(
                 classDAO.getCourseClass(classId, courseId)
@@ -753,7 +711,6 @@ class ClassServiceImpl : ClassService {
         )
     }
 
-    @Transactional
     override fun deleteSpecificReportOnLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int, reportId: Int, principal: Principal): Int {
         val courseClassId = classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
@@ -771,7 +728,6 @@ class ClassServiceImpl : ClassService {
         return success
     }
 
-    @Transactional
     override fun createReportOnLectureFromCourseInClass(classId: Int, courseId: Int, lectureId: Int, lectureReportInputModel: LectureReportInputModel, principal: Principal): LectureReport {
         val courseClassId = classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
@@ -787,7 +743,6 @@ class ClassServiceImpl : ClassService {
         return lectureReport
     }
 
-    @Transactional
     override fun voteOnReportOfLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int {
         val courseClassId = classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
@@ -808,7 +763,6 @@ class ClassServiceImpl : ClassService {
         return success
     }
 
-    @Transactional
     override fun updateLectureFromReport(classId: Int, courseId: Int, lectureId: Int, reportId: Int, principal: Principal): LectureOutputModel {
         val courseClassId = classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
@@ -843,7 +797,6 @@ class ClassServiceImpl : ClassService {
         return toLectureOutputModel(res)
     }
 
-    @Transactional
     override fun getAllStagedLecturesOfCourseInClass(classId: Int, courseId: Int): LectureStageCollectionOutputModel {
         val stagedLectures = lectureDAO.getAllStagedLecturesOfCourseInClass(
                 classDAO.getCourseClass(classId, courseId)
@@ -853,7 +806,6 @@ class ClassServiceImpl : ClassService {
         return toLectureStageCollectionOutputModel(stagedLectures)
     }
 
-    @Transactional
     override fun getSpecificStagedLectureOfCourseInClass(classId: Int, courseId: Int, stageId: Int): LectureStageOutputModel {
         return toLectureStageOutputModel(lectureDAO.getSpecificStagedLectureOfCourseInClass(
                 classDAO.getCourseClass(classId, courseId)
@@ -863,7 +815,6 @@ class ClassServiceImpl : ClassService {
         ).orElseThrow { NotFoundException("No staged lecture found", "Try with other id") })
     }
 
-    @Transactional
     override fun createStagingLectureOfCourseInClass(classId: Int, courseId: Int, lectureInputModel: LectureInputModel, principal: Principal): LectureStageOutputModel {
         val lectureStage = lectureDAO.createStagingLectureOnCourseInClass(
                 classDAO.getCourseClass(classId, courseId)
@@ -879,7 +830,6 @@ class ClassServiceImpl : ClassService {
         return toLectureStageOutputModel(lectureStage)
     }
 
-    @Transactional
     override fun deleteSpecificStagedLectureOfCourseInClass(classId: Int, courseId: Int, stageId: Int, principal: Principal): Int {
         val courseClassId = classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
@@ -902,7 +852,6 @@ class ClassServiceImpl : ClassService {
         return success
     }
 
-    @Transactional
     override fun voteOnStagedLectureOfCourseInClass(classId: Int, courseId: Int, stageId: Int, vote: VoteInputModel, principal: Principal): Int {
         val lectureStage = lectureDAO.getSpecificStagedLectureOfCourseInClass(classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
@@ -922,7 +871,6 @@ class ClassServiceImpl : ClassService {
         return success
     }
 
-    @Transactional
     override fun createLectureFromStaged(classId: Int, courseId: Int, stageId: Int, principal: Principal): LectureOutputModel {
         val courseClassId = classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
@@ -947,7 +895,6 @@ class ClassServiceImpl : ClassService {
         return toLectureOutputModel(createdLecture)
     }
 
-    @Transactional
     override fun getAllVersionsOfLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int): LectureVersionCollectionOutputModel {
         val lectureVersions = lectureDAO.getAllVersionsOfLectureOfCourseInclass(
                 classDAO.getCourseClass(classId, courseId)
@@ -958,7 +905,6 @@ class ClassServiceImpl : ClassService {
         return toLectureVersionCollectionOutputModel(lectureVersions)
     }
 
-    @Transactional
     override fun getSpecificVersionOfLectureOfCourseInClass(classId: Int, courseId: Int, lectureId: Int, version: Int): LectureVersionOutputModel {
         return toLectureVersionOutputModel(lectureDAO.getSpecificVersionOfLectureOfCourseInClass(
                 classDAO.getCourseClass(classId, courseId)
@@ -973,7 +919,6 @@ class ClassServiceImpl : ClassService {
      * Homeworks Methods
      */
 
-    @Transactional
     override fun getAllHomeworksOfCourseInClass(classId: Int, courseId: Int): HomeworkCollectionOutputModel {
         val homeworks = homeworkDAO.getAllHomeworksFromCourseInClass(classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
@@ -981,7 +926,6 @@ class ClassServiceImpl : ClassService {
         return toHomeworkCollectionOutputModel(homeworks.map { toHomeworkOutputModel(it) })
     }
 
-    @Transactional
     override fun getSpecificHomeworkFromSpecificCourseInClass(classId: Int, courseId: Int, homeworkId: Int): HomeworkOutputModel {
         return toHomeworkOutputModel(homeworkDAO.getSpecificHomeworkFromSpecificCourseInClass(
                 classDAO.getCourseClass(classId, courseId)
@@ -991,7 +935,6 @@ class ClassServiceImpl : ClassService {
         ).orElseThrow { NotFoundException("No homework found", "Try other homework id") })
     }
 
-    @Transactional
     override fun createHomeworkOnCourseInClass(
             sheet: MultipartFile,
             classId: Int,
@@ -1017,7 +960,6 @@ class ClassServiceImpl : ClassService {
         return toHomeworkOutputModel(createdHomework)
     }
 
-    @Transactional
     override fun voteOnHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, vote: VoteInputModel, principal: Principal): Int {
         val homework = homeworkDAO.getSpecificHomeworkFromSpecificCourseInClass(classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
@@ -1037,7 +979,6 @@ class ClassServiceImpl : ClassService {
         return success
     }
 
-    @Transactional
     override fun deleteSpecificHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, principal: Principal): Int {
         val courseClassId = classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
@@ -1055,7 +996,6 @@ class ClassServiceImpl : ClassService {
         return success
     }
 
-    @Transactional
     override fun getAllStagedHomeworksOfCourseInClass(classId: Int, courseId: Int): HomeworkStageCollectionOutputModel {
         val stagedHomeworks = homeworkDAO.getAllStagedHomeworksOfCourseInClass(
                 classDAO.getCourseClass(classId, courseId)
@@ -1065,7 +1005,6 @@ class ClassServiceImpl : ClassService {
         return toHomeworkStageCollectionOutputModel(stagedHomeworks)
     }
 
-    @Transactional
     override fun getSpecificStagedHomeworkOfCourseInClass(classId: Int, courseId: Int, stageId: Int): HomeworkStageOutputModel {
         return toHomeworkStagedOutputModel(
                 homeworkDAO.getSpecificStagedHomeworkOfCourseInClass(classDAO.getCourseClass(classId, courseId)
@@ -1075,7 +1014,6 @@ class ClassServiceImpl : ClassService {
         )
     }
 
-    @Transactional
     override fun createStagingHomeworkOnCourseInClass(sheet: MultipartFile, classId: Int, courseId: Int, homeworkInputModel: HomeworkInputModel, principal: Principal): HomeworkStageOutputModel {
         val stagingHomework = homeworkDAO.createStagingHomeworkOnCourseInClass(
                 classDAO.getCourseClass(classId, courseId)
@@ -1092,7 +1030,6 @@ class ClassServiceImpl : ClassService {
         return toHomeworkStagedOutputModel(stagingHomework)
     }
 
-    @Transactional
     override fun createHomeworkFromStaged(classId: Int, courseId: Int, stageId: Int, principal: Principal): HomeworkOutputModel {
         val courseClassId = classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
@@ -1119,7 +1056,6 @@ class ClassServiceImpl : ClassService {
         return toHomeworkOutputModel(createdHomework)
     }
 
-    @Transactional
     override fun voteOnStagedHomeworkOfCourseInClass(classId: Int, courseId: Int, stageId: Int, vote: VoteInputModel, principal: Principal): Int {
         val homeworkStage = homeworkDAO.getSpecificStagedHomeworkOfCourseInClass(classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
@@ -1140,7 +1076,6 @@ class ClassServiceImpl : ClassService {
         return success
     }
 
-    @Transactional
     override fun deleteSpecificStagedHomeworkOfCourseInClass(classId: Int, courseId: Int, stageId: Int, principal: Principal): Int {
         val courseClassId = classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
@@ -1160,7 +1095,6 @@ class ClassServiceImpl : ClassService {
         return success
     }
 
-    @Transactional
     override fun getAllReportsOfHomeworkFromCourseInClass(classId: Int, courseId: Int, homeWorkId: Int): HomeworkReportCollectionOutputModel {
         val reports = homeworkDAO.getAllReportsOfHomeworkFromCourseInClass(
                 classDAO.getCourseClass(classId, courseId)
@@ -1171,7 +1105,6 @@ class ClassServiceImpl : ClassService {
         return toHomeworkReportCollectionOutputModel(reports)
     }
 
-    @Transactional
     override fun getSpecificReportOfHomeworkFromCourseInClass(classId: Int, courseId: Int, homeworkId: Int, reportId: Int): HomeworkReportOutputModel {
         return toHomeworkReportOutputModel(
                 homeworkDAO.getSpecificReportOfHomeworkFromCourseInClass(
@@ -1184,7 +1117,6 @@ class ClassServiceImpl : ClassService {
         )
     }
 
-    @Transactional
     override fun createReportOnHomeworkFromCourseInClass(
             classId: Int,
             courseId: Int,
@@ -1207,7 +1139,6 @@ class ClassServiceImpl : ClassService {
         return toHomeworkReportOutputModel(homeworkReport)
     }
 
-    @Transactional
     override fun updateHomeworkFromReport(classId: Int, courseId: Int, homeworkId: Int, reportId: Int, principal: Principal): HomeworkOutputModel {
         val courseClassId = classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
@@ -1243,7 +1174,6 @@ class ClassServiceImpl : ClassService {
         return toHomeworkOutputModel(res)
     }
 
-    @Transactional
     override fun voteOnReportOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int {
         val courseClassId = classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
@@ -1265,7 +1195,6 @@ class ClassServiceImpl : ClassService {
         return success
     }
 
-    @Transactional
     override fun deleteSpecificReportOnHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, reportId: Int, principal: Principal): Int {
         val courseClassId = classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
@@ -1285,7 +1214,6 @@ class ClassServiceImpl : ClassService {
         return success
     }
 
-    @Transactional
     override fun getAllVersionsOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int): HomeworkVersionCollectionOutputModel {
         val homeworkVersions = homeworkDAO.getAllVersionsOfHomeworkOfCourseInclass(
                 classDAO.getCourseClass(classId, courseId)
@@ -1296,7 +1224,6 @@ class ClassServiceImpl : ClassService {
         return toHomeworkVersionCollectionOutputModel(homeworkVersions)
     }
 
-    @Transactional
     override fun getSpecificVersionOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, version: Int): HomeworkVersionOutputModel {
         return toHomeworkVersionOutputModel(
                 homeworkDAO.getSpecificVersionOfHomeworkOfCourseInClass(

@@ -4,7 +4,6 @@ import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_CREATED
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_FULL_NAME
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_ID
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_LOG_ID
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_ORGANIZATION_ID
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_SHORT_NAME
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_TIMESTAMP
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_VERSION
@@ -16,8 +15,6 @@ import java.time.LocalDateTime
 data class Course(
         @ColumnName(COURSE_ID)
         val courseId: Int = -1,
-        @ColumnName(COURSE_ORGANIZATION_ID)
-        val organizationId: Int = 0,
         @ColumnName(COURSE_VERSION)
         val version: Int = 1,
         @ColumnName(COURSE_LOG_ID)

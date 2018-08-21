@@ -10,5 +10,7 @@ class OrganizationInputModel(
         @JsonProperty("organization_address")
         val address: String = "",
         @JsonProperty("organization_contact")
-        val contact: String = ""
+        val contact: String = "",
+        @JsonProperty("organization_website")
+        val website: String = ""
 )

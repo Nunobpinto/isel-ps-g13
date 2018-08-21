@@ -17,20 +17,17 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.CourseVersionOu
 
 fun toCourse(input: CourseInputModel, createdBy: String) = Course(
         createdBy = createdBy,
-        organizationId = input.organizationId,
         fullName = input.fullName,
         shortName = input.shortName
 )
 
 fun toCourseStage(input: CourseInputModel, createdBy: String) = CourseStage(
         createdBy = createdBy,
-        organizationId = input.organizationId,
         fullName = input.fullName,
         shortName = input.shortName
 )
 
 fun stagedToCourse(stage: CourseStage) = Course(
-        organizationId = stage.organizationId,
         createdBy = stage.createdBy,
         fullName = stage.fullName,
         shortName = stage.shortName
@@ -45,7 +42,6 @@ fun toCourseReport(courseId: Int, inputCourseReport: CourseReportInputModel, rep
 
 fun toCourseVersion(course: Course) = CourseVersion(
         courseId = course.courseId,
-        organizationId = course.organizationId,
         version = course.version,
         fullName = course.fullName,
         shortName = course.shortName,
@@ -55,7 +51,6 @@ fun toCourseVersion(course: Course) = CourseVersion(
 
 fun toCourseOutputModel(course: Course) = CourseOutputModel(
         courseId = course.courseId,
-        organizationId = course.organizationId,
         version = course.version,
         votes = course.votes,
         timestamp = course.timestamp,
@@ -76,7 +71,6 @@ fun toCourseReportOutputModel(courseReport: CourseReport) = CourseReportOutputMo
 
 fun toCourseStageOutputModel(courseStage: CourseStage) = CourseStageOutputModel(
         stagedId = courseStage.stageId,
-        organizationId = courseStage.organizationId,
         votes = courseStage.votes,
         timestamp = courseStage.timestamp,
         fullName = courseStage.fullName,
@@ -86,7 +80,6 @@ fun toCourseStageOutputModel(courseStage: CourseStage) = CourseStageOutputModel(
 
 fun toCourseVersionOutputModel(courseVersion: CourseVersion) = CourseVersionOutputModel(
         courseId = courseVersion.courseId,
-        organizationId = courseVersion.organizationId,
         version = courseVersion.version,
         timestamp = courseVersion.timestamp,
         fullName = courseVersion.fullName,

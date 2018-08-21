@@ -5,15 +5,13 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.UserCourseClassInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserProgrammeInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.UserReportInputModel
-import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.UserService
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Service
 import isel.leic.ps.eduWikiAPI.domain.mappers.*
 import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ClassCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.UserReportOutputModel
+import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.UserService
 import isel.leic.ps.eduWikiAPI.eventListeners.events.OnRegistrationEvent
 import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.BadRequestException
 import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.ExceededValidationException
@@ -21,12 +19,16 @@ import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.NotFoundException
 import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.UnknownDataException
 import isel.leic.ps.eduWikiAPI.repository.interfaces.*
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.sql.Timestamp
 import java.time.LocalDateTime
-import java.util.*
 import java.util.regex.Pattern
+import java.util.*
 
+@Transactional
 @Service
 class UserServiceImpl : UserService {
 
@@ -46,19 +48,18 @@ class UserServiceImpl : UserService {
     lateinit var termDAO: TermDAO
     @Autowired
     lateinit var tokenDAO: TokenDAO
+    @Autowired
+    lateinit var passwordEncoder: PasswordEncoder
 
-    @Transactional
     override fun getAuthenticatedUser(username: String): AuthUserOutputModel =
             toAuthUserOutputModel(userDAO.getUser(username).orElseThrow { NotFoundException("User not found", "Try another username") })
 
-    @Transactional
     override fun getUser(username: String): UserOutputModel =
             toUserOutputModel(
                     userDAO.getUser(username)
                             .orElseThrow { NotFoundException("User not found", "Try another username") }
             )
 
-    @Transactional
     override fun saveUser(inputUser: UserInputModel): AuthUserOutputModel {
         if(!isEmailValid(inputUser.organizationEmail))
             throw BadRequestException("invalid organization email", "Get an actual organization email")
@@ -66,14 +67,13 @@ class UserServiceImpl : UserService {
         val user1 = userDAO.createUser(toUser(inputUser))
         reputationDAO.createUserReputation(Reputation(
                 reputationPoints = 0,
-                reputationRole = "ROLE_UNCONFIRMED",
+                reputationRole = ReputationRole.ROLE_UNCONFIRMED.name,
                 username = user1.username
         ))
         eventPublisher.publishEvent(OnRegistrationEvent(user1))
         return toAuthUserOutputModel(user1)
     }
 
-    @Transactional
     override fun confirmUser(username: String, token: UUID): AuthUserOutputModel {
             val validationToken = tokenDAO.getToken(token)
                     .orElseThrow { NotFoundException("Invalid token", "Verify if the token is the same as the one in the email we sent") }
@@ -89,11 +89,9 @@ class UserServiceImpl : UserService {
             return toAuthUserOutputModel(userChanged)
     }
 
-    @Transactional
     override fun deleteUser(username: String): Int =
             userDAO.deleteUser(username)
 
-    @Transactional
     override fun getCoursesOfUser(username: String): CourseCollectionOutputModel {
                 val coursesIds = userDAO.getCoursesOfUser(username)
                 val courses = coursesIds.map {
@@ -102,7 +100,6 @@ class UserServiceImpl : UserService {
                 return toCourseCollectionOutputModel(courses)
             }
 
-    @Transactional
     override fun getClassesOfUser(username: String): ClassCollectionOutputModel {
                 val courseClasses = userDAO.getClassesOfUser(username)
                 val classes = courseClasses.map {
@@ -113,7 +110,6 @@ class UserServiceImpl : UserService {
                 return toClassCollectionOutputModel(classes)
             }
 
-    @Transactional
     override fun getProgrammeOfUser(username: String): ProgrammeOutputModel {
                 val programmeId = userDAO.getProgrammeOfUser(username)
                 return toProgrammeOutput(
@@ -122,7 +118,6 @@ class UserServiceImpl : UserService {
                 )
             }
 
-    @Transactional
     override fun addProgrammeToUSer(username: String, input: UserProgrammeInputModel): ProgrammeOutputModel {
                 val added = userDAO.addProgrammeToUser(username, input.programmeId)
                 return toProgrammeOutput(
@@ -136,20 +131,17 @@ class UserServiceImpl : UserService {
                 )
             }
 
-    @Transactional
     override fun addCourseToUser(username: String, input: UserCourseClassInputModel): UserCourseOutputModel {
         val userCourseClass = toUserCourseClass(username, input)
         return toUserCourseOutputModel(userDAO.addCourseToUser(userCourseClass))
     }
 
-    @Transactional
     override fun addClassToUser(username: String, input: UserCourseClassInputModel): UserCourseClassOutputModel {
         val userCourseClass = toUserCourseClass(username, input)
         return toUserCourseClassOutputModel(userDAO.addClassToUser(userCourseClass))
     }
 
     //TODO Support changes of password ???????
-    @Transactional
     override fun updateUser(input: UserInputModel): AuthUserOutputModel {
             val current = userDAO.getUser(input.username).get()
             val newUser = User(
@@ -163,48 +155,38 @@ class UserServiceImpl : UserService {
             return toAuthUserOutputModel(userDAO.updateUser(newUser))
         }
 
-    @Transactional
     override fun deleteAllCoursesOfUser(username: String): Int =
             userDAO.deleteAllCoursesOfUser(username)
 
-    @Transactional
     override fun deleteProgrammeOfUser(username: String): Int =
             userDAO.deleteProgramme(username)
 
-    @Transactional
     override fun deleteSpecificCourseOfUser(username: String, courseId: Int): Int =
             userDAO.deleteSpecificCourseOfUser(username, courseId)
 
 
-    @Transactional
     override fun reportUser(username: String, reportedBy: String, reportInput: UserReportInputModel): UserReportOutputModel {
         val report = toUserReport(username, reportedBy, reportInput)
         return toUserReportOutput(userDAO.reportUser(report))
     }
 
-    @Transactional
     override fun deleteAllClassesOfUser(username: String): Int =
             userDAO.deleteAllClassesOfUser(username)
 
-    @Transactional
     override fun deleteSpecificClassOfUser(username: String, courseClassId: Int): Int =
             userDAO.deleteSpecificClassOfUser(username, courseClassId)
 
-    @Transactional
     override fun approveReport(username: String, reportId: Int): Int {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    @Transactional
     override fun getAllReportsOfUser(username: String): List<UserReportOutputModel> =
             userDAO.getAllReportsOfUser(username).map { toUserReportOutput(it) }
 
-    @Transactional
     override fun getSpecificReportOfUser(username: String, reportId: Int): UserReportOutputModel =
             toUserReportOutput(userDAO.getSpecficReportOfUser(username, reportId))
 
 
-    @Transactional
     override fun deleteReportOnUser(username: String, reportId: Int): Int =
             userDAO.deleteSpecificReportOfUser(username, reportId)
 

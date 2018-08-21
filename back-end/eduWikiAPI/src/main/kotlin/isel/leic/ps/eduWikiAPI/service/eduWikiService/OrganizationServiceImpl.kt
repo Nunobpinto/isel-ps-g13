@@ -10,7 +10,6 @@ import isel.leic.ps.eduWikiAPI.domain.model.Vote
 import isel.leic.ps.eduWikiAPI.eventListeners.events.*
 import isel.leic.ps.eduWikiAPI.repository.OrganizationDAOImpl.Companion.ORGANIZATION_TABLE
 import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.OrganizationService
-import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.OrganizationCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.OrganizationOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.OrganizationReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.OrganizationVersionCollectionOutputModel
@@ -29,6 +28,7 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
 
+@Transactional
 @Service
 class OrganizationServiceImpl : OrganizationService {
 
@@ -43,20 +43,11 @@ class OrganizationServiceImpl : OrganizationService {
      * Organization Methods
      */
 
-    @Transactional
-    override fun getSpecificOrganization(organizationId: Int): OrganizationOutputModel =
-            toOrganizationOutputModel(organizationDAO.getSpecificOrganization(organizationId)
+    override fun getOrganization(): OrganizationOutputModel =
+            toOrganizationOutputModel(organizationDAO.getOrganization()
                     .orElseThrow { NotFoundException("No organization found", "Try other ID") }
             )
 
-
-    @Transactional
-    override fun getAllOrganizations(): OrganizationCollectionOutputModel {
-        val organizations = organizationDAO.getAllOrganizations().map { toOrganizationOutputModel(it) }
-        return toOrganizationCollectionOutputModel(organizations)
-    }
-
-    @Transactional
     override fun createOrganization(organizationInputModel: OrganizationInputModel, principal: Principal): OrganizationOutputModel {
         val organization = organizationDAO.createOrganization(toOrganization(organizationInputModel, principal.name))
 
@@ -70,13 +61,8 @@ class OrganizationServiceImpl : OrganizationService {
         return toOrganizationOutputModel(organization)
     }
 
-    @Transactional
-    override fun deleteOrganization(organizationId: Int): Int =
-            organizationDAO.deleteOrganization(organizationId)
-
-    @Transactional
-    override fun updateOrganization(organizationId: Int, organizationInputModel: OrganizationInputModel, principal: Principal): OrganizationOutputModel {
-        val prevOrganization = organizationDAO.getSpecificOrganization(organizationId)
+    override fun updateOrganization(organizationInputModel: OrganizationInputModel, principal: Principal): OrganizationOutputModel {
+        val prevOrganization = organizationDAO.getOrganization()
                 .orElseThrow { NotFoundException("No organization found", "Try other ID") }
         val updatedOrganization = organizationDAO.updateOrganization(Organization(
                 organizationId = prevOrganization.organizationId,
@@ -98,42 +84,20 @@ class OrganizationServiceImpl : OrganizationService {
         return toOrganizationOutputModel(updatedOrganization)
     }
 
-    @Transactional
-    override fun voteOnOrganization(organizationId: Int, vote: VoteInputModel, principal: Principal): Int {
-        val organization = organizationDAO.getSpecificOrganization(organizationId)
-                .orElseThrow { NotFoundException("No organization found", "Try other ID") }
-        resolveVote(principal.name, organization.createdBy, reputationDAO.getActionLogsByUserAndResource(principal.name, ORGANIZATION_TABLE, organization.logId))
-
-        val votes = if(Vote.valueOf(vote.vote) == Vote.Down) organization.votes - 1 else organization.votes + 1
-        val success = organizationDAO.updateVotesOnOrganization(organizationId, votes)
-
-        publisher.publishEvent(VoteOnResourceEvent(
-                principal.name,
-                organization.createdBy,
-                ORGANIZATION_TABLE,
-                organization.logId,
-                Vote.valueOf(vote.vote)
-        ))
-        return success
-    }
-
-    @Transactional
-    override fun getAllReportsOnOrganization(organizationId: Int): OrganizationReportCollectionOutputModel {
-        val reports = organizationDAO.getAllReportsOnOrganization(organizationId).map { toOrganizationReportOutputModel(it) }
+    override fun getAllReportsOnOrganization(): OrganizationReportCollectionOutputModel {
+        val reports = organizationDAO.getAllReportsOnOrganization().map { toOrganizationReportOutputModel(it) }
         return toOrganizationReportCollectionOutputModel(reports)
     }
 
-    @Transactional
-    override fun getSpecificReportOnOrganization(organizationId: Int, reportId: Int): OrganizationReportOutputModel {
+    override fun getSpecificReportOnOrganization(reportId: Int): OrganizationReportOutputModel {
         return toOrganizationReportOutputModel(
-                organizationDAO.getSpecificReportOnOrganization(organizationId, reportId)
+                organizationDAO.getSpecificReportOnOrganization(reportId)
                         .orElseThrow { NotFoundException("No report found for this organization", "Try other report ID") }
         )
     }
 
-    @Transactional
-    override fun reportOrganization(organizationId: Int, input: OrganizationReportInputModel, principal: Principal): OrganizationReportOutputModel {
-        val reportOrganization = organizationDAO.reportOrganization(toOrganizationReport(organizationId, input, principal.name))
+    override fun reportOrganization(input: OrganizationReportInputModel, principal: Principal): OrganizationReportOutputModel {
+        val reportOrganization = organizationDAO.reportOrganization(toOrganizationReport(input, principal.name))
 
         publisher.publishEvent(ResourceCreatedEvent(
                 principal.name,
@@ -143,9 +107,8 @@ class OrganizationServiceImpl : OrganizationService {
         return toOrganizationReportOutputModel(reportOrganization)
     }
 
-    @Transactional
-    override fun deleteSpecificReportOnOrganization(organizationId: Int, reportId: Int, principal: Principal): Int {
-        val report = organizationDAO.getSpecificReportOnOrganization(organizationId, reportId)
+    override fun deleteSpecificReportOnOrganization(reportId: Int, principal: Principal): Int {
+        val report = organizationDAO.getSpecificReportOnOrganization(reportId)
                 .orElseThrow { NotFoundException("No report found", "Try other ID") }
         val success = organizationDAO.deleteSpecificReportOnOrganization(reportId)
 
@@ -160,14 +123,13 @@ class OrganizationServiceImpl : OrganizationService {
 
     }
 
-    @Transactional
-    override fun voteOnOrganizationReport(organizationId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int {
-        val organizationReport = organizationDAO.getSpecificReportOnOrganization(organizationId, reportId)
+    override fun voteOnOrganizationReport(reportId: Int, vote: VoteInputModel, principal: Principal): Int {
+        val organizationReport = organizationDAO.getSpecificReportOnOrganization(reportId)
                 .orElseThrow { NotFoundException("No report found", "Try other ID") }
         resolveVote(principal.name, organizationReport.reportedBy, reputationDAO.getActionLogsByUserAndResource(principal.name, ORGANIZATION_REPORT_TABLE, organizationReport.logId))
 
         val votes = if(Vote.valueOf(vote.vote) == Vote.Down) organizationReport.votes - 1 else organizationReport.votes + 1
-        val success = organizationDAO.updateVotesOnOrganizationReport(organizationId, reportId, votes)
+        val success = organizationDAO.updateVotesOnOrganizationReport(reportId, votes)
 
         publisher.publishEvent(VoteOnResourceEvent(
                 principal.name,
@@ -179,32 +141,28 @@ class OrganizationServiceImpl : OrganizationService {
         return success
     }
 
-    @Transactional
-    override fun getAllVersionsOfOrganization(organizationId: Int): OrganizationVersionCollectionOutputModel {
-        val organizationVersions = organizationDAO.getAllVersionsOfOrganization(organizationId).map { toOrganizationVersionOutputModel(it) }
+    override fun getAllVersionsOfOrganization(): OrganizationVersionCollectionOutputModel {
+        val organizationVersions = organizationDAO.getAllVersionsOfOrganization().map { toOrganizationVersionOutputModel(it) }
         return toOrganizationVersionCollectionOutputModel(organizationVersions)
     }
 
-    @Transactional
-    override fun getSpecificVersionOfOrganization(organizationId: Int, version: Int): OrganizationVersionOutputModel {
+    override fun getSpecificVersionOfOrganization(version: Int): OrganizationVersionOutputModel {
         return toOrganizationVersionOutputModel(
-                organizationDAO.getSpecificVersionOfOrganization(organizationId, version)
+                organizationDAO.getSpecificVersionOfOrganization(version)
                         .orElseThrow { NotFoundException("No version found for this organization", "Try another version number") }
         )
     }
 
-    @Transactional
-    override fun updateReportedOrganization(organizationId: Int, reportId: Int, principal: Principal): OrganizationOutputModel {
-        val prevOrganization = organizationDAO.getSpecificOrganization(organizationId)
+    override fun updateReportedOrganization(reportId: Int, principal: Principal): OrganizationOutputModel {
+        val prevOrganization = organizationDAO.getOrganization()
                 .orElseThrow { NotFoundException("No organization found", "Try other ID") }
-        val report = organizationDAO.getSpecificReportOnOrganization(organizationId, reportId)
+        val report = organizationDAO.getSpecificReportOnOrganization(reportId)
                 .orElseThrow { NotFoundException("No organization found", "Try other ID") }
         resolveApproval(principal.name, report.reportedBy)
 
         val updatedOrganization = organizationDAO.updateOrganization(Organization(
                 organizationId = prevOrganization.organizationId,
                 version = prevOrganization.version.inc(),
-                votes = prevOrganization.votes,
                 createdBy = report.reportedBy,
                 fullName = report.fullName ?: prevOrganization.fullName,
                 shortName = report.shortName ?: prevOrganization.shortName,
@@ -212,7 +170,7 @@ class OrganizationServiceImpl : OrganizationService {
                 address = report.address ?: prevOrganization.address
         ))
         organizationDAO.createOrganizationVersion(toOrganizationVersion(updatedOrganization))
-        organizationDAO.deleteReportOnOrganization(organizationId, reportId)
+        organizationDAO.deleteReportOnOrganization(reportId)
 
         publisher.publishEvent(ResourceApprovedEvent(
                 principal.name,

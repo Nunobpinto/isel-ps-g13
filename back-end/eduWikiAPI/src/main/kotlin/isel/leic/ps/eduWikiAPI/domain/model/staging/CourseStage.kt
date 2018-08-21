@@ -4,7 +4,6 @@ import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_STAGE_I
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_STAGE_CREATED_BY
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_STAGE_FULL_NAME
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_STAGE_LOG_ID
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_STAGE_ORG_ID
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_STAGE_SHORT_NAME
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_STAGE_TIMESTAMP
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_STAGE_VOTES
@@ -15,8 +14,6 @@ import java.time.LocalDateTime
 data class CourseStage (
         @ColumnName(COURSE_STAGE_ID)
         val stageId: Int = -1,
-        @ColumnName(COURSE_STAGE_ORG_ID)
-        val organizationId: Int = 0,
         @ColumnName(COURSE_STAGE_FULL_NAME)
         val fullName: String = "",
         @ColumnName(COURSE_STAGE_SHORT_NAME)

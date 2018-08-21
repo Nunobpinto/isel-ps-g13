@@ -34,10 +34,10 @@ class TermDAOImpl : TermDAO {
             jdbi.open().attach(TermDAOJdbi::class.java).getTerm(termId)
 
     interface TermDAOJdbi : TermDAO {
-        @SqlQuery("SELECT * FROM $TERM_TABLE WHERE $TERM_ID = :termId")
+        @SqlQuery("SELECT * FROM :schema.$TERM_TABLE WHERE $TERM_ID = :termId")
         override fun getTerm(termId: Int): Optional<Term>
 
-        @SqlQuery("SELECT * FROM $TERM_TABLE")
+        @SqlQuery("SELECT * FROM :schema.$TERM_TABLE")
         override fun getAllTerms(): List<Term>
     }
 }

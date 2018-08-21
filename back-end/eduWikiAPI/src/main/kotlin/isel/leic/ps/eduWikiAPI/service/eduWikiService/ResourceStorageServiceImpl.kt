@@ -9,13 +9,13 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import java.util.*
 
+@Transactional
 @Service
 class ResourceStorageServiceImpl : ResourceStorageService {
 
     @Autowired
     lateinit var resourceDAO: ResourceDAO
 
-    @Transactional
     override fun storeResource(uuId: UUID, sheet: MultipartFile): Resource =
             resourceDAO.storeResource(
                     uuId,
@@ -25,15 +25,12 @@ class ResourceStorageServiceImpl : ResourceStorageService {
                     sheet.size
             )
 
-
     override fun getResource(uuId: UUID): Resource =
             resourceDAO.getResource(uuId).orElseGet { Resource() }
 
-    @Transactional
     override fun batchDeleteResource(uuIds: List<UUID>): IntArray =
             resourceDAO.batchDeleteResources(uuIds)
 
-    @Transactional
     override fun deleteSpecificResource(uuid: UUID): Int =
             resourceDAO.deleteSpecificResource(uuid)
 

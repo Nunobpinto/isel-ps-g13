@@ -44,6 +44,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
 
+@Transactional
 @Service
 class ProgrammeServiceImpl : ProgrammeService {
 
@@ -62,20 +63,17 @@ class ProgrammeServiceImpl : ProgrammeService {
     // Programme Methods
     // -------------------------------
 
-    @Transactional
     override fun getAllProgrammes(): ProgrammeCollectionOutputModel {
         val programmes = programmeDAO.getAllProgrammes().map { toProgrammeOutput(it) }
         return toProgrammeCollectionOutputModel(programmes)
     }
 
-    @Transactional
     override fun getSpecificProgramme(programmeId: Int): ProgrammeOutputModel {
         return toProgrammeOutput(programmeDAO.getSpecificProgramme(programmeId)
                 .orElseThrow { NotFoundException("No Programme Found", "Try with other id") }
         )
     }
 
-    @Transactional
     override fun createProgramme(inputProgramme: ProgrammeInputModel, principal: Principal): ProgrammeOutputModel {
         val programme = programmeDAO.createProgramme(toProgramme(inputProgramme, principal.name))
         programmeDAO.createProgrammeVersion(toProgrammeVersion(programme))
@@ -88,7 +86,6 @@ class ProgrammeServiceImpl : ProgrammeService {
         return toProgrammeOutput(programme)
     }
 
-    @Transactional
     override fun voteOnProgramme(programmeId: Int, vote: VoteInputModel, principal: Principal): Int {
         val programme = programmeDAO.getSpecificProgramme(programmeId)
                 .orElseThrow { NotFoundException("No Programme Found", "Try with other id") }
@@ -107,7 +104,6 @@ class ProgrammeServiceImpl : ProgrammeService {
         return success
     }
 
-    @Transactional
     override fun partialUpdateOnProgramme(programmeId: Int, inputProgramme: ProgrammeInputModel, principal: Principal): ProgrammeOutputModel {
         val programme = programmeDAO.getSpecificProgramme(programmeId)
                 .orElseThrow { NotFoundException("No Programme Found", "Try with other id") }
@@ -133,7 +129,6 @@ class ProgrammeServiceImpl : ProgrammeService {
         return toProgrammeOutput(res)
     }
 
-    @Transactional
     override fun deleteSpecificProgramme(programmeId: Int, principal: Principal): Int {
         val programme = programmeDAO.getSpecificProgramme(programmeId)
                 .orElseThrow { NotFoundException("No Programme Found", "Try with other id") }
@@ -151,7 +146,6 @@ class ProgrammeServiceImpl : ProgrammeService {
     // Programme Stage Methods
     // -------------------------------
 
-    @Transactional
     override fun getSpecificStageEntryOfProgramme(stageId: Int): ProgrammeStageOutputModel {
         return toProgrammeStageOutputModel(
                 programmeDAO.getSpecificStageEntryOfProgramme(stageId)
@@ -159,13 +153,11 @@ class ProgrammeServiceImpl : ProgrammeService {
         )
     }
 
-    @Transactional
     override fun getAllProgrammeStageEntries(): ProgrammeStageCollectionOutputModel {
         val stagedProgrammes = programmeDAO.getAllProgrammeStageEntries().map { toProgrammeStageOutputModel(it) }
         return toProgrammeStageCollectionOutputModel(stagedProgrammes)
     }
 
-    @Transactional
     override fun voteOnStagedProgramme(stageId: Int, vote: VoteInputModel, principal: Principal): Int {
         val programmeStage = programmeDAO.getSpecificStageEntryOfProgramme(stageId)
                 .orElseThrow { NotFoundException("No Programme Staged Found", "Try with other id") }
@@ -184,7 +176,6 @@ class ProgrammeServiceImpl : ProgrammeService {
         return success
     }
 
-    @Transactional
     override fun createStagingProgramme(inputProgramme: ProgrammeInputModel, principal: Principal): ProgrammeStageOutputModel {
         val programmeStage = programmeDAO.createStagingProgramme(toProgrammeStage(inputProgramme, principal.name))
 
@@ -196,7 +187,6 @@ class ProgrammeServiceImpl : ProgrammeService {
         return toProgrammeStageOutputModel(programmeStage)
     }
 
-    @Transactional
     override fun createProgrammeFromStaged(stageId: Int, principal: Principal): ProgrammeOutputModel {
         val programmeStage = programmeDAO.getSpecificStageEntryOfProgramme(stageId)
                 .orElseThrow { NotFoundException("No Programme Staged Found", "Try with other id") }
@@ -219,7 +209,6 @@ class ProgrammeServiceImpl : ProgrammeService {
         return toProgrammeOutput(createdProgramme)
     }
 
-    @Transactional
     override fun deleteSpecificStagedProgramme(stageId: Int, principal: Principal): Int {
         val programme = programmeDAO.getSpecificStageEntryOfProgramme(stageId)
                 .orElseThrow { NotFoundException("No Programme Staged Found", "Try with other id") }
@@ -239,19 +228,16 @@ class ProgrammeServiceImpl : ProgrammeService {
     // Programme Report Methods
     // -------------------------------
 
-    @Transactional
     override fun getAllReportsOfSpecificProgramme(programmeId: Int): ProgrammeReportCollectionOutputModel {
         val reports = programmeDAO.getAllReportsOfSpecificProgramme(programmeId).map { toProgrammeReportOutputModel(it) }
         return toProgrammeReportCollectionOutputModel(reports)
     }
 
-    @Transactional
     override fun getSpecificReportOfProgramme(programmeId: Int, reportId: Int): ProgrammeReportOutputModel {
         return toProgrammeReportOutputModel(programmeDAO.getSpecificReportOfProgramme(programmeId, reportId)
                 .orElseThrow { NotFoundException("No report found", "Try with other id") })
     }
 
-    @Transactional
     override fun reportProgramme(programmeId: Int, inputProgrammeReport: ProgrammeReportInputModel, principal: Principal): ProgrammeReportOutputModel {
         val reportProgramme = programmeDAO.reportProgramme(programmeId, toProgrammeReport(programmeId, inputProgrammeReport, principal.name))
 
@@ -263,7 +249,6 @@ class ProgrammeServiceImpl : ProgrammeService {
         return toProgrammeReportOutputModel(reportProgramme)
     }
 
-    @Transactional
     override fun voteOnReportedProgramme(programmeId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int {
         val programmeReport = programmeDAO.getSpecificReportOfProgramme(reportId, programmeId)
                 .orElseThrow { NotFoundException("No report found", "Try with other id") }
@@ -282,7 +267,6 @@ class ProgrammeServiceImpl : ProgrammeService {
         return success
     }
 
-    @Transactional
     override fun updateProgrammeFromReport(programmeId: Int, reportId: Int, principal: Principal): ProgrammeOutputModel {
         val programme = programmeDAO.getSpecificProgramme(programmeId)
                 .orElseThrow { NotFoundException("No programme found", "Try with other id") }
@@ -315,7 +299,6 @@ class ProgrammeServiceImpl : ProgrammeService {
         return toProgrammeOutput(res)
     }
 
-    @Transactional
     override fun deleteSpecificReportOnProgramme(programmeId: Int, reportId: Int, principal: Principal): Int {
         val programmeReport = programmeDAO.getSpecificReportOfProgramme(programmeId, reportId)
                 .orElseThrow { NotFoundException("No report found", "Try with other id") }
@@ -336,13 +319,11 @@ class ProgrammeServiceImpl : ProgrammeService {
     // Programme Version Methods
     // -------------------------------
 
-    @Transactional
     override fun getAllVersionsOfProgramme(programmeId: Int): ProgrammeVersionCollectionOutputModel {
         val programmeVersions = programmeDAO.getAllVersionsOfProgramme(programmeId).map { toProgrammeVersionOutputModel(it) }
         return toProgrammeVersionCollectionOutputModel(programmeVersions)
     }
 
-    @Transactional
     override fun getSpecificVersionOfProgramme(programmeId: Int, version: Int): ProgrammeVersionOutputModel {
         return toProgrammeVersionOutputModel(
                 programmeDAO.getSpecificVersionOfProgramme(programmeId, version)
@@ -360,7 +341,6 @@ class ProgrammeServiceImpl : ProgrammeService {
     // Course Programme Methods
     // -------------------------------
 
-    @Transactional
     override fun getAllCoursesOnSpecificProgramme(programmeId: Int): CourseProgrammeCollectionOutputModel {
         val courseProgrammes = courseDAO.getAllCoursesOnSpecificProgramme(programmeId)
         return toCourseProgrammeCollectionOutputModel(courseProgrammes.map {
@@ -372,7 +352,6 @@ class ProgrammeServiceImpl : ProgrammeService {
         })
     }
 
-    @Transactional
     override fun getSpecificCourseOfProgramme(programmeId: Int, courseId: Int): CourseProgrammeOutputModel {
         return toCourseProgrammeOutputModel(
                 courseDAO.getSpecificCourseOfProgramme(programmeId, courseId)
@@ -382,7 +361,6 @@ class ProgrammeServiceImpl : ProgrammeService {
         )
     }
 
-    @Transactional
     override fun addCourseToProgramme(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel, principal: Principal): CourseProgrammeOutputModel {
         val course = courseDAO.getSpecificCourse(inputCourseProgramme.courseId)
                 .orElseThrow { NotFoundException("Course does not exist", "Use a valid course") }
@@ -398,7 +376,6 @@ class ProgrammeServiceImpl : ProgrammeService {
         return toCourseProgrammeOutputModel(newCourseProgramme, course)
     }
 
-    @Transactional
     override fun voteOnCourseProgramme(programmeId: Int, courseId: Int, vote: VoteInputModel, principal: Principal): Int {
         val courseProgramme = courseDAO.getSpecificCourseOfProgramme(programmeId, courseId)
                 .orElseThrow { NotFoundException("This course in this programme does not exist", "Try again") }
@@ -417,7 +394,6 @@ class ProgrammeServiceImpl : ProgrammeService {
         return success
     }
 
-    @Transactional
     override fun deleteSpecificCourseProgramme(programmeId: Int, courseId: Int, principal: Principal): Int {
         val courseProgramme = courseDAO.getSpecificCourseOfProgramme(programmeId, courseId)
                 .orElseThrow { NotFoundException("This course in this programme does not exist", "Try again") }
@@ -436,13 +412,11 @@ class ProgrammeServiceImpl : ProgrammeService {
     // Course Programme Stage Methods
     // -------------------------------
 
-    @Transactional
     override fun getAllCourseStageEntriesOfSpecificProgramme(programmeId: Int): CourseProgrammeStageCollectionOutputModel {
         val courseProgrammeStageEntries = courseDAO.getAllCourseStageEntriesOfSpecificProgramme(programmeId).map { toCourseProgrammeStageOutputModel(it) }
         return toCourseProgrammeStageCollectionOutputModel(courseProgrammeStageEntries)
     }
 
-    @Transactional
     override fun getSpecificStagedCourseOfProgramme(programmeId: Int, stageId: Int): CourseProgrammeStageOutputModel {
         return toCourseProgrammeStageOutputModel(
                 courseDAO.getSpecificStagedCourseProgramme(programmeId, stageId)
@@ -450,7 +424,6 @@ class ProgrammeServiceImpl : ProgrammeService {
         )
     }
 
-    @Transactional
     override fun createStagingCourseOnProgramme(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel, principal: Principal): CourseProgrammeStageOutputModel {
         val courseProgrammeStage = courseDAO.createStagingCourseOfProgramme(toCourseProgrammeStage(programmeId, inputCourseProgramme, principal.name))
 
@@ -462,7 +435,6 @@ class ProgrammeServiceImpl : ProgrammeService {
         return toCourseProgrammeStageOutputModel(courseProgrammeStage)
     }
 
-    @Transactional
     override fun createCourseProgrammeFromStaged(programmeId: Int, stageId: Int, principal: Principal): CourseProgrammeOutputModel {
         val courseProgrammeStage = courseDAO.getSpecificStagedCourseProgramme(programmeId, stageId)
                 .orElseThrow { NotFoundException("No staged version of course with this id in this programme", "Search other staged version") }
@@ -487,7 +459,6 @@ class ProgrammeServiceImpl : ProgrammeService {
         return toCourseProgrammeOutputModel(courseProgramme, course)
     }
 
-    @Transactional
     override fun voteOnStagedCourseProgramme(programmeId: Int, stageId: Int, vote: VoteInputModel, principal: Principal): Int {
         val courseProgrammeStage = courseDAO.getSpecificStagedCourseProgramme(programmeId, stageId)
                 .orElseThrow { NotFoundException("Either the stage or programme id are not valid", "Try other ids") }
@@ -506,7 +477,6 @@ class ProgrammeServiceImpl : ProgrammeService {
         return success
     }
 
-    @Transactional
     override fun deleteSpecificStagedCourseProgramme(programmeId: Int, stageId: Int, principal: Principal): Int {
         val courseProgrammeStage = courseDAO.getSpecificStagedCourseProgramme(programmeId, stageId)
                 .orElseThrow { NotFoundException("Either the stage or programme id are not valid", "Try other ids") }
@@ -527,14 +497,12 @@ class ProgrammeServiceImpl : ProgrammeService {
     // Course Programme Report Methods
     // -------------------------------
 
-    @Transactional
     override fun getAllReportsOfCourseOnProgramme(programmeId: Int, courseId: Int): CourseProgrammeReportCollectionOutputModel {
         val reports = courseDAO.getAllReportsOfCourseOnProgramme(programmeId, courseId)
                 .map { toCourseProgrammeReportOutputModel(it) }
         return toCourseProgrammeReportCollectionOutputModel(reports)
     }
 
-    @Transactional
     override fun getSpecificReportOfCourseOnProgramme(programmeId: Int, courseId: Int, reportId: Int): CourseProgrammeReportOutputModel {
         return toCourseProgrammeReportOutputModel(
                 courseDAO.getSpecificReportOfCourseProgramme(programmeId, courseId, reportId)
@@ -542,7 +510,6 @@ class ProgrammeServiceImpl : ProgrammeService {
         )
     }
 
-    @Transactional
     override fun reportSpecificCourseOnProgramme(programmeId: Int, courseId: Int, inputCourseReport: CourseProgrammeReportInputModel, principal: Principal): CourseProgrammeReportOutputModel {
         val courseProgrammeReport = courseDAO.reportSpecificCourseOnProgramme(programmeId, courseId, toCourseProgrammeReport(programmeId, courseId, inputCourseReport, principal.name))
 
@@ -554,7 +521,6 @@ class ProgrammeServiceImpl : ProgrammeService {
         return toCourseProgrammeReportOutputModel(courseProgrammeReport)
     }
 
-    @Transactional
     override fun updateCourseProgrammeFromReport(programmeId: Int, courseId: Int, reportId: Int, principal: Principal): CourseProgrammeOutputModel {
         val course = courseDAO.getSpecificCourse(courseId)
                 .orElseThrow { NotFoundException("The course is not valid", "Contact admins") }
@@ -600,7 +566,6 @@ class ProgrammeServiceImpl : ProgrammeService {
         return toRet
     }
 
-    @Transactional
     override fun voteOnReportedCourseProgramme(programmeId: Int, courseId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int {
         val courseProgrammeReport = courseDAO.getSpecificReportOfCourseProgramme(programmeId, courseId, reportId)
                 .orElseThrow { NotFoundException("Can't find the specified report for this course in programme", "Search other report") }
@@ -620,7 +585,6 @@ class ProgrammeServiceImpl : ProgrammeService {
     }
 
 
-    @Transactional
     override fun deleteSpecificReportOfCourseProgramme(programmeId: Int, courseId: Int, reportId: Int, principal: Principal): Int =
             courseDAO.deleteSpecificReportOfCourseProgramme(programmeId, courseId, reportId)
 
@@ -629,13 +593,11 @@ class ProgrammeServiceImpl : ProgrammeService {
     // Course Programme Version Methods
     // -------------------------------
 
-    @Transactional
     override fun getAllVersionsOfCourseOnProgramme(programmeId: Int, courseId: Int): CourseProgrammeVersionCollectionOutputModel {
         val courseProgrammeVersions = courseDAO.getAllVersionsOfCourseOnProgramme(programmeId, courseId).map { toCourseProgrammeVersionOutput(it) }
         return toCourseProgrammeVersionCollectionOutputModel(courseProgrammeVersions)
     }
 
-    @Transactional
     override fun getSpecificVersionOfCourseOnProgramme(programmeId: Int, courseId: Int, version: Int): CourseProgrammeVersionOutputModel {
         return toCourseProgrammeVersionOutput(
                 courseDAO.getSpecificVersionOfCourseOnProgramme(programmeId, courseId, version)

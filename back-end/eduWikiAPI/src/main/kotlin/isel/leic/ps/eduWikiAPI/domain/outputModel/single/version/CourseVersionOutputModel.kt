@@ -6,7 +6,6 @@ import java.time.LocalDateTime
 data class CourseVersionOutputModel(
         val version: Int = 1,
         val courseId: Int = 0,
-        val organizationId: Int = 0,
         val fullName: String = "",
         val shortName: String = "",
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now()),

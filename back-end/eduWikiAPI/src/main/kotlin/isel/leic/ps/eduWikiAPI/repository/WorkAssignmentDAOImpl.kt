@@ -181,8 +181,8 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_VOTES, " +
                         "W.$WORK_ASSIGNMENT_TIMESTAMP, " +
                         "W.$WORK_ASSIGNMENT_LOG_ID" +
-                        "FROM $WORK_ASSIGNMENT_TABLE AS W " +
-                        "INNER JOIN $COURSE_MISC_UNIT_TABLE AS C " +
+                        "FROM :schema.$WORK_ASSIGNMENT_TABLE AS W " +
+                        "INNER JOIN :schema.$COURSE_MISC_UNIT_TABLE AS C " +
                         "ON W.$WORK_ASSIGNMENT_ID = C.$COURSE_MISC_UNIT_ID " +
                         "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId " +
                         "AND C.$COURSE_MISC_UNIT_TERM_ID = :termId " +
@@ -194,7 +194,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                 createCourseDAO().deleteSpecificCourseMiscUnitEntry(courseId, termId, workAssignmentId)
 
         @SqlUpdate(
-                "UPDATE $WORK_ASSIGNMENT_TABLE SET " +
+                "UPDATE :schema.$WORK_ASSIGNMENT_TABLE SET " +
                         "$WORK_ASSIGNMENT_VERSION = :workAssignment.version, " +
                         "$WORK_ASSIGNMENT_PHASE = :workAssignment.phase" +
                         "$WORK_ASSIGNMENT_CREATED_BY = :workAssignment.createdBy, " +
@@ -213,7 +213,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         override fun updateWorkAssignment(workAssignmentId: Int, workAssignment: WorkAssignment): WorkAssignment
 
         @SqlUpdate(
-                "UPDATE $WORK_ASSIGNMENT_TABLE SET $WORK_ASSIGNMENT_VOTES = :votes" +
+                "UPDATE :schema.$WORK_ASSIGNMENT_TABLE SET $WORK_ASSIGNMENT_VOTES = :votes" +
                         " WHERE $WORK_ASSIGNMENT_ID = :workAssignmentId"
         )
         override fun updateVotesOnWorkAssignment(workAssignmentId: Int, votes: Int): Int
@@ -222,7 +222,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                 createCourseDAO().deleteSpecificStagedCourseMiscUnitEntry(courseId, termId, stageId)
 
         @SqlUpdate(
-                "DELETE FROM $WORK_ASSIGNMENT_REPORT_TABLE AS W " +
+                "DELETE FROM :schema.$WORK_ASSIGNMENT_REPORT_TABLE AS W " +
                         "USING $COURSE_MISC_UNIT_TABLE AS C " +
                         "WHERE W.$WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID = C.$COURSE_MISC_UNIT_ID " +
                         "C.$COURSE_MISC_UNIT_COURSE_ID = :courseId AND " +
@@ -247,8 +247,8 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_REQUIRES_REPORT, " +
                         "W.$WORK_ASSIGNMENT_TIMESTAMP, " +
                         "W.$WORK_ASSIGNMENT_LOG_ID " +
-                        "FROM $WORK_ASSIGNMENT_TABLE AS W " +
-                        "INNER JOIN $COURSE_MISC_UNIT_TABLE AS C " +
+                        "FROM :schema.$WORK_ASSIGNMENT_TABLE AS W " +
+                        "INNER JOIN :schema.$COURSE_MISC_UNIT_TABLE AS C " +
                         "ON W.$WORK_ASSIGNMENT_ID = C.$COURSE_MISC_UNIT_ID " +
                         "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId " +
                         "AND C.$COURSE_MISC_UNIT_TERM_ID = :termId"
@@ -269,8 +269,8 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_STAGE_VOTES," +
                         "W.$WORK_ASSIGNMENT_STAGE_TIMESTAMP, " +
                         "W.$WORK_ASSIGNMENT_STAGE_LOG_ID " +
-                        "FROM $WORK_ASSIGNMENT_STAGE_TABLE AS W " +
-                        "INNER JOIN $COURSE_MISC_UNIT_STAGE_TABLE AS C " +
+                        "FROM :schema.$WORK_ASSIGNMENT_STAGE_TABLE AS W " +
+                        "INNER JOIN :schema.$COURSE_MISC_UNIT_STAGE_TABLE AS C " +
                         "ON W.$WORK_ASSIGNMENT_STAGE_ID = C.$COURSE_MISC_UNIT_STAGE_ID " +
                         "WHERE C.$COURSE_MISC_UNIT_STAGE_COURSE_ID = :courseId " +
                         "AND C.$COURSE_MISC_UNIT_STAGE_TERM_ID = :termId"
@@ -291,8 +291,8 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_STAGE_VOTES, " +
                         "W.$WORK_ASSIGNMENT_STAGE_TIMESTAMP, " +
                         "W.$WORK_ASSIGNMENT_STAGE_LOG_ID " +
-                        "FROM $WORK_ASSIGNMENT_STAGE_TABLE AS W " +
-                        "INNER JOIN $COURSE_MISC_UNIT_STAGE_TABLE AS C " +
+                        "FROM :schema.$WORK_ASSIGNMENT_STAGE_TABLE AS W " +
+                        "INNER JOIN :schema.$COURSE_MISC_UNIT_STAGE_TABLE AS C " +
                         "ON W.$WORK_ASSIGNMENT_STAGE_ID = C.$COURSE_MISC_UNIT_STAGE_ID " +
                         "WHERE C.$COURSE_MISC_UNIT_STAGE_COURSE_ID = :courseId " +
                         "AND C.$COURSE_MISC_UNIT_STAGE_TERM_ID = :termId " +
@@ -315,8 +315,8 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_REPORT_VOTES, " +
                         "W.$WORK_ASSIGNMENT_REPORT_TIMESTAMP, " +
                         "W.$WORK_ASSIGNMENT_REPORT_LOG_ID" +
-                        "FROM $WORK_ASSIGNMENT_REPORT_TABLE AS W " +
-                        "INNER JOIN $COURSE_MISC_UNIT_TABLE AS C " +
+                        "FROM :schema.$WORK_ASSIGNMENT_REPORT_TABLE AS W " +
+                        "INNER JOIN :schema.$COURSE_MISC_UNIT_TABLE AS C " +
                         "ON W.$WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID = C.$COURSE_MISC_UNIT_ID " +
                         "WHERE C.$COURSE_MISC_UNIT_ID = :workAssignmentId" +
                         "AND C.$COURSE_MISC_UNIT_TERM_ID = :termId " +
@@ -325,7 +325,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         override fun getAllReportsOnWorkUnitOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): List<WorkAssignmentReport>
 
         @SqlUpdate(
-                "INSERT INTO $WORK_ASSIGNMENT_TABLE (" +
+                "INSERT INTO :schema.$WORK_ASSIGNMENT_TABLE (" +
                         "$WORK_ASSIGNMENT_ID, " +
                         "$WORK_ASSIGNMENT_VERSION, " +
                         "$WORK_ASSIGNMENT_CREATED_BY, " +
@@ -358,7 +358,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         }
 
         @SqlUpdate(
-                "INSERT INTO $WORK_ASSIGNMENT_REPORT_TABLE (" +
+                "INSERT INTO :schema.$WORK_ASSIGNMENT_REPORT_TABLE (" +
                         "$WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID, " +
                         "$WORK_ASSIGNMENT_REPORT_SHEET_ID, " +
                         "$WORK_ASSIGNMENT_REPORT_PHASE, " +
@@ -381,7 +381,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         override fun addReportToWorkAssignmentOnCourseInTerm(workAssignmentId: Int, workAssignmentReport: WorkAssignmentReport): WorkAssignmentReport
 
         @SqlUpdate(
-                "UPDATE $WORK_ASSIGNMENT_REPORT_TABLE SET $WORK_ASSIGNMENT_REPORT_VOTES = :votes " +
+                "UPDATE :schema.$WORK_ASSIGNMENT_REPORT_TABLE SET $WORK_ASSIGNMENT_REPORT_VOTES = :votes " +
                         "WHERE $WORK_ASSIGNMENT_REPORT_ID = :reportId"
         )
         override fun updateVotesOnReportedWorkAssignment(reportId: Int, votes: Int): Int
@@ -401,8 +401,8 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_REPORT_VOTES, " +
                         "W.$WORK_ASSIGNMENT_REPORT_TIMESTAMP, " +
                         "W.$WORK_ASSIGNMENT_REPORT_LOG_ID" +
-                        "FROM $WORK_ASSIGNMENT_REPORT_TABLE AS W " +
-                        "INNER JOIN $COURSE_MISC_UNIT_TABLE AS C " +
+                        "FROM :schema.$WORK_ASSIGNMENT_REPORT_TABLE AS W " +
+                        "INNER JOIN :schema.$COURSE_MISC_UNIT_TABLE AS C " +
                         "ON W.$WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID = C.$COURSE_MISC_UNIT_ID " +
                         "WHERE C.$COURSE_MISC_UNIT_ID = :workAssignmentId" +
                         "AND C.$COURSE_MISC_UNIT_TERM_ID = :termId " +
@@ -412,7 +412,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         override fun getSpecificReportOfWorkAssignment(termId: Int, courseId: Int, workAssignmentId: Int, reportId: Int): Optional<WorkAssignmentReport>
 
         @SqlUpdate(
-                "INSERT INTO $WORK_ASSIGNMENT_VERSION_TABLE ( " +
+                "INSERT INTO :schema.$WORK_ASSIGNMENT_VERSION_TABLE ( " +
                         "$WORK_ASSIGNMENT_VERSION_WORK_ASSIGN_ID," +
                         "$WORK_ASSIGNMENT_VERSION, " +
                         "$WORK_ASSIGNMENT_VERSION_PHASE, " +
@@ -436,7 +436,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         override fun createWorkAssignmentVersion(workAssignmentVersion: WorkAssignmentVersion): WorkAssignmentVersion
 
         @SqlUpdate(
-                "INSERT INTO $WORK_ASSIGNMENT_STAGE_TABLE (" +
+                "INSERT INTO :schema.$WORK_ASSIGNMENT_STAGE_TABLE (" +
                         "$WORK_ASSIGNMENT_STAGE_ID, " +
                         "$WORK_ASSIGNMENT_STAGE_PHASE, " +
                         "$WORK_ASSIGNMENT_STAGE_SHEET_ID, " +
@@ -469,7 +469,7 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         }
 
         @SqlUpdate(
-                "UPDATE $WORK_ASSIGNMENT_STAGE_TABLE SET $WORK_ASSIGNMENT_STAGE_VOTES = :votes " +
+                "UPDATE :schema.$WORK_ASSIGNMENT_STAGE_TABLE SET $WORK_ASSIGNMENT_STAGE_VOTES = :votes " +
                         "WHERE $WORK_ASSIGNMENT_STAGE_ID = :stageId"
         )
         override fun updateStagedWorkAssignmentVotes(stageId: Int, votes: Int): Int
@@ -488,8 +488,8 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_VERSION_REQUIRES_REPORT, " +
                         "W.$WORK_ASSIGNMENT_VERSION_CREATED_BY, " +
                         "W.$WORK_ASSIGNMENT_VERSION_TIMESTAMP " +
-                        "FROM $WORK_ASSIGNMENT_VERSION_TABLE AS W " +
-                        "INNER JOIN $COURSE_MISC_UNIT_TABLE AS C ON W.$WORK_ASSIGNMENT_VERSION_WORK_ASSIGN_ID = C.$COURSE_MISC_UNIT_ID " +
+                        "FROM :schema.$WORK_ASSIGNMENT_VERSION_TABLE AS W " +
+                        "INNER JOIN :schema.$COURSE_MISC_UNIT_TABLE AS C ON W.$WORK_ASSIGNMENT_VERSION_WORK_ASSIGN_ID = C.$COURSE_MISC_UNIT_ID " +
                         "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId AND C.$COURSE_MISC_UNIT_TERM_ID = :termId " +
                         "C.$COURSE_MISC_UNIT_ID = :workAssignment"
         )
@@ -509,8 +509,8 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_VERSION_REQUIRES_REPORT, " +
                         "W.$WORK_ASSIGNMENT_VERSION_CREATED_BY, " +
                         "W.$WORK_ASSIGNMENT_VERSION_TIMESTAMP " +
-                        "FROM $WORK_ASSIGNMENT_VERSION_TABLE AS W " +
-                        "INNER JOIN $COURSE_MISC_UNIT_TABLE AS C ON W.$WORK_ASSIGNMENT_VERSION_WORK_ASSIGN_ID = C.$COURSE_MISC_UNIT_ID " +
+                        "FROM :schema.$WORK_ASSIGNMENT_VERSION_TABLE AS W " +
+                        "INNER JOIN :schema.$COURSE_MISC_UNIT_TABLE AS C ON W.$WORK_ASSIGNMENT_VERSION_WORK_ASSIGN_ID = C.$COURSE_MISC_UNIT_ID " +
                         "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId AND C.$COURSE_MISC_UNIT_TERM_ID = :termId " +
                         "AND C.$COURSE_MISC_UNIT_ID = :workAssignment AND W.$WORK_ASSIGNMENT_VERSION_ID = :version"
         )

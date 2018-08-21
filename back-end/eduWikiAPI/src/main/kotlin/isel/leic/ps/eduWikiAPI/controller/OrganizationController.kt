@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*
 import java.security.Principal
 
 @RestController
-@RequestMapping("/organizations")
+@RequestMapping("/organization")
 class OrganizationController {
 
     @Autowired
@@ -21,60 +21,51 @@ class OrganizationController {
     // ----------------------------
 
     @GetMapping
-    fun getAllOrganizations() = organizationService.getAllOrganizations()
+    fun getAllOrganizations() = organizationService.getOrganization()
 
-    @GetMapping("/{organizationId}")
-    fun getSpecificOrganization(@PathVariable organizationId: Int) = organizationService.getSpecificOrganization(organizationId)
-
+    //TODO: Create somewhere else? (schema creation endpoint?)
     @PostMapping
     fun createOrganization(
             @RequestBody input: OrganizationInputModel,
             principal: Principal
     ) = organizationService.createOrganization(input, principal)
 
-    @PostMapping("/{organizationId}/vote")
-    fun voteOrganization(@PathVariable organizationId: Int, @RequestBody input: VoteInputModel, principal: Principal) = organizationService.voteOnOrganization(organizationId, input, principal)
-
-    @PatchMapping("/{organizationId}")
+    @PatchMapping("")
     fun partialUpdateOnOrganization(
-            @PathVariable organizationId: Int,
             @RequestBody input: OrganizationInputModel,
             principal: Principal
-    ) = organizationService.updateOrganization(organizationId, input, principal)
-
-    @DeleteMapping("/{organizationId}")
-    fun deleteSpecificOrganization(@PathVariable organizationId: Int, principal: Principal) = organizationService.deleteOrganization(organizationId)
+    ) = organizationService.updateOrganization(input, principal)
 
     // ----------------------------
     // Organization Report Endpoints
     // ----------------------------
 
-    @GetMapping("/{organizationId}/reports")
-    fun getAllReportsOnOrganization(@PathVariable organizationId: Int) = organizationService.getAllReportsOnOrganization(organizationId)
+    @GetMapping("/reports")
+    fun getAllReportsOnOrganization() = organizationService.getAllReportsOnOrganization()
 
-    @GetMapping("/{organizationId}/reports/{reportId}")
-    fun getSpecificReportOnOrganization(@PathVariable organizationId: Int, @PathVariable reportId: Int) = organizationService.getSpecificReportOnOrganization(organizationId, reportId)
+    @GetMapping("/reports/{reportId}")
+    fun getSpecificReportOnOrganization(@PathVariable reportId: Int) = organizationService.getSpecificReportOnOrganization(reportId)
 
-    @PostMapping("/{organizationId}/reports")
-    fun reportOrganization(@PathVariable organizationId: Int, @RequestBody input: OrganizationReportInputModel, principal: Principal) = organizationService.reportOrganization(organizationId, input, principal)
+    @PostMapping("/reports")
+    fun reportOrganization(@RequestBody input: OrganizationReportInputModel, principal: Principal) = organizationService.reportOrganization(input, principal)
 
-    @PostMapping("/{organizationId}/reports/{reportId}")
-    fun updateReportedOrganization(@PathVariable organizationId: Int, @PathVariable reportId: Int, principal: Principal)
-            = organizationService.updateReportedOrganization(organizationId, reportId, principal)
+    @PostMapping("/reports/{reportId}")
+    fun updateReportedOrganization(@PathVariable reportId: Int, principal: Principal)
+            = organizationService.updateReportedOrganization(reportId, principal)
 
-    @PostMapping("/{organizationId}/reports/{reportId}/vote")
-    fun voteOrganizationReport(@PathVariable organizationId: Int, @PathVariable reportId: Int, @RequestBody input: VoteInputModel, principal: Principal) = organizationService.voteOnOrganizationReport(organizationId, reportId, input, principal)
+    @PostMapping("/reports/{reportId}/vote")
+    fun voteOrganizationReport(@PathVariable reportId: Int, @RequestBody input: VoteInputModel, principal: Principal) = organizationService.voteOnOrganizationReport(reportId, input, principal)
 
-    @DeleteMapping("/{organizationId}/reports/{reportId}")
-    fun deleteSpecificReport(@PathVariable organizationId: Int, @PathVariable reportId: Int, principal: Principal) = organizationService.deleteSpecificReportOnOrganization(organizationId, reportId, principal)
+    @DeleteMapping("/reports/{reportId}")
+    fun deleteSpecificReport(@PathVariable reportId: Int, principal: Principal) = organizationService.deleteSpecificReportOnOrganization(reportId, principal)
 
     // ----------------------------
     // Organization Version Endpoints
     // ----------------------------
 
-    @GetMapping("/{organizationId}/versions")
-    fun getAllVersionsOfOrganization(@PathVariable organizationId: Int) = organizationService.getAllVersionsOfOrganization(organizationId)
+    @GetMapping("/versions")
+    fun getAllVersionsOfOrganization() = organizationService.getAllVersionsOfOrganization()
 
-    @GetMapping("/{organizationId}/versions/{versionId}")
-    fun getSpecificVersionOfOrganization(@PathVariable organizationId: Int, @PathVariable versionId: Int) = organizationService.getSpecificVersionOfOrganization(organizationId, versionId)
+    @GetMapping("/versions/{versionId}")
+    fun getSpecificVersionOfOrganization(@PathVariable versionId: Int) = organizationService.getSpecificVersionOfOrganization(versionId)
 }

@@ -139,17 +139,17 @@ class ProgrammeDAOImpl : ProgrammeDAO {
             jdbi.open().attach(ProgrammeDAOJdbi::class.java).deleteSpecificReportOnProgramme(programmeId, reportId)
 
     interface ProgrammeDAOJdbi : ProgrammeDAO {
-        @SqlQuery("SELECT * FROM $PROGRAMME_TABLE")
+        @SqlQuery("SELECT * FROM :schema.$PROGRAMME_TABLE")
         override fun getAllProgrammes(): List<Programme>
 
-        @SqlQuery("SELECT * FROM $PROGRAMME_TABLE WHERE $PROGRAMME_ID = :programmeId")
+        @SqlQuery("SELECT * FROM :schema.$PROGRAMME_TABLE WHERE $PROGRAMME_ID = :programmeId")
         override fun getSpecificProgramme(programmeId: Int): Optional<Programme>
 
-        @SqlUpdate("DELETE FROM $PROGRAMME_TABLE WHERE $PROGRAMME_ID = :programmeId")
+        @SqlUpdate("DELETE FROM :schema.$PROGRAMME_TABLE WHERE $PROGRAMME_ID = :programmeId")
         override fun deleteSpecificProgramme(programmeId: Int): Int
 
         @SqlUpdate(
-                "UPDATE $PROGRAMME_TABLE SET " +
+                "UPDATE :schema.$PROGRAMME_TABLE SET " +
                         "$PROGRAMME_VERSION = :programme.version, " +
                         "$PROGRAMME_CREATED_BY = :programme.createdBy, " +
                         "$PROGRAMME_FULL_NAME = :programme.fullName, " +
@@ -165,7 +165,7 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         override fun updateProgramme(programmeId: Int, programme: Programme): Programme
 
         @SqlUpdate(
-                "INSERT INTO $PROGRAMME_TABLE ( " +
+                "INSERT INTO :schema.$PROGRAMME_TABLE ( " +
                         "$PROGRAMME_VERSION, " +
                         "$PROGRAMME_FULL_NAME, " +
                         "$PROGRAMME_SHORT_NAME, " +
@@ -181,17 +181,17 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         @GetGeneratedKeys
         override fun createProgramme(programme: Programme): Programme
 
-        @SqlUpdate("UPDATE $PROGRAMME_TABLE SET $PROGRAMME_VOTES = :votes WHERE $PROGRAMME_ID = :programmeId")
+        @SqlUpdate("UPDATE :schema.$PROGRAMME_TABLE SET $PROGRAMME_VOTES = :votes WHERE $PROGRAMME_ID = :programmeId")
         override fun updateVotesOnProgramme(programmeId: Int, votes: Int): Int
 
-        @SqlQuery("SELECT * FROM $PROGRAMME_STAGE_TABLE WHERE $PROGRAMME_STAGE_ID = :stageId")
+        @SqlQuery("SELECT * FROM :schema.$PROGRAMME_STAGE_TABLE WHERE $PROGRAMME_STAGE_ID = :stageId")
         override fun getSpecificStageEntryOfProgramme(stageId: Int): Optional<ProgrammeStage>
 
-        @SqlQuery("SELECT * FROM $PROGRAMME_STAGE_TABLE")
+        @SqlQuery("SELECT * FROM :schema.$PROGRAMME_STAGE_TABLE")
         override fun getAllProgrammeStageEntries(): List<ProgrammeStage>
 
         @SqlUpdate(
-                "INSERT INTO $PROGRAMME_STAGE_TABLE (" +
+                "INSERT INTO :schema.$PROGRAMME_STAGE_TABLE (" +
                         "$PROGRAMME_STAGE_FULL_NAME, " +
                         "$PROGRAMME_STAGE_SHORT_NAME, " +
                         "$PROGRAMME_STAGE_ACADEMIC_DEGREE, " +
@@ -206,23 +206,23 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         @GetGeneratedKeys
         override fun createStagingProgramme(programmeStage: ProgrammeStage): ProgrammeStage
 
-        @SqlUpdate("UPDATE $PROGRAMME_STAGE_TABLE SET $PROGRAMME_STAGE_VOTES = :votes WHERE $PROGRAMME_STAGE_ID = :stageId")
+        @SqlUpdate("UPDATE :schema.$PROGRAMME_STAGE_TABLE SET $PROGRAMME_STAGE_VOTES = :votes WHERE $PROGRAMME_STAGE_ID = :stageId")
         override fun updateVotesOnStagedProgramme(stageId: Int, votes: Int): Int
 
-        @SqlUpdate("DELETE FROM $PROGRAMME_STAGE_TABLE WHERE $PROGRAMME_STAGE_ID = :stageId")
+        @SqlUpdate("DELETE FROM :schema.$PROGRAMME_STAGE_TABLE WHERE $PROGRAMME_STAGE_ID = :stageId")
         override fun deleteSpecificStagedProgramme(stageId: Int): Int
 
-        @SqlQuery("SELECT * FROM $PROGRAMME_VERSION_TABLE WHERE $PROGRAMME_VERSION_PROGRAMME_ID = :programmeId")
+        @SqlQuery("SELECT * FROM :schema.$PROGRAMME_VERSION_TABLE WHERE $PROGRAMME_VERSION_PROGRAMME_ID = :programmeId")
         override fun getAllVersionsOfProgramme(programmeId: Int): List<ProgrammeVersion>
 
-        @SqlQuery("SELECT * FROM $PROGRAMME_VERSION_TABLE WHERE $PROGRAMME_VERSION_PROGRAMME_ID = :programmeId AND $PROGRAMME_VERSION_ID = :version")
+        @SqlQuery("SELECT * FROM :schema.$PROGRAMME_VERSION_TABLE WHERE $PROGRAMME_VERSION_PROGRAMME_ID = :programmeId AND $PROGRAMME_VERSION_ID = :version")
         override fun getSpecificVersionOfProgramme(programmeId: Int, version: Int): Optional<ProgrammeVersion>
 
-        @SqlUpdate("DELETE FROM $PROGRAMME_VERSION_TABLE WHERE $PROGRAMME_VERSION_PROGRAMME_ID = :programmeId AND $PROGRAMME_VERSION_ID = :version")
+        @SqlUpdate("DELETE FROM :schema.$PROGRAMME_VERSION_TABLE WHERE $PROGRAMME_VERSION_PROGRAMME_ID = :programmeId AND $PROGRAMME_VERSION_ID = :version")
         override fun deleteSpecificProgrammeVersion(programmeId: Int, version: Int): Int
 
         @SqlUpdate(
-                "INSERT INTO $PROGRAMME_REPORT_TABLE (" +
+                "INSERT INTO :schema.$PROGRAMME_REPORT_TABLE (" +
                         "$PROGRAMME_REPORT_PROGRAMME_ID, " +
                         "$PROGRAMME_REPORT_FULL_NAME, " +
                         "$PROGRAMME_REPORT_SHORT_NAME, " +
@@ -238,21 +238,21 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         @GetGeneratedKeys
         override fun reportProgramme(programmeId: Int, programmeReport: ProgrammeReport): ProgrammeReport
 
-        @SqlQuery("SELECT * FROM $PROGRAMME_REPORT_TABLE WHERE $PROGRAMME_REPORT_PROGRAMME_ID = :programmeId")
+        @SqlQuery("SELECT * FROM :schema.$PROGRAMME_REPORT_TABLE WHERE $PROGRAMME_REPORT_PROGRAMME_ID = :programmeId")
         override fun getAllReportsOfSpecificProgramme(programmeId: Int): List<ProgrammeReport>
 
-        @SqlQuery("SELECT * FROM $PROGRAMME_REPORT_TABLE WHERE $PROGRAMME_REPORT_PROGRAMME_ID = :programmeId AND $PROGRAMME_REPORT_ID = :reportId")
+        @SqlQuery("SELECT * FROM :schema.$PROGRAMME_REPORT_TABLE WHERE $PROGRAMME_REPORT_PROGRAMME_ID = :programmeId AND $PROGRAMME_REPORT_ID = :reportId")
         override fun getSpecificReportOfProgramme(programmeId: Int, reportId: Int): Optional<ProgrammeReport>
 
 
-        @SqlUpdate("DELETE FROM $PROGRAMME_REPORT_TABLE WHERE $PROGRAMME_REPORT_PROGRAMME_ID = :programmeId AND $PROGRAMME_REPORT_ID = :reportId")
+        @SqlUpdate("DELETE FROM :schema.$PROGRAMME_REPORT_TABLE WHERE $PROGRAMME_REPORT_PROGRAMME_ID = :programmeId AND $PROGRAMME_REPORT_ID = :reportId")
         override fun deleteSpecificReportOnProgramme(programmeId: Int, reportId: Int): Int
 
-        @SqlUpdate("UPDATE $PROGRAMME_REPORT_TABLE SET $PROGRAMME_REPORT_VOTES = :votes WHERE $PROGRAMME_REPORT_ID = :reportId AND $PROGRAMME_REPORT_PROGRAMME_ID = :programmeId")
+        @SqlUpdate("UPDATE :schema.$PROGRAMME_REPORT_TABLE SET $PROGRAMME_REPORT_VOTES = :votes WHERE $PROGRAMME_REPORT_ID = :reportId AND $PROGRAMME_REPORT_PROGRAMME_ID = :programmeId")
         override fun updateVotesOnReportedProgramme(programmeId: Int, reportId: Int, votes: Int): Int
 
         @SqlUpdate(
-                "INSERT INTO $PROGRAMME_VERSION_TABLE ( " +
+                "INSERT INTO :schema.$PROGRAMME_VERSION_TABLE ( " +
                         "$PROGRAMME_VERSION_PROGRAMME_ID, " +
                         "$PROGRAMME_VERSION_ID, " +
                         "$PROGRAMME_VERSION_FULL_NAME, " +

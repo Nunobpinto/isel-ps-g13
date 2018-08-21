@@ -5,7 +5,6 @@ import java.time.LocalDateTime
 
 data class CourseOutputModel(
         val courseId: Int = 0,
-        val organizationId: Int = 0,
         val version: Int = 0,
         val createdBy: String = "",
         val fullName: String = "",

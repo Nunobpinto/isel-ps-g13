@@ -12,36 +12,21 @@ interface OrganizationDAO {
      * Main entities queries
      */
 
-    fun getSpecificOrganization(organizationId: Int) : Optional<Organization>
-
-    fun getAllOrganizations() : List<Organization>
-
-    fun deleteOrganization(organizationId: Int): Int
-
-    fun deleteAllOrganizations() : Int
+    fun getOrganization() : Optional<Organization>
 
     fun updateOrganization(organization: Organization) : Organization
 
     fun createOrganization(organization: Organization) : Organization
 
-    fun getVotesOnOrganization(organizationId: Int): Int
-
-    fun updateVotesOnOrganization(organizationId: Int, votes: Int): Int
-
-
     /**
      * Version entity queries
      */
 
-    fun getAllVersionsOfOrganization(organizationId: Int): List<OrganizationVersion>
+    fun getAllVersionsOfOrganization(): List<OrganizationVersion>
 
-    fun getSpecificVersionOfOrganization(organizationId: Int, version: Int): Optional<OrganizationVersion>
+    fun getSpecificVersionOfOrganization(version: Int): Optional<OrganizationVersion>
 
     fun createOrganizationVersion(version: OrganizationVersion): OrganizationVersion
-
-    fun deleteAllOrganizationVersions(organizationId: Int) : Int
-
-    fun deleteSpecificVersionOfOrganization(organizationId: Int, version: Int): Int
 
     /**
      * Report entity queries
@@ -51,16 +36,16 @@ interface OrganizationDAO {
 
     fun deleteSpecificReportOnOrganization(reportId: Int) : Int
 
-    fun deleteAllReportsOnOrganization(organizationId : Int) : Int
+    fun deleteAllReportsOnOrganization() : Int
 
-    fun getAllReportsOnOrganization(organizationId: Int) : List<OrganizationReport>
+    fun getAllReportsOnOrganization() : List<OrganizationReport>
 
-    fun getSpecificReportOnOrganization(organizationId: Int, reportId: Int) : Optional<OrganizationReport>
+    fun getSpecificReportOnOrganization(reportId: Int) : Optional<OrganizationReport>
 
-    fun updateVotesOnOrganizationReport(organizationId: Int, reportId: Int, votes: Int): Int
+    fun updateVotesOnOrganizationReport(reportId: Int, votes: Int): Int
 
-    fun getVotesOnOrganizationReport(organizationId: Int, reportId: Int): Int
+    fun getVotesOnOrganizationReport(reportId: Int): Int
 
-    fun deleteReportOnOrganization(organizationId: Int, reportId: Int): Int
+    fun deleteReportOnOrganization(reportId: Int): Int
 
 }

@@ -8,7 +8,6 @@ data class CourseProgrammeStageOutputModel (
         val stagedId: Int = 0,
         val courseId: Int = 0,
         val programmeId: Int = 0,
-        val organizationId: Int = 0,
         val createdBy: String = "",
         val lecturedTerm: String = "",
         val optional: Boolean = false,

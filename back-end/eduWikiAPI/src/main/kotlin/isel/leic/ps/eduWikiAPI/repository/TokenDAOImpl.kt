@@ -35,20 +35,20 @@ class TokenDAOImpl : TokenDAO {
             jdbi.open().attach(TokenDAOJdbi::class.java).deleteToken(token)
 
     interface TokenDAOJdbi : TokenDAO {
-        @SqlUpdate("INSERT INTO $VALIDATION_TOKEN_TABLE (" +
+        @SqlUpdate("INSERT INTO :schema.$VALIDATION_TOKEN_TABLE (" +
                 "$VALIDATION_TOKEN, "+
-                VALIDATION_TOKEN_DATE +
-                ") VALUES ( " +
+                "VALIDATION_TOKEN_DATE)"+
+                "VALUES ( " +
                 ":validationToken.token, " +
                 ":validationToken.date " +
                 ")")
         @GetGeneratedKeys
         override fun saveToken(validationToken: ValidationToken): ValidationToken
 
-        @SqlQuery("SELECT * FROM $VALIDATION_TOKEN_TABLE WHERE $VALIDATION_TOKEN = :token")
+        @SqlQuery("SELECT * FROM :schema.$VALIDATION_TOKEN_TABLE WHERE $VALIDATION_TOKEN = :token")
         override fun getToken(token: UUID): Optional<ValidationToken>
 
-        @SqlUpdate("DELETE FROM $VALIDATION_TOKEN_TABLE WHERE $VALIDATION_TOKEN = :token")
+        @SqlUpdate("DELETE FROM :schema.$VALIDATION_TOKEN_TABLE WHERE $VALIDATION_TOKEN = :token")
         override fun deleteToken(token: UUID): Int
     }
 

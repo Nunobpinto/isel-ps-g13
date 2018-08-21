@@ -9,8 +9,8 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.UserReportOutputModel
 
 
-fun toUser(inputModel: UserInputModel?) = User(
-        username = inputModel!!.username,
+fun toUser(inputModel: UserInputModel) = User(
+        username = inputModel.username,
         familyName = inputModel.familyName!!,
         givenName = inputModel.givenName!!,
         organizationEmail = inputModel.organizationEmail!!,

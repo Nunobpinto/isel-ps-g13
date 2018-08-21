@@ -174,7 +174,7 @@ class ExamDAOImpl : ExamDAO {
         override fun updateExam(examId: Int, exam: Exam): Exam
 
         @SqlUpdate(
-                "INSERT INTO $EXAM_TABLE ( " +
+                "INSERT INTO :schema.$EXAM_TABLE ( " +
                         "$EXAM_ID, " +
                         "$EXAM_VERSION, " +
                         "$EXAM_CREATED_BY, " +
@@ -204,13 +204,13 @@ class ExamDAOImpl : ExamDAO {
         }
 
         @SqlUpdate(
-                "UPDATE $EXAM_TABLE SET $EXAM_VOTES = :votes " +
+                "UPDATE :schema.$EXAM_TABLE SET $EXAM_VOTES = :votes " +
                         "WHERE $EXAM_ID = :examId"
         )
         override fun updateVotesOnExam(examId: Int, votes: Int): Int
 
         @SqlUpdate(
-                "INSERT INTO $EXAM_STAGE_TABLE ( " +
+                "INSERT INTO :schema.$EXAM_STAGE_TABLE ( " +
                         "$EXAM_STAGE_ID, " +
                         "$EXAM_STAGE_SHEET_ID, " +
                         "$EXAM_STAGE_DUE_DATE, " +
@@ -239,13 +239,13 @@ class ExamDAOImpl : ExamDAO {
         }
 
         @SqlUpdate(
-                "UPDATE $EXAM_STAGE_TABLE SET $EXAM_STAGE_VOTES = :votes " +
+                "UPDATE :schema.$EXAM_STAGE_TABLE SET $EXAM_STAGE_VOTES = :votes " +
                         "WHERE $EXAM_STAGE_ID = :stageId"
         )
         override fun updateVotesOnStagedExam(stageId: Int, votes: Int): Int
 
         @SqlUpdate(
-                "INSERT INTO $EXAM_VERSION_TABLE ( " +
+                "INSERT INTO :schema.$EXAM_VERSION_TABLE ( " +
                         "$EXAM_VERSION_EXAM_ID, " +
                         "$EXAM_VERSION_ID, " +
                         "$EXAM_VERSION_SHEET_ID, " +
@@ -264,7 +264,7 @@ class ExamDAOImpl : ExamDAO {
         override fun createExamVersion(examVersion: ExamVersion): ExamVersion
 
         @SqlUpdate(
-                "INSERT INTO $EXAM_REPORT_TABLE ( " +
+                "INSERT INTO :schema.$EXAM_REPORT_TABLE ( " +
                         "$EXAM_REPORT_EXAM_ID, " +
                         "$EXAM_REPORT_SHEET_ID, " +
                         "$EXAM_REPORT_DUE_DATE, " +
@@ -283,7 +283,7 @@ class ExamDAOImpl : ExamDAO {
         override fun reportExam(examReport: ExamReport): ExamReport
 
         @SqlUpdate(
-                "DELETE FROM $EXAM_REPORT_TABLE AS E " +
+                "DELETE FROM :schema.$EXAM_REPORT_TABLE AS E " +
                         "USING $COURSE_MISC_UNIT_TABLE AS C " +
                         "WHERE E.$EXAM_REPORT_EXAM_ID = C.$COURSE_MISC_UNIT_ID AND " +
                         "C.$COURSE_MISC_UNIT_COURSE_ID = :courseId AND " +
@@ -305,8 +305,8 @@ class ExamDAOImpl : ExamDAO {
                         "E.$EXAM_VOTES, " +
                         "E.$EXAM_TIMESTAMP, " +
                         "E.$EXAM_LOG_ID " +
-                        "FROM $EXAM_TABLE AS E " +
-                        "INNER JOIN $COURSE_MISC_UNIT_TABLE AS C " +
+                        "FROM :schema.$EXAM_TABLE AS E " +
+                        "INNER JOIN :schema.$COURSE_MISC_UNIT_TABLE AS C " +
                         "ON E.$EXAM_ID = C.$COURSE_MISC_UNIT_ID " +
                         "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId " +
                         "AND C.$COURSE_MISC_UNIT_TERM_ID = :termId"
@@ -325,8 +325,8 @@ class ExamDAOImpl : ExamDAO {
                         "E.$EXAM_VOTES," +
                         "E.$EXAM_TIMESTAMP, " +
                         "E.$EXAM_LOG_ID " +
-                        "FROM $EXAM_TABLE AS E " +
-                        "INNER JOIN $COURSE_MISC_UNIT_TABLE AS C " +
+                        "FROM :schema.$EXAM_TABLE AS E " +
+                        "INNER JOIN :schema.$COURSE_MISC_UNIT_TABLE AS C " +
                         "ON E.$EXAM_ID = C.$COURSE_MISC_UNIT_ID" +
                         "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId " +
                         "AND C.$COURSE_MISC_UNIT_TERM_ID = :termId " +
@@ -345,8 +345,8 @@ class ExamDAOImpl : ExamDAO {
                         "E.$EXAM_STAGE_VOTES, " +
                         "E.$EXAM_STAGE_TIMESTAMP, " +
                         "E.$EXAM_STAGE_LOG_ID " +
-                        "FROM $EXAM_STAGE_TABLE AS E " +
-                        "INNER JOIN $COURSE_MISC_UNIT_STAGE_TABLE AS C " +
+                        "FROM :schema.$EXAM_STAGE_TABLE AS E " +
+                        "INNER JOIN :schema.$COURSE_MISC_UNIT_STAGE_TABLE AS C " +
                         "ON E.$EXAM_STAGE_ID = C.$COURSE_MISC_UNIT_STAGE_ID " +
                         "WHERE C.$COURSE_MISC_UNIT_STAGE_COURSE_ID = :courseId " +
                         "AND C.$COURSE_MISC_UNIT_STAGE_TERM_ID = :termId"
@@ -364,8 +364,8 @@ class ExamDAOImpl : ExamDAO {
                         "E.$EXAM_STAGE_VOTES, " +
                         "E.$EXAM_STAGE_TIMESTAMP, " +
                         "E.$EXAM_STAGE_LOG_ID " +
-                        "FROM $EXAM_STAGE_TABLE AS E " +
-                        "INNER JOIN $COURSE_MISC_UNIT_STAGE_TABLE AS C " +
+                        "FROM :schema.$EXAM_STAGE_TABLE AS E " +
+                        "INNER JOIN :schema.$COURSE_MISC_UNIT_STAGE_TABLE AS C " +
                         "ON E.$EXAM_STAGE_ID = C.$COURSE_MISC_UNIT_STAGE_ID " +
                         "WHERE C.$COURSE_MISC_UNIT_STAGE_COURSE_ID = :courseId " +
                         "AND C.$COURSE_MISC_UNIT_STAGE_ID = :stageId"
@@ -385,8 +385,8 @@ class ExamDAOImpl : ExamDAO {
                         "E.$EXAM_REPORT_VOTES, " +
                         "E.$EXAM_REPORT_TIMESTAMP, " +
                         "E.$EXAM_REPORT_LOG_ID " +
-                        "FROM $COURSE_MISC_UNIT_TABLE as C " +
-                        "INNER JOIN $EXAM_REPORT_TABLE as E ON c.$COURSE_MISC_UNIT_ID = E.$EXAM_REPORT_EXAM_ID " +
+                        "FROM :schema.$COURSE_MISC_UNIT_TABLE as C " +
+                        "INNER JOIN :schema.$EXAM_REPORT_TABLE as E ON c.$COURSE_MISC_UNIT_ID = E.$EXAM_REPORT_EXAM_ID " +
                         "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId AND C.$COURSE_MISC_UNIT_TERM_ID = :termId AND " +
                         "C.$COURSE_MISC_UNIT_ID = :examId"
         )
@@ -405,15 +405,15 @@ class ExamDAOImpl : ExamDAO {
                         "E.$EXAM_REPORT_VOTES, " +
                         "E.$EXAM_REPORT_TIMESTAMP, " +
                         "E.$EXAM_REPORT_LOG_ID " +
-                        "FROM $COURSE_MISC_UNIT_TABLE as C " +
-                        "INNER JOIN $EXAM_REPORT_TABLE as E ON C.$COURSE_MISC_UNIT_ID = E.$EXAM_REPORT_EXAM_ID " +
+                        "FROM :schema.$COURSE_MISC_UNIT_TABLE as C " +
+                        "INNER JOIN :schema.$EXAM_REPORT_TABLE as E ON C.$COURSE_MISC_UNIT_ID = E.$EXAM_REPORT_EXAM_ID " +
                         "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId AND C.$COURSE_MISC_UNIT_TERM_ID = :termId AND " +
                         "C.$COURSE_MISC_UNIT_ID = :examId AND E.$EXAM_REPORT_ID = :reportId"
         )
         override fun getSpecificReportOnExamOnSpecificTermOfCourse(courseId: Int, termId: Int, examId: Int, reportId: Int): Optional<ExamReport>
 
         @SqlUpdate(
-                "UPDATE $EXAM_REPORT_TABLE SET $EXAM_REPORT_VOTES = :votes " +
+                "UPDATE :schema.$EXAM_REPORT_TABLE SET $EXAM_REPORT_VOTES = :votes " +
                         "WHERE $EXAM_REPORT_ID = :reportId"
         )
         override fun updateVotesOnReportedExam(reportId: Int, votes: Int): Int
@@ -432,8 +432,8 @@ class ExamDAOImpl : ExamDAO {
                         "V.$EXAM_VERSION_LOCATION, " +
                         "V.$EXAM_VERSION_CREATED_BY, " +
                         "V.$EXAM_VERSION_TIMESTAMP " +
-                        "FROM $EXAM_VERSION_TABLE as V " +
-                        "INNER JOIN $COURSE_MISC_UNIT_TABLE as C ON V.$EXAM_VERSION_EXAM_ID = C.$COURSE_MISC_UNIT_ID " +
+                        "FROM :schema.$EXAM_VERSION_TABLE as V " +
+                        "INNER JOIN :schema.$COURSE_MISC_UNIT_TABLE as C ON V.$EXAM_VERSION_EXAM_ID = C.$COURSE_MISC_UNIT_ID " +
                         "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId AND C.$COURSE_MISC_UNIT_TERM_ID = :termId AND C.$COURSE_MISC_UNIT_ID = :examId"
         )
         override fun getAllVersionsOfSpecificExam(termId: Int, courseId: Int, examId: Int): List<ExamVersion>
@@ -449,8 +449,8 @@ class ExamDAOImpl : ExamDAO {
                         "V.$EXAM_VERSION_LOCATION, " +
                         "V.$EXAM_VERSION_CREATED_BY, " +
                         "V.$EXAM_VERSION_TIMESTAMP " +
-                        "FROM $EXAM_VERSION_TABLE as V " +
-                        "INNER JOIN $COURSE_MISC_UNIT_TABLE as C ON V.$EXAM_VERSION_EXAM_ID = C.$COURSE_MISC_UNIT_ID " +
+                        "FROM :schema.$EXAM_VERSION_TABLE as V " +
+                        "INNER JOIN :schema.$COURSE_MISC_UNIT_TABLE as C ON V.$EXAM_VERSION_EXAM_ID = C.$COURSE_MISC_UNIT_ID " +
                         "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId AND C.$COURSE_MISC_UNIT_TERM_ID = :termId AND " +
                         "C.$COURSE_MISC_UNIT_ID = :examId AND V.$EXAM_VERSION_ID = :version"
         )
