@@ -1,4 +1,4 @@
-package isel.leic.ps.eduWikiAPI.configuration
+package isel.leic.ps.eduWikiAPI.configuration.persistence
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -48,6 +48,7 @@ class PersistenceConfiguration {
                     .installPlugin(PostgresPlugin())
                     .installPlugin(SqlObjectPlugin())
                     .installPlugin(KotlinSqlObjectPlugin())
+                    .setTemplateEngine(SchemaReWriter())
 
     // ----------------------------
     // Resources database configuration
@@ -74,4 +75,5 @@ class PersistenceConfiguration {
                     .installPlugin(PostgresPlugin())
                     .installPlugin(SqlObjectPlugin())
                     .installPlugin(KotlinSqlObjectPlugin())
+                    .setTemplateEngine(SchemaReWriter())
 }

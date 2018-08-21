@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.configuration.security
 
+import isel.leic.ps.eduWikiAPI.configuration.persistence.CaptureTenantFilter
 import isel.leic.ps.eduWikiAPI.configuration.security.authorization.AuthorizationConfig
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
@@ -11,7 +12,10 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
 
 @EnableWebSecurity
 @Configuration
@@ -22,14 +26,17 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
     }
 
     @Autowired
-    lateinit var userDetailsServiceImpl: UserDetailsServiceImpl
+    lateinit var userDetailsServiceImpl: UserDetailsService
     @Autowired
     lateinit var daoAuthenticationProvider: DaoAuthenticationProvider
     @Autowired
     lateinit var authorizationConfig: AuthorizationConfig
+    @Autowired
+    lateinit var captureTenantFilter: CaptureTenantFilter
 
     override fun configure(http: HttpSecurity) {
         http
+                .addFilterAt(captureTenantFilter, BasicAuthenticationFilter::class.java)
                 .csrf().disable()
                 .httpBasic().realmName(REALM).authenticationEntryPoint(authenticationEntryPoint())
                 .and().cors()
@@ -55,10 +62,13 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
         val auth = DaoAuthenticationProvider()
         auth.isHideUserNotFoundExceptions = false
         auth.setUserDetailsService(userDetailsServiceImpl)
-        auth.setPasswordEncoder(BCryptPasswordEncoder())
+        auth.setPasswordEncoder(passwordEncoder())
         return auth
     }
 
     @Bean
     fun authenticationEntryPoint(): CustomBasicAuthenticationEntryPoint = CustomBasicAuthenticationEntryPoint()
+
+    @Bean
+    fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 }

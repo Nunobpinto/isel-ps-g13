@@ -185,7 +185,7 @@ class ReputationEventListeners {
         )
 
         val newPoints = ownerRepDetails.points + pointsGiven
-        val roles = ReputationRole.values().filter { it.hierarchyLevel > 0 }
+        val roles = ReputationRole.values().filter { it.userRole }
 
         when {
         // If reputation is lower than minimum value, reset it
