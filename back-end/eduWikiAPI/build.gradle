@@ -52,11 +52,11 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-web')
 //	Data access dependencies
 	compile('org.springframework.boot:spring-boot-starter-jdbc')
-    compile('org.jdbi:jdbi3-core:3.2.0')
-	compile('org.jdbi:jdbi3-kotlin:3.2.0')
-	compile('org.jdbi:jdbi3-postgres:3.2.1')
-	compile('org.jdbi:jdbi3-sqlobject:3.3.0')
-	compile('org.jdbi:jdbi3-kotlin-sqlobject:3.3.0')
+    compile('org.jdbi:jdbi3-core:3.4.0')
+	compile('org.jdbi:jdbi3-kotlin:3.4.0')
+	compile('org.jdbi:jdbi3-postgres:3.4.0')
+	compile('org.jdbi:jdbi3-sqlobject:3.4.0')
+	compile('org.jdbi:jdbi3-kotlin-sqlobject:3.4.0')
 	runtime('org.postgresql:postgresql')
 	compile('com.fasterxml.jackson.module:jackson-module-kotlin')
 //	Programming languages dependencies
