@@ -2,7 +2,6 @@ package isel.ps.eduwikimobile.domain.model.single
 
 import android.os.Parcel
 import android.os.Parcelable
-import java.sql.Timestamp
 
 data class Programme (
         val programmeId: Int = 0,
@@ -14,7 +13,7 @@ data class Programme (
         val totalCredits: Int = 0,
         val duration: Int = 0,
         val votes: Int = 0,
-        val timestamp: Timestamp? = null
+        val timestamp: String = ""
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
             parcel.readInt(),
@@ -26,7 +25,7 @@ data class Programme (
             parcel.readInt(),
             parcel.readInt(),
             parcel.readInt(),
-            TODO("timestamp")) {
+            parcel.readString()) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -39,6 +38,7 @@ data class Programme (
         parcel.writeInt(totalCredits)
         parcel.writeInt(duration)
         parcel.writeInt(votes)
+        parcel.writeString(timestamp)
     }
 
     override fun describeContents(): Int {
@@ -54,8 +54,8 @@ data class Programme (
             return arrayOfNulls(size)
         }
     }
-
     override fun toString(): String {
         return "Programme"
     }
+
 }

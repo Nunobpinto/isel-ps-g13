@@ -49,6 +49,7 @@ class ClassListAdapter (var context: Context, var list: MutableList<Class>) : Re
         fun getItem(position: Int) = list[position]
 
         fun bindView(position: Int) {
+            val item = list[position]
             classShortName.text = list[position].className
         }
 

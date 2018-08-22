@@ -1,5 +1,6 @@
 package isel.ps.eduwikimobile.ui.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -15,7 +16,8 @@ import isel.ps.eduwikimobile.adapters.CourseListAdapter
 import isel.ps.eduwikimobile.controller.AppController
 import isel.ps.eduwikimobile.domain.model.single.Course
 import isel.ps.eduwikimobile.paramsContainer.CourseProgrammeCollectionParametersContainer
-import kotlinx.android.synthetic.main.courses_fragment.*
+import isel.ps.eduwikimobile.ui.IDataComunication
+import kotlinx.android.synthetic.main.course_collection_fragment.*
 
 class CoursesOfProgrammeFragment : Fragment() {
 
@@ -23,6 +25,7 @@ class CoursesOfProgrammeFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var coursesOfProgrammeList: MutableList<Course>
     private lateinit var cAdapter: CourseListAdapter
+    lateinit var dataComunication: IDataComunication
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,10 +34,11 @@ class CoursesOfProgrammeFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view: View = inflater.inflate(R.layout.courses_fragment, container, false)
-        recyclerView = view.findViewById(R.id.recycler_view)
+        val view: View = inflater.inflate(R.layout.course_collection_fragment, container, false)
+        recyclerView = view.findViewById(R.id.courses_recycler_view)
 
-        fetchCoursesOfProgramme(app.programmeId!!)
+        val programmeId = dataComunication.getProgramme().programmeId
+        fetchCoursesOfProgramme(programmeId)
 
         cAdapter = CourseListAdapter(context, coursesOfProgrammeList)
         recyclerView.adapter = cAdapter
@@ -61,6 +65,16 @@ class CoursesOfProgrammeFragment : Fragment() {
                         errorCb = { error -> Toast.makeText(app, "Error" + error.message, LENGTH_LONG).show() }
                 )
         )
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+
+        try {
+            dataComunication = context as IDataComunication
+        } catch (e: ClassCastException) {
+            throw ClassCastException(e. message)
+        }
     }
 
 }

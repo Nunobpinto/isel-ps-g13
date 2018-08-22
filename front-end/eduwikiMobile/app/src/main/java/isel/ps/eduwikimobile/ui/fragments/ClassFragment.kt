@@ -35,7 +35,7 @@ class ClassFragment : Fragment() {
 
         klassName.text = klass.className
 
-        /* val fragmentAdapter = TabAdapter(fragmentManager)
+        /* val fragmentAdapter = ProgrammeViewPagerAdapter(fragmentManager)
          viewPager.adapter = fragmentAdapter
          tabLayout.setupWithViewPager(viewPager)*/
 

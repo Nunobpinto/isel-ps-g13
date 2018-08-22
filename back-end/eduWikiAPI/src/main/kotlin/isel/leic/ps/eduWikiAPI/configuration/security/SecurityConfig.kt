@@ -55,6 +55,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
                 .antMatchers("/webjars/**")
                 .antMatchers("/users")
                 .antMatchers("/users/{username}/confirm/{token}")
+                .antMatchers("/resources/{uuId}")
     }
 
     @Bean

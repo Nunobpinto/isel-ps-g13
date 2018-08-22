@@ -45,8 +45,8 @@ class WorkAssignmentTests {
                 createdBy = "bruno",
                 dueDate = LocalDate.now(),
                 individual = false,
-                sheet = "Fazer 3ºtrabalho",
-                supplement = "Nenhum",
+                //sheet = "Fazer 3ºtrabalho",
+                //supplement = "Nenhum",
                 lateDelivery = false,
                 multipleDeliveries = true,
                 requiresReport = false

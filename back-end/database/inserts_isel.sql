@@ -116,29 +116,29 @@ insert into isel.course_term (course_id, term_id, time_stamp)
 insert into isel.course_misc_unit (misc_type, course_id, term_id)
     values ('WORK_ASSIGNMENT', 1, 1);
 
-insert into isel.work_assignment (work_assignment_id, created_by, sheet_id, supplement_id, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
-    values (1,'ze', gen_random_uuid(),gen_random_uuid(),current_date,false ,true ,true ,false ,current_timestamp);
+insert into isel.work_assignment (work_assignment_id, created_by, phase, sheet_id, supplement_id, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
+    values (1,'ze', '1º',gen_random_uuid(),gen_random_uuid(),current_date,false ,true ,true ,false ,current_timestamp);
 
-insert into isel.work_assignment_version (work_assignment_id, work_assignment_version, created_by, sheet_id, supplement_id, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
-    values (1, 1, 'ze', gen_random_uuid(),gen_random_uuid(),current_date,false ,true ,true ,false ,current_timestamp);
+insert into isel.work_assignment_version (work_assignment_id, work_assignment_version, phase, created_by, sheet_id, supplement_id, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
+    values (1, 1, '1º', 'ze', gen_random_uuid(),gen_random_uuid(),current_date,false ,true ,true ,false ,current_timestamp);
 
 insert into isel.course_misc_unit (misc_type, course_id, term_id)
     values ('WORK_ASSIGNMENT', 1, 2);
 
-insert into isel.work_assignment (work_assignment_id, created_by, sheet_id, supplement_id, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
-    values (2,'ze', gen_random_uuid(), gen_random_uuid(), current_date,false ,true ,true ,false ,current_timestamp);
+insert into isel.work_assignment (work_assignment_id, created_by, phase, sheet_id, supplement_id, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
+    values (2,'ze', '2º', gen_random_uuid(), gen_random_uuid(), current_date,false ,true ,true ,false ,current_timestamp);
 
-insert into isel.work_assignment_version (work_assignment_id, work_assignment_version, created_by, sheet_id, supplement_id, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
-    values (2, 1, 'ze', gen_random_uuid(),gen_random_uuid(),current_date,false ,true ,true ,false ,current_timestamp);
+insert into isel.work_assignment_version (work_assignment_id, work_assignment_version, phase, created_by, sheet_id, supplement_id, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
+    values (2, 1, '2º' ,'ze', gen_random_uuid(),gen_random_uuid(),current_date,false ,true ,true ,false ,current_timestamp);
 
 insert into isel.course_misc_unit (misc_type, course_id, term_id)
     values ('WORK_ASSIGNMENT', 3, 2);
 
-insert into isel.work_assignment (work_assignment_id, created_by, sheet_id, supplement_id, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
-    values (3,'ze', gen_random_uuid(),gen_random_uuid(),current_date,false ,true ,true ,false ,current_timestamp);
+insert into isel.work_assignment (work_assignment_id, created_by, phase, sheet_id, supplement_id, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
+    values (3,'ze', '3º',gen_random_uuid(),gen_random_uuid(),current_date,false ,true ,true ,false ,current_timestamp);
 
-insert into isel.work_assignment_version (work_assignment_id, work_assignment_version, created_by, sheet_id, supplement_id, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
-    values (3, 1, 'ze', gen_random_uuid(),gen_random_uuid(),current_date,false ,true ,true ,false ,current_timestamp);
+insert into isel.work_assignment_version (work_assignment_id, work_assignment_version, created_by, phase, sheet_id, supplement_id, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
+    values (3, 1, 'ze', '3º', gen_random_uuid(),gen_random_uuid(),current_date,false ,true ,true ,false ,current_timestamp);
 
 -- Exam Insert
 

@@ -15,7 +15,8 @@ import isel.ps.eduwikimobile.adapters.ClassListAdapter
 import isel.ps.eduwikimobile.controller.AppController
 import isel.ps.eduwikimobile.domain.model.single.Class
 import isel.ps.eduwikimobile.paramsContainer.ClassCollectionParametersContainer
-import kotlinx.android.synthetic.main.classes_fragment.*
+import isel.ps.eduwikimobile.ui.activities.MainActivity
+import kotlinx.android.synthetic.main.class_collection_fragment.*
 
 class ClassCollectionFragment : Fragment() {
 
@@ -30,9 +31,16 @@ class ClassCollectionFragment : Fragment() {
         classList = ArrayList()
     }
 
+    override fun onResume() {
+        super.onResume()
+        val activity = activity as MainActivity
+        activity.toolbar.title = "Classes"
+        activity.toolbar.subtitle = ""
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view: View = inflater.inflate(R.layout.classes_fragment, container, false)
-        recyclerView = view.findViewById(R.id.recycler_view)
+        val view: View = inflater.inflate(R.layout.class_collection_fragment, container, false)
+        recyclerView = view.findViewById(R.id.classes_recycler_view)
 
         fetchClassItems()
 

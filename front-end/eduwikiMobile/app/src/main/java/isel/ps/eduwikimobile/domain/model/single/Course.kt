@@ -2,10 +2,9 @@ package isel.ps.eduwikimobile.domain.model.single
 
 import android.os.Parcel
 import android.os.Parcelable
-import java.sql.Timestamp
 
 data class Course (
-        val courseId: Int = 0,
+        var courseId: Int = 0,
         val organizationId: Int = 0,
         val programmeId: Int? = null,
         val version: Int = 0,
@@ -16,7 +15,7 @@ data class Course (
         val optional: Boolean? = null,
         val credits: Int? = null,
         val votes: Int = 0,
-        val timestamp: Timestamp? = null
+        val timestamp: String = ""
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
             parcel.readInt(),
