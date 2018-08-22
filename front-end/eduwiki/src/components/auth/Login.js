@@ -2,7 +2,7 @@ import React from 'react'
 import {Redirect, Link} from 'react-router-dom'
 import {message, Form, Input, Button, Icon} from 'antd'
 import Cookies from 'universal-cookie'
-import fetch from 'isomorphic-fetch'
+import fetcher from '../../fetcher'
 const cookies = new Cookies()
 
 class LoginForm extends React.Component {
@@ -17,7 +17,6 @@ class LoginForm extends React.Component {
       message.warning('You need to be logged in to see what you wanted')
     }
     this.handleSubmit = this.handleSubmit.bind(this)
-    this.tryLogin = this.tryLogin.bind(this)
   }
 
   handleSubmit (e) {
@@ -101,7 +100,14 @@ class LoginForm extends React.Component {
   componentDidUpdate () {
     if (this.state.redirect) {
       const credentials = Buffer.from(this.state.username + ':' + this.state.password).toString('base64')
-      this.tryLogin(credentials)
+      const options = {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Authorization': 'Basic ' + credentials,
+          'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
+        }
+      }
+      fetcher('http://localhost:8080/user', options)
         .then(_ => {
           cookies.set('auth', credentials, {maxAge: 9999})
           if (this.props.destination) {
