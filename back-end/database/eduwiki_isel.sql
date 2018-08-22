@@ -239,15 +239,6 @@ CREATE TABLE IF NOT EXISTS isel.user_programme (
   PRIMARY KEY (user_username)
 );
 
-CREATE TABLE IF NOT EXISTS isel.resource (
-  uuid UUID NOT NULL,
-  byte_sequence bytea NOT NULL,
-  content_type VARCHAR(100) NOT NULL,
-  original_filename VARCHAR(50),
-  size BIGINT,
-  PRIMARY KEY(uuid)
-);
-
 --------------------------
 -- Create Stage Tables
 --------------------------

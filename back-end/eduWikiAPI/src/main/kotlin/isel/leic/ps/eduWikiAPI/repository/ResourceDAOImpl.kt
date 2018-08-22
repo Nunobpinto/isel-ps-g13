@@ -17,10 +17,11 @@ import java.util.*
 class ResourceDAOImpl : ResourceDAO {
 
     companion object {
-
-        //TABLES
+        // Resources Schema
+        const val RESOURCES_SCHEMA = "resourcesSchema"
+        // TABLES
         const val RESOURCE_TABLE = "resource"
-        //FIELDS
+        // FIELDS
         const val RESOURCE_BYTE_SEQUENCE = "byte_sequence"
         const val RESOURCE_CONTENT_TYPE = "content_type"
         const val RESOURCE_ORIGINAL_FILENAME = "original_filename"
@@ -47,7 +48,7 @@ class ResourceDAOImpl : ResourceDAO {
     internal interface ResourceDAOJdbi : ResourceDAO {
 
         @SqlUpdate(
-                "INSERT INTO :schema.$RESOURCE_TABLE ( " +
+                "INSERT INTO $RESOURCES_SCHEMA.$RESOURCE_TABLE ( " +
                         "$RESOURCE_UUID, " +
                         "$RESOURCE_BYTE_SEQUENCE, " +
                         "$RESOURCE_CONTENT_TYPE, " +
@@ -60,17 +61,17 @@ class ResourceDAOImpl : ResourceDAO {
         override fun storeResource(uuId: UUID, byteSequence: ByteArray, contentType: String, originalFilename: String, size: Long): Resource
 
         @SqlQuery(
-                "SELECT * FROM :schema.$RESOURCE_TABLE WHERE $RESOURCE_UUID = :uuId"
+                "SELECT * FROM $RESOURCES_SCHEMA.$RESOURCE_TABLE WHERE $RESOURCE_UUID = :uuId"
         )
         override fun getResource(uuId: UUID): Optional<Resource>
 
         @SqlBatch(
-                "DELETE FROM :schema.$RESOURCE_TABLE WHERE $RESOURCE_UUID = :uuIds"
+                "DELETE FROM $RESOURCES_SCHEMA.$RESOURCE_TABLE WHERE $RESOURCE_UUID = :uuIds"
         )
         override fun batchDeleteResources(uuIds: List<UUID>): IntArray
 
         @SqlUpdate(
-                "DELETE FROM :schema.$RESOURCE_TABLE WHERE $RESOURCE_UUID = :uuId"
+                "DELETE FROM $RESOURCES_SCHEMA.$RESOURCE_TABLE WHERE $RESOURCE_UUID = :uuId"
         )
         override fun deleteSpecificResource(uuId: UUID): Int
     }

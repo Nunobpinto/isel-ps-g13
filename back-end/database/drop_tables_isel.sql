@@ -78,12 +78,6 @@ DROP TABLE IF EXISTS isel.homework_version;
 -- Drop Main Tables
 --------------------------
 
-DROP TABLE IF EXISTS isel.resource_validator;
-
-DROP TABLE IF EXISTS isel.confirm;
-
-DROP TABLE IF EXISTS isel.resource;
-
 DROP TABLE IF EXISTS isel.course_programme;
 
 DROP TABLE IF EXISTS isel.work_assignment;
@@ -123,19 +117,3 @@ DROP TABLE IF EXISTS isel.course;
 DROP TABLE IF EXISTS isel.organization;
 
 DROP TABLE IF EXISTS isel.user_account;
-
---------------------------
--- Drop Auxiliary Types
---------------------------
-
-DROP TYPE IF EXISTS isel.term_type;
-
-DROP TYPE IF EXISTS isel.action_type;
-
-DROP TYPE IF EXISTS isel.course_misc_unit_type;
-
-DROP TYPE IF EXISTS isel.class_misc_unit_type;
-
-DROP TYPE IF EXISTS isel.exam_type;
-
-DROP TYPE IF EXISTS isel.weekday;
