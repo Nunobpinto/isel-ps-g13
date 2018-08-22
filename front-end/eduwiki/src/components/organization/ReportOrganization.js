@@ -1,6 +1,6 @@
 import React from 'react'
-import fetch from 'isomorphic-fetch'
-import {Input, Form, Button} from 'antd'
+import fetcher from '../../fetcher'
+import {Input, Form, Button, message} from 'antd'
 import Cookies from 'universal-cookie'
 const cookies = new Cookies()
 
@@ -12,7 +12,6 @@ export default class extends React.Component {
       short_name: undefined,
       address: undefined,
       contact: undefined,
-      organizationId: props.id,
       history: props.history
     }
     this.handleChange = this.handleChange.bind(this)
@@ -71,16 +70,20 @@ export default class extends React.Component {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json',
-          'Authorization': 'Basic ' + cookies.get('auth')
+          'Authorization': 'Basic ' + cookies.get('auth'),
+          'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
         },
         body: JSON.stringify(data)
       }
       const url = `http://localhost:8080/organizations/${this.props.id}/reports`
-      fetch(url, options)
-        .then(resp => {
-          if (resp.status < 400) {
-            this.state.history.push('/programmes/' + this.props.id)
-          }
+      fetcher(url, options)
+        .then(_ => {
+          this.state.history.push('/programmes/' + this.props.id)
+          this.setState({reported: false})
+        })
+        .catch(_ => {
+          message.error('Error while processing your report!!')
+          this.setState({reported: false})
         })
     }
   }
