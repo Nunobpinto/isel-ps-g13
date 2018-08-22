@@ -108,6 +108,7 @@ CREATE TABLE IF NOT EXISTS isel.course_misc_unit (
 CREATE TABLE IF NOT EXISTS isel.work_assignment (
   work_assignment_id INTEGER REFERENCES isel.course_misc_unit ON DELETE CASCADE,
   work_assignment_version INTEGER NOT NULL DEFAULT 1,
+  phase VARCHAR(5) NOT NULL,
   created_by VARCHAR(20) NOT NULL,
   sheet_id UUID NOT NULL,
   supplement_id UUID,
@@ -334,6 +335,7 @@ CREATE TABLE IF NOT EXISTS isel.class_misc_unit_stage (
 CREATE TABLE IF NOT EXISTS isel.work_assignment_stage (
   work_assignment_stage_id INTEGER REFERENCES isel.course_misc_unit_stage ON DELETE CASCADE,
   sheet_id UUID NOT NULL,
+  phase VARCHAR(5) NOT NULL,
   supplement_id UUID NOT NULL,
   due_date date NOT NULL,
   individual BOOLEAN NOT NULL,
@@ -479,6 +481,7 @@ CREATE TABLE IF NOT EXISTS isel.work_assignment_report (
   work_assignment_report_id SERIAL,
   work_assignment_id INTEGER REFERENCES isel.course_misc_unit ON DELETE CASCADE,
   sheet_id UUID,
+  phase VARCHAR(5) NOT NULL,
   supplement_id UUID,
   due_date date,
   individual BOOLEAN,
@@ -611,6 +614,7 @@ CREATE TABLE IF NOT EXISTS isel.work_assignment_version (
   work_assignment_id INTEGER,
   work_assignment_version INTEGER,
   sheet_id UUID NOT NULL,
+  phase VARCHAR(5) NOT NULL,
   supplement_id UUID NOT NULL,
   due_date date NOT NULL,
   individual BOOLEAN NOT NULL,
