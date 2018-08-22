@@ -12,55 +12,68 @@ import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
-import isel.ps.eduwikimobile.adapters.CourseListAdapter
+import isel.ps.eduwikimobile.adapters.ExamListAdapter
 import isel.ps.eduwikimobile.controller.AppController
 import isel.ps.eduwikimobile.domain.model.single.Course
-import isel.ps.eduwikimobile.paramsContainer.CourseProgrammeCollectionParametersContainer
+import isel.ps.eduwikimobile.domain.model.single.Exam
+import isel.ps.eduwikimobile.domain.model.single.Term
+import isel.ps.eduwikimobile.paramsContainer.ExamCollectionParametersContainer
 import isel.ps.eduwikimobile.ui.IDataComunication
-import kotlinx.android.synthetic.main.course_collection_fragment.*
+import isel.ps.eduwikimobile.ui.activities.MainActivity
+import kotlinx.android.synthetic.main.exam_collection_fragment.*
 
-class CoursesOfProgrammeFragment : Fragment() {
+class ExamCollectionFragment : Fragment() {
 
     lateinit var app: EduWikiApplication
     private lateinit var recyclerView: RecyclerView
-    private lateinit var coursesOfProgrammeList: MutableList<Course>
-    private lateinit var cAdapter: CourseListAdapter
+    private lateinit var examList: MutableList<Exam>
+    private lateinit var examAdapter: ExamListAdapter
     lateinit var dataComunication: IDataComunication
+    lateinit var course: Course
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         app = activity.applicationContext as EduWikiApplication
-        coursesOfProgrammeList = ArrayList()
+        examList = ArrayList()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view: View = inflater.inflate(R.layout.course_collection_fragment, container, false)
-        recyclerView = view.findViewById(R.id.courses_recycler_view)
+        val view: View = inflater.inflate(R.layout.exam_collection_fragment, container, false)
+        recyclerView = view.findViewById(R.id.exams_recycler_view)
 
-        val programmeId = dataComunication.getProgramme().programmeId
-        fetchCoursesOfProgramme(programmeId)
+        val bundle: Bundle = arguments
+        val term: Term = bundle.getParcelable("actualTerm")
 
-        cAdapter = CourseListAdapter(context, coursesOfProgrammeList)
-        recyclerView.adapter = cAdapter
+        course = dataComunication.getCourse()
+        dataComunication.setTerm(term)
+
+        val activity = activity as MainActivity
+        activity.toolbar.title = course.shortName + "/" + term.shortName + "/" + "Exams"
+        activity.toolbar.subtitle = ""
+
+        fetchExamItems(course.courseId, term.termId)
+
+        examAdapter = ExamListAdapter(context, examList)
+        recyclerView.adapter = examAdapter
 
         val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(activity)
         recyclerView.layoutManager = layoutManager
         recyclerView.isNestedScrollingEnabled = true
-
         return view
     }
 
-    private fun fetchCoursesOfProgramme(programmeId: Int) {
+    private fun fetchExamItems(courseId: Int, termId: Int) {
         AppController.actionHandler(
-                AppController.ALL_COURSES_OF_SPECIFIC_PROGRAMME,
-                CourseProgrammeCollectionParametersContainer(
-                        programmeId = programmeId,
+                AppController.EXAMS,
+                ExamCollectionParametersContainer(
+                        termId = termId,
+                        courseId = courseId,
                         app = activity.applicationContext as EduWikiApplication,
-                        successCb = { courses ->
-                            coursesOfProgrammeList.addAll(courses.courseProgrammeList)
-                            cAdapter.notifyDataSetChanged()
+                        successCb = { exams ->
+                            examList.addAll(exams.examList)
+                            examAdapter.notifyDataSetChanged()
                             recyclerView.visibility = View.VISIBLE;
-                            courses_progress_bar.visibility = View.GONE;
+                            exams_progress_bar.visibility = View.GONE;
                         },
                         errorCb = { error -> Toast.makeText(app, "Error" + error.message, LENGTH_LONG).show() }
                 )
@@ -73,7 +86,7 @@ class CoursesOfProgrammeFragment : Fragment() {
         try {
             dataComunication = context as IDataComunication
         } catch (e: ClassCastException) {
-            throw ClassCastException(e. message)
+            throw ClassCastException(e.message)
         }
     }
 

@@ -6,12 +6,12 @@
     android:id="@+id/item_id">
 
     <TextView
-        android:id="@+id/class_short_name"
+        android:id="@+id/work_assignment_short_name"
         android:layout_weight="3"
         android:layout_height="wrap_content"
         android:layout_width="0dp"
         android:textSize="22sp"
-        android:text="Class"
+        android:text="Work Assignment"
         android:layout_margin="22dp"
         />
 

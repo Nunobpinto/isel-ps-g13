@@ -4,7 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import isel.ps.eduwikimobile.domain.model.single.Programme
 
-class ProgrammeCollection (
+data class ProgrammeCollection (
         val programmeList: Array<Programme>
 ) : Parcelable {
     constructor(parcel: Parcel) : this(parcel.createTypedArray(Programme)) {

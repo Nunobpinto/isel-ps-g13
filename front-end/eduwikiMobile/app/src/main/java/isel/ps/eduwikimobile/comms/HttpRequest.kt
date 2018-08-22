@@ -43,6 +43,7 @@ data class HttpRequest<T>(
         val params = HashMap<String, String>()
         params.put("Access-Control-Allow-Origin", "*")
         val auth = "Basic $authToken"
+        params.put("tenant-uuid", "4cd93a0f-5b5c-4902-ae0a-181c780fedb1")
         params.put("Authorization", auth)
         return params
     }

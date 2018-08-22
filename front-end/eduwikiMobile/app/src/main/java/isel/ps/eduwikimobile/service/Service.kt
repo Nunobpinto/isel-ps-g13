@@ -43,12 +43,48 @@ class Service : IService {
                     { error: VolleyError -> params.errorCb(AppException(error.message!!)) }
             )
 
-    override fun getOrganization(params: OrganizationParametersContainer) {
-        remoteRepository.getOrganization(
+    override fun getOrganization(params: OrganizationParametersContainer) =
+            remoteRepository.getOrganization(
+                    params.app,
+                    { organization -> params.successCb(organization) },
+                    { error: VolleyError -> params.errorCb(AppException(error.message!!)) }
+            )
+
+    override fun getWorkAssignmentsOfSpecificCourse(params: WorkAssignmentCollectionParametersContainer) =
+            remoteRepository.getWorkAssignmentsOfSpecificCourse(
+                    params.termId,
+                    params.courseId,
+                    params.app,
+                    { works -> params.successCb(works) },
+                    { error: VolleyError -> params.errorCb(AppException(error.message!!)) }
+            )
+
+    override fun getExamsOfSpecificCourse(params: ExamCollectionParametersContainer) =
+            remoteRepository.getExamsOfSpecificCourse(
+                    params.termId,
+                    params.courseId,
+                    params.app,
+                    { exams -> params.successCb(exams) },
+                    { error: VolleyError -> params.errorCb(AppException(error.message!!)) }
+            )
+
+    override fun getClassesOfSpecificCourse(params: CourseClassCollectionParametersContainer) =
+            remoteRepository.getClassesOfSpecificCourse(
+                    params.termId,
+                    params.courseId,
+                    params.app,
+                    { classes -> params.successCb(classes) },
+                    { error: VolleyError -> params.errorCb(AppException(error.message!!)) }
+            )
+
+    override fun getTermsOfCourse(params: TermCollectionParametersContainer) {
+        remoteRepository.getTermsOfCourse(
+                params.courseId,
                 params.app,
-                { organization -> params.successCb(organization) },
-                { error: VolleyError -> params.errorCb(AppException(error.message!!))  }
+                { terms -> params.successCb(terms)},
+                { error: VolleyError -> params.errorCb(AppException(error.message!!))}
         )
     }
+
 
 }
