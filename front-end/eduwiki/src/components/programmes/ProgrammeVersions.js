@@ -1,6 +1,6 @@
 import React from 'react'
-import fetch from 'isomorphic-fetch'
-import {List} from 'antd'
+import fetcher from '../../fetcher'
+import {List, message} from 'antd'
 
 export default class extends React.Component {
   constructor (props) {
@@ -31,19 +31,15 @@ export default class extends React.Component {
     const body = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + this.props.auth
+        'Authorization': 'Basic ' + this.props.auth,
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetch(url, body)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('error !!!')
-        }
-        return resp.json()
-      })
+    fetcher(url, body)
       .then(versions => {
         const programmeVersions = versions.programmeVersionList.filter(version => version.version !== versionNumber)
         this.setState({versions: programmeVersions})
       })
+      .catch(_ => message.error('Error fetching programme versions'))
   }
 }

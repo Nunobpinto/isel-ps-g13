@@ -1,9 +1,9 @@
 import React from 'react'
-import fetch from 'isomorphic-fetch'
+import fetcher from '../../fetcher'
 import { Link } from 'react-router-dom'
 import IconText from '../comms/IconText'
 import Layout from '../layout/Layout'
-import { Button, Form, Input, List, message } from 'antd'
+import { Button, Input, List, message } from 'antd'
 import Cookies from 'universal-cookie'
 import CreateProgramme from './CreateProgramme'
 const cookies = new Cookies()
@@ -176,49 +176,32 @@ export default class extends React.Component {
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetch(uri, header)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
-        const ct = resp.headers.get('content-type') || ''
-        if (ct === 'application/json' || ct.startsWith('application/json;')) {
-          return resp.json()
-        }
-        throw new Error(`unexpected content type ${ct}`)
-      })
+    fetcher(uri, header)
       .then(programmes => {
         const stagedUri = 'http://localhost:8080/programmes/stage'
-        fetch(stagedUri, header)
-          .then(response => {
-            if (response.status >= 400) {
-              throw new Error('Unable to access content')
-            }
-            const ct = response.headers.get('content-type') || ''
-            if (ct === 'application/json' || ct.startsWith('application/json;')) {
-              return response.json()
-            }
-            throw new Error(`unexpected content type ${ct}`)
-          })
+        fetcher(stagedUri, header)
           .then(stagedProgrammes => this.setState({
             programmes: programmes.programmeList,
             viewProgrammes: programmes.programmeList,
             staged: stagedProgrammes.programmeStageList,
             viewStaged: stagedProgrammes.programmeStageList
           }))
-          .catch(stagedError => this.setState({
-            programmes: programmes,
-            viewProgrammes: programmes,
-            stagedError: stagedError
-          }))
+          .catch(stagedError => {
+            message.error('Error fetching staged programmes')
+            this.setState({
+              programmes: programmes,
+              viewProgrammes: programmes,
+              stagedError: stagedError
+            })
+          })
       })
       .catch(error => {
-        this.setState({
-          error: error
-        })
+        message.error('Error fetching programmes')
+        this.setState({error: error})
       })
   }
 
@@ -235,18 +218,13 @@ export default class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(body)
     }
     const url = 'http://localhost:8080/programmes/stage'
-    fetch(url, options)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
-        return resp.json()
-      })
+    fetcher(url, options)
       .then(staged => {
         const newItem = {
           fullName: staged.full_name,
@@ -274,8 +252,7 @@ export default class extends React.Component {
 
   voteUp () {
     const voteInput = {
-      vote: 'Up',
-      created_by: 'ze'
+      vote: 'Up'
     }
     const progID = this.state.progID
     const url = `http://localhost:8080/programmes/${progID}/vote`
@@ -284,31 +261,31 @@ export default class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
     }
-    fetch(url, body)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
-        this.setState(prevState => {
-          let newArray = [...prevState.programmes]
-          const index = newArray.findIndex(programme => programme.programmeId === progID)
-          newArray[index].votes = prevState.programmes[index].votes + 1
-          return ({
-            programmes: newArray,
-            voteUp: false
-          })
+    fetcher(url, body)
+      .then(_ => this.setState(prevState => {
+        let newArray = [...prevState.programmes]
+        const index = newArray.findIndex(programme => programme.programmeId === progID)
+        newArray[index].votes = prevState.programmes[index].votes + 1
+        message.success('Vote up!!')
+        return ({
+          programmes: newArray,
+          voteUp: false
         })
+      }))
+      .catch(_ => {
+        message.error('Error while processing your vote!!')
+        this.setState({voteUp: false})
       })
   }
 
   voteDown () {
     const voteInput = {
-      vote: 'Down',
-      created_by: 'ze'
+      vote: 'Down'
     }
     const progID = this.state.progID
     const url = `http://localhost:8080/programmes/${progID}/vote`
@@ -317,24 +294,25 @@ export default class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
     }
-    fetch(url, body)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
-        this.setState(prevState => {
-          let newArray = [...prevState.programmes]
-          const index = newArray.findIndex(programme => programme.programmeId === progID)
-          newArray[index].votes = prevState.programmes[index].votes - 1
-          return ({
-            programmes: newArray,
-            voteDown: false
-          })
+    fetcher(url, body)
+      .then(_ => this.setState(prevState => {
+        let newArray = [...prevState.programmes]
+        const index = newArray.findIndex(programme => programme.programmeId === progID)
+        newArray[index].votes = prevState.programmes[index].votes - 1
+        message.success('Vote Down!!')
+        return ({
+          programmes: newArray,
+          voteDown: false
         })
+      }))
+      .catch(_ => {
+        message.error('Error while processing your vote!!')
+        this.setState({voteDown: false})
       })
   }
 
@@ -349,33 +327,31 @@ export default class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
     }
-    fetch(url, body)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
+    fetcher(url, body)
+      .then(_ => this.setState(prevState => {
+        let newArray = [...prevState.staged]
+        const index = newArray.findIndex(programme => programme.stageID === stageID)
+        newArray[index].votes = prevState.staged[index].votes + 1
         message.success('Successfully voted up')
-        this.setState(prevState => {
-          let newArray = [...prevState.staged]
-          const index = newArray.findIndex(programme => programme.stageID === stageID)
-          newArray[index].votes = prevState.staged[index].votes + 1
-          return ({
-            staged: newArray,
-            voteUpStaged: false
-          })
+        return ({
+          staged: newArray,
+          voteUpStaged: false
         })
+      }))
+      .catch(_ => {
+        message.error('Error while processing your vote')
+        this.setState({voteUpStaged: false})
       })
-      .catch(_ => message.error('Cannot vote'))
   }
 
   voteDownStaged () {
     const voteInput = {
-      vote: 'Down',
-      created_by: 'ze'
+      vote: 'Down'
     }
     const stageID = this.state.stageID
     const url = `http://localhost:8080/programmes/stage/${stageID}/vote`
@@ -384,27 +360,26 @@ export default class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
     }
-    fetch(url, body)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
+    fetcher(url, body)
+      .then(_ => this.setState(prevState => {
+        let newArray = [...prevState.staged]
+        const index = newArray.findIndex(programme => programme.stageID === stageID)
+        newArray[index].votes = prevState.staged[index].votes - 1
         message.success('Successfully voted down')
-        this.setState(prevState => {
-          let newArray = [...prevState.staged]
-          const index = newArray.findIndex(programme => programme.stageID === stageID)
-          newArray[index].votes = prevState.staged[index].votes - 1
-          return ({
-            staged: newArray,
-            voteDownStaged: false
-          })
+        return ({
+          staged: newArray,
+          voteDownStaged: false
         })
+      }))
+      .catch(_ => {
+        message.error('Error while processing your vote')
+        this.setState({voteDownStaged: false})
       })
-      .catch(_ => message.error('Cannot vote'))
   }
 
   componentDidUpdate () {

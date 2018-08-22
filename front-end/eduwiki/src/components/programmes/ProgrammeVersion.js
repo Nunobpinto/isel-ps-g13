@@ -1,7 +1,7 @@
 import React from 'react'
 import Layout from '../layout/Layout'
-import fetch from 'isomorphic-fetch'
-import {Row, Col, Card, Button, Icon} from 'antd'
+import fetcher from '../../fetcher'
+import {Row, Col, Card, Button, Icon, message} from 'antd'
 import Cookies from 'universal-cookie'
 const cookies = new Cookies()
 
@@ -61,17 +61,12 @@ export default class extends React.Component {
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
     const uri = `http://localhost:8080/programmes/${programmeId}/versions/${versionNumber}`
-    fetch(uri, options)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('error!!')
-        }
-        return resp.json()
-      })
+    fetcher(uri, options)
       .then(json => this.setState({
         full_name: json.fullName,
         short_name: json.shortName,
@@ -83,5 +78,6 @@ export default class extends React.Component {
         createdBy: json.createdBy,
         timestamp: json.timestamp
       }))
+      .catch(_ => message.error('Error fetching programme version'))
   }
 }
