@@ -1,6 +1,6 @@
 import React from 'react'
-import fetch from 'isomorphic-fetch'
-import {Layout, Menu, Card, Col, Row} from 'antd'
+import fetcher from '../../fetcher'
+import {Layout, Menu, Card, Col, Row, message} from 'antd'
 import Exams from '../exams/Exams'
 import Cookies from 'universal-cookie'
 const cookies = new Cookies()
@@ -53,6 +53,8 @@ export default class extends React.Component {
         <Menu
           theme='light'
           mode='horizontal'
+          defaultSelectedKeys={['1']}
+          defaultOpenKeys={['1']}
         >
           <Menu.Item
             key={1}
@@ -95,32 +97,26 @@ export default class extends React.Component {
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetch(uri, header)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
-        const ct = resp.headers.get('content-type') || ''
-        if (ct === 'application/json' || ct.startsWith('application/json;')) {
-          return resp.json()
-        }
-        throw new Error(`unexpected content type ${ct}`)
-      })
+    fetcher(uri, header)
       .then(exams => this.setState(
         {
           examFlag: false,
           exams: exams
         }
       ))
-      .catch(error => this.setState(
-        {
-          examFlag: false,
-          examError: error
-        }
-      ))
+      .catch(error => {
+        message.error('Error fetching exams')
+        this.setState(
+          {
+            examFlag: false,
+            examError: error
+          }
+        )
+      })
   }
 
   fetchWorkAssignments (courseId, termId) {
@@ -128,31 +124,25 @@ export default class extends React.Component {
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetch(uri, header)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
-        const ct = resp.headers.get('content-type') || ''
-        if (ct === 'application/json' || ct.startsWith('application/json;')) {
-          return resp.json()
-        }
-        throw new Error(`unexpected content type ${ct}`)
-      })
+    fetcher(uri, header)
       .then(works => this.setState(
         {
           workAssignmentFlag: false,
           workAssignments: works
         }
       ))
-      .catch(error => this.setState(
-        {
-          workAssignmentFlag: false,
-          workAssignmentError: error
-        }
-      ))
+      .catch(error => {
+        message.error('Error fetching work assignments')
+        this.setState(
+          {
+            workAssignmentFlag: false,
+            workAssignmentError: error
+          }
+        )
+      })
   }
 }

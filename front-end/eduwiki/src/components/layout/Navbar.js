@@ -1,17 +1,9 @@
 import React from 'react'
 import TransparentButton from '../comms/TransparentButton'
-import { Dropdown, Menu, Avatar, message, Row, Col } from 'antd'
-import fetch from 'isomorphic-fetch'
+import { Avatar, message, Row, Col } from 'antd'
+import fetcher from '../../fetcher'
 import Cookies from 'universal-cookie'
 const cookies = new Cookies()
-
-const menu = (
-  <Menu>
-    <Menu.Item>
-      <a href='/user'>My Page</a>
-    </Menu.Item>
-  </Menu>
-)
 
 export default class extends React.Component {
   constructor (props) {
@@ -55,16 +47,11 @@ export default class extends React.Component {
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + auth
+        'Authorization': 'Basic ' + auth,
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetch('http://localhost:8080/user', options)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('error!!!')
-        }
-        return resp.json()
-      })
+    fetcher('http://localhost:8080/user', options)
       .then(json => this.setState({username: json.username}))
       .catch(_ => message.error('Something bad happened'))
   }

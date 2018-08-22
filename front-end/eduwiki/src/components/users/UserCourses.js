@@ -1,5 +1,5 @@
 import React from 'react'
-import fetch from 'isomorphic-fetch'
+import fetcher from '../../fetcher'
 import {Card} from 'antd'
 
 export default class extends React.Component {
@@ -37,14 +37,11 @@ export default class extends React.Component {
     const options = {
       headers: {
         'Authorization': 'Basic ' + authCookie,
-        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*',
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetch('http://localhost:8080/user/courses', options)
-      .then(resp => {
-        if (resp.status >= 400) throw new Error('Error!!!')
-        return resp.json()
-      })
+    fetcher('http://localhost:8080/user/courses', options)
       .then(json => this.setState({
         courses: json.courseList,
         error: undefined

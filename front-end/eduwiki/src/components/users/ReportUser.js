@@ -1,7 +1,7 @@
 import { Form, Input, Button, message } from 'antd'
 import React from 'react'
 import Cookies from 'universal-cookie'
-import fetch from 'isomorphic-fetch'
+import fetcher from '../../fetcher'
 const cookies = new Cookies()
 
 const FormItem = Form.Item
@@ -57,18 +57,13 @@ class ReportForm extends React.Component {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json',
-          'Authorization': 'Basic ' + cookies.get('auth')
+          'Authorization': 'Basic ' + cookies.get('auth'),
+          'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
         },
         body: JSON.stringify(report)
       }
       this.props.form.resetFields()
-      fetch(`http://localhost:8080/users/${this.props.username}/report`, options)
-        .then(resp => {
-          if (resp.status >= 400) {
-            throw new Error('Error')
-          }
-          return resp.json()
-        })
+      fetcher(`http://localhost:8080/users/${this.props.username}/report`, options)
         .then(_ => {
           message.success('Successfully reported')
           this.setState({

@@ -1,11 +1,11 @@
 import React from 'react'
-import fetch from 'isomorphic-fetch'
+import fetcher from '../../fetcher'
 import MyLayout from '../layout/Layout'
 import ProgrammesStage from '../programmes/ProgrammesStage'
 import UserActivity from './UserActivity'
-import {Layout, Menu, message, Calendar} from 'antd'
+import {Layout, Menu, message} from 'antd'
 import Cookies from 'universal-cookie'
-import CoursesStage from '../courses/CoursesStage';
+import CoursesStage from '../courses/CoursesStage'
 const cookies = new Cookies()
 const {Content} = Layout
 
@@ -89,16 +89,11 @@ export default class extends React.Component {
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + auth
+        'Authorization': 'Basic ' + auth,
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetch('http://localhost:8080/user', options)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('error!!!')
-        }
-        return resp.json()
-      })
+    fetcher('http://localhost:8080/user', options)
       .then(user => {
         this.setState({
           user: {
@@ -110,7 +105,6 @@ export default class extends React.Component {
           }
         })
       })
-
-      .catch(_ => message.error('Something bad happened'))
+      .catch(_ => message.error('Error getting your profile'))
   }
 }
