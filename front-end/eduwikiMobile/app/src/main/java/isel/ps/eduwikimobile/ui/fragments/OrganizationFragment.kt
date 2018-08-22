@@ -22,6 +22,9 @@ class OrganizationFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         app = activity.applicationContext as EduWikiApplication
+        val activity = activity as MainActivity
+        activity.toolbar.title = "Organization"
+        activity.toolbar.subtitle = ""
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

@@ -8,4 +8,8 @@ interface IService {
     fun getCoursesOfSpecificProgramme(params: CourseProgrammeCollectionParametersContainer)
     fun getAllClasses(params: ClassCollectionParametersContainer)
     fun getOrganization(params: OrganizationParametersContainer)
+    fun getWorkAssignmentsOfSpecificCourse(params: WorkAssignmentCollectionParametersContainer)
+    fun getExamsOfSpecificCourse(params: ExamCollectionParametersContainer)
+    fun getClassesOfSpecificCourse(params: CourseClassCollectionParametersContainer)
+    fun getTermsOfCourse(params: TermCollectionParametersContainer)
 }

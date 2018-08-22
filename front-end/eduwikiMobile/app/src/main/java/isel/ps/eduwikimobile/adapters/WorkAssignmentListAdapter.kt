@@ -7,13 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import isel.ps.eduwikimobile.R
-import isel.ps.eduwikimobile.domain.model.single.Class
+import isel.ps.eduwikimobile.domain.model.single.WorkAssignment
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 
-class ClassListAdapter (var context: Context, var list: MutableList<Class>) : RecyclerView.Adapter<ClassListAdapter.ListViewHolder>() {
+class WorkAssignmentListAdapter(var context: Context, var list: MutableList<WorkAssignment>) : RecyclerView.Adapter<WorkAssignmentListAdapter.ListViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ListViewHolder {
-        val view: View = LayoutInflater.from(parent!!.context).inflate(R.layout.class_item_row, parent, false)
+        val view: View = LayoutInflater.from(parent!!.context).inflate(R.layout.work_assignment_item_row, parent, false)
         val newHolder = ListViewHolder(view)
 
         newHolder.setListItemClickListener(object : ListItemClickListener {
@@ -33,16 +33,16 @@ class ClassListAdapter (var context: Context, var list: MutableList<Class>) : Re
 
     inner class ListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
-        var classShortName: TextView
+        var workAssignmentName: TextView
 
         private lateinit var listener: ListItemClickListener
 
         init {
-            classShortName = itemView.findViewById(R.id.class_short_name)
+            workAssignmentName = itemView.findViewById(R.id.work_assignment_short_name)
             itemView.setOnClickListener(this)
         }
 
-        fun setListItemClickListener (listener: ListItemClickListener) {
+        fun setListItemClickListener(listener: ListItemClickListener) {
             this.listener = listener
         }
 
@@ -50,7 +50,7 @@ class ClassListAdapter (var context: Context, var list: MutableList<Class>) : Re
 
         fun bindView(position: Int) {
             val item = list[position]
-            classShortName.text = list[position].className
+            workAssignmentName.text = " " + list[position].phase + " Work Assignment"
         }
 
         override fun onClick(v: View) {

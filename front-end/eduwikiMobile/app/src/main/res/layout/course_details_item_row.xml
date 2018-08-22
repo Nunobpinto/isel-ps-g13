@@ -1,0 +1,52 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_id"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#40efff"
+    android:orientation="horizontal">
+
+    <Button
+        android:id="@+id/course_term_exams"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/course_term_classes"
+        android:layout_marginEnd="12dp"
+        android:text="Exams"
+        android:textSize="12sp" />
+
+    <Button
+        android:id="@+id/course_term_work_assignments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/term_short_name"
+        android:layout_centerHorizontal="true"
+        android:text="Work Assignments"
+        android:textSize="12sp" />
+
+    <Button
+        android:id="@+id/course_term_classes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/course_term_work_assignments"
+        android:layout_marginStart="12dp"
+        android:text="Classes"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/term_short_name"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_weight="3"
+        android:background="@android:color/holo_blue_dark"
+        android:text="Term"
+        android:textAlignment="center"
+        android:textColor="@android:color/background_dark"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+
+</RelativeLayout>

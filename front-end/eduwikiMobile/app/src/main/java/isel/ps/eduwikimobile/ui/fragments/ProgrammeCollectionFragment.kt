@@ -15,7 +15,8 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import isel.ps.eduwikimobile.adapters.ProgrammeListAdapter
 import isel.ps.eduwikimobile.domain.model.single.Programme
-import kotlinx.android.synthetic.main.programmes_fragment.*
+import isel.ps.eduwikimobile.ui.activities.MainActivity
+import kotlinx.android.synthetic.main.programme_collection_fragment.*
 
 class ProgrammeCollectionFragment : Fragment() {
 
@@ -30,9 +31,16 @@ class ProgrammeCollectionFragment : Fragment() {
         programmeList = ArrayList()
     }
 
+    override fun onResume() {
+        super.onResume()
+        val activity = activity as MainActivity
+        activity.toolbar.title = "Programmes"
+        activity.toolbar.subtitle = ""
+    }
+    
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view: View = inflater.inflate(R.layout.programmes_fragment, container, false)
-        recyclerView = view.findViewById(R.id.recycler_view)
+        val view: View = inflater.inflate(R.layout.programme_collection_fragment, container, false)
+        recyclerView = view.findViewById(R.id.programmes_recycler_view)
         fetchProgrammeItems()
 
         pAdapter = ProgrammeListAdapter(context, programmeList)
