@@ -333,8 +333,8 @@ class CourseDAOImpl : CourseDAO {
                         "C.$CLASS_VOTES, " +
                         "C.$CLASS_TIMESTAMP, " +
                         "C.$CLASS_LOG_ID " +
-                        "FROM $CLASS_TABLE AS C " +
-                        "INNER JOIN $COURSE_CLASS_TABLE AS CC " +
+                        "FROM :schema.$CLASS_TABLE AS C " +
+                        "INNER JOIN :schema.$COURSE_CLASS_TABLE AS CC " +
                         "ON C.$CLASS_ID = CC.$COURSE_CLASS_CLASS_ID " +
                         "WHERE CC.$COURSE_CLASS_COURSE_ID = :courseId " +
                         "AND CC.$COURSE_CLASS_TERM_ID = :termId "
@@ -350,8 +350,8 @@ class CourseDAOImpl : CourseDAO {
                         "C.$CLASS_VOTES, " +
                         "C.$CLASS_TIMESTAMP, " +
                         "C.$CLASS_LOG_ID " +
-                        "FROM $CLASS_TABLE AS C " +
-                        "INNER JOIN $COURSE_CLASS_TABLE AS CC " +
+                        "FROM :schema.$CLASS_TABLE AS C " +
+                        "INNER JOIN :schema.$COURSE_CLASS_TABLE AS CC " +
                         "ON C.$CLASS_ID = CC.$COURSE_CLASS_CLASS_ID " +
                         "WHERE CC.$COURSE_CLASS_COURSE_ID = :courseId " +
                         "AND CC.$COURSE_CLASS_TERM_ID = :termId " +
