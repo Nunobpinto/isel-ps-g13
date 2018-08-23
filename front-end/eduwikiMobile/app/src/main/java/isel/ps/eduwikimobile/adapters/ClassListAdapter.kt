@@ -19,7 +19,7 @@ class ClassListAdapter (var context: Context, var list: MutableList<Class>) : Re
         newHolder.setListItemClickListener(object : ListItemClickListener {
             override fun onClick(view: View, position: Int) {
                 val mainActivity = context as MainActivity
-                mainActivity.navigateToListItem(newHolder.getItem(position))
+                mainActivity.navigateToListItem(newHolder.getItem(position), null)
             }
         })
         return newHolder
@@ -49,8 +49,7 @@ class ClassListAdapter (var context: Context, var list: MutableList<Class>) : Re
         fun getItem(position: Int) = list[position]
 
         fun bindView(position: Int) {
-            val item = list[position]
-            classShortName.text = list[position].className
+            classShortName.text = list[position].lecturedTerm + '/' + list[position].className
         }
 
         override fun onClick(v: View) {

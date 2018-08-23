@@ -1,4 +1,4 @@
-package isel.ps.eduwikimobile.ui.fragments
+package isel.ps.eduwikimobile.ui.fragments.single
 
 import android.content.Context
 import android.os.Bundle

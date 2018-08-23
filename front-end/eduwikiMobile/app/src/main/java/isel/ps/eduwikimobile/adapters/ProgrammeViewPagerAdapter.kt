@@ -2,11 +2,9 @@ package isel.ps.eduwikimobile.adapters
 
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.app.FragmentStatePagerAdapter
-import android.view.ViewGroup
-import isel.ps.eduwikimobile.ui.fragments.CoursesOfProgrammeFragment
-import isel.ps.eduwikimobile.ui.fragments.ProgrammeInfoTabFragment
+import isel.ps.eduwikimobile.ui.fragments.collection.CourseCollectionOfSpecificProgrammeFragment
+import isel.ps.eduwikimobile.ui.fragments.single.ProgrammeInfoTabFragment
 
 class ProgrammeViewPagerAdapter(fragManager: FragmentManager) : FragmentStatePagerAdapter(fragManager) {
 
@@ -15,7 +13,7 @@ class ProgrammeViewPagerAdapter(fragManager: FragmentManager) : FragmentStatePag
     override fun getItem(position: Int): Fragment {
         return when (position) {
             0 -> ProgrammeInfoTabFragment()
-            else -> CoursesOfProgrammeFragment()
+            else -> CourseCollectionOfSpecificProgrammeFragment()
         }
     }
 

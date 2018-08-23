@@ -50,14 +50,3 @@
     </android.support.constraint.ConstraintLayout>
 
 </ScrollView>
-
-    <!--<android.support.design.widget.NavigationView
-        android:id="@+id/course_navigation_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        app:menu="@menu/side_navigation"
-        app:headerLayout="@layout/header_side_navigation">
-    </android.support.design.widget.NavigationView>
-
-</android.support.v4.widget.DrawerLayout>-->

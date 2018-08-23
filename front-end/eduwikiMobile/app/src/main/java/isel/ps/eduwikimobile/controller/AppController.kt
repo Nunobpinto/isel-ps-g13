@@ -14,6 +14,10 @@ class AppController {
         const val EXAMS = "EXAMS"
         const val ALL_CLASSES_OF_SPECIFIC_COURSE = "ALL_CLASSES_OF_SPECIFIC_COURSE"
         const val TERMS_OF_COURSE = "TERMS_OF_COURSE"
+        const val SPECIFIC_RESOURCE = "SPECIFIC_RESOURCE"
+        const val ALL_COURSES_OF_SPECIFIC_CLASS = "ALL_COURSES_OF_SPECIFIC_CLASS"
+        const val ALL_LECTURES_OF_COURSE_CLASS = "ALL_LECTURES_OF_COURSE_CLASS"
+        const val ALL_HOMEWORKS_OF_COURSE_CLASS = "ALL_HOMEWORKS_OF_COURSE_CLASS"
 
         fun actionHandler(action: String, params: IParametersContainer) {
             return when (action) {
@@ -26,6 +30,10 @@ class AppController {
                 EXAMS -> getExamsOfSpecificCourse(params as ExamCollectionParametersContainer)
                 ALL_CLASSES_OF_SPECIFIC_COURSE -> getClassesOfSpecificCourse(params as CourseClassCollectionParametersContainer)
                 TERMS_OF_COURSE -> getTermsOfCourse(params as TermCollectionParametersContainer)
+                //SPECIFIC_RESOURCE -> getSpecificResource(params as ResourceParametersContainer)
+                ALL_COURSES_OF_SPECIFIC_CLASS -> getAllCoursesOfSpecificClass(params as CoursesOfSpecificClassParametersContainer)
+                ALL_LECTURES_OF_COURSE_CLASS -> getAllLecturesOfCourseClass(params as LectureCollectionParametersContainer)
+                ALL_HOMEWORKS_OF_COURSE_CLASS -> getAllHomeworksOfCourseClass(params as HomeworkCollectionParametersContainer)
                 else -> throw UnsupportedOperationException("Action not supported!")
             }
         }
@@ -56,6 +64,15 @@ class AppController {
 
         private fun getTermsOfCourse(params: TermCollectionParametersContainer) =
                 params.app.service.getTermsOfCourse(params)
+
+        private fun getAllCoursesOfSpecificClass(params: CoursesOfSpecificClassParametersContainer) =
+                params.app.service.getAllCoursesOfSpecificClass(params)
+
+        private fun  getAllLecturesOfCourseClass(params: LectureCollectionParametersContainer) =
+                params.app.service.getAllLecturesOfCourseClass(params)
+
+        private fun getAllHomeworksOfCourseClass(params: HomeworkCollectionParametersContainer) =
+                params.app.service.getAllHomeworksOfCourseClass(params)
 
     }
 

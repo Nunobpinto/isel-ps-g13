@@ -10,7 +10,7 @@ import isel.ps.eduwikimobile.domain.model.collection.*
 import isel.ps.eduwikimobile.domain.model.single.Organization
 import java.util.*
 
-class EduWikiRepository() : IEduWikiRepository {
+class EduWikiRepository : IEduWikiRepository {
 
     companion object {
         val ALL_PROGRAMMES_URL = API_URL + "/programmes"
@@ -81,6 +81,28 @@ class EduWikiRepository() : IEduWikiRepository {
         }
         makeRequest(ctx, ALL_COURSES_URL + "/" + courseId + "/terms", "emU6MTIzNA==", TermCollection::class.java, successCb, errorCb)
     }
+
+    override fun getAllCoursesOfSpecificClass(classId: Int, ctx: Context, successCb: (CourseClassCollection) -> Unit, errorCb: (VolleyError) -> Unit) {
+        if (!isConnected(ctx)) {
+            return errorCb(VolleyError())
+        }
+        makeRequest(ctx, ALL_CLASSES_URL + "/" + classId + "/courses", "emU6MTIzNA==", CourseClassCollection::class.java, successCb, errorCb)
+    }
+
+    override fun getAllLecturesOfCourseClass(courseId: Int, classId: Int, ctx: Context, successCb: (LectureCollection) -> Unit, errorCb: (VolleyError) -> Unit) {
+        if (!isConnected(ctx)) {
+            return errorCb(VolleyError())
+        }
+        makeRequest(ctx, ALL_CLASSES_URL + "/" + classId + "/courses/" + courseId + "/lectures", "emU6MTIzNA==", LectureCollection::class.java, successCb, errorCb)
+    }
+
+    override fun getAllHomeworksOfCourseClass(courseId: Int, classId: Int, ctx: Context, successCb: (HomeworkCollection) -> Unit, errorCb: (VolleyError) -> Unit) {
+        if (!isConnected(ctx)) {
+            return errorCb(VolleyError())
+        }
+        makeRequest(ctx, ALL_CLASSES_URL + "/" + classId + "/courses/" + courseId + "/homeworks", "emU6MTIzNA==", HomeworkCollection::class.java, successCb, errorCb)
+    }
+
 
 
     private fun isConnected(context: Context): Boolean {

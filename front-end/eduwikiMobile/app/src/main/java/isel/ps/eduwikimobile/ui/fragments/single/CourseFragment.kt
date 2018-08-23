@@ -1,4 +1,4 @@
-package isel.ps.eduwikimobile.ui.fragments
+package isel.ps.eduwikimobile.ui.fragments.single
 
 import android.content.Context
 import android.os.Bundle
@@ -11,7 +11,6 @@ import android.widget.*
 import android.widget.Toast.LENGTH_LONG
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
-import isel.ps.eduwikimobile.adapters.CourseListAdapter
 import isel.ps.eduwikimobile.adapters.CourseListTermsAdapter
 import isel.ps.eduwikimobile.controller.AppController
 import isel.ps.eduwikimobile.domain.model.single.Course
@@ -19,7 +18,6 @@ import isel.ps.eduwikimobile.domain.model.single.Term
 import isel.ps.eduwikimobile.paramsContainer.TermCollectionParametersContainer
 import isel.ps.eduwikimobile.ui.IDataComunication
 import isel.ps.eduwikimobile.ui.activities.MainActivity
-import kotlinx.android.synthetic.main.course_details_fragment.*
 
 class CourseFragment : Fragment() {
 
@@ -30,6 +28,7 @@ class CourseFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var courseTermsAdapter: CourseListTermsAdapter
     private lateinit var map: HashMap<Int, MutableList<Term>>
+    lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,30 +38,49 @@ class CourseFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view: View = inflater.inflate(R.layout.course_details_fragment, container, false)
-        recyclerView = view.findViewById(R.id.course_recycler_view)
+        val view: View
+        val courseName: TextView
+        if (arguments.getString("path") != null) {
+            view = inflater.inflate(R.layout.course_programme_details_fragment, container, false)
+            recyclerView = view.findViewById(R.id.course_programme_recycler_view)
+            courseName = view.findViewById(R.id.course_programme_full_name)
+        } else {
+            view = inflater.inflate(R.layout.course_details_fragment, container, false)
+            recyclerView = view.findViewById(R.id.course_recycler_view)
+            courseName = view.findViewById(R.id.course_full_name)
+        }
+
         val bundle: Bundle = arguments
         course = bundle.getParcelable("item_selected")
+        val path = bundle.getString("path")
 
-        if(map[course.courseId] == null) {
+        if (map[course.courseId] == null) {
             termList.clear()
             dataComunication.setCourse(course)
-            view.findViewById<ProgressBar>(R.id.course_progress_bar).visibility = View.VISIBLE
+            if (path != null) {
+                progressBar = view.findViewById(R.id.course_programme_progress_bar)
+            } else progressBar = view.findViewById(R.id.course_progress_bar)
+            progressBar.visibility = View.VISIBLE
             getCourseTerms(course.courseId)
-        }
-        else if(course.courseId != dataComunication.getCourse().courseId) {
+        } else if (course.courseId != dataComunication.getCourse()!!.courseId) {
             dataComunication.setCourse(course)
             termList = map[course.courseId]!!
         }
-
-        val courseName = view.findViewById<TextView>(R.id.course_full_name)
 
         courseTermsAdapter = CourseListTermsAdapter(context, termList)
         recyclerView.adapter = courseTermsAdapter
 
         val mainActivity = context as MainActivity
         mainActivity.toolbar.displayOptions = ActionBar.DISPLAY_SHOW_TITLE
-        mainActivity.toolbar.title = course.shortName
+        var toolbarTitle = course.shortName
+        if (path != null) {
+            toolbarTitle = path + "/" + course.shortName
+            view.findViewById<TextView>(R.id.course_programme_optional).text = if(course.optional!!) "Yes" else "No"
+            view.findViewById<TextView>(R.id.course_programme_lectured_term).text = course.lecturedTerm
+            view.findViewById<TextView>(R.id.course_programme_credits).text = course.credits.toString()
+        }
+
+        mainActivity.toolbar.title = toolbarTitle
         mainActivity.toolbar.subtitle = course.createdBy
 
         val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(activity)
@@ -93,8 +111,8 @@ class CourseFragment : Fragment() {
                             termList.addAll(terms.termList)
                             map[courseId] = terms.termList.toMutableList()
                             courseTermsAdapter.notifyDataSetChanged()
-                            recyclerView.visibility = View.VISIBLE;
-                            course_progress_bar.visibility = View.GONE
+                            recyclerView.visibility = View.VISIBLE
+                            progressBar.visibility = View.GONE
                         },
                         errorCb = { error -> Toast.makeText(app, "Error" + error.message, LENGTH_LONG).show() }
                 )

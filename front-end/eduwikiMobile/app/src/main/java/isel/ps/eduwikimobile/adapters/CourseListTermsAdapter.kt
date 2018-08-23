@@ -9,14 +9,11 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import isel.ps.eduwikimobile.R
-import isel.ps.eduwikimobile.domain.model.single.Exam
 import isel.ps.eduwikimobile.domain.model.single.Term
 import isel.ps.eduwikimobile.ui.activities.MainActivity
-import isel.ps.eduwikimobile.ui.fragments.ClassCollectionFragment
-import isel.ps.eduwikimobile.ui.fragments.ClassesOfSpecificCourseFragment
-import isel.ps.eduwikimobile.ui.fragments.ExamCollectionFragment
-import isel.ps.eduwikimobile.ui.fragments.WorkAssignmentCollectionFragment
-import kotlin.math.acos
+import isel.ps.eduwikimobile.ui.fragments.collection.ClassCollectionOfSpecificCourseFragment
+import isel.ps.eduwikimobile.ui.fragments.collection.ExamCollectionFragment
+import isel.ps.eduwikimobile.ui.fragments.collection.WorkAssignmentCollectionFragment
 
 class CourseListTermsAdapter (var context: Context, var list: MutableList<Term>) : RecyclerView.Adapter<CourseListTermsAdapter.ListViewHolder>() {
 
@@ -46,7 +43,7 @@ class CourseListTermsAdapter (var context: Context, var list: MutableList<Term>)
         }
 
         classesButtons.setOnClickListener {
-            val fragment = ClassesOfSpecificCourseFragment()
+            val fragment = ClassCollectionOfSpecificCourseFragment()
             val bundle = Bundle()
             bundle.putParcelable("actualTerm", newHolder.term)
             fragment.arguments = bundle
