@@ -1,4 +1,4 @@
-package isel.ps.eduwikimobile.ui.fragments
+package isel.ps.eduwikimobile.ui.fragments.collection
 
 import android.content.Context
 import android.os.Bundle
@@ -9,51 +9,52 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import android.widget.Toast.LENGTH_LONG
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
-import isel.ps.eduwikimobile.adapters.ClassListAdapter
+import isel.ps.eduwikimobile.adapters.WorkAssignmentListAdapter
 import isel.ps.eduwikimobile.controller.AppController
-import isel.ps.eduwikimobile.domain.model.single.Class
 import isel.ps.eduwikimobile.domain.model.single.Course
 import isel.ps.eduwikimobile.domain.model.single.Term
-import isel.ps.eduwikimobile.paramsContainer.CourseClassCollectionParametersContainer
+import isel.ps.eduwikimobile.domain.model.single.WorkAssignment
+import isel.ps.eduwikimobile.paramsContainer.WorkAssignmentCollectionParametersContainer
 import isel.ps.eduwikimobile.ui.IDataComunication
 import isel.ps.eduwikimobile.ui.activities.MainActivity
-import kotlinx.android.synthetic.main.class_collection_fragment.*
+import kotlinx.android.synthetic.main.work_assignment_collection_fragment.*
 
-class ClassesOfSpecificCourseFragment : Fragment() {
+class WorkAssignmentCollectionFragment : Fragment() {
 
     lateinit var app: EduWikiApplication
     private lateinit var recyclerView: RecyclerView
-    private lateinit var classesOfSpecificCourseList: MutableList<Class>
-    private lateinit var classAdapter: ClassListAdapter
+    private lateinit var workAssignmentList: MutableList<WorkAssignment>
+    private lateinit var workAssignmentAdapter: WorkAssignmentListAdapter
     lateinit var dataComunication: IDataComunication
     lateinit var course: Course
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         app = activity.applicationContext as EduWikiApplication
-        classesOfSpecificCourseList = ArrayList()
+        workAssignmentList = ArrayList()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view: View = inflater.inflate(R.layout.class_collection_fragment, container, false)
-        recyclerView = view.findViewById(R.id.classes_recycler_view)
+        val view: View = inflater.inflate(R.layout.work_assignment_collection_fragment, container, false)
+        recyclerView = view.findViewById(R.id.work_assignments_recycler_view)
 
         val bundle: Bundle = arguments
         val term: Term = bundle.getParcelable("actualTerm")
 
-        course = dataComunication.getCourse()
+        course = dataComunication.getCourse()!!
         dataComunication.setTerm(term)
 
         val activity = activity as MainActivity
-        activity.toolbar.title = course.shortName + "/" + term.shortName + "/" + "Classes"
+        activity.toolbar.title = course.shortName + "/" + term.shortName + "/" + "Work-Assignments"
         activity.toolbar.subtitle = ""
 
-        fetchClassesOfCourse(course.courseId, term.termId)
+        fetchWorkAssignmentItems(course.courseId, term.termId)
 
-        classAdapter = ClassListAdapter(context, classesOfSpecificCourseList)
-        recyclerView.adapter = classAdapter
+        workAssignmentAdapter = WorkAssignmentListAdapter(context, workAssignmentList)
+        recyclerView.adapter = workAssignmentAdapter
 
         val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(activity)
         recyclerView.layoutManager = layoutManager
@@ -62,20 +63,20 @@ class ClassesOfSpecificCourseFragment : Fragment() {
     }
 
 
-    private fun fetchClassesOfCourse(courseId: Int, termId: Int) {
+    private fun fetchWorkAssignmentItems(courseId: Int, termId: Int) {
         AppController.actionHandler(
-                AppController.ALL_CLASSES_OF_SPECIFIC_COURSE,
-                CourseClassCollectionParametersContainer(
+                AppController.WORK_ASSIGNMENTS,
+                WorkAssignmentCollectionParametersContainer(
                         termId = termId,
                         courseId = courseId,
                         app = activity.applicationContext as EduWikiApplication,
-                        successCb = { classes ->
-                            classesOfSpecificCourseList.addAll(classes.classList)
-                            classAdapter.notifyDataSetChanged()
+                        successCb = { works ->
+                            workAssignmentList.addAll(works.workAssignmentList)
+                            workAssignmentAdapter.notifyDataSetChanged()
                             recyclerView.visibility = View.VISIBLE;
-                            classes_progress_bar.visibility = View.GONE;
+                            work_assignments_progress_bar.visibility = View.GONE;
                         },
-                        errorCb = { error -> Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                        errorCb = { error -> Toast.makeText(app, "Error" + error.message, LENGTH_LONG).show() }
                 )
         )
     }

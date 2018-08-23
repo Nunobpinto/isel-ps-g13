@@ -19,7 +19,7 @@ class ProgrammeListAdapter(var context: Context, var list: MutableList<Programme
         newHolder.setListItemClickListener(object : ListItemClickListener {
             override fun onClick(view: View, position: Int) {
                 val mainActivity = context as MainActivity
-                mainActivity.navigateToListItem(newHolder.getItem(position))
+                mainActivity.navigateToListItem(newHolder.getItem(position), null)
             }
         })
         return newHolder
@@ -49,7 +49,7 @@ class ProgrammeListAdapter(var context: Context, var list: MutableList<Programme
         fun getItem(position: Int) = list[position]
 
         fun bindView(position: Int) {
-            programmeShortName.setText(list[position].shortName)
+            programmeShortName.text = list[position].shortName
         }
 
         override fun onClick(v: View) {

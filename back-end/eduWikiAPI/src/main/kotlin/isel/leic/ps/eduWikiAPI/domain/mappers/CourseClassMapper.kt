@@ -38,7 +38,8 @@ fun toCourseClassOutputModel(course: Course, klass: Class, courseClass: CourseCl
         lecturedTerm = term.shortName,
         classId = klass.classId,
         className = klass.className,
-        courseName = course.shortName,
+        courseShortName = course.shortName,
+        courseFullName = course.fullName,
         termId = courseClass.termId,
         courseClassId = courseClass.courseClassId
 )
@@ -65,7 +66,7 @@ fun toCourseClassStageOutputModel(courseClassStage: CourseClassStage) = CourseCl
 )
 
 fun toCourseClassCollectionOutputModel(courseClasseList: List<CourseClassOutputModel>) = CourseClassCollectionOutputModel(
-        courseClasseList = courseClasseList
+        courseClassList = courseClasseList
 )
 
 fun toCourseClassReportCollectionOutputModel(courseClassReportList: List<CourseClassReportOutputModel>) = CourseClassReportCollectionOutputModel(

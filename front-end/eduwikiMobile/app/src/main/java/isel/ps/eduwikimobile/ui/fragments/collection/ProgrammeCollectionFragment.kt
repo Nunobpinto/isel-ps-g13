@@ -1,4 +1,4 @@
-package isel.ps.eduwikimobile.ui.fragments
+package isel.ps.eduwikimobile.ui.fragments.collection
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -13,6 +13,7 @@ import isel.ps.eduwikimobile.controller.AppController
 import isel.ps.eduwikimobile.paramsContainer.ProgrammeCollectionParametersContainer
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.widget.ProgressBar
 import isel.ps.eduwikimobile.adapters.ProgrammeListAdapter
 import isel.ps.eduwikimobile.domain.model.single.Programme
 import isel.ps.eduwikimobile.ui.activities.MainActivity
@@ -37,11 +38,15 @@ class ProgrammeCollectionFragment : Fragment() {
         activity.toolbar.title = "Programmes"
         activity.toolbar.subtitle = ""
     }
-    
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.programme_collection_fragment, container, false)
         recyclerView = view.findViewById(R.id.programmes_recycler_view)
-        fetchProgrammeItems()
+
+        if (programmeList.size == 0) {
+            view.findViewById<ProgressBar>(R.id.programmes_progress_bar).visibility = View.VISIBLE
+            fetchProgrammeItems()
+        }
 
         pAdapter = ProgrammeListAdapter(context, programmeList)
         recyclerView.adapter = pAdapter

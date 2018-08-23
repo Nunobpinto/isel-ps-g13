@@ -10,7 +10,7 @@ import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.domain.model.single.Course
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 
-class CourseListAdapter(var context: Context, var list: MutableList<Course>) : RecyclerView.Adapter<CourseListAdapter.ListViewHolder>() {
+class CourseListAdapter(var context: Context, var list: MutableList<Course>, var path: String?) : RecyclerView.Adapter<CourseListAdapter.ListViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ListViewHolder {
         val view: View = LayoutInflater.from(parent!!.context).inflate(R.layout.course_item_row, parent, false)
@@ -18,8 +18,8 @@ class CourseListAdapter(var context: Context, var list: MutableList<Course>) : R
 
         newHolder.setListItemClickListener(object : ListItemClickListener {
             override fun onClick(view: View, position: Int) {
-                val mainActivity = context as MainActivity
-                mainActivity.navigateToListItem(newHolder.getItem(position))
+                    val mainActivity = context as MainActivity
+                    mainActivity.navigateToListItem(newHolder.getItem(position), path)
             }
         })
         return newHolder

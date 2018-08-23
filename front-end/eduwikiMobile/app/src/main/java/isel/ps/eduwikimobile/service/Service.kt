@@ -86,5 +86,34 @@ class Service : IService {
         )
     }
 
+    override fun getAllCoursesOfSpecificClass(params: CoursesOfSpecificClassParametersContainer) {
+        remoteRepository.getAllCoursesOfSpecificClass(
+                params.classId,
+                params.app,
+                { courses -> params.successCb(courses)},
+                { error: VolleyError -> params.errorCb(AppException(error.message!!))}
+        )
+    }
+
+    override fun getAllLecturesOfCourseClass(params: LectureCollectionParametersContainer) {
+        remoteRepository.getAllLecturesOfCourseClass(
+                params.courseId,
+                params.classId,
+                params.app,
+                { lectures -> params.successCb(lectures)},
+                { error: VolleyError -> params.errorCb(AppException(error.message!!))}
+        )
+    }
+
+    override fun getAllHomeworksOfCourseClass(params: HomeworkCollectionParametersContainer) {
+        remoteRepository.getAllHomeworksOfCourseClass(
+                params.courseId,
+                params.classId,
+                params.app,
+                { homeworks -> params.successCb(homeworks)},
+                { error: VolleyError -> params.errorCb(AppException(error.message!!))}
+        )
+    }
+
 
 }

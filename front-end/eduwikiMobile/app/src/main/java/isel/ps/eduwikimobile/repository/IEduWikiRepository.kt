@@ -15,4 +15,7 @@ interface IEduWikiRepository {
     fun getExamsOfSpecificCourse(termId: Int, courseId: Int, ctx: Context, successCb: (ExamCollection) -> Unit, errorCb: (VolleyError) -> Unit)
     fun getClassesOfSpecificCourse(termId: Int, courseId: Int, ctx: Context, successCb: (ClassCollection) -> Unit, errorCb: (VolleyError) -> Unit)
     fun getTermsOfCourse(courseId: Int, ctx: Context, successCb: (TermCollection) -> Unit, errorCb: (VolleyError) -> Unit)
+    fun getAllCoursesOfSpecificClass(classId: Int, ctx: Context, successCb: (CourseClassCollection) -> Unit, errorCb: (VolleyError) -> Unit)
+    fun getAllLecturesOfCourseClass(courseId: Int, classId: Int,  ctx: Context, successCb: (LectureCollection) -> Unit, errorCb: (VolleyError) -> Unit)
+    fun getAllHomeworksOfCourseClass(courseId: Int, classId: Int,  ctx: Context, successCb: (HomeworkCollection) -> Unit, errorCb: (VolleyError) -> Unit)
 }

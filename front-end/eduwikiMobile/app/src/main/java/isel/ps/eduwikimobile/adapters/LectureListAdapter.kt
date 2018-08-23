@@ -7,13 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import isel.ps.eduwikimobile.R
-import isel.ps.eduwikimobile.domain.model.single.WorkAssignment
+import isel.ps.eduwikimobile.domain.model.single.Lecture
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 
-class WorkAssignmentListAdapter(var context: Context, var list: MutableList<WorkAssignment>) : RecyclerView.Adapter<WorkAssignmentListAdapter.ListViewHolder>() {
+class LectureListAdapter (var context: Context, var list: MutableList<Lecture>) : RecyclerView.Adapter<LectureListAdapter.ListViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ListViewHolder {
-        val view: View = LayoutInflater.from(parent!!.context).inflate(R.layout.work_assignment_item_row, parent, false)
+        val view: View = LayoutInflater.from(parent!!.context).inflate(R.layout.lecture_item_row, parent, false)
         val newHolder = ListViewHolder(view)
 
         newHolder.setListItemClickListener(object : ListItemClickListener {
@@ -33,12 +33,12 @@ class WorkAssignmentListAdapter(var context: Context, var list: MutableList<Work
 
     inner class ListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
-        var workAssignmentName: TextView
+        var lectureName: TextView
 
         private lateinit var listener: ListItemClickListener
 
         init {
-            workAssignmentName = itemView.findViewById(R.id.work_assignment_short_name)
+            lectureName = itemView.findViewById(R.id.lecture_name)
             itemView.setOnClickListener(this)
         }
 
@@ -49,8 +49,7 @@ class WorkAssignmentListAdapter(var context: Context, var list: MutableList<Work
         fun getItem(position: Int) = list[position]
 
         fun bindView(position: Int) {
-            val item = list[position]
-            workAssignmentName.text = " " + list[position].phase + " Work Assignment"
+            lectureName.text = "Lecture - " + list[position].lectureId
         }
 
         override fun onClick(v: View) {
@@ -58,4 +57,5 @@ class WorkAssignmentListAdapter(var context: Context, var list: MutableList<Work
         }
 
     }
+
 }
