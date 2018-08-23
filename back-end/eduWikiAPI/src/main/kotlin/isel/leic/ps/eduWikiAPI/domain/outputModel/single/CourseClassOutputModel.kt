@@ -11,7 +11,8 @@ data class CourseClassOutputModel(
         val lecturedTerm: String = "",
         val classId: Int = 0,
         val className: String = "",
-        val courseName: String = "",
+        val courseShortName: String = "",
         val termId: Int = 0,
-        val courseClassId: Int
+        val courseClassId: Int,
+        val courseFullName: String = ""
 )
