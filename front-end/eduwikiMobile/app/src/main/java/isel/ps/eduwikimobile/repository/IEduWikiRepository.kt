@@ -4,6 +4,7 @@ import android.content.Context
 import com.android.volley.VolleyError
 import isel.ps.eduwikimobile.domain.model.collection.*
 import isel.ps.eduwikimobile.domain.model.single.Organization
+import isel.ps.eduwikimobile.paramsContainer.ResourceParametersContainer
 
 interface IEduWikiRepository {
     fun getAllProgrammes(ctx: Context, successCb: (ProgrammeCollection) -> Unit, errorCb: (VolleyError) -> Unit)
@@ -18,4 +19,5 @@ interface IEduWikiRepository {
     fun getAllCoursesOfSpecificClass(classId: Int, ctx: Context, successCb: (CourseClassCollection) -> Unit, errorCb: (VolleyError) -> Unit)
     fun getAllLecturesOfCourseClass(courseId: Int, classId: Int,  ctx: Context, successCb: (LectureCollection) -> Unit, errorCb: (VolleyError) -> Unit)
     fun getAllHomeworksOfCourseClass(courseId: Int, classId: Int,  ctx: Context, successCb: (HomeworkCollection) -> Unit, errorCb: (VolleyError) -> Unit)
+    fun getSpecificResource(params: ResourceParametersContainer)
 }

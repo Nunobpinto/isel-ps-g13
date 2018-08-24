@@ -1,7 +1,13 @@
 package isel.ps.eduwikimobile.repository
 
+import android.Manifest
+import android.app.DownloadManager
 import android.content.Context
+import android.content.pm.PackageManager
 import android.net.ConnectivityManager
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.PermissionChecker.checkSelfPermission
+import android.util.Log
 import com.android.volley.VolleyError
 import isel.ps.eduwikimobile.API_URL
 import isel.ps.eduwikimobile.EduWikiApplication
@@ -9,6 +15,10 @@ import isel.ps.eduwikimobile.comms.HttpRequest
 import isel.ps.eduwikimobile.domain.model.collection.*
 import isel.ps.eduwikimobile.domain.model.single.Organization
 import java.util.*
+import isel.ps.eduwikimobile.ui.activities.MainActivity
+import isel.ps.eduwikimobile.exceptions.AppException
+import isel.ps.eduwikimobile.paramsContainer.ResourceParametersContainer
+
 
 class EduWikiRepository : IEduWikiRepository {
 
@@ -17,6 +27,7 @@ class EduWikiRepository : IEduWikiRepository {
         val ALL_COURSES_URL = API_URL + "/courses"
         val ALL_CLASSES_URL = API_URL + "/classes"
         val ORGANIZATION = API_URL + "/organization"
+        val RESOURCES = API_URL + "/resources"
     }
 
     override fun getAllProgrammes(ctx: Context, successCb: (ProgrammeCollection) -> Unit, errorCb: (VolleyError) -> Unit) {
@@ -103,7 +114,12 @@ class EduWikiRepository : IEduWikiRepository {
         makeRequest(ctx, ALL_CLASSES_URL + "/" + classId + "/courses/" + courseId + "/homeworks", "emU6MTIzNA==", HomeworkCollection::class.java, successCb, errorCb)
     }
 
-
+    override fun getSpecificResource(params: ResourceParametersContainer) {
+        if (!isConnected(params.app)) {
+            return params.errorCb(AppException("No connection detected"))
+        }
+        downloadFileRequest(params.activity, params.app, RESOURCES + "/" + params.resourceId, params.successCb, params.errorCb)
+    }
 
     private fun isConnected(context: Context): Boolean {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -118,7 +134,7 @@ class EduWikiRepository : IEduWikiRepository {
             klass: Class<T>,
             successCb: (T) -> Unit,
             errorCb: (VolleyError) -> Unit
-    ) : String {
+    ): String {
         val tag = UUID.randomUUID().toString() //TODO see usage
         val req = HttpRequest(
                 url,
@@ -132,4 +148,22 @@ class EduWikiRepository : IEduWikiRepository {
         return tag
     }
 
+    private fun downloadFileRequest(
+            activity: MainActivity,
+            ctx: Context,
+            url: String,
+            successCb: () -> Unit,
+            errorCb: (AppException) -> Unit
+    ) {
+        activity.url = url
+        if (checkSelfPermission(ctx,android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            Log.e("Permission error","You have permission")
+        }
+        else {
+            Log.e("Permission error","You have asked for permission");
+            ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1);
+        }
+
+        DownloadManager.ACTION_DOWNLOAD_COMPLETE
+    }
 }

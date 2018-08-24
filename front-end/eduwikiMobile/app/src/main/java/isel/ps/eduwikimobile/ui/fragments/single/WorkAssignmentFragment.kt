@@ -10,9 +10,12 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.Toast.LENGTH_LONG
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
+import isel.ps.eduwikimobile.controller.AppController
 import isel.ps.eduwikimobile.domain.model.single.WorkAssignment
+import isel.ps.eduwikimobile.paramsContainer.ResourceParametersContainer
 import isel.ps.eduwikimobile.ui.IDataComunication
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 
@@ -64,14 +67,26 @@ class WorkAssignmentFragment : Fragment() {
         }
 
         workAssignmentSheet.setOnClickListener {
-            downloadWorkAssignmentSheet(workAssignment.supplementId)
+            downloadWorkAssignmentSheet(mainActivity, workAssignment.supplementId)
         }
 
         return view
     }
 
-    private fun downloadWorkAssignmentSheet(sheetId: String) {
-        Toast.makeText(context, "Download", Toast.LENGTH_LONG).show()
+    private fun downloadWorkAssignmentSheet(activity: MainActivity, sheetId: String) {
+        AppController.actionHandler(
+                AppController.SPECIFIC_RESOURCE,
+                ResourceParametersContainer(
+                        activity = activity,
+                        resourceId = sheetId,
+                        app = activity.applicationContext as EduWikiApplication,
+                        successCb = { },
+                        errorCb = { error -> Toast.makeText(app, "Error" + error.message, LENGTH_LONG).show() }
+                )
+        )
+
+
+        //Toast.makeText(context, "Download", Toast.LENGTH_LONG).show()
         /* val uri = Uri.parse(API_URL + "/resources/" + sheetId)
          val req = DownloadManager.Request(uri)
          req.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)

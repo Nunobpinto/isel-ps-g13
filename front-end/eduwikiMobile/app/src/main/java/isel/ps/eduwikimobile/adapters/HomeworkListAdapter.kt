@@ -5,6 +5,8 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.CheckBox
 import android.widget.TextView
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.domain.model.single.Homework
@@ -33,12 +35,18 @@ class HomeworkListAdapter (var context: Context, var list: MutableList<Homework>
 
     inner class ListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
-        var homeworkName: TextView
+        var homeworkDueDate: TextView
+        var homeworkLateDelivery: CheckBox
+        var homeworkMultipleDeliveries: CheckBox
+        var homeworkSheet: Button
 
         private lateinit var listener: ListItemClickListener
 
         init {
-            homeworkName = itemView.findViewById(R.id.homework_name)
+            homeworkDueDate = itemView.findViewById(R.id.to_insert_homework_due_date)
+            homeworkLateDelivery = itemView.findViewById(R.id.homework_late_delivey_checkbox)
+            homeworkMultipleDeliveries = itemView.findViewById(R.id.homework_multiple_deliveries_checkbox)
+            homeworkSheet = itemView.findViewById(R.id.homework_sheet)
             itemView.setOnClickListener(this)
         }
 
@@ -49,7 +57,10 @@ class HomeworkListAdapter (var context: Context, var list: MutableList<Homework>
         fun getItem(position: Int) = list[position]
 
         fun bindView(position: Int) {
-            homeworkName.text = "Homework - " + list[position].homeworkId
+            val item = list[position]
+            homeworkDueDate.text = item.dueDate
+            homeworkLateDelivery.isChecked = item.lateDelivery
+            homeworkMultipleDeliveries.isChecked = item.multipleDeliveries
         }
 
         override fun onClick(v: View) {

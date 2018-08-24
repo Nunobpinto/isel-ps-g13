@@ -1,11 +1,23 @@
 package isel.ps.eduwikimobile.ui.activities
 
+import android.Manifest
+import android.app.DownloadManager
+import android.content.Context
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.os.Parcelable
 import android.support.design.widget.BottomNavigationView
+import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
+import android.webkit.MimeTypeMap
+import android.webkit.URLUtil
+import isel.ps.eduwikimobile.API_URL
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.domain.model.single.*
 import isel.ps.eduwikimobile.ui.IDataComunication
@@ -13,6 +25,14 @@ import isel.ps.eduwikimobile.ui.fragments.collection.ClassCollectionFragment
 import isel.ps.eduwikimobile.ui.fragments.collection.CourseCollectionFragment
 import isel.ps.eduwikimobile.ui.fragments.collection.ProgrammeCollectionFragment
 import isel.ps.eduwikimobile.ui.fragments.single.*
+import android.content.Intent
+import android.os.AsyncTask
+import isel.ps.eduwikimobile.DownloadTask
+import isel.ps.eduwikimobile.paramsContainer.DownloadFileContainer
+import java.io.BufferedInputStream
+import java.net.HttpURLConnection
+import java.net.URL
+
 
 class MainActivity : AppCompatActivity(), IDataComunication {
 
@@ -28,6 +48,8 @@ class MainActivity : AppCompatActivity(), IDataComunication {
     var actualCourseClass: CourseClass? = null
     var actualLecture: Lecture? = null
     var actualHomework: Homework? = null
+    lateinit var url: String
+    lateinit var user: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -162,4 +184,24 @@ class MainActivity : AppCompatActivity(), IDataComunication {
         actualLecture = lecture
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            //you have the permission now.
+            val container = DownloadFileContainer(url, applicationContext)
+           DownloadTask(container).execute(container)
+
+            /*val request = DownloadManager.Request(Uri.parse(url))
+            request.allowScanningByMediaScanner()
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            request.setVisibleInDownloadsUi(true)
+            val filename = "exam.${type}"
+            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename)
+            val manager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+            val id = manager.enqueue(request)
+            //val myIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            //startActivity(myIntent)*/
+        }
+    }
 }
+

@@ -12,7 +12,9 @@ import android.widget.TextView
 import android.widget.Toast
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
+import isel.ps.eduwikimobile.controller.AppController
 import isel.ps.eduwikimobile.domain.model.single.Exam
+import isel.ps.eduwikimobile.paramsContainer.ResourceParametersContainer
 import isel.ps.eduwikimobile.ui.IDataComunication
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 class ExamFragment : Fragment() {
@@ -59,6 +61,17 @@ class ExamFragment : Fragment() {
     }
 
     private fun downloadExamSheet(sheetId: String) {
+        /*AppController.actionHandler(
+                AppController.SPECIFIC_RESOURCE,
+                ResourceParametersContainer(
+                        activity = activity,
+                        resourceId = sheetId,
+                        app = activity.applicationContext as EduWikiApplication,
+                        successCb = { },
+                        errorCb = { error -> Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                )
+        )*/
+
         Toast.makeText(context, "Download", Toast.LENGTH_LONG).show()
        /* val uri = Uri.parse(API_URL + "/resources/" + sheetId)
         val req = DownloadManager.Request(uri)

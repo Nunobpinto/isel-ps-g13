@@ -1,18 +1,85 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/item_id"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/item_id">
+    android:orientation="horizontal">
 
     <TextView
-        android:id="@+id/homework_name"
-        android:layout_weight="3"
+        android:id="@+id/homework_due_date"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_width="0dp"
-        android:textSize="22sp"
-        android:text="Homework"
-        android:layout_margin="22dp"
-        />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:text="Due Date:"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/homework_late_delivery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:text="Late Delivery:"
+        android:textSize="16sp"
+        app:layout_constraintStart_toEndOf="@+id/homework_multiple_deliveries_checkbox"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/homework_multiple_deliveries"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="32dp"
+        android:text="Multiple Deliveries:"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/homework_sheet"
+        android:layout_width="129dp"
+        android:layout_height="52dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="64dp"
+        android:text="Sheet"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <CheckBox
+        android:id="@+id/homework_late_delivey_checkbox"
+        android:layout_width="30dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:clickable="false"
+        app:layout_constraintStart_toEndOf="@+id/homework_late_delivery"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <CheckBox
+        android:id="@+id/homework_multiple_deliveries_checkbox"
+        android:layout_width="30dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="32dp"
+        android:clickable="false"
+        app:layout_constraintStart_toEndOf="@+id/homework_multiple_deliveries"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/to_insert_homework_due_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:text="Insert Due Date"
+        android:textSize="16sp"
+        app:layout_constraintStart_toEndOf="@+id/homework_due_date"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

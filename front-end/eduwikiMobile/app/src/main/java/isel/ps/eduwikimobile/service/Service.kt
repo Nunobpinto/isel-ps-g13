@@ -115,5 +115,9 @@ class Service : IService {
         )
     }
 
+    override fun getSpecificResource(params: ResourceParametersContainer) {
+        remoteRepository.getSpecificResource(params)
+    }
+
 
 }

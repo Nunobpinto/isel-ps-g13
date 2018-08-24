@@ -30,7 +30,7 @@ class AppController {
                 EXAMS -> getExamsOfSpecificCourse(params as ExamCollectionParametersContainer)
                 ALL_CLASSES_OF_SPECIFIC_COURSE -> getClassesOfSpecificCourse(params as CourseClassCollectionParametersContainer)
                 TERMS_OF_COURSE -> getTermsOfCourse(params as TermCollectionParametersContainer)
-                //SPECIFIC_RESOURCE -> getSpecificResource(params as ResourceParametersContainer)
+                SPECIFIC_RESOURCE -> getSpecificResource(params as ResourceParametersContainer)
                 ALL_COURSES_OF_SPECIFIC_CLASS -> getAllCoursesOfSpecificClass(params as CoursesOfSpecificClassParametersContainer)
                 ALL_LECTURES_OF_COURSE_CLASS -> getAllLecturesOfCourseClass(params as LectureCollectionParametersContainer)
                 ALL_HOMEWORKS_OF_COURSE_CLASS -> getAllHomeworksOfCourseClass(params as HomeworkCollectionParametersContainer)
@@ -73,6 +73,9 @@ class AppController {
 
         private fun getAllHomeworksOfCourseClass(params: HomeworkCollectionParametersContainer) =
                 params.app.service.getAllHomeworksOfCourseClass(params)
+
+        private fun getSpecificResource(params: ResourceParametersContainer) =
+                params.app.service.getSpecificResource(params)
 
     }
 

@@ -15,4 +15,5 @@ interface IService {
     fun getAllCoursesOfSpecificClass(params: CoursesOfSpecificClassParametersContainer)
     fun getAllLecturesOfCourseClass(params: LectureCollectionParametersContainer)
     fun getAllHomeworksOfCourseClass(params: HomeworkCollectionParametersContainer)
+    fun getSpecificResource(params: ResourceParametersContainer)
 }

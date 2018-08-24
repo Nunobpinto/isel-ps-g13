@@ -15,13 +15,15 @@ class ResourceController {
     @Autowired
     lateinit var storageService: ResourceStorageService
 
-    @GetMapping("/{sheetId}" )
+    @GetMapping("/{sheetId}")
     fun getResource(
             @PathVariable sheetId: UUID
-    ) : ResponseEntity<ByteArray> {
+    ): ResponseEntity<ByteArray> {
         val resource = storageService.getResource(sheetId)
         val headers = HttpHeaders()
+        val disposition = "attachment; filename=\"${resource.originalFilename}\""
         headers.add("Content-Type", resource.contentType)
+        headers.add("Content-Disposition", disposition)
         return ResponseEntity(resource.byteSequence, headers, HttpStatus.OK)
     }
 
