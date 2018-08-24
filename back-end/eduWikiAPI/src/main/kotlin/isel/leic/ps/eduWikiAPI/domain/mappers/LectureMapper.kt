@@ -2,6 +2,7 @@ package isel.leic.ps.eduWikiAPI.domain.mappers
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.LectureInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.LectureReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.model.ActionLog
 import isel.leic.ps.eduWikiAPI.domain.model.Lecture
 import isel.leic.ps.eduWikiAPI.domain.model.report.LectureReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.LectureStage
@@ -11,6 +12,7 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.LectureCollectionO
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.LectureReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.LectureStageCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.LectureVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserActionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.LectureReportOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.LectureStageOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.LectureVersionOutputModel
@@ -122,3 +124,23 @@ fun toLectureVersionCollectionOutputModel(lectureVersionList: List<LectureVersio
         lectureVersionList = lectureVersionList
 )
 
+fun Lecture.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
+        action_type = actionLog.actionType.name,
+        entity_type = actionLog.entity,
+        entity_link = "classes/$classId/courses/$courseId/lectures/$lectureId",
+        timestamp = actionLog.timestamp
+)
+
+fun LectureReport.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
+        action_type = actionLog.actionType.name,
+        entity_type = actionLog.entity,
+        entity_link = "classes/$classId/courses/$courseId/lectures/$lectureId/reports/$reportId",
+        timestamp = actionLog.timestamp
+)
+
+fun LectureStage.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
+        action_type = actionLog.actionType.name,
+        entity_type = actionLog.entity,
+        entity_link = "classes/$classId/courses/$courseId/lectures/stage/$stageId",
+        timestamp = actionLog.timestamp
+)

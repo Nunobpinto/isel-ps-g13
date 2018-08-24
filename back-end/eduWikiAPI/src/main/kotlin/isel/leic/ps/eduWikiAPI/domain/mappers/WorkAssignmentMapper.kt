@@ -2,6 +2,7 @@ package isel.leic.ps.eduWikiAPI.domain.mappers
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.WorkAssignmentInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.WorkAssignmentReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.model.ActionLog
 import isel.leic.ps.eduWikiAPI.domain.model.WorkAssignment
 import isel.leic.ps.eduWikiAPI.domain.model.report.WorkAssignmentReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
@@ -10,6 +11,7 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.WorkAssignmentOutputMod
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.WorkAssignmentCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.WorkAssignmentReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.WorkAssignmentVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserActionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.WorkAssignmentReportOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.WorkAssignmentStageOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.WorkAssignmentVersionOutputModel
@@ -146,4 +148,25 @@ fun toWorkAssignmentReportCollectionOutputModel(workAssignmentReportList: List<W
 
 fun toWorkAssignmentVersionCollectionOutputModel(workAssignmentVersionList: List<WorkAssignmentVersionOutputModel>) = WorkAssignmentVersionCollectionOutputModel(
         workAssignmentVersionList = workAssignmentVersionList
+)
+
+fun WorkAssignment.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
+        action_type = actionLog.actionType.name,
+        entity_type = actionLog.entity,
+        entity_link = "courses/$courseId/terms/$termId/work-assignments/$workAssignmentId",
+        timestamp = actionLog.timestamp
+)
+
+fun WorkAssignmentReport.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
+        action_type = actionLog.actionType.name,
+        entity_type = actionLog.entity,
+        entity_link = "courses/$courseId/terms/$termId/work-assignments/$workAssignmentId/reports/$reportId",
+        timestamp = actionLog.timestamp
+)
+
+fun WorkAssignmentStage.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
+        action_type = actionLog.actionType.name,
+        entity_type = actionLog.entity,
+        entity_link = "courses/$courseId/terms/$termId/work-assignments/stage/$stageId",
+        timestamp = actionLog.timestamp
 )

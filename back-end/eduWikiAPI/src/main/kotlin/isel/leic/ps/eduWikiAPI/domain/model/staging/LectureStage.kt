@@ -1,5 +1,9 @@
 package isel.leic.ps.eduWikiAPI.domain.model.staging
 
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_CLASS_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_COURSE_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.LectureDAOImpl.Companion.LECTURE_STAGE_BEGINS
 import isel.leic.ps.eduWikiAPI.repository.LectureDAOImpl.Companion.LECTURE_STAGE_CREATED_BY
 import isel.leic.ps.eduWikiAPI.repository.LectureDAOImpl.Companion.LECTURE_STAGE_DURATION
@@ -16,6 +20,10 @@ import java.time.*
 data class LectureStage(
         @ColumnName(LECTURE_STAGE_ID)
         val stageId: Int = -1,
+        @ColumnName(COURSE_CLASS_CLASS_ID)
+        val classId: Int = 0,
+        @ColumnName(COURSE_CLASS_COURSE_ID)
+        val courseId: Int = 0,
         @ColumnName(LECTURE_STAGE_LOG_ID)
         val logId: Int = 0,
         @ColumnName(LECTURE_STAGE_WEEK_DAY)

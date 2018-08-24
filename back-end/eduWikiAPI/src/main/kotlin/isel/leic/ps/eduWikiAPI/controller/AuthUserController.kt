@@ -30,6 +30,15 @@ class AuthUserController {
     @GetMapping("/programme")
     fun getProgrammeOfUser(principal: Principal) = userService.getProgrammeOfUser(principal.name)
 
+    @GetMapping("/feed")
+    fun getUserFeed(principal: Principal) = userService.getUserFeed(principal)
+
+    @GetMapping("/reputation")
+    fun getUserReputation(principal: Principal) = userService.getUserReputation(principal)
+
+    @GetMapping("/actions")
+    fun getUserActions(principal: Principal) = userService.getUserActions(principal)
+
     /**
      * ALL PATCH Routes
      */
@@ -67,6 +76,7 @@ class AuthUserController {
 
     @DeleteMapping("/classes")
     fun deleteAllClassesOfUser(principal: Principal) = userService.deleteAllClassesOfUser(principal.name)
+
     @DeleteMapping("/classes/{classId}")
     fun deleteSpecificClassOfUser(principal: Principal, @PathVariable classId: Int) =
             userService.deleteSpecificClassOfUser(principal.name, classId)

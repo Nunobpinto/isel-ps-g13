@@ -161,6 +161,15 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
     override fun deleteReportOnWorkAssignment(termId: Int, courseId: Int, workAssignmentId: Int, reportId: Int): Int =
             jdbi.open().attach(WorkAssignmentDAOJdbi::class.java).deleteReportOnWorkAssignment(termId, courseId, workAssignmentId, reportId)
 
+    override fun getWorkAssignmentByLogId(logId: Int): Optional<WorkAssignment> =
+            jdbi.open().attach(WorkAssignmentDAOJdbi::class.java).getWorkAssignmentByLogId(logId)
+
+    override fun getWorkAssignmentReportByLogId(logId: Int): Optional<WorkAssignmentReport> =
+            jdbi.open().attach(WorkAssignmentDAOJdbi::class.java).getWorkAssignmentReportByLogId(logId)
+
+    override fun getWorkAssignmentStageByLogId(logId: Int): Optional<WorkAssignmentStage> =
+            jdbi.open().attach(WorkAssignmentDAOJdbi::class.java).getWorkAssignmentStageByLogId(logId)
+
     interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
         @CreateSqlObject
         fun createCourseDAO(): CourseDAOImpl.CourseDAOJdbi
@@ -180,7 +189,9 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_REQUIRES_REPORT, " +
                         "W.$WORK_ASSIGNMENT_VOTES, " +
                         "W.$WORK_ASSIGNMENT_TIMESTAMP, " +
-                        "W.$WORK_ASSIGNMENT_LOG_ID" +
+                        "W.$WORK_ASSIGNMENT_LOG_ID, " +
+                        "C.$COURSE_MISC_UNIT_COURSE_ID, " +
+                        "C.$COURSE_MISC_UNIT_TERM_ID " +
                         "FROM :schema.$WORK_ASSIGNMENT_TABLE AS W " +
                         "INNER JOIN :schema.$COURSE_MISC_UNIT_TABLE AS C " +
                         "ON W.$WORK_ASSIGNMENT_ID = C.$COURSE_MISC_UNIT_ID " +
@@ -246,7 +257,9 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_MULTIPLE_DELIVERIES, " +
                         "W.$WORK_ASSIGNMENT_REQUIRES_REPORT, " +
                         "W.$WORK_ASSIGNMENT_TIMESTAMP, " +
-                        "W.$WORK_ASSIGNMENT_LOG_ID " +
+                        "W.$WORK_ASSIGNMENT_LOG_ID, " +
+                        "C.$COURSE_MISC_UNIT_COURSE_ID, " +
+                        "C.$COURSE_MISC_UNIT_TERM_ID " +
                         "FROM :schema.$WORK_ASSIGNMENT_TABLE AS W " +
                         "INNER JOIN :schema.$COURSE_MISC_UNIT_TABLE AS C " +
                         "ON W.$WORK_ASSIGNMENT_ID = C.$COURSE_MISC_UNIT_ID " +
@@ -268,7 +281,9 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_STAGE_REQUIRES_REPORT, " +
                         "W.$WORK_ASSIGNMENT_STAGE_VOTES," +
                         "W.$WORK_ASSIGNMENT_STAGE_TIMESTAMP, " +
-                        "W.$WORK_ASSIGNMENT_STAGE_LOG_ID " +
+                        "W.$WORK_ASSIGNMENT_STAGE_LOG_ID, " +
+                        "C.$COURSE_MISC_UNIT_STAGE_COURSE_ID, " +
+                        "C.$COURSE_MISC_UNIT_STAGE_TERM_ID " +
                         "FROM :schema.$WORK_ASSIGNMENT_STAGE_TABLE AS W " +
                         "INNER JOIN :schema.$COURSE_MISC_UNIT_STAGE_TABLE AS C " +
                         "ON W.$WORK_ASSIGNMENT_STAGE_ID = C.$COURSE_MISC_UNIT_STAGE_ID " +
@@ -290,7 +305,9 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_STAGE_CREATED_BY, " +
                         "W.$WORK_ASSIGNMENT_STAGE_VOTES, " +
                         "W.$WORK_ASSIGNMENT_STAGE_TIMESTAMP, " +
-                        "W.$WORK_ASSIGNMENT_STAGE_LOG_ID " +
+                        "W.$WORK_ASSIGNMENT_STAGE_LOG_ID, " +
+                        "C.$COURSE_MISC_UNIT_STAGE_COURSE_ID, " +
+                        "C.$COURSE_MISC_UNIT_STAGE_TERM_ID " +
                         "FROM :schema.$WORK_ASSIGNMENT_STAGE_TABLE AS W " +
                         "INNER JOIN :schema.$COURSE_MISC_UNIT_STAGE_TABLE AS C " +
                         "ON W.$WORK_ASSIGNMENT_STAGE_ID = C.$COURSE_MISC_UNIT_STAGE_ID " +
@@ -314,7 +331,9 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_REPORTED_BY, " +
                         "W.$WORK_ASSIGNMENT_REPORT_VOTES, " +
                         "W.$WORK_ASSIGNMENT_REPORT_TIMESTAMP, " +
-                        "W.$WORK_ASSIGNMENT_REPORT_LOG_ID" +
+                        "W.$WORK_ASSIGNMENT_REPORT_LOG_ID, " +
+                        "C.$COURSE_MISC_UNIT_COURSE_ID, " +
+                        "C.$COURSE_MISC_UNIT_TERM_ID " +
                         "FROM :schema.$WORK_ASSIGNMENT_REPORT_TABLE AS W " +
                         "INNER JOIN :schema.$COURSE_MISC_UNIT_TABLE AS C " +
                         "ON W.$WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID = C.$COURSE_MISC_UNIT_ID " +
@@ -400,7 +419,9 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_REPORTED_BY, " +
                         "W.$WORK_ASSIGNMENT_REPORT_VOTES, " +
                         "W.$WORK_ASSIGNMENT_REPORT_TIMESTAMP, " +
-                        "W.$WORK_ASSIGNMENT_REPORT_LOG_ID" +
+                        "W.$WORK_ASSIGNMENT_REPORT_LOG_ID, " +
+                        "C.$COURSE_MISC_UNIT_COURSE_ID, " +
+                        "C.$COURSE_MISC_UNIT_TERM_ID " +
                         "FROM :schema.$WORK_ASSIGNMENT_REPORT_TABLE AS W " +
                         "INNER JOIN :schema.$COURSE_MISC_UNIT_TABLE AS C " +
                         "ON W.$WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID = C.$COURSE_MISC_UNIT_ID " +
@@ -515,6 +536,78 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "AND C.$COURSE_MISC_UNIT_ID = :workAssignment AND W.$WORK_ASSIGNMENT_VERSION_ID = :version"
         )
         override fun getVersionOfSpecificWorkAssignment(termId: Int, courseId: Int, workAssignmentId: Int, version: Int): Optional<WorkAssignmentVersion>
+
+        @SqlQuery(
+                "SELECT W.$WORK_ASSIGNMENT_ID," +
+                        "W.$WORK_ASSIGNMENT_VERSION," +
+                        "W.$WORK_ASSIGNMENT_PHASE, " +
+                        "W.$WORK_ASSIGNMENT_CREATED_BY, " +
+                        "W.$WORK_ASSIGNMENT_VOTES, " +
+                        "W.$WORK_ASSIGNMENT_SHEET_ID, " +
+                        "W.$WORK_ASSIGNMENT_SUPPLEMENT, " +
+                        "W.$WORK_ASSIGNMENT_DUE_DATE," +
+                        "W.$WORK_ASSIGNMENT_INDIVIDUAL, " +
+                        "W.$WORK_ASSIGNMENT_LATE_DELIVERY, " +
+                        "W.$WORK_ASSIGNMENT_MULTIPLE_DELIVERIES, " +
+                        "W.$WORK_ASSIGNMENT_REQUIRES_REPORT, " +
+                        "W.$WORK_ASSIGNMENT_VOTES, " +
+                        "W.$WORK_ASSIGNMENT_TIMESTAMP, " +
+                        "W.$WORK_ASSIGNMENT_LOG_ID, " +
+                        "C.$COURSE_MISC_UNIT_COURSE_ID, " +
+                        "C.$COURSE_MISC_UNIT_TERM_ID " +
+                        "FROM :schema.$WORK_ASSIGNMENT_TABLE AS W " +
+                        "INNER JOIN :schema.$COURSE_MISC_UNIT_TABLE AS C " +
+                        "ON W.$WORK_ASSIGNMENT_ID = C.$COURSE_MISC_UNIT_ID " +
+                        "WHERE W.$WORK_ASSIGNMENT_LOG_ID = :logId"
+        )
+        override fun getWorkAssignmentByLogId(logId: Int): Optional<WorkAssignment>
+
+        @SqlQuery(
+                "SELECT W.$WORK_ASSIGNMENT_REPORT_ID, " +
+                        "W.$WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID, " +
+                        "W.$WORK_ASSIGNMENT_REPORT_PHASE, " +
+                        "W.$WORK_ASSIGNMENT_REPORT_SHEET_ID, " +
+                        "W.$WORK_ASSIGNMENT_REPORT_SUPPLEMENT, " +
+                        "W.$WORK_ASSIGNMENT_REPORT_DUE_DATE, " +
+                        "W.$WORK_ASSIGNMENT_REPORT_INDIVIDUAL, " +
+                        "W.$WORK_ASSIGNMENT_REPORT_LATE_DELIVERY, " +
+                        "W.$WORK_ASSIGNMENT_REPORT_MULTIPLE_DELIVERIES, " +
+                        "W.$WORK_ASSIGNMENT_REPORT_REQUIRES_REPORT, " +
+                        "W.$WORK_ASSIGNMENT_REPORTED_BY, " +
+                        "W.$WORK_ASSIGNMENT_REPORT_VOTES, " +
+                        "W.$WORK_ASSIGNMENT_REPORT_TIMESTAMP, " +
+                        "W.$WORK_ASSIGNMENT_REPORT_LOG_ID, " +
+                        "C.$COURSE_MISC_UNIT_COURSE_ID, " +
+                        "C.$COURSE_MISC_UNIT_TERM_ID " +
+                        "FROM :schema.$WORK_ASSIGNMENT_REPORT_TABLE AS W " +
+                        "INNER JOIN :schema.$COURSE_MISC_UNIT_TABLE AS C " +
+                        "ON W.$WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID = C.$COURSE_MISC_UNIT_ID " +
+                        "WHERE W.$WORK_ASSIGNMENT_REPORT_LOG_ID = :logId"
+        )
+        override fun getWorkAssignmentReportByLogId(logId: Int): Optional<WorkAssignmentReport>
+
+        @SqlQuery(
+                "SELECT W.$WORK_ASSIGNMENT_STAGE_ID, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_SHEET_ID, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_PHASE, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_SUPPLEMENT, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_DUE_DATE, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_INDIVIDUAL, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_LATE_DELIVERY, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_MULTIPLE_DELIVERIES, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_REQUIRES_REPORT, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_CREATED_BY, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_VOTES, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_TIMESTAMP, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_LOG_ID, " +
+                        "C.$COURSE_MISC_UNIT_STAGE_COURSE_ID, " +
+                        "C.$COURSE_MISC_UNIT_STAGE_TERM_ID " +
+                        "FROM :schema.$WORK_ASSIGNMENT_STAGE_TABLE AS W " +
+                        "INNER JOIN :schema.$COURSE_MISC_UNIT_STAGE_TABLE AS C " +
+                        "ON W.$WORK_ASSIGNMENT_STAGE_ID = C.$COURSE_MISC_UNIT_STAGE_ID " +
+                        "WHERE W.$WORK_ASSIGNMENT_STAGE_LOG_ID = :logId"
+        )
+        override fun getWorkAssignmentStageByLogId(logId: Int): Optional<WorkAssignmentStage>
 
     }
 

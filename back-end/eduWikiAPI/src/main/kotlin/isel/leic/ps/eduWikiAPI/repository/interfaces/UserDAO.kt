@@ -47,4 +47,6 @@ interface UserDAO {
     fun deleteAllClassesOfUser(username: String): Int
 
     fun deleteSpecificClassOfUser(username: String, courseClassId: Int): Int
+
+    fun getDevs(): List<User>
 }

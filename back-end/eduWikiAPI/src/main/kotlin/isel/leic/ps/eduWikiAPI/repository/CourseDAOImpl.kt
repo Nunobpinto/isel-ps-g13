@@ -42,7 +42,6 @@ import java.util.*
 @Repository
 class CourseDAOImpl : CourseDAO {
 
-
     companion object {
         //TABLE NAMES
         const val COURSE_TABLE = "course"
@@ -312,6 +311,25 @@ class CourseDAOImpl : CourseDAO {
 
     override fun deleteSpecificStagedCourseMiscUnitEntry(courseId: Int, termId: Int, stageId: Int): Int =
             jdbi.open().attach(CourseDAOJdbi::class.java).deleteSpecificStagedCourseMiscUnitEntry(courseId, termId, stageId)
+
+    override fun getCourseByLogId(logId: Int): Optional<Course> =
+            jdbi.open().attach(CourseDAOJdbi::class.java).getCourseByLogId(logId)
+
+
+    override fun getCourseReportByLogId(logId: Int): Optional<CourseReport> =
+            jdbi.open().attach(CourseDAOJdbi::class.java).getCourseReportByLogId(logId)
+
+    override fun getCourseStageByLogId(logId: Int): Optional<CourseStage> =
+            jdbi.open().attach(CourseDAOJdbi::class.java).getCourseStageByLogId(logId)
+
+    override fun getCourseProgrammeByLogId(logId: Int): Optional<CourseProgramme> =
+            jdbi.open().attach(CourseDAOJdbi::class.java).getCourseProgrammeByLogId(logId)
+
+    override fun getCourseProgrammeReportByLogId(logId: Int): Optional<CourseProgrammeReport> =
+            jdbi.open().attach(CourseDAOJdbi::class.java).getCourseProgrammeReportByLogId(logId)
+
+    override fun getCourseProgrammeStageByLogId(logId: Int): Optional<CourseProgrammeStage> =
+            jdbi.open().attach(CourseDAOJdbi::class.java).getCourseProgrammeStageByLogId(logId)
 
     interface CourseDAOJdbi : CourseDAO {
         @SqlQuery(
@@ -793,6 +811,25 @@ class CourseDAOImpl : CourseDAO {
                         "AND $COURSE_MISC_UNIT_STAGE_TERM_ID = :termId "
         )
         override fun deleteSpecificStagedCourseMiscUnitEntry(courseId: Int, termId: Int, stageId: Int): Int
+
+        @SqlQuery("SELECT * FROM :schema.$COURSE_TABLE WHERE $COURSE_LOG_ID = :logId")
+        override fun getCourseByLogId(logId: Int): Optional<Course>
+
+        @SqlQuery("SELECT * FROM :schema.$COURSE_REPORT_TABLE WHERE $COURSE_REPORT_LOG_ID = :logId")
+        override fun getCourseReportByLogId(logId: Int): Optional<CourseReport>
+
+        @SqlQuery("SELECT * FROM :schema.$COURSE_STAGE_TABLE WHERE $COURSE_STAGE_LOG_ID = :logId")
+        override fun getCourseStageByLogId(logId: Int): Optional<CourseStage>
+
+        @SqlQuery("SELECT * FROM :schema.$COURSE_PROGRAMME_TABLE WHERE $COURSE_PROGRAMME_LOG_ID = :logId")
+        override fun getCourseProgrammeByLogId(logId: Int): Optional<CourseProgramme>
+
+        @SqlQuery("SELECT * FROM :schema.$COURSE_PROGRAMME_REPORT_TABLE WHERE $COURSE_PROGRAMME_REPORT_LOG_ID = :logId")
+        override fun getCourseProgrammeReportByLogId(logId: Int): Optional<CourseProgrammeReport>
+
+        @SqlQuery("SELECT * FROM :schema.$COURSE_PROGRAMME_STAGE_TABLE WHERE $COURSE_PROGRAMME_STAGE_LOG_ID = :logId")
+        override fun getCourseProgrammeStageByLogId(logId: Int): Optional<CourseProgrammeStage>
+
     }
 
 }

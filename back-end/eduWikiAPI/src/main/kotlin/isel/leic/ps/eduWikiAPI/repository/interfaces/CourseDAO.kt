@@ -138,4 +138,16 @@ interface CourseDAO {
 
     fun deleteSpecificStagedCourseMiscUnitEntry(courseId: Int, termId: Int, stageId: Int): Int
 
+    fun getCourseByLogId(logId: Int): Optional<Course>
+
+    fun getCourseReportByLogId(logId: Int): Optional<CourseReport>
+
+    fun getCourseStageByLogId(logId: Int): Optional<CourseStage>
+
+    fun getCourseProgrammeByLogId(logId: Int): Optional<CourseProgramme>
+
+    fun getCourseProgrammeReportByLogId(logId: Int): Optional<CourseProgrammeReport>
+
+    fun getCourseProgrammeStageByLogId(logId: Int): Optional<CourseProgrammeStage>
+
 }

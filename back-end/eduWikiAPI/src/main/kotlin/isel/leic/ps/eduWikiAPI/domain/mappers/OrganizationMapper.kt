@@ -2,6 +2,7 @@ package isel.leic.ps.eduWikiAPI.domain.mappers
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.OrganizationInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.OrganizationReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.model.ActionLog
 import isel.leic.ps.eduWikiAPI.domain.model.Organization
 import isel.leic.ps.eduWikiAPI.domain.model.report.OrganizationReport
 import isel.leic.ps.eduWikiAPI.domain.model.version.OrganizationVersion
@@ -9,6 +10,7 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.OrganizationCollec
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.OrganizationOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.OrganizationReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.OrganizationVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserActionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.OrganizationReportOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.OrganizationVersionOutputModel
 
@@ -84,4 +86,18 @@ fun toOrganizationReportCollectionOutputModel(organizationReportList: List<Organ
 
 fun toOrganizationVersionCollectionOutputModel(organizationVersionList: List<OrganizationVersionOutputModel>) = OrganizationVersionCollectionOutputModel(
         organizationVersionList = organizationVersionList
+)
+
+fun Organization.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
+        action_type = actionLog.actionType.name,
+        entity_type = actionLog.entity,
+        entity_link = "/organization",
+        timestamp = actionLog.timestamp
+)
+
+fun OrganizationReport.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
+        action_type = actionLog.actionType.name,
+        entity_type = actionLog.entity,
+        entity_link = "/organization/reports/$reportId",
+        timestamp = actionLog.timestamp
 )

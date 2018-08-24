@@ -6,5 +6,6 @@ data class AuthUserOutputModel (
         val familyName: String = "",
         val personalEmail: String = "",
         val organizationEmail: String = "",
-        val confirmed: Boolean
+        val confirmed: Boolean,
+        val reputation: ReputationOutputModel
 )

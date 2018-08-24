@@ -7,10 +7,16 @@ import isel.leic.ps.eduWikiAPI.domain.model.staging.HomeworkStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.HomeworkVersion
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_MISC_UNIT_COURSE_CLASS_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_MISC_UNIT_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_MISC_UNIT_STAGE_COURSE_CLASS_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_MISC_UNIT_STAGE_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_MISC_UNIT_STAGE_TABLE
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_MISC_UNIT_TABLE
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_CLASS_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_COURSE_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_STAGE_TERM_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_TABLE
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.interfaces.HomeworkDAO
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.sqlobject.CreateSqlObject
@@ -136,6 +142,16 @@ class HomeworkDAOImpl : HomeworkDAO {
     override fun createHomeworkVersion(homeworkVersion: HomeworkVersion): HomeworkVersion =
             jdbi.open().attach(HomeworkDAOJdbi::class.java).createHomeworkVersion(homeworkVersion)
 
+    override fun getHomeworkByLogId(logId: Int): Optional<Homework> =
+            jdbi.open().attach(HomeworkDAOJdbi::class.java).getHomeworkByLogId(logId)
+
+    override fun getHomeworkReportByLogId(logId: Int): Optional<HomeworkReport> =
+            jdbi.open().attach(HomeworkDAOJdbi::class.java).getHomeworkReportByLogId(logId)
+
+    override fun getHomeworkStageByLogId(logId: Int): Optional<HomeworkStage> =
+            jdbi.open().attach(HomeworkDAOJdbi::class.java).getHomeworkStageByLogId(logId)
+
+
     interface HomeworkDAOJdbi : HomeworkDAO {
         @CreateSqlObject
         fun createClassDAO(): ClassDAOImpl.ClassDAOJdbi
@@ -150,11 +166,15 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "H.$HOMEWORK_MULTIPLE_DELIVERIES, " +
                         "H.$HOMEWORK_VOTES, " +
                         "H.$HOMEWORK_TIMESTAMP, " +
-                        "H.$HOMEWORK_LOG_ID " +
+                        "H.$HOMEWORK_LOG_ID, " +
+                        "CC.$COURSE_CLASS_CLASS_ID, " +
+                        "CC.$COURSE_CLASS_COURSE_ID " +
                         "FROM :schema.$HOMEWORK_TABLE AS H " +
-                        "INNER JOIN :schema.$CLASS_MISC_UNIT_TABLE AS C " +
-                        "ON H.$HOMEWORK_ID = C.$CLASS_MISC_UNIT_ID " +
-                        "WHERE C.$COURSE_CLASS_ID = :courseClassId"
+                        "INNER JOIN :schema.$CLASS_MISC_UNIT_TABLE AS CMU " +
+                        "ON H.$HOMEWORK_ID = CMU.$CLASS_MISC_UNIT_ID " +
+                        "INNER JOIN :schema.$COURSE_CLASS_TABLE as CC " +
+                        "ON CMU.$CLASS_MISC_UNIT_COURSE_CLASS_ID = CC.$COURSE_CLASS_ID " +
+                        "WHERE CMU.$CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId"
         )
         override fun getAllHomeworksFromCourseInClass(courseClassId: Int): List<Homework>
 
@@ -168,11 +188,15 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "H.$HOMEWORK_MULTIPLE_DELIVERIES, " +
                         "H.$HOMEWORK_VOTES, " +
                         "H.$HOMEWORK_TIMESTAMP, " +
-                        "H.$HOMEWORK_LOG_ID " +
+                        "H.$HOMEWORK_LOG_ID, " +
+                        "CC.$COURSE_CLASS_CLASS_ID, " +
+                        "CC.$COURSE_CLASS_COURSE_ID " +
                         "FROM :schema.$HOMEWORK_TABLE AS H " +
-                        "INNER JOIN :schema.$CLASS_MISC_UNIT_TABLE AS C " +
-                        "ON H.$HOMEWORK_ID = C.$CLASS_MISC_UNIT_ID " +
-                        "WHERE C.$COURSE_CLASS_ID = :courseClassId " +
+                        "INNER JOIN :schema.$CLASS_MISC_UNIT_TABLE AS CMU " +
+                        "ON H.$HOMEWORK_ID = CMU.$CLASS_MISC_UNIT_ID " +
+                        "INNER JOIN :schema.$COURSE_CLASS_TABLE as CC " +
+                        "ON CMU.$CLASS_MISC_UNIT_COURSE_CLASS_ID = CC.$COURSE_CLASS_ID " +
+                        "WHERE CMU.$CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
                         "AND H.$HOMEWORK_ID = :homeworkId"
         )
         override fun getSpecificHomeworkFromSpecificCourseInClass(courseClassId: Int, homeworkId: Int): Optional<Homework>
@@ -227,11 +251,15 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "H.$HOMEWORK_STAGE_TIMESTAMP, " +
                         "H.$HOMEWORK_STAGE_VOTES, " +
                         "H.$HOMEWORK_STAGE_CREATED_BY, " +
-                        "H.$HOMEWORK_STAGE_LOG_ID " +
+                        "H.$HOMEWORK_STAGE_LOG_ID, " +
+                        "CC.$COURSE_CLASS_CLASS_ID, " +
+                        "CC.$COURSE_CLASS_COURSE_ID " +
                         "FROM :schema.$HOMEWORK_STAGE_TABLE AS H " +
                         "INNER JOIN :schema.$CLASS_MISC_UNIT_STAGE_TABLE AS C " +
                         "ON H.$HOMEWORK_STAGE_ID = C.$CLASS_MISC_UNIT_STAGE_ID " +
-                        "WHERE C.$CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId"
+                        "INNER JOIN :schema.$COURSE_CLASS_TABLE as CC " +
+                        "ON C.$CLASS_MISC_UNIT_STAGE_COURSE_CLASS_ID = CC.$COURSE_CLASS_ID " +
+                        "WHERE C.$CLASS_MISC_UNIT_STAGE_COURSE_CLASS_ID = :courseClassId"
         )
         override fun getAllStagedHomeworksOfCourseInClass(courseClassId: Int): List<HomeworkStage>
 
@@ -244,10 +272,14 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "H.$HOMEWORK_STAGE_TIMESTAMP, " +
                         "H.$HOMEWORK_STAGE_VOTES, " +
                         "H.$HOMEWORK_STAGE_CREATED_BY, " +
-                        "H.$HOMEWORK_STAGE_LOG_ID " +
+                        "H.$HOMEWORK_STAGE_LOG_ID, " +
+                        "CC.$COURSE_CLASS_CLASS_ID, " +
+                        "CC.$COURSE_CLASS_COURSE_ID " +
                         "FROM :schema.$HOMEWORK_STAGE_TABLE AS H " +
                         "INNER JOIN :schema.$CLASS_MISC_UNIT_STAGE_TABLE AS C " +
                         "ON H.$HOMEWORK_STAGE_ID = C.$CLASS_MISC_UNIT_STAGE_ID " +
+                        "INNER JOIN :schema.$COURSE_CLASS_TABLE as CC " +
+                        "ON C.$CLASS_MISC_UNIT_STAGE_COURSE_CLASS_ID = CC.$COURSE_CLASS_ID " +
                         "WHERE C.$CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
                         "AND H.$HOMEWORK_STAGE_ID = :stageId"
         )
@@ -316,10 +348,14 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "H.$HOMEWORK_REPORTED_BY, " +
                         "H.$HOMEWORK_REPORT_VOTES, " +
                         "H.$HOMEWORK_REPORT_TIMESTAMP, " +
-                        "H.$HOMEWORK_REPORT_LOG_ID " +
+                        "H.$HOMEWORK_REPORT_LOG_ID, " +
+                        "CC.$COURSE_CLASS_CLASS_ID, " +
+                        "CC.$COURSE_CLASS_COURSE_ID " +
                         "FROM :schema.$HOMEWORK_REPORT_TABLE AS H " +
                         "INNER JOIN :schema.$CLASS_MISC_UNIT_TABLE AS C " +
                         "ON H.$HOMEWORK_REPORT_HOMEWORK_ID = C.$CLASS_MISC_UNIT_ID " +
+                        "INNER JOIN :schema.$COURSE_CLASS_TABLE as CC " +
+                        "ON C.$CLASS_MISC_UNIT_COURSE_CLASS_ID = CC.$COURSE_CLASS_ID " +
                         "WHERE C.$CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
                         "AND H.$HOMEWORK_REPORT_HOMEWORK_ID = :homeworkId"
         )
@@ -335,10 +371,14 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "H.$HOMEWORK_REPORTED_BY, " +
                         "H.$HOMEWORK_REPORT_VOTES, " +
                         "H.$HOMEWORK_REPORT_TIMESTAMP, " +
-                        "H.$HOMEWORK_REPORT_LOG_ID " +
-                        "FROM :schema.$HOMEWORK_TABLE AS H " +
+                        "H.$HOMEWORK_REPORT_LOG_ID, " +
+                        "CC.$COURSE_CLASS_CLASS_ID, " +
+                        "CC.$COURSE_CLASS_COURSE_ID " +
+                        "FROM :schema.$HOMEWORK_REPORT_TABLE AS H " +
                         "INNER JOIN :schema.$CLASS_MISC_UNIT_TABLE AS C " +
                         "ON H.$HOMEWORK_REPORT_HOMEWORK_ID = C.$CLASS_MISC_UNIT_ID " +
+                        "INNER JOIN :schema.$COURSE_CLASS_TABLE as CC " +
+                        "ON C.$CLASS_MISC_UNIT_COURSE_CLASS_ID = CC.$COURSE_CLASS_ID " +
                         "WHERE C.$CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
                         "AND H.$HOMEWORK_REPORT_HOMEWORK_ID = :homeworkId " +
                         "AND H.$HOMEWORK_REPORT_ID = :reportId"
@@ -431,6 +471,72 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "AND H.$HOMEWORK_VERSION_ID = :version"
         )
         override fun getSpecificVersionOfHomeworkOfCourseInClass(courseClassId: Int, homeworkId: Int, version: Int): Optional<HomeworkVersion>
+
+        @SqlQuery(
+                "SELECT H.$HOMEWORK_ID, " +
+                        "H.$HOMEWORK_VERSION, " +
+                        "H.$HOMEWORK_CREATED_BY, " +
+                        "H.$HOMEWORK_SHEET_ID, " +
+                        "H.$HOMEWORK_DUE_DATE, " +
+                        "H.$HOMEWORK_LATE_DELIVERY, " +
+                        "H.$HOMEWORK_MULTIPLE_DELIVERIES, " +
+                        "H.$HOMEWORK_VOTES, " +
+                        "H.$HOMEWORK_TIMESTAMP, " +
+                        "H.$HOMEWORK_LOG_ID, " +
+                        "CC.$COURSE_CLASS_CLASS_ID, " +
+                        "CC.$COURSE_CLASS_COURSE_ID " +
+                        "FROM :schema.$HOMEWORK_TABLE AS H " +
+                        "INNER JOIN :schema.$CLASS_MISC_UNIT_TABLE AS CMU " +
+                        "ON H.$HOMEWORK_ID = CMU.$CLASS_MISC_UNIT_ID " +
+                        "INNER JOIN :schema.$COURSE_CLASS_TABLE as CC " +
+                        "ON CMU.$CLASS_MISC_UNIT_COURSE_CLASS_ID = CC.$COURSE_CLASS_ID " +
+                        "WHERE H.$HOMEWORK_LOG_ID = :logId"
+        )
+        override fun getHomeworkByLogId(logId: Int): Optional<Homework>
+
+        @SqlQuery(
+                "SELECT H.$HOMEWORK_REPORT_ID, " +
+                        "H.$HOMEWORK_REPORT_HOMEWORK_ID, " +
+                        "H.$HOMEWORK_REPORT_SHEET_ID, " +
+                        "H.$HOMEWORK_REPORT_DUE_DATE, " +
+                        "H.$HOMEWORK_REPORT_LATE_DELIVERY, " +
+                        "H.$HOMEWORK_REPORT_MULTIPLE_DELIVERIES, " +
+                        "H.$HOMEWORK_REPORTED_BY, " +
+                        "H.$HOMEWORK_REPORT_VOTES, " +
+                        "H.$HOMEWORK_REPORT_TIMESTAMP, " +
+                        "H.$HOMEWORK_REPORT_LOG_ID, " +
+                        "CC.$COURSE_CLASS_CLASS_ID, " +
+                        "CC.$COURSE_CLASS_COURSE_ID " +
+                        "FROM :schema.$HOMEWORK_REPORT_TABLE AS H " +
+                        "INNER JOIN :schema.$CLASS_MISC_UNIT_TABLE AS C " +
+                        "ON H.$HOMEWORK_REPORT_HOMEWORK_ID = C.$CLASS_MISC_UNIT_ID " +
+                        "INNER JOIN :schema.$COURSE_CLASS_TABLE as CC " +
+                        "ON C.$CLASS_MISC_UNIT_COURSE_CLASS_ID = CC.$COURSE_CLASS_ID " +
+                        "WHERE H.$HOMEWORK_REPORT_LOG_ID = :logId"
+        )
+        override fun getHomeworkReportByLogId(logId: Int): Optional<HomeworkReport>
+
+        @SqlQuery(
+                "SELECT H.$HOMEWORK_STAGE_ID, " +
+                        "H.$HOMEWORK_STAGE_SHEET_ID, " +
+                        "H.$HOMEWORK_STAGE_DUE_DATE, " +
+                        "H.$HOMEWORK_STAGE_LATE_DELIVERY, " +
+                        "H.$HOMEWORK_STAGE_MULTIPLE_DELIVERIES, " +
+                        "H.$HOMEWORK_STAGE_TIMESTAMP, " +
+                        "H.$HOMEWORK_STAGE_VOTES, " +
+                        "H.$HOMEWORK_STAGE_CREATED_BY, " +
+                        "H.$HOMEWORK_STAGE_LOG_ID, " +
+                        "CC.$COURSE_CLASS_CLASS_ID, " +
+                        "CC.$COURSE_CLASS_COURSE_ID " +
+                        "FROM :schema.$HOMEWORK_STAGE_TABLE AS H " +
+                        "INNER JOIN :schema.$CLASS_MISC_UNIT_STAGE_TABLE AS C " +
+                        "ON H.$HOMEWORK_STAGE_ID = C.$CLASS_MISC_UNIT_STAGE_ID " +
+                        "INNER JOIN :schema.$COURSE_CLASS_TABLE as CC " +
+                        "ON C.$CLASS_MISC_UNIT_STAGE_COURSE_CLASS_ID = CC.$COURSE_CLASS_ID " +
+                        "WHERE H.$HOMEWORK_STAGE_LOG_ID = :logId"
+        )
+        override fun getHomeworkStageByLogId(logId: Int): Optional<HomeworkStage>
+
     }
 
 }

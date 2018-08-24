@@ -64,4 +64,10 @@ interface LectureDAO {
 
     fun createLectureVersion(lectureVersion: LectureVersion): LectureVersion
 
+    fun getLectureByLogId(logId: Int): Optional<Lecture>
+
+    fun getLectureReportByLogId(logId: Int): Optional<LectureReport>
+
+    fun getLectureStageByLogId(logId: Int): Optional<LectureStage>
+
 }

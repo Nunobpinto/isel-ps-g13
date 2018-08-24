@@ -10,9 +10,9 @@ data class Reputation (
         @ColumnName(REPUTATION_ID)
         val reputationId: Int = 0,
         @ColumnName(REPUTATION_POINTS)
-        val reputationPoints: Int = 0,
+        var points: Int = 0,
         @ColumnName(REPUTATION_ROLE)
-        val reputationRole: String = "",
+        var role: String = "",
         @ColumnName(REPUTATION_USER)
         val username: String = ""
 )

@@ -1,5 +1,9 @@
 package isel.leic.ps.eduWikiAPI.domain.model.staging
 
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_CLASS_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_COURSE_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_STAGE_CREATED_BY
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_STAGE_DUE_DATE
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_STAGE_LATE_DELIVERY
@@ -18,6 +22,10 @@ import java.util.*
 data class HomeworkStage (
         @ColumnName(HOMEWORK_STAGE_ID)
         val stageId: Int = -1,
+        @ColumnName(COURSE_CLASS_CLASS_ID)
+        val classId: Int = 0,
+        @ColumnName(COURSE_CLASS_COURSE_ID)
+        val courseId: Int = 0,
         @ColumnName(HOMEWORK_STAGE_LOG_ID)
         val logId: Int = -1,
         @ColumnName(HOMEWORK_STAGE_SHEET_ID)

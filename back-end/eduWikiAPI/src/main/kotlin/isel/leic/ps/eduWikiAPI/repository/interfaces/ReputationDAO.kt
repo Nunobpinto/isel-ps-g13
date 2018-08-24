@@ -9,13 +9,13 @@ interface ReputationDAO {
 
     fun getReputationRoleOfUser(username: String): Optional<String>
 
-    fun getUserReputationDetails(user: String): Optional<ReputationDetails>
+    fun getUserReputationDetails(user: String): Optional<Reputation>
 
     fun createUserReputation(reputation: Reputation): Reputation
 
-    fun updateUserRole(username: String, reputationPoints: Int, role: String): Int
+    fun updateUserRole(username: String, reputationPoints: Int, role: String): Reputation
 
-    fun updateUserReputation(reputationDetails: ReputationDetails): Int
+    fun updateUserReputation(reputationDetails: Reputation): Int
 
     fun registerReputationLog(user: String, reputationId: Int, pointsGiven: Int, givenBy: String, actionId: Int): ReputationLog
 
@@ -23,5 +23,11 @@ interface ReputationDAO {
 
     fun getActionLogsByUserAndResource(user: String, approvedEntity: String, approvedLogId: Int): List<ActionLog>
 
+    fun getActionLogsByUser(username: String): List<ActionLog>
+
     fun registerActionLog(user: String, action: ActionType, entity: String, logId: Int, timestamp: Timestamp): ActionLog
+
+    fun getReputationLogsByUser(username: String): List<ReputationLog>
+
+    fun getActionLogById(repActionId: Int): Optional<ActionLog>
 }

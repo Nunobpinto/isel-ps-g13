@@ -2,6 +2,7 @@ package isel.leic.ps.eduWikiAPI.domain.mappers
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.ProgrammeInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ProgrammeReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.model.ActionLog
 import isel.leic.ps.eduWikiAPI.domain.model.Programme
 import isel.leic.ps.eduWikiAPI.domain.model.report.ProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ProgrammeStage
@@ -11,6 +12,7 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ProgrammeCollectio
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.ProgrammeReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.ProgrammeStageCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.ProgrammeVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserActionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.ProgrammeReportOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.ProgrammeStageOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.ProgrammeVersionOutputModel
@@ -128,4 +130,25 @@ fun toProgrammeReportCollectionOutputModel(programmeReportList: List<ProgrammeRe
 
 fun toProgrammeVersionCollectionOutputModel(programmeVersionList: List<ProgrammeVersionOutputModel>) = ProgrammeVersionCollectionOutputModel(
         programmeVersionList = programmeVersionList
+)
+
+fun Programme.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
+        action_type = actionLog.actionType.name,
+        entity_type = actionLog.entity,
+        entity_link = "programmes/$programmeId",
+        timestamp = actionLog.timestamp
+)
+
+fun ProgrammeReport.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
+        action_type = actionLog.actionType.name,
+        entity_type = actionLog.entity,
+        entity_link = "programmes/$programmeId/reports/$reportId",
+        timestamp = actionLog.timestamp
+)
+
+fun ProgrammeStage.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
+        action_type = actionLog.actionType.name,
+        entity_type = actionLog.entity,
+        entity_link = "programmes/stage/$stageId",
+        timestamp = actionLog.timestamp
 )

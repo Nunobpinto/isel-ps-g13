@@ -1,6 +1,9 @@
 package isel.leic.ps.eduWikiAPI.domain.model.report
 
 import isel.leic.ps.eduWikiAPI.domain.enums.ExamType
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_UNIT_COURSE_ID
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_UNIT_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_REPORT_DUE_DATE
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_REPORT_EXAM_ID
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_REPORT_LOCATION
@@ -23,6 +26,10 @@ data class ExamReport (
         val reportId: Int = -1,
         @ColumnName(EXAM_REPORT_EXAM_ID)
         val examId: Int = 0,
+        @ColumnName(COURSE_MISC_UNIT_COURSE_ID)
+        val courseId: Int = 0,
+        @ColumnName(COURSE_MISC_UNIT_TERM_ID)
+        val termId: Int = 0,
         @ColumnName(EXAM_REPORT_LOG_ID)
         val logId: Int = 0,
         @ColumnName(EXAM_REPORT_SHEET_ID)

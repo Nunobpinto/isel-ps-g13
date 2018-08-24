@@ -63,6 +63,12 @@ interface ExamDAO {
 
     fun deleteReportOnExam(courseId: Int, termId: Int, examId: Int, reportId: Int): Int
 
+    fun getExamByLogId(logId: Int): Optional<Exam>
+
+    fun getExamStageByLogId(logId: Int): Optional<ExamStage>
+
+    fun getExamReportByLogId(logId: Int): Optional<ExamReport>
+
 }
 
 

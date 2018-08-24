@@ -1,5 +1,9 @@
 package isel.leic.ps.eduWikiAPI.domain.model.report
 
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_CLASS_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_COURSE_ID
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.LectureDAOImpl.Companion.LECTURE_BEGINS
 import isel.leic.ps.eduWikiAPI.repository.LectureDAOImpl.Companion.LECTURE_DURATION
 import isel.leic.ps.eduWikiAPI.repository.LectureDAOImpl.Companion.LECTURE_ID
@@ -19,6 +23,10 @@ data class LectureReport (
         val reportId: Int = -1,
         @ColumnName(LECTURE_ID)
         val lectureId: Int = 0,
+        @ColumnName(COURSE_CLASS_CLASS_ID)
+        val classId: Int = 0,
+        @ColumnName(COURSE_CLASS_COURSE_ID)
+        val courseId: Int = 0,
         @ColumnName(LECTURE_REPORT_LOG_ID)
         val logId: Int = 0,
         @ColumnName(LECTURE_WEEK_DAY)

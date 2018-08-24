@@ -2,6 +2,7 @@ package isel.leic.ps.eduWikiAPI.domain.mappers
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.CourseInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.model.ActionLog
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseStage
@@ -11,6 +12,7 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseCollectionOu
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.CourseReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.CourseStageCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.CourseVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserActionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.CourseReportOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.CourseStageOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.CourseVersionOutputModel
@@ -101,4 +103,25 @@ fun toCourseStageCollectionOutputModel(courseStageList: List<CourseStageOutputMo
 
 fun toCourseVersionCollectionOutputModel(courseVersionList: List<CourseVersionOutputModel>) = CourseVersionCollectionOutputModel(
         courseVersionList = courseVersionList
+)
+
+fun Course.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
+        action_type = actionLog.actionType.name,
+        entity_type = actionLog.entity,
+        entity_link = "/courses/$courseId",
+        timestamp = actionLog.timestamp
+)
+
+fun CourseStage.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
+        action_type = actionLog.actionType.name,
+        entity_type = actionLog.entity,
+        entity_link = "/courses/stage/$stageId",
+        timestamp = actionLog.timestamp
+)
+
+fun CourseReport.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
+        action_type = actionLog.actionType.name,
+        entity_type = actionLog.entity,
+        entity_link = "/courses/$courseId/reports/$reportId",
+        timestamp = actionLog.timestamp
 )

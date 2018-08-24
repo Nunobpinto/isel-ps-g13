@@ -3,6 +3,7 @@ package isel.leic.ps.eduWikiAPI.domain.mappers
 import isel.leic.ps.eduWikiAPI.domain.enums.ExamType
 import isel.leic.ps.eduWikiAPI.domain.inputModel.ExamInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ExamReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.model.ActionLog
 import isel.leic.ps.eduWikiAPI.domain.model.Exam
 import isel.leic.ps.eduWikiAPI.domain.model.report.ExamReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ExamStage
@@ -121,4 +122,25 @@ fun toExamReportCollectionOutputModel(examReportList: List<ExamReportOutputModel
 
 fun toExamVersionCollectionOutputModel(examVersionList: List<ExamVersionOutputModel>) = ExamVersionCollectionOutputModel(
         examVersionList = examVersionList
+)
+
+fun Exam.toUserActionOutputModel(actionLog: ActionLog) = isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserActionOutputModel(
+        action_type = actionLog.actionType.name,
+        entity_type = actionLog.entity,
+        entity_link = "courses/$courseId/terms/$termId/exams/$examId",
+        timestamp = actionLog.timestamp
+)
+
+fun ExamReport.toUserActionOutputModel(actionLog: ActionLog) = isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserActionOutputModel(
+        action_type = actionLog.actionType.name,
+        entity_type = actionLog.entity,
+        entity_link = "courses/$courseId/terms/$termId/exams/$examId/reports/$reportId",
+        timestamp = actionLog.timestamp
+)
+
+fun ExamStage.toUserActionOutputModel(actionLog: ActionLog) = isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserActionOutputModel(
+        action_type = actionLog.actionType.name,
+        entity_type = actionLog.entity,
+        entity_link = "courses/$courseId/terms/$termId/exams/stage/$stageId",
+        timestamp = actionLog.timestamp
 )

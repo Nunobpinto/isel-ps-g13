@@ -1,6 +1,9 @@
 package isel.leic.ps.eduWikiAPI.domain.model.staging
 
 import isel.leic.ps.eduWikiAPI.domain.enums.ExamType
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_UNIT_STAGE_COURSE_ID
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_UNIT_STAGE_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_STAGE_ID
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_STAGE_CREATED_BY
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_STAGE_DUE_DATE
@@ -20,6 +23,10 @@ import java.util.*
 data class ExamStage (
         @ColumnName(EXAM_STAGE_ID)
         val stageId: Int = -1,
+        @ColumnName(COURSE_MISC_UNIT_STAGE_COURSE_ID)
+        val courseId: Int = -1,
+        @ColumnName(COURSE_MISC_UNIT_STAGE_TERM_ID)
+        val termId: Int = -1,
         @ColumnName(EXAM_STAGE_LOG_ID)
         val logId: Int = 0,
         @ColumnName(EXAM_STAGE_SHEET_ID)

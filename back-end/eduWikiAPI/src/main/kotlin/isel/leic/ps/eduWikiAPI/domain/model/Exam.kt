@@ -1,6 +1,9 @@
 package isel.leic.ps.eduWikiAPI.domain.model;
 
 import isel.leic.ps.eduWikiAPI.domain.enums.ExamType
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_UNIT_COURSE_ID
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_UNIT_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_ID
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_CREATED_BY
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_DUE_DATE
@@ -21,6 +24,10 @@ import java.util.*
 data class Exam (
         @ColumnName(EXAM_ID)
         val examId: Int = 0,
+        @ColumnName(COURSE_MISC_UNIT_COURSE_ID)
+        val courseId: Int = 0,
+        @ColumnName(COURSE_MISC_UNIT_TERM_ID)
+        val termId: Int = 0,
         @ColumnName(EXAM_VERSION)
         val version: Int = 1,
         @ColumnName(EXAM_LOG_ID)

@@ -2,6 +2,7 @@ package isel.leic.ps.eduWikiAPI.domain.mappers
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.ClassInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ClassReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.model.ActionLog
 import isel.leic.ps.eduWikiAPI.domain.model.Class
 import isel.leic.ps.eduWikiAPI.domain.model.Term
 import isel.leic.ps.eduWikiAPI.domain.model.report.ClassReport
@@ -13,6 +14,7 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ClassCollectionOut
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.ClassReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.ClassStageCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.ClassVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserActionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.ClassReportOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.ClassStageOutputModel
 import java.security.Principal
@@ -109,4 +111,25 @@ fun toClassStageCollectionOutputModel(classStageList: List<ClassStageOutputModel
 
 fun toClassVersionCollectionOutputModel(classVersionList: List<ClassVersionOutputModel>) = ClassVersionCollectionOutputModel(
         classVersionList = classVersionList
+)
+
+fun Class.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
+        action_type = actionLog.actionType.name,
+        entity_type = actionLog.entity,
+        entity_link = "/classes/$classId",
+        timestamp = actionLog.timestamp
+)
+
+fun ClassReport.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
+        action_type = actionLog.actionType.name,
+        entity_type = actionLog.entity,
+        entity_link = "/classes/$classId/reports/$reportId",
+        timestamp = actionLog.timestamp
+)
+
+fun ClassStage.toUserActionOutputModel(actionLog: ActionLog)= UserActionOutputModel(
+        action_type = actionLog.actionType.name,
+        entity_type = actionLog.entity,
+        entity_link = "/classes/stage/$stageId",
+        timestamp = actionLog.timestamp
 )

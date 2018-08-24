@@ -62,4 +62,10 @@ interface WorkAssignmentDAO {
 
     fun deleteReportOnWorkAssignment(termId: Int, courseId: Int, workAssignmentId: Int, reportId: Int) : Int
 
+    fun getWorkAssignmentByLogId(logId: Int): Optional<WorkAssignment>
+
+    fun getWorkAssignmentReportByLogId(logId: Int): Optional<WorkAssignmentReport>
+
+    fun getWorkAssignmentStageByLogId(logId: Int): Optional<WorkAssignmentStage>
+
 }

@@ -6,8 +6,10 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.UserProgrammeInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.UserReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ClassCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.UserActionCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.UserReportOutputModel
+import java.security.Principal
 import java.util.*
 
 interface UserService {
@@ -55,4 +57,10 @@ interface UserService {
     fun deleteReportOnUser(username: String, reportId: Int): Int
 
     fun confirmUser(username: String, token: UUID): AuthUserOutputModel
+
+    fun getUserFeed(principal: Principal): Any
+
+    fun getUserReputation(principal: Principal): Any
+
+    fun getUserActions(principal: Principal): UserActionCollectionOutputModel
 }

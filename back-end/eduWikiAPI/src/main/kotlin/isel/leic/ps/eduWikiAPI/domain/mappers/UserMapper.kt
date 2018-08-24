@@ -2,20 +2,22 @@ package isel.leic.ps.eduWikiAPI.domain.mappers
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.UserReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.model.Reputation
 import isel.leic.ps.eduWikiAPI.domain.model.User
 import isel.leic.ps.eduWikiAPI.domain.model.report.UserReport
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.AuthUserOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.ReputationOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.UserReportOutputModel
 
 
 fun toUser(inputModel: UserInputModel) = User(
         username = inputModel.username,
-        familyName = inputModel.familyName!!,
-        givenName = inputModel.givenName!!,
-        organizationEmail = inputModel.organizationEmail!!,
-        password = inputModel.password!!,
-        personalEmail = inputModel.personalEmail!!,
+        familyName = inputModel.familyName !!,
+        givenName = inputModel.givenName !!,
+        organizationEmail = inputModel.organizationEmail !!,
+        password = inputModel.password !!,
+        personalEmail = inputModel.personalEmail !!,
         confirmed = false
 )
 
@@ -25,13 +27,19 @@ fun toUserReport(username: String, reportedBy: String, reportInput: UserReportIn
         reason = reportInput.reason
 )
 
-fun toAuthUserOutputModel(user: User) = AuthUserOutputModel(
+fun toAuthUserOutputModel(user: User, reputation: Reputation) = AuthUserOutputModel(
         username = user.username,
         givenName = user.givenName,
         familyName = user.familyName,
         personalEmail = user.personalEmail,
         organizationEmail = user.organizationEmail,
-        confirmed = user.confirmed
+        confirmed = user.confirmed,
+        reputation = toReputationOutputModel(reputation)
+)
+
+fun toReputationOutputModel(reputation: Reputation) = ReputationOutputModel(
+        points = reputation.points,
+        role = reputation.role
 )
 
 fun toUserOutputModel(user: User) = UserOutputModel(

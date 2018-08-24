@@ -119,5 +119,16 @@ interface ClassDAO {
 
     fun updateStagedCourseClassVotes(classId: Int, stageId: Int, votes: Int): Int
 
+    fun getClassByLogId(logId: Int): Optional<Class>
+
+    fun getClassReportByLogId(logId: Int): Optional<ClassReport>
+
+    fun getClassStageByLogId(logId: Int): Optional<ClassStage>
+
+    fun getCourseClassByLogId(logId: Int): Optional<CourseClass>
+
+    fun getCourseClassReportByLogId(logId: Int): Optional<CourseClassReport>
+
+    fun getCourseClassStageByLogId(logId: Int): Optional<CourseClassStage>
 
 }

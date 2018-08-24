@@ -5,6 +5,8 @@ import isel.leic.ps.eduWikiAPI.domain.model.UserCourseClass
 import isel.leic.ps.eduWikiAPI.domain.model.UserProgramme
 import isel.leic.ps.eduWikiAPI.domain.model.report.UserReport
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_ID
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_TABLE
+import isel.leic.ps.eduWikiAPI.repository.TenantDAOImpl.Companion.MASTER_SCHEMA
 import isel.leic.ps.eduWikiAPI.repository.interfaces.UserDAO
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys
@@ -40,6 +42,11 @@ class UserDAOImpl : UserDAO {
         const val TIMESTAMP = "time_stamp"
         const val REPORT_ID = "report_id"
         const val USER_CONFIRMED_FLAG = "user_confirmed"
+        // USER_DEV FIELDS
+        const val DEV_EMAIL = "dev_email"
+        const val DEV_PASSWORD = "dev_password"
+        const val DEV_GIVEN_NAME = "dev_given_name"
+        const val DEV_FAMILY_NAME = "dev_family_name"
     }
 
     @Qualifier("MainJdbi")
@@ -106,7 +113,11 @@ class UserDAOImpl : UserDAO {
     override fun deleteSpecificClassOfUser(username: String, courseClassId: Int): Int =
             jdbi.open().attach(UserDAOJdbi::class.java).deleteSpecificClassOfUser(username, courseClassId)
 
+    override fun getDevs(): List<User> =
+            jdbi.open().attach(UserDAOJdbi::class.java).getDevs()
+
     interface UserDAOJdbi : UserDAO {
+
         @SqlQuery("SELECT * FROM :schema.$USER_TABLE where $USER_USERNAME = :username")
         override fun getUser(username: String): Optional<User>
 
@@ -231,6 +242,9 @@ class UserDAOImpl : UserDAO {
                 "AND $COURSE_CLASS_ID = :courseClassId"
         )
         override fun deleteSpecificClassOfUser(username: String, courseClassId: Int): Int
+
+        @SqlQuery("SELECT * FROM $MASTER_SCHEMA.$USER_TABLE")
+        override fun getDevs(): List<User>
     }
 
 }

@@ -1,5 +1,8 @@
 package isel.leic.ps.eduWikiAPI.domain.model.report
 
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_UNIT_COURSE_ID
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_UNIT_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_REPORT_PHASE
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_REPORT_TIMESTAMP
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_REPORT_DUE_DATE
@@ -23,6 +26,10 @@ import java.util.*
 data class WorkAssignmentReport (
         @ColumnName(WORK_ASSIGNMENT_REPORT_ID)
         val reportId: Int = -1,
+        @ColumnName(COURSE_MISC_UNIT_COURSE_ID)
+        val courseId: Int = 0,
+        @ColumnName(COURSE_MISC_UNIT_TERM_ID)
+        val termId: Int = 0,
         @ColumnName(WORK_ASSIGNMENT_REPORT_LOG_ID)
         val logId: Int = 0,
         @ColumnName(WORK_ASSIGNMENT_REPORT_WORK_ASSIGN_ID)

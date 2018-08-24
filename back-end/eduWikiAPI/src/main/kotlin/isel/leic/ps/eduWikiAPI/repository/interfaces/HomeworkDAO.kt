@@ -61,4 +61,10 @@ interface HomeworkDAO {
     fun getSpecificVersionOfHomeworkOfCourseInClass(courseClassId: Int, homeworkId: Int, version: Int): Optional<HomeworkVersion>
 
     fun createHomeworkVersion(homeworkVersion: HomeworkVersion): HomeworkVersion
+
+    fun getHomeworkByLogId(logId: Int): Optional<Homework>
+
+    fun getHomeworkReportByLogId(logId: Int): Optional<HomeworkReport>
+
+    fun getHomeworkStageByLogId(logId: Int): Optional<HomeworkStage>
 }

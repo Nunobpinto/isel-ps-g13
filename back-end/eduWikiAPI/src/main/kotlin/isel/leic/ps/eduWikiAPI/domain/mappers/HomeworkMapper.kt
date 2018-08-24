@@ -2,6 +2,7 @@ package isel.leic.ps.eduWikiAPI.domain.mappers
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.HomeworkInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.HomeworkReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.model.ActionLog
 import isel.leic.ps.eduWikiAPI.domain.model.Homework
 import isel.leic.ps.eduWikiAPI.domain.model.report.HomeworkReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.HomeworkStage
@@ -11,6 +12,7 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.HomeworkCollection
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.HomeworkReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.HomeworkStageCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.HomeworkVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserActionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.HomeworkReportOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.HomeworkStageOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.HomeworkVersionOutputModel
@@ -112,4 +114,25 @@ fun toHomeworkReportCollectionOutputModel(homeworkReportList: List<HomeworkRepor
 )
 fun toHomeworkVersionCollectionOutputModel(homeworkVersionList: List<HomeworkVersionOutputModel>) = HomeworkVersionCollectionOutputModel(
         homeworkVersionList = homeworkVersionList
+)
+
+fun Homework.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
+        action_type = actionLog.actionType.name,
+        entity_type = actionLog.entity,
+        entity_link = "classes/$classId/courses/$courseId/homeworks/$homeworkId",
+        timestamp = actionLog.timestamp
+)
+
+fun HomeworkReport.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
+        action_type = actionLog.actionType.name,
+        entity_type = actionLog.entity,
+        entity_link = "classes/$classId/courses/$courseId/homeworks/$homeworkId/reports/$reportId",
+        timestamp = actionLog.timestamp
+)
+
+fun HomeworkStage.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
+        action_type = actionLog.actionType.name,
+        entity_type = actionLog.entity,
+        entity_link = "classes/$classId/courses/$courseId/homeworks/stage/$stageId",
+        timestamp = actionLog.timestamp
 )

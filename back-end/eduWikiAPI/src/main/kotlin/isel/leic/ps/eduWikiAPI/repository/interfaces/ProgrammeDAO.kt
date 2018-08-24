@@ -65,4 +65,10 @@ interface ProgrammeDAO {
 
     fun deleteSpecificReportOnProgramme(programmeId: Int, reportId: Int): Int
 
+    fun getProgrammeByLogId(logId: Int): Optional<Programme>
+
+    fun getProgrammeReportByLogId(logId: Int): Optional<ProgrammeReport>
+
+    fun getProgrammeStageByLogId(logId: Int): Optional<ProgrammeStage>
+
 }

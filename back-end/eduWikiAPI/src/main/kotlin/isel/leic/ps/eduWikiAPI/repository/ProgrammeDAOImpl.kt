@@ -138,6 +138,15 @@ class ProgrammeDAOImpl : ProgrammeDAO {
     override fun deleteSpecificReportOnProgramme(programmeId: Int, reportId: Int): Int =
             jdbi.open().attach(ProgrammeDAOJdbi::class.java).deleteSpecificReportOnProgramme(programmeId, reportId)
 
+    override fun getProgrammeByLogId(logId: Int): Optional<Programme> =
+            jdbi.open().attach(ProgrammeDAOJdbi::class.java).getProgrammeByLogId(logId)
+
+    override fun getProgrammeReportByLogId(logId: Int): Optional<ProgrammeReport> =
+            jdbi.open().attach(ProgrammeDAOJdbi::class.java).getProgrammeReportByLogId(logId)
+
+    override fun getProgrammeStageByLogId(logId: Int): Optional<ProgrammeStage> =
+            jdbi.open().attach(ProgrammeDAOJdbi::class.java).getProgrammeStageByLogId(logId)
+
     interface ProgrammeDAOJdbi : ProgrammeDAO {
         @SqlQuery("SELECT * FROM :schema.$PROGRAMME_TABLE")
         override fun getAllProgrammes(): List<Programme>
@@ -269,6 +278,16 @@ class ProgrammeDAOImpl : ProgrammeDAO {
         )
         @GetGeneratedKeys
         override fun createProgrammeVersion(programmeVersion: ProgrammeVersion): ProgrammeVersion
+
+        @SqlQuery("SELECT * FROM :schema.$PROGRAMME_TABLE WHERE $PROGRAMME_LOG_ID = :logId")
+        override fun getProgrammeByLogId(logId: Int): Optional<Programme>
+
+        @SqlQuery("SELECT * FROM :schema.$PROGRAMME_REPORT_TABLE WHERE $PROGRAMME_REPORT_LOG_ID = :logId")
+        override fun getProgrammeReportByLogId(logId: Int): Optional<ProgrammeReport>
+
+        @SqlQuery("SELECT * FROM :schema.$PROGRAMME_STAGE_TABLE WHERE $PROGRAMME_STAGE_LOG_ID = :logId")
+        override fun getProgrammeStageByLogId(logId: Int): Optional<ProgrammeStage>
+
     }
 
 }

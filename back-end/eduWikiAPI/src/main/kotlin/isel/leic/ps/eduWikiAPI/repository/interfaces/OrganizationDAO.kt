@@ -48,4 +48,6 @@ interface OrganizationDAO {
 
     fun deleteReportOnOrganization(reportId: Int): Int
 
+    fun getOrganizationReportByLogId(logId: Int): Optional<OrganizationReport>
+
 }

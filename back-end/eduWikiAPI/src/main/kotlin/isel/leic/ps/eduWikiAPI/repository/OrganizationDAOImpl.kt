@@ -86,6 +86,9 @@ class OrganizationDAOImpl : OrganizationDAO {
     override fun deleteReportOnOrganization(reportId: Int): Int =
             jdbi.open().attach(OrganizationDAOJdbi::class.java).deleteReportOnOrganization(reportId)
 
+    override fun getOrganizationReportByLogId(logId: Int): Optional<OrganizationReport> =
+            jdbi.open().attach(OrganizationDAOJdbi::class.java).getOrganizationReportByLogId(logId)
+
     internal interface OrganizationDAOJdbi : OrganizationDAO {
 
         @SqlQuery("SELECT * FROM :schema.$ORGANIZATION_TABLE WHERE $ORGANIZATION_ID = '$ORGANIZATION_KEY'")
@@ -184,5 +187,9 @@ class OrganizationDAOImpl : OrganizationDAO {
                 "DELETE FROM :schema.$ORGANIZATION_REPORT_TABLE WHERE $ORGANIZATION_REPORT_ID = :reportId"
         )
         override fun deleteReportOnOrganization(reportId: Int): Int
+
+        @SqlQuery("SELECT * FROM :schema.$ORGANIZATION_REPORT_TABLE WHERE $ORGANIZATION_REPORT_LOG_ID = :logId")
+        override fun getOrganizationReportByLogId(logId: Int): Optional<OrganizationReport>
+
     }
 }

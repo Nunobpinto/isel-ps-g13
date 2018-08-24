@@ -225,6 +225,24 @@ class ClassDAOImpl : ClassDAO {
     override fun updateStagedCourseClassVotes(classId: Int, stageId: Int, votes: Int): Int =
             jdbi.open().attach(ClassDAOJdbi::class.java).updateStagedCourseClassVotes(classId, stageId, votes)
 
+    override fun getClassByLogId(logId: Int): Optional<Class> =
+            jdbi.open().attach(ClassDAOJdbi::class.java).getClassByLogId(logId)
+
+    override fun getClassReportByLogId(logId: Int): Optional<ClassReport> =
+            jdbi.open().attach(ClassDAOJdbi::class.java).getClassReportByLogId(logId)
+
+    override fun getClassStageByLogId(logId: Int): Optional<ClassStage> =
+            jdbi.open().attach(ClassDAOJdbi::class.java).getClassStageByLogId(logId)
+
+    override fun getCourseClassByLogId(logId: Int): Optional<CourseClass> =
+            jdbi.open().attach(ClassDAOJdbi::class.java).getCourseClassByLogId(logId)
+
+    override fun getCourseClassReportByLogId(logId: Int): Optional<CourseClassReport> =
+            jdbi.open().attach(ClassDAOJdbi::class.java).getCourseClassReportByLogId(logId)
+
+    override fun getCourseClassStageByLogId(logId: Int): Optional<CourseClassStage> =
+            jdbi.open().attach(ClassDAOJdbi::class.java).getCourseClassStageByLogId(logId)
+
     interface ClassDAOJdbi : ClassDAO {
         @SqlQuery(
                 "SELECT * FROM :schema.$CLASS_TABLE"
@@ -574,6 +592,24 @@ class ClassDAOImpl : ClassDAO {
 
         @SqlQuery("SELECT * FROM :schema.$COURSE_CLASS_TABLE WHERE $COURSE_CLASS_ID = :courseClassId ")
         override fun getCourseClassFromId(courseClassId: Int?): CourseClass
+
+        @SqlQuery("SELECT * FROM :schema.$CLASS_TABLE WHERE $CLASS_LOG_ID = :logId")
+        override fun getClassByLogId(logId: Int): Optional<Class>
+
+        @SqlQuery("SELECT * FROM :schema.$CLASS_REPORT_TABLE WHERE $CLASS_REPORT_LOG_ID = :logId")
+        override fun getClassReportByLogId(logId: Int): Optional<ClassReport>
+
+        @SqlQuery("SELECT * FROM :schema.$CLASS_STAGE_TABLE WHERE $CLASS_STAGE_LOG_ID = :logId")
+        override fun getClassStageByLogId(logId: Int): Optional<ClassStage>
+
+        @SqlQuery("SELECT * FROM :schema.$COURSE_CLASS_TABLE WHERE $COURSE_CLASS_LOG_ID = :logId")
+        override fun getCourseClassByLogId(logId: Int): Optional<CourseClass>
+
+        @SqlQuery("SELECT * FROM :schema.$COURSE_CLASS_REPORT_TABLE WHERE $COURSE_CLASS_REPORT_LOG_ID = :logId")
+        override fun getCourseClassReportByLogId(logId: Int): Optional<CourseClassReport>
+
+        @SqlQuery("SELECT * FROM :schema.$COURSE_CLASS_STAGE_TABLE WHERE $COURSE_CLASS_STAGE_LOG_ID = :logId")
+        override fun getCourseClassStageByLogId(logId: Int): Optional<CourseClassStage>
 
     }
 }
