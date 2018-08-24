@@ -27,6 +27,13 @@ body {
     width: 40%;
 }
 
+#isel-logo {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 20%;
+}
+
 #karma-positive {
   color: green
 }

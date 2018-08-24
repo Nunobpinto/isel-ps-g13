@@ -1,10 +1,10 @@
 import React from 'react'
-import fetch from 'isomorphic-fetch'
+import fetcher from '../../fetcher'
 import {Link} from 'react-router-dom'
 import MyLayout from '../layout/Layout'
 import CourseVersions from './CourseVersions'
 import Term from '../term/Term'
-import {Button, Card, Col, Row, Tooltip, Menu, Layout, Popover} from 'antd'
+import {Button, Card, Col, Row, Tooltip, Menu, Layout, Popover, message} from 'antd'
 import Cookies from 'universal-cookie'
 const cookies = new Cookies()
 
@@ -95,7 +95,7 @@ export default class extends React.Component {
                       >
                         {this.state.terms.map(item =>
                           <Menu.Item
-                            key={item.id}
+                            key={item.termId}
                             onClick={() => this.showTerm(item)}
                           >
                             {item.shortName}
@@ -123,8 +123,7 @@ export default class extends React.Component {
 
   voteUp () {
     const voteInput = {
-      vote: 'Up',
-      created_by: 'ze'
+      vote: 'Up'
     }
     const id = this.props.match.params.id
     const uri = 'http://localhost:8080/courses/' + id + '/vote'
@@ -133,26 +132,28 @@ export default class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
     }
-    fetch(uri, body)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
+    fetcher(uri, body)
+      .then(_ => {
+        message.success('Vote Up!!')
         this.setState(prevState => ({
           voteUp: false,
           votes: prevState.votes + 1
         }))
       })
+      .catch(_ => {
+        message.error('Error processing your vote')
+        this.setState({voteUp: false})
+      })
   }
 
   voteDown () {
     const voteInput = {
-      vote: 'Down',
-      created_by: 'ze'
+      vote: 'Down'
     }
     const id = this.props.match.params.id
     const uri = 'http://localhost:8080/courses/' + id + '/vote'
@@ -161,19 +162,22 @@ export default class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
     }
-    fetch(uri, body)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
+    fetcher(uri, body)
+      .then(_ => {
+        message.success('Vote Down!!')
         this.setState(prevState => ({
           voteDown: false,
           votes: prevState.votes - 1
         }))
+      })
+      .catch(_ => {
+        message.error('Error processing your vote')
+        this.setState({voteDown: false})
       })
   }
 
@@ -183,64 +187,47 @@ export default class extends React.Component {
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetch(uri, header)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
-        const ct = resp.headers.get('content-type') || ''
-        if (ct === 'application/json' || ct.startsWith('application/json;')) {
-          return resp.json()
-        }
-        throw new Error(`unexpected content type ${ct}`)
-      })
-      .then(json => {
-        const termsUri = `http://localhost:8080/courses/${json.courseId}/terms`
-        fetch(termsUri, header)
-          .then(resp => {
-            if (resp.status >= 400) {
-              throw new Error('Unable to access content')
-            }
-            const ct = resp.headers.get('content-type') || ''
-            if (ct === 'application/json' || ct.startsWith('application/json;')) {
-              return resp.json()
-            }
-            throw new Error(`unexpected content type ${ct}`)
-          })
+    fetcher(uri, header)
+      .then(course => {
+        const termsUri = `http://localhost:8080/courses/${course.courseId}/terms`
+        fetcher(termsUri, header)
           .then(terms => {
             const userCoursesUri = 'http://localhost:8080/user/courses'
-            fetch(userCoursesUri, header)
-              .then(resp => {
-                if (resp.status >= 400) {
-                  throw new Error('Erro')
-                }
-                return resp.json()
-              })
-              .then(userCourses =>
-                this.setState({
-                  full_name: json.fullName,
-                  short_name: json.shortName,
-                  createdBy: json.createdBy,
-                  timestamp: json.timestamp,
-                  version: json.version,
-                  id: json.courseId,
-                  votes: json.votes,
-                  terms: terms,
-                  userFollowing: (userCourses.find(course => course.courseId === json.courseId))
-                })
-              )
+            fetcher(userCoursesUri, header)
+              .then(userCourses => this.setState({
+                full_name: course.fullName,
+                short_name: course.shortName,
+                createdBy: course.createdBy,
+                timestamp: course.timestamp,
+                version: course.version,
+                id: course.courseId,
+                votes: course.votes,
+                terms: terms.termList,
+                userFollowing: (userCourses.courseList.find(crs => crs.courseId === course.courseId))
+              }))
+              .catch(_ => this.setState({
+                full_name: course.fullName,
+                short_name: course.shortName,
+                createdBy: course.createdBy,
+                timestamp: course.timestamp,
+                version: course.version,
+                id: course.courseId,
+                votes: course.votes,
+                terms: terms.termList
+              }))
           })
-          .catch(err => {
-            this.setState({termError: err})
+          .catch(error => {
+            message.error('Error fetching terms')
+            this.setState({termError: error})
           })
       })
       .catch(error => {
-        this.setState({
-          courseError: error
-        })
+        message.error('Error fetching course')
+        this.setState({courseError: error})
       })
   }
 
@@ -254,18 +241,23 @@ export default class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
 
       }
     }
-    fetch('http://localhost:8080/user/courses', options)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error(`Can´t follow this Course`)
-        }
-        return resp.json()
+    fetcher('http://localhost:8080/user/courses', options)
+      .then(_ => {
+        message.success('Followed this course !!!')
+        this.setState({
+          followProgrammeFlag: false,
+          userFollowing: true
+        })
       })
-      .then(_ => this.setState({followProgrammeFlag: false}))
+      .catch(_ => {
+        message.error('Error while following this course!!')
+        this.setState({followProgrammeFlag: false})
+      })
   }
 
   unFollowCourse () {
@@ -273,18 +265,22 @@ export default class extends React.Component {
       method: 'DELETE',
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth')
-
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetch('http://localhost:8080/user/courses/' + this.state.courseId, options)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error(`Can´t unfollow this Course`)
-        }
-        return resp.json()
+    fetcher('http://localhost:8080/user/courses/' + this.state.courseId, options)
+      .then(_ => {
+        message.success('Unfollowed this course !!!')
+        this.setState({
+          unFollowCourseFlag: false,
+          userFollowing: false
+        })
       })
-      .then(_ => this.setState({unFollowCourseFlag: false}))
+      .catch(_ => {
+        message.error('Error while unfollowing this course!!')
+        this.setState({unFollowCourseFlag: false})
+      })
   }
 
   componentDidUpdate () {

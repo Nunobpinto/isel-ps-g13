@@ -1,5 +1,5 @@
 import React from 'react'
-import fetch from 'isomorphic-fetch'
+import fetcher from '../../fetcher'
 import {Input, List, message} from 'antd'
 import IconText from '../comms/IconText'
 import Cookies from 'universal-cookie'
@@ -30,18 +30,25 @@ export default class extends React.Component {
       method: 'POST',
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetch(stagedUri, options)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('error!!!')
-        }
-        return resp.json()
-      })
+    fetcher(stagedUri, options)
       .then(course => {
-        this.props.history.push('/courses/' + course.courseId)
+        message.success('Successfully approved staged course')
+        this.setState(prevState => {
+          const newArray = prevState.staged.filter(crs => crs.stagedId !== prevState.stageID)
+          return ({
+            staged: newArray,
+            viewStaged: newArray,
+            approveStage: false
+          })
+        })
+      })
+      .catch(_ => {
+        message.error('Cannot approve this staged course')
+        this.setState({approveStage: false})
       })
   }
   deleteStaged () {
@@ -50,22 +57,25 @@ export default class extends React.Component {
       method: 'DELETE',
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetch(stagedUri, options)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('error!!!')
-        }
+    fetcher(stagedUri, options)
+      .then(_ => {
+        message.success('Successfully deleted staged course')
         this.setState(prevState => {
-          const newArray = prevState.staged.filter(course => course.stageId !== prevState.stageID)
+          const newArray = prevState.staged.filter(crs => crs.stagedId !== prevState.stageID)
           return ({
             staged: newArray,
             viewStaged: newArray,
             deleteStage: false
           })
         })
+      })
+      .catch(_ => {
+        message.error('Cannot delete this staged course')
+        this.setState({deleteStage: false})
       })
   }
   render () {
@@ -113,26 +123,17 @@ export default class extends React.Component {
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
     const stagedUri = 'http://localhost:8080/courses/stage'
-    fetch(stagedUri, options)
-      .then(response => {
-        if (response.status >= 400) {
-          throw new Error('Unable to access content')
-        }
-        const ct = response.headers.get('content-type') || ''
-        if (ct === 'application/json' || ct.startsWith('application/json;')) {
-          return response.json()
-        }
-        throw new Error(`unexpected content type ${ct}`)
-      })
+    fetcher(stagedUri, options)
       .then(json => this.setState({
         staged: json.courseStageList,
         viewStaged: json.courseStageList
       }))
-      .catch(stagedError => message.error('Something bad happened'))
+      .catch(_ => message.error('Error obtaining all staged courses'))
   }
   componentDidUpdate () {
     if (this.state.approveStage) {

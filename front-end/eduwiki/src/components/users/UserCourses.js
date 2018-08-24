@@ -25,7 +25,9 @@ export default class extends React.Component {
             ? <p>{this.state.error}</p>
             : <ul>
               {this.state.courses.map(course => (
-                <li>{course.fullName} ({course.shortName})</li>
+                <a href={`/courses/${course.courseId}`}>
+                  <li>{course.shortName}</li>
+                </a>
               ))}
             </ul>}
         </Card>

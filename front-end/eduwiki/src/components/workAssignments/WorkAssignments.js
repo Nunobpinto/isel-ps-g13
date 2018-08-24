@@ -2,7 +2,7 @@ import React from 'react'
 import fetch from 'isomorphic-fetch'
 import {Card, Col, Row, Button} from 'antd'
 import Cookies from 'universal-cookie'
-import SubmitExam from './SubmitExam'
+import SubmitWorkAssignment from './SubmitWorkAssignment'
 const cookies = new Cookies()
 
 export default class extends React.Component {
@@ -11,17 +11,21 @@ export default class extends React.Component {
     this.state = {
       up: false,
       down: false,
-      exams: props.exams,
+      works: props.works,
       courseId: props.courseId,
       termId: props.termId,
+      sheet: undefined,
+      supplement: undefined,
       dueDate: undefined,
-      type: '',
+      individual: false,
       phase: '',
-      location: ''
+      lateDelivery: false,
+      multipleDeliveries: false,
+      requiresReport: false
     }
     this.voteUp = this.voteUp.bind(this)
     this.voteDown = this.voteDown.bind(this)
-    this.showExamsheet = this.showExamsheet.bind(this)
+    this.showResource = this.showResource.bind(this)
   }
 
   voteUp () {
@@ -92,7 +96,7 @@ export default class extends React.Component {
 
   componentWillReceiveProps (props) {
     this.setState({
-      exams: props.exams,
+      works: props.works,
       courseId: props.courseId,
       termId: props.termId
     })
@@ -100,30 +104,34 @@ export default class extends React.Component {
 
   render () {
     return (
-      <div id={`exms_term_${this.props.termId}`}>
-        {this.state.exams.map(exam => (
+      <div>
+        {this.state.works.map(work => (
           <div style={{ padding: '30px' }}>
             <Row gutter={16}>
-              <Col span={8} key={exam.examId}>
+              <Col span={8} key={work.examId}>
                 <Card
-                  title={`${exam.type} - ${exam.phase} - ${exam.dueDate} - ${exam.votes} Votes`}
+                  title={`${work.phase} - ${work.dueDate} - ${work.votes} Votes`}
                   actions={[
-                    <Button id='like_btn' shape='circle' icon='like' onClick={() => this.setState({up: true, id: exam.examId})} />,
-                    <Button id='dislike_btn' shape='circle' icon='dislike' onClick={() => this.setState({down: true, id: exam.examId})} />
+                    <Button id='like_btn' shape='circle' icon='like' onClick={() => this.setState({up: true, id: work.examId})} />,
+                    <Button id='dislike_btn' shape='circle' icon='dislike' onClick={() => this.setState({down: true, id: work.examId})} />
                   ]}
                 >
-                  <p>Location : {exam.location}</p>
-                  <p>Created By : {exam.createdBy}</p>
-                  <p>Added in : {exam.timestamp}</p>
-                  <button onClick={() => this.showExamsheet(exam.sheetId)}> See exam sheet</button>
+                  <p>Individual : {work.individual}</p>
+                  <p>Late Delivery : {work.lateDelivery}</p>
+                  <p>Multiple Deliveries : {work.multipleDeliveries}</p>
+                  <p>Requires Report : {work.requiresReport}</p>
+                  <p>Added in : {work.timestamp}</p>
+                  <p>Created By : {work.createdBy}</p>
+                  <button onClick={() => this.showResource(work.sheetId)}> See Work Assignment sheet</button>
+                  <button onClick={() => this.showResource(work.supplementId)}> See Supplement</button>
                 </Card>
               </Col>
             </Row>
           </div>
         ))}
-        <Button onClick={() => this.setState({createExam: true})}>Add exam</Button>
-        {this.state.createExam &&
-          <SubmitExam
+        <Button onClick={() => this.setState({createWork: true})}>Add Work Assignment</Button>
+        {this.state.createWork &&
+          <SubmitWorkAssignment
             courseId={this.props.courseId}
             termId={this.props.termId}
           />
@@ -132,7 +140,7 @@ export default class extends React.Component {
     )
   }
 
-  showExamsheet (sheet) {
+  showResource (sheet) {
     const resourceUrl = `http://localhost:8080/resources/${sheet}`
     window.open(resourceUrl)
   }

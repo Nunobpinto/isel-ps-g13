@@ -1,7 +1,7 @@
 import React from 'react'
-import fetch from 'isomorphic-fetch'
+import fetcher from '../../fetcher'
 import Layout from '../layout/Layout'
-import {Button, Icon} from 'antd'
+import {Button, Icon, message} from 'antd'
 import Cookies from 'universal-cookie'
 const cookies = new Cookies()
 
@@ -42,20 +42,11 @@ export default class extends React.Component {
     const headers = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetch(url, headers)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
-        const ct = resp.headers.get('content-type') || ''
-        if (ct === 'application/json' || ct.startsWith('application/json;')) {
-          return resp.json()
-        }
-        throw new Error(`unexpected content type ${ct}`)
-      })
+    fetcher(url, headers)
       .then(json => this.setState({
         full_name: json.fullName,
         short_name: json.shortName,
@@ -64,6 +55,9 @@ export default class extends React.Component {
         version: json.version,
         id: json.courseId
       }))
-      .catch(err => this.setState({err: err}))
+      .catch(error => {
+        message.error('Error fetching version of course')
+        this.setState({err: error})
+      })
   }
 }

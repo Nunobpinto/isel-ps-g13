@@ -26,9 +26,11 @@ export default class extends React.Component {
         >
           {this.state.error
             ? <p>{this.state.error}</p>
-            : <p onClick={() => this.props.history.push(`/programmes/${this.state.programme.programmeId}`)}>
-              {`${this.state.programme.fullName} (${this.state.programme.shortName})`}
-            </p>
+            : <a href={`/programmes/${this.state.programme.programmeId}`}>
+              <p>
+                {this.state.programme.shortName}
+              </p>
+            </a>
           }
 
         </Card>
@@ -47,7 +49,7 @@ export default class extends React.Component {
     }
     fetcher('http://localhost:8080/user/programme', options)
       .then(json => this.setState({
-        programme: `${json.fullName} (${json.shortName})`,
+        programme: json,
         error: undefined
       }))
       .catch(_ => this.setState({error: 'Try following a programme or try later'}))

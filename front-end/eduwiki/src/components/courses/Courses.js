@@ -1,5 +1,5 @@
 import React from 'react'
-import fetch from 'isomorphic-fetch'
+import fetcher from '../../fetcher'
 import { Link } from 'react-router-dom'
 import IconText from '../comms/IconText'
 import Layout from '../layout/Layout'
@@ -22,22 +22,13 @@ export default class extends React.Component {
       nameFilter: '',
       stagedNameFilter: ''
     }
-    this.showElements = this.showElements.bind(this)
-    this.createCourseForm = this.createCourseForm.bind(this)
     this.voteUp = this.voteUp.bind(this)
     this.voteDown = this.voteDown.bind(this)
     this.voteUpStaged = this.voteUpStaged.bind(this)
     this.voteDownStaged = this.voteDownStaged.bind(this)
-    this.handleChange = this.handleChange.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
     this.createStagedCourse = this.createStagedCourse.bind(this)
     this.filterCoursesByName = this.filterCoursesByName.bind(this)
     this.filterStagedByName = this.filterStagedByName.bind(this)
-  }
-
-  showElements (id) {
-    const element = document.getElementById(id)
-    element.className = 'show_staged_resources'
   }
 
   filterCoursesByName (ev) {
@@ -55,22 +46,6 @@ export default class extends React.Component {
       let array = prevState.staged
       array = array.filter(staged => staged.fullName.toLowerCase().includes(name))
       return ({viewStaged: array})
-    })
-  }
-
-  handleChange (ev) {
-    this.setState({
-      [ev.target.name]: ev.target.value
-    })
-  }
-
-  handleSubmit (ev) {
-    ev.preventDefault()
-    this.setState({
-      full_name: this.state.full_name,
-      short_name: this.state.short_name,
-      organization_id: 1,
-      createStagedFlag: true
     })
   }
 
@@ -156,7 +131,7 @@ export default class extends React.Component {
                         onClick={() =>
                           this.setState({
                             voteUpStaged: true,
-                            stageID: item.stageId
+                            stageID: item.stagedId
                           })}
                         text={item.votes}
                       />
@@ -166,7 +141,7 @@ export default class extends React.Component {
                         onClick={() =>
                           this.setState({
                             voteDownStaged: true,
-                            stageID: item.stageId
+                            stageID: item.stagedId
                           })}
                       />
                     </List.Item>
@@ -187,49 +162,32 @@ export default class extends React.Component {
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetch(uri, header)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
-        const ct = resp.headers.get('content-type') || ''
-        if (ct === 'application/json' || ct.startsWith('application/json;')) {
-          return resp.json()
-        }
-        throw new Error(`unexpected content type ${ct}`)
-      })
+    fetcher(uri, header)
       .then(courses => {
         const stagedUri = 'http://localhost:8080/courses/stage'
-        fetch(stagedUri, header)
-          .then(response => {
-            if (response.status >= 400) {
-              throw new Error('Unable to access content')
-            }
-            const ct = response.headers.get('content-type') || ''
-            if (ct === 'application/json' || ct.startsWith('application/json;')) {
-              return response.json()
-            }
-            throw new Error(`unexpected content type ${ct}`)
-          })
+        fetcher(stagedUri, header)
           .then(stagedCourses => this.setState({
             courses: courses.courseList,
             viewCourses: courses.courseList,
             staged: stagedCourses.courseStageList,
             viewStaged: stagedCourses.courseStageList
           }))
-          .catch(stagedError => this.setState({
-            courses: courses.courseList,
-            viewCourses: courses.courseList,
-            stagedError: stagedError
-          }))
+          .catch(stagedError => {
+            message.error('Error fetching staged courses')
+            this.setState({
+              courses: courses.courseList,
+              viewCourses: courses.courseList,
+              stagedError: stagedError
+            })
+          })
       })
       .catch(error => {
-        this.setState({
-          error: error
-        })
+        message.error('Error fetching courses')
+        this.setState({error: error})
       })
   }
 
@@ -244,18 +202,13 @@ export default class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(body)
     }
     const url = 'http://localhost:8080/courses/stage'
-    fetch(url, options)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
-        return resp.json()
-      })
+    fetcher(url, options)
       .then(json => {
         const newItem = {
           fullName: data.full_name,
@@ -290,24 +243,25 @@ export default class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
     }
-    fetch(url, body)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
-        this.setState(prevState => {
-          let newArray = [...prevState.courses]
-          const index = newArray.findIndex(course => course.courseId === courseId)
-          newArray[index].votes = prevState.courses[index].votes + 1
-          return ({
-            courses: newArray,
-            voteUp: false
-          })
+    fetcher(url, body)
+      .then(_ => this.setState(prevState => {
+        let newArray = [...prevState.courses]
+        const index = newArray.findIndex(course => course.courseId === courseId)
+        newArray[index].votes = prevState.courses[index].votes + 1
+        message.success('Vote Up!!!')
+        return ({
+          courses: newArray,
+          voteUp: false
         })
+      }))
+      .catch(_ => {
+        message.error('Error processing your vote')
+        this.setState({voteUp: false})
       })
   }
 
@@ -322,24 +276,25 @@ export default class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
     }
-    fetch(url, body)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
-        this.setState(prevState => {
-          let newArray = [...prevState.courses]
-          const index = newArray.findIndex(course => course.courseId === courseId)
-          newArray[index].votes = prevState.courses[index].votes - 1
-          return ({
-            courses: newArray,
-            voteDown: false
-          })
+    fetcher(url, body)
+      .then(_ => this.setState(prevState => {
+        let newArray = [...prevState.courses]
+        const index = newArray.findIndex(course => course.courseId === courseId)
+        newArray[index].votes = prevState.courses[index].votes - 1
+        message.success('Vote Down!!!')
+        return ({
+          courses: newArray,
+          voteDown: false
         })
+      }))
+      .catch(_ => {
+        message.error('Error processing your vote')
+        this.setState({voteDown: false})
       })
   }
 
@@ -354,16 +309,14 @@ export default class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
     }
-    fetch(url, body)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
-        message.success('Successfully voted up')
+    fetcher(url, body)
+      .then(_ => {
+        message.success('Voted staged up!!!')
         this.setState(prevState => {
           let newArray = [...prevState.staged]
           const index = newArray.findIndex(course => course.stageId === stageID)
@@ -374,7 +327,10 @@ export default class extends React.Component {
           })
         })
       })
-      .catch(_ => message.error('Cannot vote'))
+      .catch(_ => {
+        message.error('Error processing your vote')
+        this.setState({voteUpStaged: false})
+      })
   }
 
   voteDownStaged () {
@@ -388,15 +344,14 @@ export default class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
     }
-    fetch(url, body)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error('Unable to access content')
-        }
+    fetcher(url, body)
+      .then(_ => {
+        message.success('Voted staged up!!!')
         this.setState(prevState => {
           let newArray = [...prevState.staged]
           const index = newArray.findIndex(course => course.stageId === stageID)
@@ -407,7 +362,10 @@ export default class extends React.Component {
           })
         })
       })
-      .catch(_ => message.error('Cannot vote'))
+      .catch(_ => {
+        message.error('Error processing your vote')
+        this.setState({voteDownStaged: false})
+      })
   }
 
   componentDidUpdate () {

@@ -12,6 +12,7 @@ export default class extends React.Component {
       short_name: undefined,
       address: undefined,
       contact: undefined,
+      website: undefined,
       history: props.history
     }
     this.handleChange = this.handleChange.bind(this)
@@ -30,6 +31,7 @@ export default class extends React.Component {
       short_name: this.state.short_name,
       address: this.state.address,
       contact: this.state.contact,
+      website: this.state.website,
       reported: true
     })
   }
@@ -49,6 +51,9 @@ export default class extends React.Component {
           <br />
         Contact: <br />
           <Input name='contact' onChange={this.handleChange} />
+          <br />
+          Website: <br />
+          <Input name='website' onChange={this.handleChange} />
           <br />
           <Button type='primary' onClick={this.handleSubmit}>Create</Button>
         </Form>

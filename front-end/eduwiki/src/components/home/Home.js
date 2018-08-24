@@ -19,23 +19,9 @@ export default (props, context) => {
     <div>
       <div className='container'>
         <img alt='EduWiki Logo' id='home-logo' src='logo_color.png' />
+        <img alt='Isel Logo' id='isel-logo' src='isel_logo.jpg' />
         <Login history={props.history} destination={props.location.state} />
       </div>
-      <h1>Current web pages</h1>
-      <ul>
-        <li>
-          <Link to={{pathname: '/organization'}}>Organization</Link>
-        </li>
-        <li>
-          <Link to={{pathname: '/programmes'}}>Programmes</Link>
-        </li>
-        <li>
-          <Link to={{pathname: '/courses'}}>Courses</Link>
-        </li>
-        <li>
-          <Link to={{pathname: '/classes'}}>Courses</Link>
-        </li>
-      </ul>
     </div>
   )
 }

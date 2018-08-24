@@ -13,7 +13,8 @@ export default class extends React.Component {
         fullName: '',
         shortName: '',
         timestamp: '',
-        createdBy: ''
+        createdBy: '',
+        website: ''
       },
       id: 0,
       version: 0,
@@ -46,6 +47,11 @@ export default class extends React.Component {
               <Col span={5}>
                 <Card title='Contact'>
                   {this.state.organization.contact}
+                </Card>
+              </Col>
+              <Col span={5}>
+                <Card title='Website'>
+                  {this.state.organization.website}
                 </Card>
               </Col>
             </Row>

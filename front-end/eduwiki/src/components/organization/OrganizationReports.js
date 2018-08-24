@@ -54,6 +54,8 @@ export default class extends React.Component {
             {item.address && `Address: ${item.address}`}
             <br />
             {item.contact && `Total Credits: ${item.contact}`}
+            <br />
+            {item.website && `Website: ${item.website}`}
           </List.Item>
         )}
       />

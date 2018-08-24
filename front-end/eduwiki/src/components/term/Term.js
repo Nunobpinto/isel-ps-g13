@@ -2,6 +2,7 @@ import React from 'react'
 import fetcher from '../../fetcher'
 import {Layout, Menu, Card, Col, Row, message} from 'antd'
 import Exams from '../exams/Exams'
+import WorkAssignments from '../workAssignments/WorkAssignments'
 import Cookies from 'universal-cookie'
 const cookies = new Cookies()
 
@@ -25,7 +26,11 @@ export default class extends React.Component {
       workAssignmentError: undefined,
       voteUp: false,
       voteDown: false,
-      courseId: props.courseId
+      courseId: props.courseId,
+      showExam: false,
+      showWrs: false,
+      exams: [],
+      works: []
     }
     this.getExams = this.getExams.bind(this)
     this.getWorkAssignments = this.getWorkAssignments.bind(this)
@@ -33,17 +38,17 @@ export default class extends React.Component {
     this.fetchWorkAssignments = this.fetchWorkAssignments.bind(this)
   }
 
-  getExams (termId) {
+  getExams () {
     this.setState({
-      examFlag: true,
-      termId: termId
+      showExam: true,
+      showWrs: false
     })
   }
 
-  getWorkAssignments (termId) {
+  getWorkAssignments () {
     this.setState({
-      workAssignmentFlag: true,
-      termId: termId
+      showWrs: true,
+      showExam: false
     })
   }
 
@@ -58,20 +63,23 @@ export default class extends React.Component {
         >
           <Menu.Item
             key={1}
-            onClick={() => this.getExams(this.props.term.termId)}
+            onClick={() => this.getExams()}
           >
             Exams
           </Menu.Item>
           <Menu.Item
             key={2}
-            onClick={() => this.getWorkAssignments(this.props.term.termId)}
+            onClick={() => this.getWorkAssignments()}
           >
             Work Assignments
           </Menu.Item>
         </Menu>
         <Content style={{ padding: '0 24px', minHeight: 280 }}>
-          {this.state.exams &&
-            <Exams exams={this.state.exams} termId={this.state.termId} courseId={this.props.courseId} />
+          {this.state.showExam &&
+            <Exams exams={this.state.exams} termId={this.props.term.termId} courseId={this.props.courseId} />
+          }
+          {this.state.showWrs &&
+            <WorkAssignments works={this.state.works} termId={this.props.term.termId} courseId={this.props.courseId} />
           }
         </Content>
       </Layout>
@@ -79,13 +87,7 @@ export default class extends React.Component {
   }
 
   componentDidUpdate () {
-    if (this.state.examFlag) {
-      const courseId = this.props.courseId
-      this.fetchExams(courseId, this.state.termId)
-    } else if (this.state.workAssignmentFlag) {
-      const courseId = this.props.courseId
-      this.fetchWorkAssignments(courseId, this.state.termId)
-    } else if (this.state.voteUp) {
+    if (this.state.voteUp) {
       this.voteUp()
     } else if (this.state.voteDown) {
       this.voteDown()
@@ -104,15 +106,14 @@ export default class extends React.Component {
     fetcher(uri, header)
       .then(exams => this.setState(
         {
-          examFlag: false,
-          exams: exams
+          exams: exams.examList,
+          showExam: true
         }
       ))
       .catch(error => {
         message.error('Error fetching exams')
         this.setState(
           {
-            examFlag: false,
             examError: error
           }
         )
@@ -120,7 +121,7 @@ export default class extends React.Component {
   }
 
   fetchWorkAssignments (courseId, termId) {
-    const uri = `http://localhost:8080/courses/${courseId}/terms/${termId}/workAssignments`
+    const uri = `http://localhost:8080/courses/${courseId}/terms/${termId}/work-assignments`
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -129,20 +130,18 @@ export default class extends React.Component {
       }
     }
     fetcher(uri, header)
-      .then(works => this.setState(
-        {
-          workAssignmentFlag: false,
-          workAssignments: works
-        }
+      .then(works => this.setState({works: works.workAssignmentList}
       ))
       .catch(error => {
         message.error('Error fetching work assignments')
-        this.setState(
-          {
-            workAssignmentFlag: false,
-            workAssignmentError: error
-          }
+        this.setState({workAssignmentError: error}
         )
       })
+  }
+  componentDidMount () {
+    const courseId = this.props.courseId
+    const termId = this.props.term.termId
+    this.fetchExams(courseId, termId)
+    this.fetchWorkAssignments(courseId, termId)
   }
 }

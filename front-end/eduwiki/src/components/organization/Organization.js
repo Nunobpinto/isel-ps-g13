@@ -72,6 +72,9 @@ export default class extends React.Component {
                 <Card title='Contact'>
                   {this.state.organization.contact}
                 </Card>
+                <Card title='Website'>
+                  {this.state.organization.website}
+                </Card>
               </Col>
             </Row>
           </div>

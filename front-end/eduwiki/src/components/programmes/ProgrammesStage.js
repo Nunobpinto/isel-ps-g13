@@ -38,7 +38,7 @@ export default class extends React.Component {
       .then(programme => {
         message.success('Successfully approved staged programme')
         this.setState(prevState => {
-          const newArray = prevState.staged.filter(programme => programme.stageId !== prevState.stageID)
+          const newArray = prevState.staged.filter(programme => programme.stagedId !== prevState.stageID)
           return ({
             staged: newArray,
             viewStaged: newArray,
@@ -65,7 +65,7 @@ export default class extends React.Component {
       .then(_ => {
         message.success('Successfully deleted staged programme')
         this.setState(prevState => {
-          const newArray = prevState.staged.filter(programme => programme.stageId !== prevState.stageID)
+          const newArray = prevState.staged.filter(programme => programme.stagedId !== prevState.stageID)
           return ({
             staged: newArray,
             viewStaged: newArray,
