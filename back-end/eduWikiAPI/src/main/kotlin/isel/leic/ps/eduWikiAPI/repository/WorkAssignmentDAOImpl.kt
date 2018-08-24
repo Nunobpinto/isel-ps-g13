@@ -187,7 +187,6 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_LATE_DELIVERY, " +
                         "W.$WORK_ASSIGNMENT_MULTIPLE_DELIVERIES, " +
                         "W.$WORK_ASSIGNMENT_REQUIRES_REPORT, " +
-                        "W.$WORK_ASSIGNMENT_VOTES, " +
                         "W.$WORK_ASSIGNMENT_TIMESTAMP, " +
                         "W.$WORK_ASSIGNMENT_LOG_ID, " +
                         "C.$COURSE_MISC_UNIT_COURSE_ID, " +
@@ -550,7 +549,6 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "W.$WORK_ASSIGNMENT_LATE_DELIVERY, " +
                         "W.$WORK_ASSIGNMENT_MULTIPLE_DELIVERIES, " +
                         "W.$WORK_ASSIGNMENT_REQUIRES_REPORT, " +
-                        "W.$WORK_ASSIGNMENT_VOTES, " +
                         "W.$WORK_ASSIGNMENT_TIMESTAMP, " +
                         "W.$WORK_ASSIGNMENT_LOG_ID, " +
                         "C.$COURSE_MISC_UNIT_COURSE_ID, " +

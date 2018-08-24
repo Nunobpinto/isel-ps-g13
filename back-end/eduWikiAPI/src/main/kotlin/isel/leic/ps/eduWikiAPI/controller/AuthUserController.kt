@@ -25,7 +25,7 @@ class AuthUserController {
     fun getCoursesOfUser(principal: Principal) = userService.getCoursesOfUser(principal.name)
 
     @GetMapping("/classes")
-    fun getClassesOfUser(principal: Principal) = userService.getClassesOfUser(principal.name)
+    fun getClassesOfUser(principal: Principal) = userService.getClassesOfCOurseOfUser(principal.name)
 
     @GetMapping("/programme")
     fun getProgrammeOfUser(principal: Principal) = userService.getProgrammeOfUser(principal.name)

@@ -1,6 +1,5 @@
 package isel.leic.ps.eduWikiAPI.service.eduWikiService
 
-import isel.leic.ps.eduWikiAPI.configuration.security.authorization.ReputationRole
 import isel.leic.ps.eduWikiAPI.configuration.security.authorization.ReputationRole.*
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserCourseClassInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserInputModel
@@ -8,20 +7,14 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.UserProgrammeInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.UserReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.mappers.*
 import isel.leic.ps.eduWikiAPI.domain.model.*
-import isel.leic.ps.eduWikiAPI.domain.model.report.ClassReport
-import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ClassCollectionOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseCollectionOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.UserActionCollectionOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.UserReputationCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.UserReportOutputModel
 import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.UserService
 import isel.leic.ps.eduWikiAPI.eventListeners.events.OnRegistrationEvent
-import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.BadRequestException
 import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.ExceededValidationException
 import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.NotFoundException
 import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.UnknownDataException
-import isel.leic.ps.eduWikiAPI.repository.*
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_REPORT_TABLE
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_STAGE_TABLE
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_TABLE
@@ -52,7 +45,7 @@ import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_A
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_STAGE_TABLE
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_TABLE
 import isel.leic.ps.eduWikiAPI.repository.interfaces.*
-import isel.leic.ps.eduWikiAPI.utils.isEmailValid
+//import isel.leic.ps.eduWikiAPI.utils.isEmailValid
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.beans.factory.annotation.Autowired
@@ -147,9 +140,9 @@ class UserServiceImpl : UserService {
             toUserOutputModel(userDAO.getUser(username).orElseThrow { NotFoundException("User not found", "Try another username") })
 
     override fun saveUser(inputUser: UserInputModel): AuthUserOutputModel {
-        if(! isEmailValid(inputUser.organizationEmail))
+       /* if(! isEmailValid(inputUser.organizationEmail))
             throw BadRequestException("invalid organization email", "Get an actual organization email")
-
+*/
         val user = userDAO.createUser(toUser(inputUser))
         val reputation = reputationDAO.createUserReputation(Reputation(
                 role = ROLE_UNCONFIRMED.name,
@@ -186,14 +179,15 @@ class UserServiceImpl : UserService {
         return toCourseCollectionOutputModel(courses)
     }
 
-    override fun getClassesOfUser(username: String): ClassCollectionOutputModel {
+    override fun getClassesOfCOurseOfUser(username: String): CourseClassCollectionOutputModel {
         val courseClasses = userDAO.getClassesOfUser(username)
         val classes = courseClasses.map {
             val courseClass = classDAO.getCourseClassFromId(it.courseClassId)
+            val course = courseDAO.getSpecificCourse(it.courseId).get()
             val term = termDAO.getTerm(courseClass.termId).get()
-            toClassOutputModel(classDAO.getSpecificClass(it.courseId).get(), term)
+            toCourseClassOutputModel(course, classDAO.getSpecificClass(it.courseId).get(), courseClass, term)
         }
-        return toClassCollectionOutputModel(classes)
+        return toCourseClassCollectionOutputModel(classes)
     }
 
     override fun getProgrammeOfUser(username: String): ProgrammeOutputModel {
@@ -285,11 +279,14 @@ class UserServiceImpl : UserService {
         val user = userDAO.getUser(principal.name)
                 .orElseThrow { NotFoundException("User not found", "There is not user with the username ${principal.name} in this tenant") }
 
+        val map = reputationDAO.getActionLogsByUser(user.username)
+                .map {
+                    entityToAction[it.entity]?.invoke(it) ?: noActionException()
+                }
+
         return UserActionCollectionOutputModel(
                 username = user.username,
-                actions = reputationDAO.getActionLogsByUser(user.username)
-                        .map { entityToAction[it.entity]?.invoke(it) ?: noActionException() }
-        )
+                actions = map)
     }
 
     override fun getUserFeed(principal: Principal): UserActionCollectionOutputModel {

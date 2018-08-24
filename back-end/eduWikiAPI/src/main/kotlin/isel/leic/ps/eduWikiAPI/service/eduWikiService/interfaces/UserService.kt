@@ -4,9 +4,7 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.UserCourseClassInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserProgrammeInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.UserReportInputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ClassCollectionOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseCollectionOutputModel
-import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.UserActionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.UserReportOutputModel
 import java.security.Principal
@@ -22,7 +20,7 @@ interface UserService {
 
     fun getCoursesOfUser(username: String): CourseCollectionOutputModel
 
-    fun getClassesOfUser(username: String): ClassCollectionOutputModel
+    fun getClassesOfCOurseOfUser(username: String): CourseClassCollectionOutputModel
 
     fun getProgrammeOfUser(username: String): ProgrammeOutputModel
 
@@ -60,7 +58,7 @@ interface UserService {
 
     fun getUserFeed(principal: Principal): Any
 
-    fun getUserReputation(principal: Principal): Any
+    fun getUserReputation(principal: Principal): UserReputationCollectionOutputModel
 
     fun getUserActions(principal: Principal): UserActionCollectionOutputModel
 }

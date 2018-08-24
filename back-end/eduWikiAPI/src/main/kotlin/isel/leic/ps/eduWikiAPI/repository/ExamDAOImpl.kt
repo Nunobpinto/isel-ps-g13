@@ -326,8 +326,8 @@ class ExamDAOImpl : ExamDAO {
 
         @SqlQuery(
                 "SELECT E.$EXAM_ID, " +
-                        "E:$EXAM_VERSION, " +
-                        "E.$EXAM_CREATED_BY " +
+                        "E.$EXAM_VERSION, " +
+                        "E.$EXAM_CREATED_BY, " +
                         "E.$EXAM_SHEET_ID, " +
                         "E.$EXAM_DUE_DATE, " +
                         "E.$EXAM_TYPE, " +
@@ -479,8 +479,8 @@ class ExamDAOImpl : ExamDAO {
 
         @SqlQuery(
                 "SELECT E.$EXAM_ID, " +
-                        "E:$EXAM_VERSION, " +
-                        "E.$EXAM_CREATED_BY " +
+                        "E.$EXAM_VERSION, " +
+                        "E.$EXAM_CREATED_BY, " +
                         "E.$EXAM_SHEET_ID, " +
                         "E.$EXAM_DUE_DATE, " +
                         "E.$EXAM_TYPE, " +
@@ -493,7 +493,7 @@ class ExamDAOImpl : ExamDAO {
                         "C.$COURSE_MISC_UNIT_TERM_ID " +
                         "FROM :schema.$EXAM_TABLE AS E " +
                         "INNER JOIN :schema.$COURSE_MISC_UNIT_TABLE AS C " +
-                        "ON E.$EXAM_ID = C.$COURSE_MISC_UNIT_ID" +
+                        "ON E.$EXAM_ID = C.$COURSE_MISC_UNIT_ID " +
                         "WHERE E.$EXAM_LOG_ID = :logId"
         )
         override fun getExamByLogId(logId: Int): Optional<Exam>
