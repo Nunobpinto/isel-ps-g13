@@ -3,6 +3,7 @@ import fetcher from '../../fetcher'
 import MyLayout from '../layout/Layout'
 import ProgrammesStage from '../programmes/ProgrammesStage'
 import UserActivity from './UserActivity'
+import UserReputation from './UserReputation'
 import {Layout, Menu, message} from 'antd'
 import Cookies from 'universal-cookie'
 import CoursesStage from '../courses/CoursesStage'
@@ -79,6 +80,7 @@ export default class extends React.Component {
           </div>
           <div className='right_side'>
             <h1>Reputation</h1>
+            <UserReputation />
           </div>
         </div>
       </MyLayout>

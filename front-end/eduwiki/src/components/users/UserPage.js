@@ -4,6 +4,7 @@ import UserCourses from './UserCourses'
 import UserOrganization from './UserOrganization'
 import Feed from './Feed'
 import { Calendar } from 'antd'
+import UserClasses from './UserClasses'
 
 export default class extends React.Component {
   constructor (props) {
@@ -20,6 +21,9 @@ export default class extends React.Component {
             auth={this.props.auth}
             history={this.props.history} />
           <UserCourses
+            auth={this.props.auth}
+            history={this.props.history} />
+          <UserClasses
             auth={this.props.auth}
             history={this.props.history} />
         </div>
