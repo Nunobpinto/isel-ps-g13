@@ -9,7 +9,9 @@ export default class extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      username: ''
+      username: '',
+      points: 0,
+      role: ''
     }
   }
   render () {
@@ -25,7 +27,7 @@ export default class extends React.Component {
             </a>
             <TransparentButton
               destiny='/user'
-              message={this.state.username} />
+              message={`${this.state.username} (${this.state.role} - ${this.state.points} points)`} />
           </Col>
           <Col span={6} />
           <Col span={6} />
@@ -52,7 +54,11 @@ export default class extends React.Component {
       }
     }
     fetcher('http://localhost:8080/user', options)
-      .then(json => this.setState({username: json.username}))
+      .then(json => this.setState({
+        username: json.username,
+        role: json.reputation.role,
+        points: json.reputation.points
+      }))
       .catch(_ => message.error('Something bad happened'))
   }
 }

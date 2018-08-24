@@ -106,7 +106,11 @@ export default class extends React.Component {
                     </Sider>
                     <Content style={{ padding: '0 24px', minHeight: 280 }}>
                       {this.state.term
-                        ? <Term term={this.state.term} courseId={this.props.match.params.id} />
+                        ? <Term
+                          term={this.state.term}
+                          courseId={this.props.match.params.id}
+                          courseBeingFollowed={this.state.userFollowing}
+                        />
                         : <h1>Please choose one of the available Terms</h1>
                       }
                     </Content>

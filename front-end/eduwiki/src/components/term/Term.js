@@ -3,6 +3,7 @@ import fetcher from '../../fetcher'
 import {Layout, Menu, Card, Col, Row, message} from 'antd'
 import Exams from '../exams/Exams'
 import WorkAssignments from '../workAssignments/WorkAssignments'
+import CourseClassesOfTerm from '../classes/CourseClassesOfTerm'
 import Cookies from 'universal-cookie'
 const cookies = new Cookies()
 
@@ -12,6 +13,9 @@ export default class extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      courseId: props.courseId,
+      termId: props.term.termId,
+      courseBeingFollowed: props.courseBeingFollowed,
       full_name: '',
       short_name: '',
       createdBy: '',
@@ -20,35 +24,47 @@ export default class extends React.Component {
       voteType: undefined,
       examFlag: false,
       workAssignmentFlag: false,
-      termId: undefined,
       termError: undefined,
       examError: undefined,
       workAssignmentError: undefined,
       voteUp: false,
       voteDown: false,
-      courseId: props.courseId,
       showExam: false,
       showWrs: false,
+      showClasses: false,
       exams: [],
-      works: []
+      works: [],
+      classes: []
     }
     this.getExams = this.getExams.bind(this)
     this.getWorkAssignments = this.getWorkAssignments.bind(this)
+    this.getCourseClasses = this.getCourseClasses.bind(this)
     this.fetchExams = this.fetchExams.bind(this)
     this.fetchWorkAssignments = this.fetchWorkAssignments.bind(this)
+    this.fetchCourseClasses = this.fetchCourseClasses.bind(this)
   }
 
   getExams () {
     this.setState({
       showExam: true,
-      showWrs: false
+      showWrs: false,
+      showClasses: false
     })
   }
 
   getWorkAssignments () {
     this.setState({
       showWrs: true,
-      showExam: false
+      showExam: false,
+      showClasses: false
+    })
+  }
+
+  getCourseClasses () {
+    this.setState({
+      showClasses: true,
+      showExam: false,
+      showWrs: false
     })
   }
 
@@ -73,13 +89,27 @@ export default class extends React.Component {
           >
             Work Assignments
           </Menu.Item>
+          <Menu.Item
+            key={3}
+            onClick={() => this.getCourseClasses()}
+          >
+            Classes
+          </Menu.Item>
         </Menu>
         <Content style={{ padding: '0 24px', minHeight: 280 }}>
           {this.state.showExam &&
-            <Exams exams={this.state.exams} termId={this.props.term.termId} courseId={this.props.courseId} />
+            <Exams exams={this.state.exams} termId={this.state.termId} courseId={this.state.courseId} />
           }
           {this.state.showWrs &&
-            <WorkAssignments works={this.state.works} termId={this.props.term.termId} courseId={this.props.courseId} />
+            <WorkAssignments works={this.state.works} termId={this.state.termId} courseId={this.state.courseId} />
+          }
+          {this.state.showClasses &&
+            <CourseClassesOfTerm
+              classes={this.state.classes}
+              termId={this.state.termId}
+              courseId={this.state.courseId}
+              courseBeingFollowed={this.state.courseBeingFollowed}
+            />
           }
         </Content>
       </Layout>
@@ -138,10 +168,30 @@ export default class extends React.Component {
         )
       })
   }
+
+  fetchCourseClasses (courseId, termId) {
+    const uri = `http://localhost:8080/courses/${courseId}/terms/${termId}/classes`
+    const header = {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
+      }
+    }
+    fetcher(uri, header)
+      .then(classes => this.setState({classes: classes.classList}
+      ))
+      .catch(error => {
+        message.error('Error fetching Course Classes')
+        this.setState({workAssignmentError: error}
+        )
+      })
+  }
   componentDidMount () {
     const courseId = this.props.courseId
     const termId = this.props.term.termId
     this.fetchExams(courseId, termId)
     this.fetchWorkAssignments(courseId, termId)
+    this.fetchCourseClasses(courseId, termId)
   }
 }
