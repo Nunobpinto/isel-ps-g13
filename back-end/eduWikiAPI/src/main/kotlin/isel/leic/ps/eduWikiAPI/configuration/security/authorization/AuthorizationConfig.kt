@@ -17,7 +17,8 @@ class AuthorizationConfig {
         val ROLE_HIERARCHY = "$ROLE_DEV > $ROLE_ADMIN > $ROLE_BEGINNER > $ROLE_UNCONFIRMED"
         // Defines access control for each resource in API
         val REPUTATION_MATCHERS = mapOf(
-                "/**" to ROLE_BEGINNER
+//                "/**" to ROLE_BEGINNER,
+                "/tenants/pending/{tenantUuid}" to ROLE_DEV
         )
     }
 

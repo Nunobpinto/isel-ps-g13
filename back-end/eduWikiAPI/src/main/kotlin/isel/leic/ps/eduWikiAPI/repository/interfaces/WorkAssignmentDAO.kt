@@ -68,4 +68,8 @@ interface WorkAssignmentDAO {
 
     fun getWorkAssignmentStageByLogId(logId: Int): Optional<WorkAssignmentStage>
 
+    fun getAllWorkAssignmentsOfSpecificCourse(courseId: Int): List<WorkAssignment>
+
+    fun getAllStagedWorkAssignmentOnSpecificCourse(courseId: Int): List<WorkAssignmentStage>
+
 }

@@ -1,15 +1,9 @@
 package isel.leic.ps.eduWikiAPI.configuration.persistence
 
 import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.NotFoundException
-import isel.leic.ps.eduWikiAPI.repository.interfaces.TenantRepository
 import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.TenantService
-import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.core.Ordered
-import org.springframework.core.annotation.Order
-import org.springframework.jdbc.datasource.DataSourceUtils
 import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.filter.OncePerRequestFilter
 import javax.servlet.*
 import javax.servlet.http.HttpServletRequest

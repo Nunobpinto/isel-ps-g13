@@ -158,6 +158,12 @@ class ExamDAOImpl : ExamDAO {
     override fun getExamReportByLogId(logId: Int): Optional<ExamReport> =
             jdbi.open().attach(ExamDAOJdbi::class.java).getExamReportByLogId(logId)
 
+    override fun getAllExamsFromSpecificCourse(courseId: Int): List<Exam> =
+            jdbi.open().attach(ExamDAOJdbi::class.java).getAllExamsFromSpecificCourse(courseId)
+
+    override fun getAllStagedExamOnSpecificCourse(courseId: Int): List<ExamStage> =
+            jdbi.open().attach(ExamDAOJdbi::class.java).getAllStagedExamOnSpecificCourse(courseId)
+
     interface ExamDAOJdbi : ExamDAO {
 
         @CreateSqlObject
@@ -539,6 +545,48 @@ class ExamDAOImpl : ExamDAO {
                         "WHERE E.$EXAM_STAGE_LOG_ID = :logId"
         )
         override fun getExamStageByLogId(logId: Int): Optional<ExamStage>
+
+
+        @SqlQuery(
+                "SELECT E.$EXAM_ID, " +
+                        "E.$EXAM_VERSION, " +
+                        "E.$EXAM_CREATED_BY, " +
+                        "E.$EXAM_SHEET_ID, " +
+                        "E.$EXAM_DUE_DATE, " +
+                        "E.$EXAM_TYPE, " +
+                        "E.$EXAM_PHASE, " +
+                        "E.$EXAM_LOCATION, " +
+                        "E.$EXAM_VOTES," +
+                        "E.$EXAM_TIMESTAMP, " +
+                        "E.$EXAM_LOG_ID, " +
+                        "C.$COURSE_MISC_UNIT_COURSE_ID, " +
+                        "C.$COURSE_MISC_UNIT_TERM_ID " +
+                        "FROM :schema.$EXAM_TABLE AS E " +
+                        "INNER JOIN :schema.$COURSE_MISC_UNIT_TABLE AS C " +
+                        "ON E.$EXAM_ID = C.$COURSE_MISC_UNIT_ID " +
+                        "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId"
+        )
+        override fun getAllExamsFromSpecificCourse(courseId: Int): List<Exam>
+
+        @SqlQuery(
+                "SELECT E.$EXAM_STAGE_ID, " +
+                        "E.$EXAM_STAGE_SHEET_ID, " +
+                        "E.$EXAM_STAGE_DUE_DATE, " +
+                        "E.$EXAM_STAGE_TYPE, " +
+                        "E.$EXAM_STAGE_PHASE, " +
+                        "E.$EXAM_STAGE_LOCATION, " +
+                        "E.$EXAM_STAGE_CREATED_BY, " +
+                        "E.$EXAM_STAGE_VOTES, " +
+                        "E.$EXAM_STAGE_TIMESTAMP, " +
+                        "E.$EXAM_STAGE_LOG_ID, " +
+                        "C.$COURSE_MISC_UNIT_STAGE_COURSE_ID, " +
+                        "C.$COURSE_MISC_UNIT_STAGE_TERM_ID " +
+                        "FROM :schema.$EXAM_STAGE_TABLE AS E " +
+                        "INNER JOIN :schema.$COURSE_MISC_UNIT_STAGE_TABLE AS C " +
+                        "ON E.$EXAM_STAGE_ID = C.$COURSE_MISC_UNIT_STAGE_ID " +
+                        "WHERE C.$COURSE_MISC_UNIT_STAGE_TERM_ID = :courseId"
+        )
+        override fun getAllStagedExamOnSpecificCourse(courseId: Int): List<ExamStage>
 
     }
 

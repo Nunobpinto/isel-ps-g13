@@ -1,8 +1,6 @@
 package isel.leic.ps.eduWikiAPI.repository.interfaces
 
-import isel.leic.ps.eduWikiAPI.domain.model.User
-import isel.leic.ps.eduWikiAPI.domain.model.UserCourseClass
-import isel.leic.ps.eduWikiAPI.domain.model.UserProgramme
+import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.domain.model.report.UserReport
 import java.util.*
 
@@ -14,11 +12,11 @@ interface UserDAO {
 
     fun confirmUser(username: String): User
 
-    fun getCoursesOfUser(username: String): List<Int>
+    fun getCoursesOfUser(username: String): List<Course>
 
     fun getClassesOfUser(username: String): List<UserCourseClass>
 
-    fun getProgrammeOfUser(username: String): Int
+    fun getProgrammeOfUser(username: String): Optional<Programme>
 
     fun addProgrammeToUser(username: String, programmeId: Int): UserProgramme
 

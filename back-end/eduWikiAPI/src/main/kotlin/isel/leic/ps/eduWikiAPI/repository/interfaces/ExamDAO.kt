@@ -69,6 +69,10 @@ interface ExamDAO {
 
     fun getExamReportByLogId(logId: Int): Optional<ExamReport>
 
+    fun getAllExamsFromSpecificCourse(courseId: Int): List<Exam>
+
+    fun getAllStagedExamOnSpecificCourse(courseId: Int): List<ExamStage>
+
 }
 
 

@@ -177,8 +177,8 @@ class ReputationEventListeners {
 
         // Log reputation change
         reputationDAO.registerReputationLog(
-                ownerRepDetails.user,
-                ownerRepDetails.repId,
+                ownerRepDetails.username,
+                ownerRepDetails.reputationId,
                 pointsGiven,
                 givenBy,
                 actionId

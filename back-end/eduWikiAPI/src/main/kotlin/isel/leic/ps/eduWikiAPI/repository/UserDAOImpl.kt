@@ -1,11 +1,29 @@
 package isel.leic.ps.eduWikiAPI.repository
 
-import isel.leic.ps.eduWikiAPI.domain.model.User
-import isel.leic.ps.eduWikiAPI.domain.model.UserCourseClass
-import isel.leic.ps.eduWikiAPI.domain.model.UserProgramme
+import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.domain.model.report.UserReport
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_ID
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_CREATED_BY
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_FULL_NAME
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_ID
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_LOG_ID
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_SHORT_NAME
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_TABLE
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_TIMESTAMP
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_VERSION
+import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_VOTES
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_ACADEMIC_DEGREE
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_CREATED_BY
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_DURATION
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_FULL_NAME
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_ID
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_LOG_ID
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_SHORT_NAME
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_TABLE
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_TIMESTAMP
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_TOTAL_CREDITS
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_VERSION
+import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_VOTES
 import isel.leic.ps.eduWikiAPI.repository.TenantDAOImpl.Companion.MASTER_SCHEMA
 import isel.leic.ps.eduWikiAPI.repository.interfaces.UserDAO
 import org.jdbi.v3.core.Jdbi
@@ -26,17 +44,18 @@ class UserDAOImpl : UserDAO {
         const val USER_REPORT_TABLE = "user_report"
         const val USER_COURSE_CLASS_TABLE = "user_course_class"
         const val USER_PROGRAMME_TABLE = "user_programme"
-        // FIELDS
+        // USER FIELDS
         const val USER_USERNAME = "user_username"
         const val USER_PASSWORD = "user_password"
         const val USER_GIVEN_NAME = "user_given_name"
         const val USER_FAMILY_NAME = "user_family_name"
         const val USER_PERSONAL_EMAIL = "user_personal_email"
         const val USER_ORG_EMAIL = "user_organization_email"
-        const val COURSE_ID = "course_id"
+        // USER_COURSE_CLASS FIELDS
+        const val USER_COURSE_CLASS_TABLE_COURSE_ID = "course_id"
         const val CLASS_ID = "class_id"
         const val TERM_ID = "term_id"
-        const val PROGRAMME_ID = "programme_id"
+        const val USER_PROGRAMME_PROGRAMME_ID = "programme_id"
         const val REASON = "reason"
         const val REPORTED_BY = "reported_by"
         const val TIMESTAMP = "time_stamp"
@@ -62,13 +81,13 @@ class UserDAOImpl : UserDAO {
     override fun confirmUser(username: String): User =
             jdbi.open().attach(UserDAOJdbi::class.java).confirmUser(username)
 
-    override fun getCoursesOfUser(username: String): List<Int> =
+    override fun getCoursesOfUser(username: String): List<Course> =
             jdbi.open().attach(UserDAOJdbi::class.java).getCoursesOfUser(username)
 
     override fun getClassesOfUser(username: String): List<UserCourseClass> =
             jdbi.open().attach(UserDAOJdbi::class.java).getClassesOfUser(username)
 
-    override fun getProgrammeOfUser(username: String): Int =
+    override fun getProgrammeOfUser(username: String): Optional<Programme> =
             jdbi.open().attach(UserDAOJdbi::class.java).getProgrammeOfUser(username)
 
     override fun addProgrammeToUser(username: String, programmeId: Int): UserProgramme =
@@ -147,14 +166,45 @@ class UserDAOImpl : UserDAO {
         @GetGeneratedKeys
         override fun confirmUser(username: String): User
 
-        @SqlQuery("SELECT $COURSE_ID FROM :schema.$USER_COURSE_CLASS_TABLE WHERE $USER_USERNAME = :username")
-        override fun getCoursesOfUser(username: String): List<Int>
+        @SqlQuery(
+                "SELECT " +
+                        "C.$COURSE_ID, " +
+                        "C.$COURSE_LOG_ID, " +
+                        "C.$COURSE_VERSION, " +
+                        "C.$COURSE_FULL_NAME, " +
+                        "C.$COURSE_SHORT_NAME, " +
+                        "C.$COURSE_VOTES, " +
+                        "C.$COURSE_TIMESTAMP, " +
+                        "C.$COURSE_CREATED_BY " +
+                        "FROM :schema.$USER_COURSE_CLASS_TABLE AS U " +
+                        "INNER JOIN :schema.$COURSE_TABLE AS C " +
+                        "ON U.$USER_COURSE_CLASS_TABLE_COURSE_ID = C.$COURSE_ID " +
+                        "WHERE $USER_USERNAME = :username"
+        )
+        override fun getCoursesOfUser(username: String): List<Course>
 
         @SqlQuery("SELECT * FROM :schema.$USER_COURSE_CLASS_TABLE WHERE $USER_USERNAME = :username")
         override fun getClassesOfUser(username: String): List<UserCourseClass>
 
-        @SqlQuery("SELECT $PROGRAMME_ID FROM :schema.$USER_PROGRAMME_TABLE WHERE $USER_USERNAME = :username")
-        override fun getProgrammeOfUser(username: String): Int
+        @SqlQuery(
+                "SELECT " +
+                        "P.$PROGRAMME_ID, " +
+                        "P.$PROGRAMME_VERSION, " +
+                        "P.$PROGRAMME_LOG_ID, " +
+                        "P.$PROGRAMME_VOTES, " +
+                        "P.$PROGRAMME_CREATED_BY, " +
+                        "P.$PROGRAMME_FULL_NAME, " +
+                        "P.$PROGRAMME_SHORT_NAME, " +
+                        "P.$PROGRAMME_ACADEMIC_DEGREE, " +
+                        "P.$PROGRAMME_TOTAL_CREDITS, " +
+                        "P.$PROGRAMME_DURATION, " +
+                        "P.$PROGRAMME_TIMESTAMP " +
+                        "FROM :schema.$USER_PROGRAMME_TABLE AS U " +
+                        "INNER JOIN :schema.$PROGRAMME_TABLE AS P " +
+                        "ON U.$USER_PROGRAMME_PROGRAMME_ID = P.$PROGRAMME_ID " +
+                        "WHERE U.$USER_USERNAME = :username"
+        )
+        override fun getProgrammeOfUser(username: String): Optional<Programme>
 
         @SqlUpdate("INSERT INTO :schema.$USER_COURSE_CLASS_TABLE (" +
                 "$USER_USERNAME," +
@@ -169,7 +219,7 @@ class UserDAOImpl : UserDAO {
         @SqlUpdate("UPDATE :schema.$USER_COURSE_CLASS_TABLE" +
                 " SET $COURSE_CLASS_ID = :userCourseClass.courseClassId " +
                 "WHERE $USER_USERNAME = :userCourseClass.username " +
-                "AND $COURSE_ID = :userCourseClass.courseId"
+                "AND $USER_COURSE_CLASS_TABLE_COURSE_ID = :userCourseClass.courseId"
         )
         @GetGeneratedKeys
         override fun addClassToUser(userCourseClass: UserCourseClass): UserCourseClass
@@ -177,7 +227,7 @@ class UserDAOImpl : UserDAO {
 
         @SqlUpdate("INSERT INTO :schema.$USER_PROGRAMME_TABLE (" +
                 "$USER_USERNAME," +
-                PROGRAMME_ID +
+                USER_PROGRAMME_PROGRAMME_ID +
                 ") VALUES ( " +
                 ":username," +
                 ":programmeId " +
@@ -190,7 +240,7 @@ class UserDAOImpl : UserDAO {
 
         @SqlUpdate("DELETE FROM :schema.$USER_COURSE_CLASS_TABLE " +
                 "WHERE $USER_USERNAME = :username " +
-                "AND $COURSE_ID = :courseId")
+                "AND $USER_COURSE_CLASS_TABLE_COURSE_ID = :courseId")
         override fun deleteSpecificCourseOfUser(username: String, courseId: Int): Int
 
         @SqlUpdate("INSERT INTO :schema.$USER_REPORT_TABLE (" +

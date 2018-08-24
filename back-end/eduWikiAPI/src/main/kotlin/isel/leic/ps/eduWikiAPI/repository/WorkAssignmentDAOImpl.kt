@@ -170,6 +170,13 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
     override fun getWorkAssignmentStageByLogId(logId: Int): Optional<WorkAssignmentStage> =
             jdbi.open().attach(WorkAssignmentDAOJdbi::class.java).getWorkAssignmentStageByLogId(logId)
 
+    override fun getAllWorkAssignmentsOfSpecificCourse(courseId: Int): List<WorkAssignment> =
+            jdbi.open().attach(WorkAssignmentDAOJdbi::class.java).getAllWorkAssignmentsOfSpecificCourse(courseId)
+
+    override fun getAllStagedWorkAssignmentOnSpecificCourse(courseId: Int): List<WorkAssignmentStage> =
+            jdbi.open().attach(WorkAssignmentDAOJdbi::class.java).getAllStagedWorkAssignmentOnSpecificCourse(courseId)
+
+
     interface WorkAssignmentDAOJdbi : WorkAssignmentDAO {
         @CreateSqlObject
         fun createCourseDAO(): CourseDAOImpl.CourseDAOJdbi
@@ -606,6 +613,77 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
                         "WHERE W.$WORK_ASSIGNMENT_STAGE_LOG_ID = :logId"
         )
         override fun getWorkAssignmentStageByLogId(logId: Int): Optional<WorkAssignmentStage>
+
+        @SqlQuery(
+                "SELECT W.$WORK_ASSIGNMENT_ID, " +
+                        "W.$WORK_ASSIGNMENT_VERSION, " +
+                        "W.$WORK_ASSIGNMENT_VOTES, " +
+                        "W.$WORK_ASSIGNMENT_CREATED_BY, " +
+                        "W.$WORK_ASSIGNMENT_PHASE, " +
+                        "W.$WORK_ASSIGNMENT_SHEET_ID, " +
+                        "W.$WORK_ASSIGNMENT_SUPPLEMENT, " +
+                        "W.$WORK_ASSIGNMENT_DUE_DATE," +
+                        "W.$WORK_ASSIGNMENT_INDIVIDUAL, " +
+                        "W.$WORK_ASSIGNMENT_LATE_DELIVERY," +
+                        "W.$WORK_ASSIGNMENT_MULTIPLE_DELIVERIES, " +
+                        "W.$WORK_ASSIGNMENT_REQUIRES_REPORT, " +
+                        "W.$WORK_ASSIGNMENT_TIMESTAMP, " +
+                        "W.$WORK_ASSIGNMENT_LOG_ID, " +
+                        "C.$COURSE_MISC_UNIT_COURSE_ID, " +
+                        "C.$COURSE_MISC_UNIT_TERM_ID " +
+                        "FROM :schema.$WORK_ASSIGNMENT_TABLE AS W " +
+                        "INNER JOIN :schema.$COURSE_MISC_UNIT_TABLE AS C " +
+                        "ON W.$WORK_ASSIGNMENT_ID = C.$COURSE_MISC_UNIT_ID " +
+                        "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId"
+        )
+        override fun getAllWorkAssignmentsOfSpecificCourse(courseId: Int): List<WorkAssignment>
+
+        /*
+        "SELECT W.$WORK_ASSIGNMENT_ID, " +
+        "W.$WORK_ASSIGNMENT_VERSION, " +
+        "W.$WORK_ASSIGNMENT_VOTES, " +
+        "W.$WORK_ASSIGNMENT_CREATED_BY, " +
+        "W.$WORK_ASSIGNMENT_PHASE, " +
+        "W.$WORK_ASSIGNMENT_SHEET_ID, " +
+        "W.$WORK_ASSIGNMENT_SUPPLEMENT, " +
+        "W.$WORK_ASSIGNMENT_DUE_DATE," +
+        "W.$WORK_ASSIGNMENT_INDIVIDUAL, " +
+        "W.$WORK_ASSIGNMENT_LATE_DELIVERY," +
+        "W.$WORK_ASSIGNMENT_MULTIPLE_DELIVERIES, " +
+        "W.$WORK_ASSIGNMENT_REQUIRES_REPORT, " +
+        "W.$WORK_ASSIGNMENT_TIMESTAMP, " +
+        "W.$WORK_ASSIGNMENT_LOG_ID, " +
+        "C.$COURSE_MISC_UNIT_COURSE_ID, " +
+        "C.$COURSE_MISC_UNIT_TERM_ID " +
+        "FROM :schema.$WORK_ASSIGNMENT_TABLE AS W " +
+        "INNER JOIN :schema.$COURSE_MISC_UNIT_TABLE AS C " +
+        "ON W.$WORK_ASSIGNMENT_ID = C.$COURSE_MISC_UNIT_ID " +
+        "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId " +
+        "AND C.$COURSE_MISC_UNIT_TERM_ID = :termId"
+         */
+
+        @SqlQuery(
+                "SELECT W.$WORK_ASSIGNMENT_STAGE_ID, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_SHEET_ID, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_PHASE, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_SUPPLEMENT, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_DUE_DATE, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_INDIVIDUAL, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_LATE_DELIVERY, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_MULTIPLE_DELIVERIES, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_REQUIRES_REPORT, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_CREATED_BY, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_VOTES, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_TIMESTAMP, " +
+                        "W.$WORK_ASSIGNMENT_STAGE_LOG_ID, " +
+                        "C.$COURSE_MISC_UNIT_STAGE_COURSE_ID, " +
+                        "C.$COURSE_MISC_UNIT_STAGE_TERM_ID " +
+                        "FROM :schema.$WORK_ASSIGNMENT_STAGE_TABLE AS W " +
+                        "INNER JOIN :schema.$COURSE_MISC_UNIT_STAGE_TABLE AS C " +
+                        "ON W.$WORK_ASSIGNMENT_STAGE_ID = C.$COURSE_MISC_UNIT_STAGE_ID " +
+                        "WHERE C.$COURSE_MISC_UNIT_STAGE_COURSE_ID = :courseId"
+        )
+        override fun getAllStagedWorkAssignmentOnSpecificCourse(courseId: Int): List<WorkAssignmentStage>
 
     }
 

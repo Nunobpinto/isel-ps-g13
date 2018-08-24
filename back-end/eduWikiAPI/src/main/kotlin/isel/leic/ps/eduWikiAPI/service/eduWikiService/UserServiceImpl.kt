@@ -8,10 +8,14 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.UserReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.mappers.*
 import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.*
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.CourseCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.UserActionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.UserReputationCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.UserReportOutputModel
 import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.UserService
 import isel.leic.ps.eduWikiAPI.eventListeners.events.OnRegistrationEvent
+import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.BadRequestException
 import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.ExceededValidationException
 import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.NotFoundException
 import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.UnknownDataException
@@ -45,7 +49,7 @@ import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_A
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_STAGE_TABLE
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_TABLE
 import isel.leic.ps.eduWikiAPI.repository.interfaces.*
-//import isel.leic.ps.eduWikiAPI.utils.isEmailValid
+import isel.leic.ps.eduWikiAPI.utils.isEmailValid
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.beans.factory.annotation.Autowired
@@ -55,6 +59,7 @@ import java.security.Principal
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import java.util.*
+import java.util.Objects.*
 
 @Transactional
 @Service
@@ -140,9 +145,9 @@ class UserServiceImpl : UserService {
             toUserOutputModel(userDAO.getUser(username).orElseThrow { NotFoundException("User not found", "Try another username") })
 
     override fun saveUser(inputUser: UserInputModel): AuthUserOutputModel {
-       /* if(! isEmailValid(inputUser.organizationEmail))
+        if(! isEmailValid(inputUser.organizationEmail))
             throw BadRequestException("invalid organization email", "Get an actual organization email")
-*/
+
         val user = userDAO.createUser(toUser(inputUser))
         val reputation = reputationDAO.createUserReputation(Reputation(
                 role = ROLE_UNCONFIRMED.name,
@@ -172,11 +177,10 @@ class UserServiceImpl : UserService {
             userDAO.deleteUser(username)
 
     override fun getCoursesOfUser(username: String): CourseCollectionOutputModel {
-        val coursesIds = userDAO.getCoursesOfUser(username)
-        val courses = coursesIds.map {
-            toCourseOutputModel(courseDAO.getSpecificCourse(it).get())
-        }
-        return toCourseCollectionOutputModel(courses)
+        val courses = userDAO.getCoursesOfUser(username)
+        return toCourseCollectionOutputModel(courses.map {
+            toCourseOutputModel(it)
+        })
     }
 
     override fun getClassesOfCOurseOfUser(username: String): CourseClassCollectionOutputModel {
@@ -191,11 +195,9 @@ class UserServiceImpl : UserService {
     }
 
     override fun getProgrammeOfUser(username: String): ProgrammeOutputModel {
-        val programmeId = userDAO.getProgrammeOfUser(username)
-        return toProgrammeOutput(
-                programmeDAO.getSpecificProgramme(programmeId)
-                        .orElseThrow { UnknownDataException("Something happened when accessing your programme", "Try Again Later") }
-        )
+        val programme = userDAO.getProgrammeOfUser(username)
+                .orElseThrow { UnknownDataException("Something happened when accessing your programme", "Try Again Later") }
+        return toProgrammeOutput(programme)
     }
 
     override fun addProgrammeToUSer(username: String, input: UserProgrammeInputModel): ProgrammeOutputModel {
@@ -279,18 +281,121 @@ class UserServiceImpl : UserService {
         val user = userDAO.getUser(principal.name)
                 .orElseThrow { NotFoundException("User not found", "There is not user with the username ${principal.name} in this tenant") }
 
-        val map = reputationDAO.getActionLogsByUser(user.username)
-                .map {
-                    entityToAction[it.entity]?.invoke(it) ?: noActionException()
-                }
-
         return UserActionCollectionOutputModel(
                 username = user.username,
-                actions = map)
+                actions = reputationDAO.getActionLogsByUser(user.username)
+                        .map { entityToAction[it.entity]?.invoke(it) ?: noActionException() }
+        )
     }
 
     override fun getUserFeed(principal: Principal): UserActionCollectionOutputModel {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val user = userDAO.getUser(principal.name)
+                .orElseThrow { NotFoundException("User not found", "There is not user with the username ${principal.name} in this tenant") }
+
+        // Get everything followed by user
+        val programme = userDAO.getProgrammeOfUser(user.username)
+        val followedCourses = userDAO.getCoursesOfUser(user.username).toMutableList()
+        val followedClasses = userDAO.getClassesOfUser(user.username)
+                .filter { nonNull(it.courseClassId) }
+                .toMutableList()
+
+        // Extract actions from all entities
+        val actions: MutableList<UserActionOutputModel> = mutableListOf()
+        actions.addAll(getActionsOnFollowedCourses(followedCourses))
+        actions.addAll(getActionsOnFollowedClasses(followedClasses))
+        actions.addAll(if(programme.isPresent) getActionsOnFollowedProgramme(programme.get()) else mutableListOf())
+        return UserActionCollectionOutputModel(
+                username = user.username,
+                actions = actions.sortedBy { it.timestamp }
+        )
+    }
+
+    private fun getActionsOnFollowedProgramme(programme: Programme): MutableList<UserActionOutputModel> {
+        val res: MutableList<UserActionOutputModel> = mutableListOf()
+
+        res.addAll(courseDAO.getAllCoursesOnSpecificProgramme(programme.programmeId)
+                .flatMap { courseProg -> reputationDAO.getActionLogsByResource(COURSE_PROGRAMME_TABLE, courseProg.logId)
+                        .map { courseProg.toUserActionOutputModel(it) }
+                }
+        )
+        res.addAll(courseDAO.getAllCourseStageEntriesOfSpecificProgramme(programme.programmeId)
+                .flatMap { courseProg -> reputationDAO.getActionLogsByResource(COURSE_PROGRAMME_STAGE_TABLE, courseProg.logId)
+                        .map { courseProg.toUserActionOutputModel(it) }
+                }
+        )
+        res.addAll(programmeDAO.getAllReportsOfSpecificProgramme(programme.programmeId)
+                .flatMap { prog -> reputationDAO.getActionLogsByResource(COURSE_PROGRAMME_STAGE_TABLE, prog.logId)
+                        .map { prog.toUserActionOutputModel(it) }
+                }
+        )
+        return res
+    }
+
+    private fun getActionsOnFollowedClasses(courseClasses: MutableList<UserCourseClass>): MutableList<UserActionOutputModel> {
+        val res: MutableList<UserActionOutputModel> = mutableListOf()
+        courseClasses.forEach { courseClass ->
+            res.addAll(lectureDAO.getAllLecturesFromCourseInClass(courseClass.courseClassId!!)
+                    .flatMap { lecture -> reputationDAO.getActionLogsByResource(LECTURE_TABLE, lecture.logId)
+                            .map { lecture.toUserActionOutputModel(it) }
+                    }
+            )
+            res.addAll(lectureDAO.getAllStagedLecturesOfCourseInClass(courseClass.courseClassId)
+                    .flatMap { lecture -> reputationDAO.getActionLogsByResource(LECTURE_STAGE_TABLE, lecture.logId)
+                            .map { lecture.toUserActionOutputModel(it) }
+                    }
+            )
+            res.addAll(homeworkDAO.getAllHomeworksFromCourseInClass(courseClass.courseClassId)
+                    .flatMap { homework -> reputationDAO.getActionLogsByResource(HOMEWORK_TABLE, homework.logId)
+                            .map { homework.toUserActionOutputModel(it) }
+                    }
+            )
+            res.addAll(homeworkDAO.getAllStagedHomeworksOfCourseInClass(courseClass.courseClassId)
+                    .flatMap { homework -> reputationDAO.getActionLogsByResource(HOMEWORK_STAGE_TABLE, homework.logId)
+                            .map { homework.toUserActionOutputModel(it) }
+                    }
+            )
+            res.addAll(classDAO.getAllReportsOfCourseInClass(courseClass.courseClassId)
+                    .flatMap { courseClassRep -> reputationDAO.getActionLogsByResource(HOMEWORK_STAGE_TABLE, courseClassRep.logId)
+                            .map { courseClassRep.toUserActionOutputModel(it) }
+                    }
+            )
+        }
+        return res
+    }
+
+    private fun getActionsOnFollowedCourses(followedCourses: MutableList<Course>): MutableList<UserActionOutputModel> {
+        val res: MutableList<UserActionOutputModel> = mutableListOf()
+        followedCourses.forEach {course ->
+            res.addAll(workAssignmentDAO.getAllWorkAssignmentsOfSpecificCourse(course.courseId)
+                    .flatMap { wrk -> reputationDAO.getActionLogsByResource(WORK_ASSIGNMENT_TABLE, wrk.logId)
+                            .map { wrk.toUserActionOutputModel(it) }
+                    }
+            )
+            res.addAll(workAssignmentDAO.getAllStagedWorkAssignmentOnSpecificCourse(course.courseId)
+                    .flatMap { wrk -> reputationDAO.getActionLogsByResource(WORK_ASSIGNMENT_STAGE_TABLE, wrk.logId)
+                            .map { wrk.toUserActionOutputModel(it) }
+                    }
+            )
+            res.addAll(examDAO.getAllExamsFromSpecificCourse(course.courseId)
+                    .flatMap { exam -> reputationDAO.getActionLogsByResource(EXAM_TABLE, exam.logId)
+                            .map { exam.toUserActionOutputModel(it) }
+                    }
+            )
+            res.addAll(examDAO.getAllStagedExamOnSpecificCourse(course.courseId)
+                    .flatMap { exam -> reputationDAO.getActionLogsByResource(EXAM_STAGE_TABLE, exam.logId)
+                            .map { exam.toUserActionOutputModel(it) }
+                    }
+            )
+            res.addAll(courseDAO.getAllReportsOnCourse(course.courseId)
+                    .flatMap { report -> reputationDAO.getActionLogsByResource(COURSE_REPORT_TABLE, report.logId)
+                            .map { report.toUserActionOutputModel(it) }
+                    }
+            )
+            res.addAll(reputationDAO.getActionLogsByResource(COURSE_TABLE, course.logId)
+                    .map { course.toUserActionOutputModel(it) }
+            )
+        }
+        return res
     }
 
     override fun getUserReputation(principal: Principal): UserReputationCollectionOutputModel {
@@ -303,10 +408,11 @@ class UserServiceImpl : UserService {
                     val actionLog = reputationDAO.getActionLogById(it.repActionId)
                             .orElseThrow { noActionException() }
                     UserReputationOutputModel(
-                        givenBy = it.givenBy,
-                        pointsGiven = it.points,
-                        action = entityToAction[actionLog.entity]?.invoke(actionLog) ?: noActionException()
-                ) }
+                            givenBy = it.givenBy,
+                            pointsGiven = it.points,
+                            action = entityToAction[actionLog.entity]?.invoke(actionLog) ?: noActionException()
+                    )
+                }
         return UserReputationCollectionOutputModel(reputationLogs)
 
     }

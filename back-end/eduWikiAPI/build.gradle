@@ -57,6 +57,7 @@ dependencies {
 	compile('org.jdbi:jdbi3-postgres:3.4.0')
 	compile('org.jdbi:jdbi3-sqlobject:3.4.0')
 	compile('org.jdbi:jdbi3-kotlin-sqlobject:3.4.0')
+	compile('org.jdbi:jdbi3-stringtemplate4:3.4.0')
 	runtime('org.postgresql:postgresql')
 	compile('com.fasterxml.jackson.module:jackson-module-kotlin')
 //	Programming languages dependencies

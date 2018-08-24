@@ -117,3 +117,19 @@ DROP TABLE IF EXISTS isel.course;
 DROP TABLE IF EXISTS isel.organization;
 
 DROP TABLE IF EXISTS isel.user_account;
+
+--------------------------
+-- Drop Auxiliary Types
+--------------------------
+
+DROP TYPE IF EXISTS isel.term_type;
+
+DROP TYPE IF EXISTS isel.action_type;
+
+DROP TYPE IF EXISTS isel.course_misc_unit_type;
+
+DROP TYPE IF EXISTS isel.class_misc_unit_type;
+
+DROP TYPE IF EXISTS isel.exam_type;
+
+DROP TYPE IF EXISTS isel.weekday;
