@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.domain.mappers
 
+import isel.leic.ps.eduWikiAPI.domain.enums.ExamType
 import isel.leic.ps.eduWikiAPI.domain.inputModel.ExamInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ExamReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Exam
@@ -17,7 +18,7 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.ExamVersionOutp
 fun toExam(input: ExamInputModel, createdBy: String) = Exam(
         createdBy = createdBy,
         dueDate = input.dueDate,
-        type = input.type,
+        type = ExamType.valueOf(input.type.toUpperCase()),
         phase = input.phase,
         location = input.location
 )
@@ -47,7 +48,7 @@ fun toExamReport(examId: Int, inputExamReport: ExamReportInputModel, reportedBy:
 fun toStageExam(inputExam: ExamInputModel, createdBy: String) = ExamStage(
         createdBy = createdBy,
         dueDate = inputExam.dueDate,
-        type = inputExam.type,
+        type = ExamType.valueOf(inputExam.type.toUpperCase()),
         phase = inputExam.phase,
         location = inputExam.location
 )

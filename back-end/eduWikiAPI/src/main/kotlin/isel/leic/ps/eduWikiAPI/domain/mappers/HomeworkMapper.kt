@@ -17,7 +17,6 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.HomeworkVersion
 
 fun toHomework(homeworkInputModel: HomeworkInputModel, createdBy: String) = Homework(
         createdBy = createdBy,
-        sheetId = homeworkInputModel.sheetId,
         dueDate = homeworkInputModel.dueDate,
         lateDelivery = homeworkInputModel.lateDelivery,
         multipleDeliveries = homeworkInputModel.multipleDeliveries
@@ -25,7 +24,6 @@ fun toHomework(homeworkInputModel: HomeworkInputModel, createdBy: String) = Home
 
 fun toHomeworkStage(homeworkInputModel: HomeworkInputModel, createdBy: String) = HomeworkStage(
         createdBy = createdBy,
-        sheetId = homeworkInputModel.sheetId,
         dueDate = homeworkInputModel.dueDate,
         lateDelivery = homeworkInputModel.lateDelivery,
         multipleDeliveries = homeworkInputModel.multipleDeliveries

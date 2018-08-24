@@ -66,7 +66,7 @@ interface CourseService {
 
     fun createExamFromStaged(courseId: Int, termId: Int, stageId: Int, principal: Principal): ExamOutputModel
 
-    fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel, sheet: MultipartFile, principal: Principal): WorkAssignmentOutputModel
+    fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel, sheet: MultipartFile, principal: Principal, supplement: MultipartFile): WorkAssignmentOutputModel
 
     fun createWorkAssignmentFromStaged(courseId: Int, termId: Int, stageId: Int, principal: Principal): WorkAssignmentOutputModel
 

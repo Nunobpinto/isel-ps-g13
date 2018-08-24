@@ -16,9 +16,7 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.WorkAssignmentV
 
 fun toWorkAssignment(input: WorkAssignmentInputModel, createdBy: String) = WorkAssignment(
         createdBy = createdBy,
-        sheetId = input.sheetId,
         phase = input.phase,
-        supplementId = input.supplementId,
         dueDate = input.dueDate,
         individual = input.individual,
         lateDelivery = input.lateDelivery,
@@ -55,8 +53,6 @@ fun toWorkAssignmentReport(workAssignmentId: Int, inputWorkAssignmentReport: Wor
 )
 
 fun toStageWorkAssignment(inputWorkAssignment: WorkAssignmentInputModel, createdBy: String) = WorkAssignmentStage(
-        sheetId = inputWorkAssignment.sheetId,
-        supplementId = inputWorkAssignment.supplementId,
         phase = inputWorkAssignment.phase,
         dueDate = inputWorkAssignment.dueDate,
         individual = inputWorkAssignment.individual,

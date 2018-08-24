@@ -15,7 +15,7 @@ class ResourceController {
     @Autowired
     lateinit var storageService: ResourceStorageService
 
-    @GetMapping("/{uuId}" )
+    @GetMapping("/{sheetId}" )
     fun getResource(
             @PathVariable sheetId: UUID
     ) : ResponseEntity<ByteArray> {

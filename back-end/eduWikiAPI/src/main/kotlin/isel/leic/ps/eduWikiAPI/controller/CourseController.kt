@@ -4,11 +4,16 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.*
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ExamReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.WorkAssignmentReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.ExamOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.WorkAssignmentOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.ExamStageOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.WorkAssignmentStageOutputModel
 import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.CourseService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.security.Principal
+import java.time.LocalDate
 
 @RestController
 @RequestMapping("/courses")
@@ -180,9 +185,20 @@ class CourseController {
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @RequestParam sheet: MultipartFile,
-            examInputModel: ExamInputModel,  //TODO check if @RequestBody does work too
+            @RequestParam phase: String,
+            @RequestParam location: String,
+            @RequestParam dueDate: String,
+            @RequestParam type: String,
             principal: Principal
-    ) = courseService.createExamOnCourseInTerm(termId, courseId, sheet, examInputModel, principal)
+    ): ExamOutputModel {
+        val examInputModel = ExamInputModel(
+                phase = phase,
+                type = type,
+                location = location,
+                dueDate = LocalDate.parse(dueDate)
+        )
+        return courseService.createExamOnCourseInTerm(termId, courseId, sheet, examInputModel, principal)
+    }
 
     @PostMapping("/{courseId}/terms/{termId}/exams/{examId}/vote")
     fun voteOnExam(
@@ -299,9 +315,20 @@ class CourseController {
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @RequestParam sheet: MultipartFile,
-            examInputModel: ExamInputModel,
+            @RequestParam phase: String,
+            @RequestParam location: String,
+            @RequestParam dueDate: String,
+            @RequestParam type: String,
             principal: Principal
-    ) = courseService.createStagingExam(courseId, termId, examInputModel, sheet, principal)
+    ): ExamStageOutputModel{
+        val examInputModel = ExamInputModel(
+                phase = phase,
+                type = type,
+                location = location,
+                dueDate = LocalDate.parse(dueDate)
+        )
+        return courseService.createStagingExam(courseId, termId, examInputModel, sheet, principal)
+    }
 
     @PostMapping("/{courseId}/terms/{termId}/exams/stage/{stageId}")
     fun createExamFromStaged(
@@ -352,9 +379,25 @@ class CourseController {
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @RequestParam sheet: MultipartFile,
-            workAssignmentInputModel: WorkAssignmentInputModel,
+            @RequestParam supplement: MultipartFile,
+            @RequestParam phase: String,
+            @RequestParam individual: Boolean,
+            @RequestParam dueDate: String,
+            @RequestParam multipleDeliveries: Boolean,
+            @RequestParam lateDelivery: Boolean,
+            @RequestParam requiresReport: Boolean,
             principal: Principal
-    ) = courseService.createWorkAssignmentOnCourseInTerm(courseId, termId, workAssignmentInputModel, sheet, principal)
+    ): WorkAssignmentOutputModel {
+        val workAssignmentInputModel = WorkAssignmentInputModel(
+                phase = phase,
+                individual = individual,
+                dueDate = LocalDate.parse(dueDate),
+                multipleDeliveries = multipleDeliveries,
+                lateDelivery = lateDelivery,
+                requiresReport = requiresReport
+        )
+        return courseService.createWorkAssignmentOnCourseInTerm(courseId, termId, workAssignmentInputModel, sheet, principal, supplement )
+    }
 
     @PostMapping("/{courseId}/terms/{termId}/work-assignments/{workAssignmentId}/vote")
     fun voteOnWorkAssignment(
@@ -470,9 +513,25 @@ class CourseController {
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
             @RequestParam sheet: MultipartFile,
-            workAssignmentInputModel: WorkAssignmentInputModel,
+            @RequestParam supplement: MultipartFile,
+            @RequestParam phase: String,
+            @RequestParam individual: Boolean,
+            @RequestParam dueDate: String,
+            @RequestParam multipleDeliveries: Boolean,
+            @RequestParam lateDelivery: Boolean,
+            @RequestParam requiresReport: Boolean,
             principal: Principal
-    ) = courseService.createStagingWorkAssignment(sheet, courseId, termId, workAssignmentInputModel, principal)
+    ): WorkAssignmentStageOutputModel {
+        val workAssignmentInputModel = WorkAssignmentInputModel(
+                phase = phase,
+                individual = individual,
+                dueDate = LocalDate.parse(dueDate),
+                multipleDeliveries = multipleDeliveries,
+                lateDelivery = lateDelivery,
+                requiresReport = requiresReport
+        )
+        return courseService.createStagingWorkAssignment(sheet, courseId, termId, workAssignmentInputModel, principal)
+    }
 
     @PostMapping("/{courseId}/terms/{termId}/work-assignments/stage/{stageId}")
     fun createWorkAssignmentFromStaged(

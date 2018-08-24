@@ -5,11 +5,14 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ClassReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseClassReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.HomeworkReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.LectureReportInputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.HomeworkOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.HomeworkStageOutputModel
 import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.ClassService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.security.Principal
+import java.time.LocalDate
 
 @RestController
 @RequestMapping("/classes")
@@ -444,12 +447,21 @@ class ClassController {
 
     @PostMapping("/{classId}/courses/{courseId}/homeworks")
     fun createHomeworkOnCourseInClass(
-            @RequestParam sheet: MultipartFile,
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
-            homeworkInputModel: HomeworkInputModel,
+            @RequestParam sheet: MultipartFile,
+            @RequestParam dueDate: String,
+            @RequestParam multipleDeliveries: Boolean,
+            @RequestParam lateDelivery: Boolean,
             principal: Principal
-    ) = classService.createHomeworkOnCourseInClass(sheet, classId, courseId, homeworkInputModel, principal)
+    ): HomeworkOutputModel{
+        val homeworkInputModel = HomeworkInputModel(
+                dueDate = LocalDate.parse(dueDate),
+                multipleDeliveries = multipleDeliveries,
+                lateDelivery = lateDelivery
+        )
+        return classService.createHomeworkOnCourseInClass(sheet, classId, courseId, homeworkInputModel, principal)
+    }
 
     @PostMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}/vote")
     fun voteOnHomeworkOfCourseInClass(
@@ -488,12 +500,21 @@ class ClassController {
 
     @PostMapping("/{classId}/courses/{courseId}/homeworks/stage")
     fun createStagingHomeworkOnCourseInClass(
-            @PathVariable sheet: MultipartFile,
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
-            homeworkInputModel: HomeworkInputModel,
+            @RequestParam sheet: MultipartFile,
+            @RequestParam dueDate: String,
+            @RequestParam multipleDeliveries: Boolean,
+            @RequestParam lateDelivery: Boolean,
             principal: Principal
-    ) = classService.createStagingHomeworkOnCourseInClass(sheet, classId, courseId, homeworkInputModel, principal)
+    ): HomeworkStageOutputModel {
+        val homeworkInputModel = HomeworkInputModel(
+                dueDate = LocalDate.parse(dueDate),
+                multipleDeliveries = multipleDeliveries,
+                lateDelivery = lateDelivery
+        )
+        return classService.createStagingHomeworkOnCourseInClass(sheet, classId, courseId, homeworkInputModel, principal)
+    }
 
     @PostMapping("/{classId}/courses/{courseId}/homeworks/stage/{stageId}")
     fun createHomeworkFromStaged(

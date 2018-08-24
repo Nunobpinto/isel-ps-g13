@@ -1,6 +1,7 @@
 package isel.leic.ps.eduWikiAPI.service.eduWikiService
 
 import isel.leic.ps.eduWikiAPI.domain.model.Resource
+import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.NotFoundException
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ResourceDAO
 import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.ResourceStorageService
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,7 +27,7 @@ class ResourceStorageServiceImpl : ResourceStorageService {
             )
 
     override fun getResource(uuId: UUID): Resource =
-            resourceDAO.getResource(uuId).orElseGet { Resource() }
+            resourceDAO.getResource(uuId).orElseThrow { NotFoundException("Resource not found", "Please provide a valid id") }
 
     override fun batchDeleteResource(uuIds: List<UUID>): IntArray =
             resourceDAO.batchDeleteResources(uuIds)

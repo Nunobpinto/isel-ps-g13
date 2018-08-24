@@ -40,7 +40,6 @@ import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_TABLE
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_REPORT_TABLE
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_STAGE_TABLE
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_TABLE
-import isel.leic.ps.eduWikiAPI.repository.TermDAOImpl
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_REPORT_TABLE
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_STAGE_TABLE
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_TABLE
@@ -403,7 +402,8 @@ class CourseServiceImpl : CourseService {
             inputExam: ExamInputModel,
             principal: Principal
     ): ExamOutputModel {
-        val createdExam = examDAO.createExamOnCourseInTerm(courseId, termId, toExam(inputExam, principal.name))
+        val exam = toExam(inputExam, principal.name)
+        val createdExam = examDAO.createExamOnCourseInTerm(courseId, termId, exam)
         examDAO.createExamVersion(toExamVersion(createdExam))
         storageService.storeResource(createdExam.sheetId, sheet)
 
@@ -672,12 +672,13 @@ class CourseServiceImpl : CourseService {
             termId: Int,
             inputWorkAssignment: WorkAssignmentInputModel,
             sheet: MultipartFile,
-            principal: Principal
+            principal: Principal,
+            supplement: MultipartFile
     ): WorkAssignmentOutputModel {
         val createdWorkAssignment = workAssignmentDAO.createWorkAssignmentOnCourseInTerm(courseId, termId, toWorkAssignment(inputWorkAssignment, principal.name))
         workAssignmentDAO.createWorkAssignmentVersion(toWorkAssignmentVersion(createdWorkAssignment))
         storageService.storeResource(createdWorkAssignment.sheetId, sheet)
-
+        storageService.storeResource(createdWorkAssignment.supplementId, supplement)
         publisher.publishEvent(ResourceCreatedEvent(
                 principal.name,
                 WORK_ASSIGNMENT_TABLE,

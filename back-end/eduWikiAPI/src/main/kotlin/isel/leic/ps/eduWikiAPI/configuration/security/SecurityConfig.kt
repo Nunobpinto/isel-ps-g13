@@ -56,6 +56,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
                 .antMatchers("/users")
                 .antMatchers("/users/{username}/confirm/{token}")
                 .antMatchers("/resources/{uuId}")
+                .antMatchers("/favicon.ico")
     }
 
     @Bean
