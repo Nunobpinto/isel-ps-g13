@@ -15,13 +15,16 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.ExamVersio
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.ExamReportOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.ExamStageOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.ExamVersionOutputModel
+import org.springframework.web.multipart.MultipartFile
+import java.util.*
 
-fun toExam(input: ExamInputModel, createdBy: String) = Exam(
+fun toExam(input: ExamInputModel, sheet: MultipartFile?, createdBy: String) = Exam(
         createdBy = createdBy,
         dueDate = input.dueDate,
         type = ExamType.valueOf(input.type.toUpperCase()),
         phase = input.phase,
-        location = input.location
+        location = input.location,
+        sheetId = if(sheet == null) null else UUID.randomUUID()
 )
 
 fun toExamVersion(exam: Exam) = ExamVersion(
@@ -46,12 +49,13 @@ fun toExamReport(examId: Int, inputExamReport: ExamReportInputModel, reportedBy:
         location = inputExamReport.location
 )
 
-fun toStageExam(inputExam: ExamInputModel, createdBy: String) = ExamStage(
+fun toStageExam(inputExam: ExamInputModel, sheet: MultipartFile?, createdBy: String) = ExamStage(
         createdBy = createdBy,
         dueDate = inputExam.dueDate,
         type = ExamType.valueOf(inputExam.type.toUpperCase()),
         phase = inputExam.phase,
-        location = inputExam.location
+        location = inputExam.location,
+        sheetId = if(sheet == null) null else UUID.randomUUID()
 )
 
 fun stagedToExam(stage: ExamStage) = Exam(

@@ -398,14 +398,16 @@ class CourseServiceImpl : CourseService {
     override fun createExamOnCourseInTerm(
             courseId: Int,
             termId: Int,
-            sheet: MultipartFile,
+            sheet: MultipartFile?,
             inputExam: ExamInputModel,
             principal: Principal
     ): ExamOutputModel {
-        val exam = toExam(inputExam, principal.name)
+        val exam = toExam(inputExam, sheet, principal.name)
         val createdExam = examDAO.createExamOnCourseInTerm(courseId, termId, exam)
         examDAO.createExamVersion(toExamVersion(createdExam))
-        storageService.storeResource(createdExam.sheetId, sheet)
+
+        if(sheet != null && createdExam.sheetId != null)
+            storageService.storeResource(createdExam.sheetId, sheet)
 
         publisher.publishEvent(ResourceCreatedEvent(
                 principal.name,
@@ -436,7 +438,8 @@ class CourseServiceImpl : CourseService {
     override fun deleteSpecificExamOfCourseInTerm(courseId: Int, termId: Int, examId: Int, principal: Principal): Int {
         val exam = examDAO.getSpecificExamFromSpecificTermOfCourse(courseId, termId, examId)
                 .orElseThrow { NotFoundException("No exam found", "Try again with other exam id") }
-        storageService.deleteSpecificResource(exam.sheetId)
+
+        if(exam.sheetId != null) storageService.deleteSpecificResource(exam.sheetId)
         val success = examDAO.deleteSpecificExamOfCourseInTerm(termId, courseId, examId)
 
         publisher.publishEvent(ResourceDeletedEvent(
@@ -466,11 +469,13 @@ class CourseServiceImpl : CourseService {
             courseId: Int,
             termId: Int,
             examInputModel: ExamInputModel,
-            sheet: MultipartFile,
+            sheet: MultipartFile?,
             principal: Principal
     ): ExamStageOutputModel {
-        val stagingExam = examDAO.createStagingExamOnCourseInTerm(courseId, termId, toStageExam(examInputModel, principal.name))
-        storageService.storeResource(stagingExam.sheetId, sheet)
+        val stagingExam = examDAO.createStagingExamOnCourseInTerm(courseId, termId, toStageExam(examInputModel, sheet, principal.name))
+
+        if(sheet != null && stagingExam.sheetId != null)
+            storageService.storeResource(stagingExam.sheetId, sheet)
 
         publisher.publishEvent(ResourceCreatedEvent(
                 principal.name,
@@ -522,7 +527,9 @@ class CourseServiceImpl : CourseService {
     override fun deleteSpecificStagedExamOfCourseInTerm(courseId: Int, termId: Int, stageId: Int, principal: Principal): Int {
         val stagedExam = examDAO.getStageEntryFromExamOnSpecificTermOfCourse(courseId, termId, stageId)
                 .orElseThrow { NotFoundException("No exam staged found", "Try again with other staged id") }
-        storageService.deleteSpecificResource(stagedExam.sheetId)
+
+        if(stagedExam.sheetId != null) storageService.deleteSpecificResource(stagedExam.sheetId)
+
         val success = examDAO.deleteSpecificStagedExamOfCourseInTerm(courseId, termId, stageId)
 
         publisher.publishEvent(ResourceRejectedEvent(
@@ -671,14 +678,18 @@ class CourseServiceImpl : CourseService {
             courseId: Int,
             termId: Int,
             inputWorkAssignment: WorkAssignmentInputModel,
-            sheet: MultipartFile,
+            sheet: MultipartFile?,
             principal: Principal,
-            supplement: MultipartFile
+            supplement: MultipartFile?
     ): WorkAssignmentOutputModel {
-        val createdWorkAssignment = workAssignmentDAO.createWorkAssignmentOnCourseInTerm(courseId, termId, toWorkAssignment(inputWorkAssignment, principal.name))
+        val createdWorkAssignment = workAssignmentDAO.createWorkAssignmentOnCourseInTerm(courseId, termId, toWorkAssignment(inputWorkAssignment, sheet, supplement, principal.name))
+
         workAssignmentDAO.createWorkAssignmentVersion(toWorkAssignmentVersion(createdWorkAssignment))
-        storageService.storeResource(createdWorkAssignment.sheetId, sheet)
-        storageService.storeResource(createdWorkAssignment.supplementId, supplement)
+        if(sheet != null && createdWorkAssignment.sheetId != null )
+            storageService.storeResource(createdWorkAssignment.sheetId, sheet)
+        if(supplement != null && createdWorkAssignment.supplementId != null)
+            storageService.storeResource(createdWorkAssignment.supplementId, supplement)
+
         publisher.publishEvent(ResourceCreatedEvent(
                 principal.name,
                 WORK_ASSIGNMENT_TABLE,
@@ -708,7 +719,10 @@ class CourseServiceImpl : CourseService {
     override fun deleteSpecificWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, workAssignmentId: Int, principal: Principal): Int {
         val workAssignment = workAssignmentDAO.getSpecificWorkAssignmentOfCourseInTerm(workAssignmentId, courseId, termId)
                 .orElseThrow { NotFoundException("No Work Assignment found", "Try again with other work assignment id") }
-        storageService.deleteSpecificResource(workAssignment.sheetId)
+
+        if(workAssignment.sheetId != null) storageService.deleteSpecificResource(workAssignment.sheetId)
+        if(workAssignment.supplementId != null) storageService.deleteSpecificResource(workAssignment.supplementId)
+
         val success = workAssignmentDAO.deleteSpecificWorkAssignment(courseId, termId, workAssignmentId)
 
         publisher.publishEvent(ResourceDeletedEvent(
@@ -735,14 +749,19 @@ class CourseServiceImpl : CourseService {
     }
 
     override fun createStagingWorkAssignment(
-            sheet: MultipartFile,
+            sheet: MultipartFile?,
+            supplement: MultipartFile?,
             courseId: Int,
             termId: Int,
             inputWorkAssignment: WorkAssignmentInputModel,
             principal: Principal
     ): WorkAssignmentStageOutputModel {
-        val stagingWorkAssignment = workAssignmentDAO.createStagingWorkAssingment(courseId, termId, toStageWorkAssignment(inputWorkAssignment, principal.name))
-        storageService.storeResource(stagingWorkAssignment.sheetId, sheet)
+        val stagingWorkAssignment = workAssignmentDAO.createStagingWorkAssingment(courseId, termId, toStageWorkAssignment(inputWorkAssignment, sheet, supplement, principal.name))
+
+        if(sheet != null && stagingWorkAssignment.sheetId != null)
+            storageService.storeResource(stagingWorkAssignment.sheetId, sheet)
+        if(supplement != null && stagingWorkAssignment.supplementId != null)
+            storageService.storeResource(stagingWorkAssignment.supplementId, supplement)
 
         publisher.publishEvent(ResourceCreatedEvent(
                 principal.name,
@@ -795,7 +814,10 @@ class CourseServiceImpl : CourseService {
     override fun deleteSpecificStagedWorkAssignmentOfCourseInTerm(courseId: Int, termId: Int, stageId: Int, principal: Principal): Int {
         val stagedWorkAssignment = workAssignmentDAO.getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId, termId, stageId)
                 .orElseThrow { NotFoundException("No Work Assignment Staged found", "Try again with other stage id") }
-        storageService.deleteSpecificResource(stagedWorkAssignment.sheetId)
+
+        if(stagedWorkAssignment.sheetId != null) storageService.deleteSpecificResource(stagedWorkAssignment.sheetId)
+        if(stagedWorkAssignment.supplementId != null) storageService.deleteSpecificResource(stagedWorkAssignment.supplementId)
+
         val success = workAssignmentDAO.deleteSpecificStagedWorkAssignmentOfCourseInTerm(courseId, termId, stageId)
 
         publisher.publishEvent(ResourceRejectedEvent(

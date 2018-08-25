@@ -37,7 +37,7 @@ data class Exam (
         @ColumnName(EXAM_CREATED_BY)
         val createdBy: String = "",
         @ColumnName(EXAM_SHEET_ID)
-        val sheetId: UUID = UUID.randomUUID(),
+        val sheetId: UUID? = UUID.randomUUID(),
         @ColumnName(EXAM_DUE_DATE)
         val dueDate: LocalDate = LocalDate.now(),
         @ColumnName(EXAM_TYPE)

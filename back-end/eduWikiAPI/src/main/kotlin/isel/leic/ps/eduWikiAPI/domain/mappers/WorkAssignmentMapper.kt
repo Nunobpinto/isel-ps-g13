@@ -15,15 +15,19 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserActionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.WorkAssignmentReportOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.WorkAssignmentStageOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.WorkAssignmentVersionOutputModel
+import org.springframework.web.multipart.MultipartFile
+import java.util.*
 
-fun toWorkAssignment(input: WorkAssignmentInputModel, createdBy: String) = WorkAssignment(
+fun toWorkAssignment(input: WorkAssignmentInputModel, sheet: MultipartFile?, supplement: MultipartFile?, createdBy: String) = WorkAssignment(
         createdBy = createdBy,
         phase = input.phase,
         dueDate = input.dueDate,
         individual = input.individual,
         lateDelivery = input.lateDelivery,
         multipleDeliveries = input.multipleDeliveries,
-        requiresReport = input.requiresReport
+        requiresReport = input.requiresReport,
+        sheetId = if(sheet == null) null else UUID.randomUUID(),
+        supplementId = if(supplement == null) null else UUID.randomUUID()
 )
 
 fun toWorkAssignmentVersion(workAssignment: WorkAssignment) = WorkAssignmentVersion(
@@ -54,13 +58,15 @@ fun toWorkAssignmentReport(workAssignmentId: Int, inputWorkAssignmentReport: Wor
         reportedBy = reportedBy
 )
 
-fun toStageWorkAssignment(inputWorkAssignment: WorkAssignmentInputModel, createdBy: String) = WorkAssignmentStage(
+fun toStageWorkAssignment(inputWorkAssignment: WorkAssignmentInputModel, sheet: MultipartFile?, supplement: MultipartFile?, createdBy: String) = WorkAssignmentStage(
         phase = inputWorkAssignment.phase,
         dueDate = inputWorkAssignment.dueDate,
         individual = inputWorkAssignment.individual,
         lateDelivery = inputWorkAssignment.lateDelivery,
         multipleDeliveries = inputWorkAssignment.multipleDeliveries,
         requiresReport = inputWorkAssignment.requiresReport,
+        sheetId = if(sheet == null) null else UUID.randomUUID(),
+        supplementId = if(supplement == null) null else UUID.randomUUID(),
         createdBy = createdBy
 )
 

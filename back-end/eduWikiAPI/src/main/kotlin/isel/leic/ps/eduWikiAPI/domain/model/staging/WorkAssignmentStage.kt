@@ -1,6 +1,5 @@
 package isel.leic.ps.eduWikiAPI.domain.model.staging
 
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_UNIT_STAGE_COURSE_ID
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_UNIT_STAGE_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.WorkAssignmentDAOImpl.Companion.WORK_ASSIGNMENT_STAGE_ID
@@ -34,9 +33,9 @@ data class WorkAssignmentStage (
         @ColumnName(WORK_ASSIGNMENT_STAGE_PHASE)
         val phase: String = "",
         @ColumnName(WORK_ASSIGNMENT_STAGE_SHEET_ID)
-        val sheetId: UUID = UUID.randomUUID(),
+        val sheetId: UUID? = UUID.randomUUID(),
         @ColumnName(WORK_ASSIGNMENT_STAGE_SUPPLEMENT)
-        val supplementId: UUID = UUID.randomUUID(),
+        val supplementId: UUID? = UUID.randomUUID(),
         @ColumnName(WORK_ASSIGNMENT_STAGE_DUE_DATE)
         val dueDate: LocalDate = LocalDate.now(),
         @ColumnName(WORK_ASSIGNMENT_STAGE_INDIVIDUAL)

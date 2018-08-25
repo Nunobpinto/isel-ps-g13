@@ -449,7 +449,7 @@ class ClassController {
     fun createHomeworkOnCourseInClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
-            @RequestParam sheet: MultipartFile,
+            @RequestParam sheet: MultipartFile?,
             @RequestParam dueDate: String,
             @RequestParam multipleDeliveries: Boolean,
             @RequestParam lateDelivery: Boolean,
@@ -502,7 +502,7 @@ class ClassController {
     fun createStagingHomeworkOnCourseInClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
-            @RequestParam sheet: MultipartFile,
+            @RequestParam sheet: MultipartFile?,
             @RequestParam dueDate: String,
             @RequestParam multipleDeliveries: Boolean,
             @RequestParam lateDelivery: Boolean,

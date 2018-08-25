@@ -20,7 +20,7 @@ data class HomeworkVersion(
         @ColumnName(HOMEWORK_VERSION_HOMEWORK_ID)
         val homeworkId: Int = 0,
         @ColumnName(HOMEWORK_VERSION_SHEET_ID)
-        val sheetId: UUID = UUID.randomUUID(),
+        val sheetId: UUID? = UUID.randomUUID(),
         @ColumnName(HOMEWORK_VERSION_DUE_DATE)
         val dueDate: LocalDate = LocalDate.now(),
         @ColumnName(HOMEWORK_VERSION_CREATED_BY)

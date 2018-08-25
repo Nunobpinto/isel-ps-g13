@@ -192,7 +192,7 @@ interface ClassService {
 
     fun getSpecificHomeworkFromSpecificCourseInClass(classId: Int, courseId: Int, homeworkId: Int): HomeworkOutputModel
 
-    fun createHomeworkOnCourseInClass(sheet: MultipartFile, classId: Int, courseId: Int, homeworkInputModel: HomeworkInputModel, principal: Principal): HomeworkOutputModel
+    fun createHomeworkOnCourseInClass(sheet: MultipartFile?, classId: Int, courseId: Int, homeworkInputModel: HomeworkInputModel, principal: Principal): HomeworkOutputModel
 
     fun voteOnHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, vote: VoteInputModel, principal: Principal): Int
 
@@ -205,7 +205,7 @@ interface ClassService {
 
     fun getSpecificStagedHomeworkOfCourseInClass(classId: Int, courseId: Int, stageId: Int): HomeworkStageOutputModel
 
-    fun createStagingHomeworkOnCourseInClass(sheet: MultipartFile, classId: Int, courseId: Int, homeworkInputModel: HomeworkInputModel, principal: Principal): HomeworkStageOutputModel
+    fun createStagingHomeworkOnCourseInClass(sheet: MultipartFile?, classId: Int, courseId: Int, homeworkInputModel: HomeworkInputModel, principal: Principal): HomeworkStageOutputModel
 
     fun createHomeworkFromStaged(classId: Int, courseId: Int, stageId: Int, principal: Principal): HomeworkOutputModel
 

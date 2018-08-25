@@ -1,9 +1,7 @@
 package isel.leic.ps.eduWikiAPI.domain.model.staging
 
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_CLASS_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_COURSE_ID
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_STAGE_CREATED_BY
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_STAGE_DUE_DATE
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_STAGE_LATE_DELIVERY
@@ -29,7 +27,7 @@ data class HomeworkStage (
         @ColumnName(HOMEWORK_STAGE_LOG_ID)
         val logId: Int = -1,
         @ColumnName(HOMEWORK_STAGE_SHEET_ID)
-        val sheetId: UUID = UUID.randomUUID(),
+        val sheetId: UUID? = UUID.randomUUID(),
         @ColumnName(HOMEWORK_STAGE_DUE_DATE)
         val dueDate: LocalDate = LocalDate.now(),
         @ColumnName(HOMEWORK_STAGE_LATE_DELIVERY)

@@ -190,7 +190,7 @@ class CourseController {
     fun createExamOnCourseInTerm(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            @RequestParam sheet: MultipartFile,
+            @RequestParam sheet: MultipartFile?,
             @RequestParam phase: String,
             @RequestParam location: String,
             @RequestParam dueDate: String,
@@ -320,7 +320,7 @@ class CourseController {
     fun createStagingExam(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            @RequestParam sheet: MultipartFile,
+            @RequestParam sheet: MultipartFile?,
             @RequestParam phase: String,
             @RequestParam location: String,
             @RequestParam dueDate: String,
@@ -384,8 +384,8 @@ class CourseController {
     fun createWorkAssignmentOnCourseInTerm(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            @RequestParam sheet: MultipartFile,
-            @RequestParam supplement: MultipartFile,
+            @RequestParam sheet: MultipartFile?,
+            @RequestParam supplement: MultipartFile?,
             @RequestParam phase: String,
             @RequestParam individual: Boolean,
             @RequestParam dueDate: String,
@@ -518,8 +518,8 @@ class CourseController {
     fun createStagingWorkAssignment(
             @PathVariable courseId: Int,
             @PathVariable termId: Int,
-            @RequestParam sheet: MultipartFile,
-            @RequestParam supplement: MultipartFile,
+            @RequestParam sheet: MultipartFile?,
+            @RequestParam supplement: MultipartFile?,
             @RequestParam phase: String,
             @RequestParam individual: Boolean,
             @RequestParam dueDate: String,
@@ -536,7 +536,7 @@ class CourseController {
                 lateDelivery = lateDelivery,
                 requiresReport = requiresReport
         )
-        return courseService.createStagingWorkAssignment(sheet, courseId, termId, workAssignmentInputModel, principal)
+        return courseService.createStagingWorkAssignment(sheet, supplement, courseId, termId, workAssignmentInputModel, principal)
     }
 
     @PostMapping("/{courseId}/terms/{termId}/work-assignments/stage/{stageId}")

@@ -16,19 +16,23 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserActionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.HomeworkReportOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.HomeworkStageOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.HomeworkVersionOutputModel
+import org.springframework.web.multipart.MultipartFile
+import java.util.*
 
-fun toHomework(homeworkInputModel: HomeworkInputModel, createdBy: String) = Homework(
+fun toHomework(homeworkInputModel: HomeworkInputModel, createdBy: String, sheet: MultipartFile?) = Homework(
         createdBy = createdBy,
         dueDate = homeworkInputModel.dueDate,
         lateDelivery = homeworkInputModel.lateDelivery,
-        multipleDeliveries = homeworkInputModel.multipleDeliveries
+        multipleDeliveries = homeworkInputModel.multipleDeliveries,
+        sheetId = if(sheet == null) null else UUID.randomUUID()
 )
 
-fun toHomeworkStage(homeworkInputModel: HomeworkInputModel, createdBy: String) = HomeworkStage(
+fun toHomeworkStage(homeworkInputModel: HomeworkInputModel, sheet: MultipartFile?, createdBy: String) = HomeworkStage(
         createdBy = createdBy,
         dueDate = homeworkInputModel.dueDate,
         lateDelivery = homeworkInputModel.lateDelivery,
-        multipleDeliveries = homeworkInputModel.multipleDeliveries
+        multipleDeliveries = homeworkInputModel.multipleDeliveries,
+        sheetId = if(sheet == null) null else UUID.randomUUID()
 )
 
 fun stagedToHomework(stagedHomework: HomeworkStage) = Homework(

@@ -36,7 +36,7 @@ data class Homework (
         @ColumnName(HOMEWORK_CREATED_BY)
         val createdBy: String = "",
         @ColumnName(HOMEWORK_SHEET_ID)
-        val sheetId: UUID = UUID.randomUUID(),
+        val sheetId: UUID? = UUID.randomUUID(),
         @ColumnName(HOMEWORK_DUE_DATE)
         val dueDate: LocalDate = LocalDate.now(),
         @ColumnName(HOMEWORK_LATE_DELIVERY)

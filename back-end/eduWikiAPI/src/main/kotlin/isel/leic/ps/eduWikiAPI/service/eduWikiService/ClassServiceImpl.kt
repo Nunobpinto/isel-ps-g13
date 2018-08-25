@@ -41,8 +41,6 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.ClassVersionOut
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.HomeworkVersionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.LectureVersionOutputModel
 import isel.leic.ps.eduWikiAPI.eventListeners.events.*
-import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.BadRequestException
-import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.ForbiddenException
 import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.NotFoundException
 import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.UnknownDataException
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_REPORT_TABLE
@@ -936,7 +934,7 @@ class ClassServiceImpl : ClassService {
     }
 
     override fun createHomeworkOnCourseInClass(
-            sheet: MultipartFile,
+            sheet: MultipartFile?,
             classId: Int,
             courseId: Int,
             homeworkInputModel: HomeworkInputModel,
@@ -946,11 +944,12 @@ class ClassServiceImpl : ClassService {
                 classDAO.getCourseClass(classId, courseId)
                         .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
                         .courseClassId,
-                toHomework(homeworkInputModel, principal.name)
+                toHomework(homeworkInputModel, principal.name, sheet)
         )
         homeworkDAO.createHomeworkVersion(toHomeworkVersion(createdHomework))
 
-        storageService.storeResource(createdHomework.sheetId, sheet)
+        if(sheet != null && createdHomework.sheetId != null )
+            storageService.storeResource(createdHomework.sheetId, sheet)
 
         publisher.publishEvent(ResourceCreatedEvent(
                 principal.name,
@@ -987,7 +986,8 @@ class ClassServiceImpl : ClassService {
                 .orElseThrow { NotFoundException("No homework found", "Try other id") }
 
         val success = homeworkDAO.deleteSpecificHomeworkOfCourseInClass(courseClassId, homeworkId)
-        storageService.deleteSpecificResource(homework.sheetId)
+        if(homework.sheetId != null ) storageService.deleteSpecificResource(homework.sheetId)
+
         publisher.publishEvent(ResourceDeletedEvent(
                 principal.name,
                 HOMEWORK_TABLE,
@@ -1014,14 +1014,17 @@ class ClassServiceImpl : ClassService {
         )
     }
 
-    override fun createStagingHomeworkOnCourseInClass(sheet: MultipartFile, classId: Int, courseId: Int, homeworkInputModel: HomeworkInputModel, principal: Principal): HomeworkStageOutputModel {
+    override fun createStagingHomeworkOnCourseInClass(sheet: MultipartFile?, classId: Int, courseId: Int, homeworkInputModel: HomeworkInputModel, principal: Principal): HomeworkStageOutputModel {
         val stagingHomework = homeworkDAO.createStagingHomeworkOnCourseInClass(
                 classDAO.getCourseClass(classId, courseId)
                         .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
                         .courseClassId,
-                toHomeworkStage(homeworkInputModel, principal.name)
+                toHomeworkStage(homeworkInputModel, sheet, principal.name)
         )
-        storageService.storeResource(stagingHomework.sheetId, sheet)
+
+        if(sheet != null && stagingHomework.sheetId != null)
+            storageService.storeResource(stagingHomework.sheetId, sheet)
+
         publisher.publishEvent(ResourceCreatedEvent(
                 principal.name,
                 HOMEWORK_STAGE_TABLE,
@@ -1084,7 +1087,8 @@ class ClassServiceImpl : ClassService {
                 .orElseThrow { NotFoundException("No staged homework", "Try with other stage id") }
 
         val success = homeworkDAO.deleteSpecificStagedHomeworkOfCourseInClass(courseClassId, stageId)
-        storageService.deleteSpecificResource(stagedHomework.sheetId)
+
+        if(stagedHomework.sheetId != null) storageService.deleteSpecificResource(stagedHomework.sheetId)
         publisher.publishEvent(ResourceRejectedEvent(
                 principal.name,
                 stagedHomework.createdBy,

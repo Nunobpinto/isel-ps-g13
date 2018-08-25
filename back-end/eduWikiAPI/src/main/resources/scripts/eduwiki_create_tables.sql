@@ -123,7 +123,7 @@ CREATE TABLE IF NOT EXISTS <schema>.work_assignment (
   work_assignment_version INTEGER NOT NULL DEFAULT 1,
   phase VARCHAR(5) NOT NULL,
   created_by VARCHAR(20) NOT NULL,
-  sheet_id UUID NOT NULL,
+  sheet_id UUID,
   supplement_id UUID,
   due_date date NOT NULL,
   individual BOOLEAN NOT NULL,
@@ -140,7 +140,7 @@ CREATE TABLE IF NOT EXISTS <schema>.exam (
   exam_id INTEGER REFERENCES <schema>.course_misc_unit ON DELETE CASCADE,
   exam_version INTEGER NOT NULL DEFAULT 1,
   created_by VARCHAR(20) NOT NULL,
-  sheet_id UUID NOT NULL,
+  sheet_id UUID,
   due_date date NOT NULL,
   exam_type <schema>.exam_type NOT NULL,
   phase VARCHAR(30) NOT NULL,
@@ -174,12 +174,12 @@ CREATE TABLE IF NOT EXISTS <schema>.class_misc_unit (
 CREATE TABLE IF NOT EXISTS <schema>.lecture (
   lecture_id INTEGER REFERENCES <schema>.class_misc_unit ON DELETE CASCADE,
   lecture_version INTEGER NOT NULL DEFAULT 1,
-  created_by VARCHAR(20),
-  weekday <schema>.weekday,
-  begins TIME,
-  duration INTERVAL,
-  location varchar(30),
-  votes INTEGER DEFAULT 0,
+  created_by VARCHAR(20) NOT NULL,
+  weekday <schema>.weekday NOT NULL,
+  begins TIME NOT NULL,
+  duration INTERVAL NOT NULL,
+  location varchar(30) NOT NULL,
+  votes INTEGER DEFAULT 0 NOT NULL,
   time_stamp timestamp NOT NULL,
   log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (lecture_id)
@@ -188,12 +188,12 @@ CREATE TABLE IF NOT EXISTS <schema>.lecture (
 CREATE TABLE IF NOT EXISTS <schema>.homework (
   homework_id INTEGER REFERENCES <schema>.class_misc_unit ON DELETE CASCADE,
   homework_version INTEGER NOT NULL DEFAULT 1,
-  created_by VARCHAR(20),
-  sheet_id UUID NOT NULL,
-  due_date DATE,
-  late_delivery BOOLEAN,
-  multiple_deliveries BOOLEAN,
-  votes INTEGER DEFAULT 0,
+  created_by VARCHAR(20) NOT NULL,
+  sheet_id UUID,
+  due_date DATE NOT NULL,
+  late_delivery BOOLEAN NOT NULL,
+  multiple_deliveries BOOLEAN NOT NULL,
+  votes INTEGER DEFAULT 0 NOT NULL,
   time_stamp timestamp NOT NULL,
   log_id SERIAL UNIQUE NOT NULL,
   PRIMARY KEY (homework_id)
@@ -338,9 +338,9 @@ CREATE TABLE IF NOT EXISTS <schema>.class_misc_unit_stage (
 
 CREATE TABLE IF NOT EXISTS <schema>.work_assignment_stage (
   work_assignment_stage_id INTEGER REFERENCES <schema>.course_misc_unit_stage ON DELETE CASCADE,
-  sheet_id UUID NOT NULL,
+  sheet_id UUID,
   phase VARCHAR(5) NOT NULL,
-  supplement_id UUID NOT NULL,
+  supplement_id UUID,
   due_date date NOT NULL,
   individual BOOLEAN NOT NULL,
   late_delivery BOOLEAN NOT NULL,
@@ -355,7 +355,7 @@ CREATE TABLE IF NOT EXISTS <schema>.work_assignment_stage (
 
 CREATE TABLE IF NOT EXISTS <schema>.exam_stage (
   exam_stage_id INTEGER REFERENCES <schema>.course_misc_unit_stage ON DELETE CASCADE,
-  sheet_id UUID NOT NULL,
+  sheet_id UUID,
   due_date date NOT NULL,
   exam_type <schema>.exam_type NOT NULL,
   phase VARCHAR(30) NOT NULL,
@@ -382,7 +382,7 @@ CREATE TABLE IF NOT EXISTS <schema>.lecture_stage (
 
 CREATE TABLE IF NOT EXISTS <schema>.homework_stage (
   homework_stage_id INTEGER REFERENCES <schema>.class_misc_unit_stage ON DELETE CASCADE,
-  sheet_id UUID NOT NULL,
+  sheet_id UUID,
   due_date DATE NOT NULL,
   late_delivery BOOLEAN NOT NULL,
   multiple_deliveries BOOLEAN NOT NULL,
@@ -617,9 +617,9 @@ CREATE TABLE IF NOT EXISTS <schema>.class_version (
 CREATE TABLE IF NOT EXISTS <schema>.work_assignment_version (
   work_assignment_id INTEGER,
   work_assignment_version INTEGER,
-  sheet_id UUID NOT NULL,
+  sheet_id UUID,
   phase VARCHAR(5) NOT NULL,
-  supplement_id UUID NOT NULL,
+  supplement_id UUID,
   due_date date NOT NULL,
   individual BOOLEAN NOT NULL,
   late_delivery BOOLEAN NOT NULL,
@@ -633,7 +633,7 @@ CREATE TABLE IF NOT EXISTS <schema>.work_assignment_version (
 CREATE TABLE IF NOT EXISTS <schema>.exam_version (
   exam_id INTEGER,
   exam_version INTEGER,
-  sheet_id UUID NOT NULL,
+  sheet_id UUID,
   due_date date NOT NULL,
   exam_type <schema>.exam_type NOT NULL,
   phase VARCHAR(30) NOT NULL,
@@ -658,7 +658,7 @@ CREATE TABLE IF NOT EXISTS <schema>.lecture_version (
 CREATE TABLE IF NOT EXISTS <schema>.homework_version (
   homework_id INTEGER,
   homework_version INTEGER,
-  sheet_id UUID NOT NULL,
+  sheet_id UUID,
   due_date DATE NOT NULL,
   created_by VARCHAR(20) NOT NULL,
   late_delivery BOOLEAN NOT NULL,

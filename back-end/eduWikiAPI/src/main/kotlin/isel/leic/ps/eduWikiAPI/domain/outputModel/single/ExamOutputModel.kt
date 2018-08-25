@@ -11,7 +11,7 @@ data class ExamOutputModel (
         val version: Int = 1,
         val votes: Int = 0,
         val createdBy: String = "",
-        val sheetId: UUID = UUID.randomUUID(),
+        val sheetId: UUID? = UUID.randomUUID(),
         val dueDate: LocalDate = LocalDate.now(),
         val type: ExamType,
         val phase: String = "",

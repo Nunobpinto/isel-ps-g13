@@ -1,7 +1,6 @@
 package isel.leic.ps.eduWikiAPI.domain.model.staging
 
 import isel.leic.ps.eduWikiAPI.domain.enums.ExamType
-import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_UNIT_STAGE_COURSE_ID
 import isel.leic.ps.eduWikiAPI.repository.CourseDAOImpl.Companion.COURSE_MISC_UNIT_STAGE_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.ExamDAOImpl.Companion.EXAM_STAGE_ID
@@ -30,7 +29,7 @@ data class ExamStage (
         @ColumnName(EXAM_STAGE_LOG_ID)
         val logId: Int = 0,
         @ColumnName(EXAM_STAGE_SHEET_ID)
-        val sheetId: UUID = UUID.randomUUID(),
+        val sheetId: UUID? = UUID.randomUUID(),
         @ColumnName(EXAM_STAGE_DUE_DATE)
         val dueDate: LocalDate = LocalDate.now(),
         @ColumnName(EXAM_STAGE_TYPE)

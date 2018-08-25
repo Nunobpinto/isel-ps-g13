@@ -1,6 +1,5 @@
 package isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -17,6 +16,6 @@ class WorkAssignmentStageOutputModel(
         val requiresReport: Boolean = false,
         val votes: Int = 0,
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now()),
-        val sheetId: UUID = UUID.randomUUID(),
-        val supplementId: UUID = UUID.randomUUID()
+        val sheetId: UUID? = UUID.randomUUID(),
+        val supplementId: UUID? = UUID.randomUUID()
 )

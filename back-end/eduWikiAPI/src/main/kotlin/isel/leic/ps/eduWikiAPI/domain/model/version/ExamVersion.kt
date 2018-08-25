@@ -22,7 +22,7 @@ data class ExamVersion (
         @ColumnName(EXAM_VERSION_EXAM_ID)
         val examId: Int = 0,
         @ColumnName(EXAM_VERSION_SHEET_ID)
-        val sheetId: UUID = UUID.randomUUID(),
+        val sheetId: UUID? = UUID.randomUUID(),
         @ColumnName(EXAM_VERSION_DUE_DATE)
         val dueDate: LocalDate = LocalDate.now(),
         @ColumnName(EXAM_VERSION_TYPE)

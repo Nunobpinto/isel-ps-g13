@@ -41,9 +41,9 @@ data class WorkAssignment (
         @ColumnName(WORK_ASSIGNMENT_PHASE)
         val phase: String = "",
         @ColumnName(WORK_ASSIGNMENT_SHEET_ID)
-        val sheetId:  UUID = UUID.randomUUID(),
+        val sheetId:  UUID? = UUID.randomUUID(),
         @ColumnName(WORK_ASSIGNMENT_SUPPLEMENT)
-        val supplementId:  UUID = UUID.randomUUID(),
+        val supplementId:  UUID? = UUID.randomUUID(),
         @ColumnName(WORK_ASSIGNMENT_DUE_DATE)
         val dueDate: LocalDate = LocalDate.now(),
         @ColumnName(WORK_ASSIGNMENT_INDIVIDUAL)

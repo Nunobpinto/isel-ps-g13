@@ -62,11 +62,11 @@ interface CourseService {
 
     fun createCourseFromStaged(stageId: Int, principal: Principal): CourseOutputModel
 
-    fun createExamOnCourseInTerm(courseId: Int, termId: Int, sheet: MultipartFile, inputExam: ExamInputModel, principal: Principal): ExamOutputModel
+    fun createExamOnCourseInTerm(courseId: Int, termId: Int, sheet: MultipartFile?, inputExam: ExamInputModel, principal: Principal): ExamOutputModel
 
     fun createExamFromStaged(courseId: Int, termId: Int, stageId: Int, principal: Principal): ExamOutputModel
 
-    fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel, sheet: MultipartFile, principal: Principal, supplement: MultipartFile): WorkAssignmentOutputModel
+    fun createWorkAssignmentOnCourseInTerm(courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel, sheet: MultipartFile?, principal: Principal, supplement: MultipartFile?): WorkAssignmentOutputModel
 
     fun createWorkAssignmentFromStaged(courseId: Int, termId: Int, stageId: Int, principal: Principal): WorkAssignmentOutputModel
 
@@ -102,9 +102,9 @@ interface CourseService {
 
     fun createStagingCourse(inputCourse: CourseInputModel, principal: Principal): CourseStageOutputModel
 
-    fun createStagingExam(courseId: Int, termId: Int, examInputModel: ExamInputModel, sheet: MultipartFile, principal: Principal): ExamStageOutputModel
+    fun createStagingExam(courseId: Int, termId: Int, examInputModel: ExamInputModel, sheet: MultipartFile?, principal: Principal): ExamStageOutputModel
 
-    fun createStagingWorkAssignment(sheet: MultipartFile, courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel, principal: Principal): WorkAssignmentStageOutputModel
+    fun createStagingWorkAssignment(sheet: MultipartFile?, supplement: MultipartFile?, courseId: Int, termId: Int, inputWorkAssignment: WorkAssignmentInputModel, principal: Principal): WorkAssignmentStageOutputModel
 
     fun voteOnStagedCourse(stageId: Int, vote: VoteInputModel, principal: Principal): Int
 
