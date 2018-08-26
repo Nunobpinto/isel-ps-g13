@@ -1,23 +1,20 @@
 import React, { Component } from 'react'
-import './App.css'
-import TenantDropdown from'./components/TenanntDropdown'
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom'
 import TenantForm from './components/TenanntForm'
+import Home from './components/Home'
 
 class App extends Component {
-
-  render() {
+  render () {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
+      <BrowserRouter>
+        <Switch>
+          <Route exact path='/home' component={Home} />
+          <Route exact path='/create-tenant' component={TenantForm} />
+          <Redirect from='*' to='/home' />
+        </Switch>
+      </BrowserRouter>
+    )
   }
 }
 
-export default App;
+export default App
