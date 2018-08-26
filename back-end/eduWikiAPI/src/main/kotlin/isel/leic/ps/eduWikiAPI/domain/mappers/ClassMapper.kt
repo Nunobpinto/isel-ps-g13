@@ -115,6 +115,7 @@ fun toClassVersionCollectionOutputModel(classVersionList: List<ClassVersionOutpu
 
 fun Class.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "/classes/$classId",
         timestamp = actionLog.timestamp
@@ -122,6 +123,7 @@ fun Class.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
 
 fun ClassReport.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "/classes/$classId/reports/$reportId",
         timestamp = actionLog.timestamp
@@ -129,6 +131,7 @@ fun ClassReport.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutput
 
 fun ClassStage.toUserActionOutputModel(actionLog: ActionLog)= UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "/classes/stage/$stageId",
         timestamp = actionLog.timestamp

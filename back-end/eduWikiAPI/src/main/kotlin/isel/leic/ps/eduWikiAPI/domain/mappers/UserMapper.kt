@@ -5,6 +5,7 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.UserReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.Reputation
 import isel.leic.ps.eduWikiAPI.domain.model.User
 import isel.leic.ps.eduWikiAPI.domain.model.report.UserReport
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.UserReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.AuthUserOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.ReputationOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserOutputModel
@@ -13,11 +14,11 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.UserReportOutpu
 
 fun toUser(inputModel: UserInputModel) = User(
         username = inputModel.username,
-        familyName = inputModel.familyName !!,
-        givenName = inputModel.givenName !!,
-        organizationEmail = inputModel.organizationEmail !!,
-        password = inputModel.password !!,
-        personalEmail = inputModel.personalEmail !!,
+        familyName = inputModel.familyName,
+        givenName = inputModel.givenName,
+        organizationEmail = inputModel.organizationEmail,
+        password = inputModel.password,
+        personalEmail = inputModel.personalEmail,
         confirmed = false
 )
 
@@ -52,5 +53,8 @@ fun toUserReportOutput(userReport: UserReport) = UserReportOutputModel(
         reportedBy = userReport.reportedBy,
         timestamp = userReport.timestamp,
         reason = userReport.reason
+)
 
+fun toUserReportCollectionOutputModel(allReportsOfUser: List<UserReport>) = UserReportCollectionOutputModel(
+        reports = allReportsOfUser.map { toUserReportOutput(it) }
 )

@@ -130,6 +130,7 @@ fun toExamVersionCollectionOutputModel(examVersionList: List<ExamVersionOutputMo
 
 fun Exam.toUserActionOutputModel(actionLog: ActionLog) = isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "courses/$courseId/terms/$termId/exams/$examId",
         timestamp = actionLog.timestamp
@@ -137,6 +138,7 @@ fun Exam.toUserActionOutputModel(actionLog: ActionLog) = isel.leic.ps.eduWikiAPI
 
 fun ExamReport.toUserActionOutputModel(actionLog: ActionLog) = isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "courses/$courseId/terms/$termId/exams/$examId/reports/$reportId",
         timestamp = actionLog.timestamp
@@ -144,6 +146,7 @@ fun ExamReport.toUserActionOutputModel(actionLog: ActionLog) = isel.leic.ps.eduW
 
 fun ExamStage.toUserActionOutputModel(actionLog: ActionLog) = isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "courses/$courseId/terms/$termId/exams/stage/$stageId",
         timestamp = actionLog.timestamp

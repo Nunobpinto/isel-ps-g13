@@ -90,6 +90,7 @@ fun toOrganizationVersionCollectionOutputModel(organizationVersionList: List<Org
 
 fun Organization.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "/organization",
         timestamp = actionLog.timestamp
@@ -97,6 +98,7 @@ fun Organization.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutpu
 
 fun OrganizationReport.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "/organization/reports/$reportId",
         timestamp = actionLog.timestamp

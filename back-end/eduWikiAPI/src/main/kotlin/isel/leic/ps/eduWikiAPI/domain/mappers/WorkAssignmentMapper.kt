@@ -158,6 +158,7 @@ fun toWorkAssignmentVersionCollectionOutputModel(workAssignmentVersionList: List
 
 fun WorkAssignment.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "courses/$courseId/terms/$termId/work-assignments/$workAssignmentId",
         timestamp = actionLog.timestamp
@@ -165,6 +166,7 @@ fun WorkAssignment.toUserActionOutputModel(actionLog: ActionLog) = UserActionOut
 
 fun WorkAssignmentReport.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "courses/$courseId/terms/$termId/work-assignments/$workAssignmentId/reports/$reportId",
         timestamp = actionLog.timestamp
@@ -172,6 +174,7 @@ fun WorkAssignmentReport.toUserActionOutputModel(actionLog: ActionLog) = UserAct
 
 fun WorkAssignmentStage.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "courses/$courseId/terms/$termId/work-assignments/stage/$stageId",
         timestamp = actionLog.timestamp

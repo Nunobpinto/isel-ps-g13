@@ -134,6 +134,7 @@ fun toProgrammeVersionCollectionOutputModel(programmeVersionList: List<Programme
 
 fun Programme.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "programmes/$programmeId",
         timestamp = actionLog.timestamp
@@ -141,6 +142,7 @@ fun Programme.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputMo
 
 fun ProgrammeReport.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "programmes/$programmeId/reports/$reportId",
         timestamp = actionLog.timestamp
@@ -148,6 +150,7 @@ fun ProgrammeReport.toUserActionOutputModel(actionLog: ActionLog) = UserActionOu
 
 fun ProgrammeStage.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "programmes/stage/$stageId",
         timestamp = actionLog.timestamp

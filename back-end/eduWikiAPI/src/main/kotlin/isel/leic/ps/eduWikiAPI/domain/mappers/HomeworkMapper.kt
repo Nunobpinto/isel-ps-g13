@@ -122,6 +122,7 @@ fun toHomeworkVersionCollectionOutputModel(homeworkVersionList: List<HomeworkVer
 
 fun Homework.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "classes/$classId/courses/$courseId/homeworks/$homeworkId",
         timestamp = actionLog.timestamp
@@ -129,6 +130,7 @@ fun Homework.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputMod
 
 fun HomeworkReport.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "classes/$classId/courses/$courseId/homeworks/$homeworkId/reports/$reportId",
         timestamp = actionLog.timestamp
@@ -136,6 +138,7 @@ fun HomeworkReport.toUserActionOutputModel(actionLog: ActionLog) = UserActionOut
 
 fun HomeworkStage.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "classes/$classId/courses/$courseId/homeworks/stage/$stageId",
         timestamp = actionLog.timestamp

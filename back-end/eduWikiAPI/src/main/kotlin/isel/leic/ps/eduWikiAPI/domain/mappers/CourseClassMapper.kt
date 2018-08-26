@@ -77,6 +77,7 @@ fun toCourseClassStageCollectionOutputModel(courseClassStageList: List<CourseCla
 
 fun CourseClass.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "classes/$classId/courses/$courseId",
         timestamp = actionLog.timestamp
@@ -84,6 +85,7 @@ fun CourseClass.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutput
 
 fun CourseClassReport.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "classes/$classId/courses/$courseId/reports/$reportId",
         timestamp = actionLog.timestamp
@@ -91,6 +93,7 @@ fun CourseClassReport.toUserActionOutputModel(actionLog: ActionLog) = UserAction
 
 fun CourseClassStage.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "classes/$classId/courses/stage/$stageId",
         timestamp = actionLog.timestamp

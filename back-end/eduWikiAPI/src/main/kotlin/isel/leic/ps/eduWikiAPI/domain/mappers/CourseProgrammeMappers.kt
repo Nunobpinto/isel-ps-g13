@@ -133,6 +133,7 @@ fun toCourseProgrammeStageCollectionOutputModel(courseProgrammeStageList: List<C
 
 fun CourseProgramme.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "programmes/$programmeId/courses/$courseId",
         timestamp = actionLog.timestamp
@@ -140,6 +141,7 @@ fun CourseProgramme.toUserActionOutputModel(actionLog: ActionLog) = UserActionOu
 
 fun CourseProgrammeReport.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "programmes/$programmeId/courses/$courseId/reports/$reportId",
         timestamp = actionLog.timestamp
@@ -147,6 +149,7 @@ fun CourseProgrammeReport.toUserActionOutputModel(actionLog: ActionLog) = UserAc
 
 fun CourseProgrammeStage.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "programmes/$programmeId/courses/stage/$stageId",
         timestamp = actionLog.timestamp

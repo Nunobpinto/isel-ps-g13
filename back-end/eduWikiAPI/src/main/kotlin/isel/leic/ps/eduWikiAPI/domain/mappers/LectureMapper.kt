@@ -126,6 +126,7 @@ fun toLectureVersionCollectionOutputModel(lectureVersionList: List<LectureVersio
 
 fun Lecture.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "classes/$classId/courses/$courseId/lectures/$lectureId",
         timestamp = actionLog.timestamp
@@ -133,6 +134,7 @@ fun Lecture.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputMode
 
 fun LectureReport.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "classes/$classId/courses/$courseId/lectures/$lectureId/reports/$reportId",
         timestamp = actionLog.timestamp
@@ -140,6 +142,7 @@ fun LectureReport.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutp
 
 fun LectureStage.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
+        action_user = actionLog.user,
         entity_type = actionLog.entity,
         entity_link = "classes/$classId/courses/$courseId/lectures/stage/$stageId",
         timestamp = actionLog.timestamp
