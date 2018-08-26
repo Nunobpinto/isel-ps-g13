@@ -185,12 +185,14 @@ class UserServiceImpl : UserService {
 
     override fun getClassesOfCOurseOfUser(username: String): CourseClassCollectionOutputModel {
         val courseClasses = userDAO.getClassesOfUser(username)
-        val classes = courseClasses.map {
-            val courseClass = classDAO.getCourseClassFromId(it.courseClassId)
-            val course = courseDAO.getSpecificCourse(it.courseId).get()
-            val term = termDAO.getTerm(courseClass.termId).get()
-            toCourseClassOutputModel(course, classDAO.getSpecificClass(it.courseId).get(), courseClass, term)
-        }
+        val classes = courseClasses
+                .filter { it.courseClassId != null }
+                .map {
+                    val courseClass = classDAO.getCourseClassFromId(it.courseClassId!!)
+                    val course = courseDAO.getSpecificCourse(it.courseId).get()
+                    val term = termDAO.getTerm(courseClass.termId).get()
+                    toCourseClassOutputModel(course, classDAO.getSpecificClass(it.courseId).get(), courseClass, term)
+                }
         return toCourseClassCollectionOutputModel(classes)
     }
 

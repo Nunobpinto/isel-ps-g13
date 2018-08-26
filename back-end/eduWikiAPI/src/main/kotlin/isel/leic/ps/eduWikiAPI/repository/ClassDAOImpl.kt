@@ -180,7 +180,7 @@ class ClassDAOImpl : ClassDAO {
     override fun getCourseClass(classId: Int, courseId: Int): Optional<CourseClass> =
             jdbi.open().attach(ClassDAOJdbi::class.java).getCourseClass(classId, courseId)
 
-    override fun getCourseClassFromId(courseClassId: Int?): CourseClass =
+    override fun getCourseClassFromId(courseClassId: Int): CourseClass =
             jdbi.open().attach(ClassDAOJdbi::class.java).getCourseClassFromId(courseClassId)
 
     override fun getSpecificReportOfCourseInClass(reportId: Int, classId: Int, courseId: Int): Optional<CourseClassReport> =
@@ -590,8 +590,8 @@ class ClassDAOImpl : ClassDAO {
         )
         override fun deleteSpecificClassMiscUnitFromTypeOnCourseInClass(courseClassId: Int, classMiscUnitId: Int, miscType: ClassMiscUnitType): Int
 
-        @SqlQuery("SELECT * FROM :schema.$COURSE_CLASS_TABLE WHERE $COURSE_CLASS_ID = :courseClassId ")
-        override fun getCourseClassFromId(courseClassId: Int?): CourseClass
+        @SqlQuery("SELECT * FROM :schema.$COURSE_CLASS_TABLE WHERE $COURSE_CLASS_ID = :courseClassId")
+        override fun getCourseClassFromId(courseClassId: Int): CourseClass
 
         @SqlQuery("SELECT * FROM :schema.$CLASS_TABLE WHERE $CLASS_LOG_ID = :logId")
         override fun getClassByLogId(logId: Int): Optional<Class>

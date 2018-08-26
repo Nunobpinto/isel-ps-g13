@@ -89,7 +89,7 @@ interface ClassDAO {
 
     fun getCourseClass(classId: Int, courseId: Int): Optional<CourseClass>
 
-    fun getCourseClassFromId(courseClassId: Int?): CourseClass
+    fun getCourseClassFromId(courseClassId: Int): CourseClass
 
     fun getSpecificReportOfCourseInClass(reportId: Int, classId: Int, courseId: Int): Optional<CourseClassReport>
 
