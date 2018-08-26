@@ -5,12 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty
 class UserInputModel (
         val username: String,
         @JsonProperty("family_name")
-        val familyName: String? = null,
+        val familyName: String = "",
         @JsonProperty("personal_email")
-        val personalEmail: String? = null,
+        val personalEmail: String = "",
         @JsonProperty("given_name")
-        val givenName: String? = null,
+        val givenName: String = "",
         @JsonProperty("organization_email")
-        val organizationEmail: String? = null,
-        val password: String? = null
+        val organizationEmail: String = "",
+        val password: String = ""
 )
