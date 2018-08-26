@@ -37,7 +37,7 @@ class TokenDAOImpl : TokenDAO {
     interface TokenDAOJdbi : TokenDAO {
         @SqlUpdate("INSERT INTO :schema.$VALIDATION_TOKEN_TABLE (" +
                 "$VALIDATION_TOKEN, "+
-                "VALIDATION_TOKEN_DATE)"+
+                "$VALIDATION_TOKEN_DATE)"+
                 "VALUES ( " +
                 ":validationToken.token, " +
                 ":validationToken.date " +

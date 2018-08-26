@@ -54,7 +54,7 @@ interface UserService {
 
     fun deleteReportOnUser(username: String, reportId: Int): Int
 
-    fun confirmUser(username: String, token: UUID): AuthUserOutputModel
+    fun confirmUser(username: String, token: UUID): String
 
     fun getUserFeed(principal: Principal): Any
 
