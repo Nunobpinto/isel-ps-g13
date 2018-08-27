@@ -116,14 +116,14 @@ export default class extends React.Component {
                     <Button id='dislike_btn' shape='circle' icon='dislike' onClick={() => this.setState({down: true, id: work.examId})} />
                   ]}
                 >
-                  <p>Individual : {work.individual}</p>
-                  <p>Late Delivery : {work.lateDelivery}</p>
-                  <p>Multiple Deliveries : {work.multipleDeliveries}</p>
-                  <p>Requires Report : {work.requiresReport}</p>
+                  <p>Individual : {work.individual ? 'Yes' : 'No'}</p>
+                  <p>Late Delivery : {work.lateDelivery ? 'Yes' : 'No'}</p>
+                  <p>Multiple Deliveries : {work.multipleDeliveries ? 'Yes' : 'No'}</p>
+                  <p>Requires Report : {work.requiresReport ? 'Yes' : 'No'}</p>
                   <p>Added in : {work.timestamp}</p>
                   <p>Created By : {work.createdBy}</p>
                   <button onClick={() => this.showResource(work.sheetId)}> See Work Assignment sheet</button>
-                  <button onClick={() => this.showResource(work.supplementId)}> See Supplement</button>
+                  {work.supplementId && <button onClick={() => this.showResource(work.supplementId)}> See Supplement</button>}
                 </Card>
               </Col>
             </Row>

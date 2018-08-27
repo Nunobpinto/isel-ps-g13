@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom'
-import TenantForm from './components/TenanntForm'
+import CreateTenant from './components/CreateTenant'
 import Home from './components/Home'
 
 class App extends Component {
@@ -9,7 +9,7 @@ class App extends Component {
       <BrowserRouter>
         <Switch>
           <Route exact path='/home' component={Home} />
-          <Route exact path='/create-tenant' component={TenantForm} />
+          <Route exact path='/create-tenant' component={CreateTenant} />
           <Redirect from='*' to='/home' />
         </Switch>
       </BrowserRouter>

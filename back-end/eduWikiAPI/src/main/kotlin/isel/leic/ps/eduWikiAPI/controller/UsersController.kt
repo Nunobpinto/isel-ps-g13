@@ -2,7 +2,6 @@ package isel.leic.ps.eduWikiAPI.controller
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.UserReportInputModel
-import isel.leic.ps.eduWikiAPI.service.mailSender.EmailService
 import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
