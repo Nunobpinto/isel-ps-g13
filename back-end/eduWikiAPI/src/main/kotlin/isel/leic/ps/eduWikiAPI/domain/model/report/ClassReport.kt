@@ -2,6 +2,7 @@ package isel.leic.ps.eduWikiAPI.domain.model.report;
 
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_NAME
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_PROGRAMME_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_REPORTED_BY
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_REPORT_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_REPORT_LOG_ID
@@ -19,6 +20,8 @@ data class ClassReport(
         val classId: Int = 0,
         @ColumnName(CLASS_NAME)
         val className: String? = null,
+        @ColumnName(CLASS_PROGRAMME_ID)
+        val programmeId: Int? = null,
         @ColumnName(CLASS_TERM_ID)
         val termId: Int = 0,
         @ColumnName(CLASS_REPORTED_BY)

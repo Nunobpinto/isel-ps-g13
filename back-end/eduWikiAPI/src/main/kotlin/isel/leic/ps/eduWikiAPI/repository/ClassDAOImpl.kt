@@ -41,6 +41,7 @@ class ClassDAOImpl : ClassDAO {
         const val CLASS_CREATED_BY = "created_by"
         const val CLASS_TIMESTAMP = "time_stamp"
         const val CLASS_VOTES = "votes"
+        const val CLASS_PROGRAMME_ID = "programme_id"
         // CLASS REPORT FIELDS
         const val CLASS_REPORT_LOG_ID = "log_id"
         const val CLASS_REPORT_ID = "class_report_id"
@@ -50,6 +51,7 @@ class ClassDAOImpl : ClassDAO {
         const val CLASS_STAGE_TERM_ID = "term_id"
         const val CLASS_STAGE_ID = "class_stage_id"
         const val CLASS_STAGE_NAME = "class_name"
+        const val CLASS_STAGE_PROGRAMME_ID = "programme_id"
         const val CLASS_STAGE_CREATED_BY = "created_by"
         const val CLASS_STAGE_TIMESTAMP = "time_stamp"
         const val CLASS_STAGE_VOTES = "votes"
@@ -262,10 +264,11 @@ class ClassDAOImpl : ClassDAO {
                         "$CLASS_NAME, " +
                         "$CLASS_TERM_ID, " +
                         "$CLASS_VOTES, " +
-                        "$CLASS_TIMESTAMP " +
+                        "$CLASS_TIMESTAMP, " +
+                        "$CLASS_PROGRAMME_ID " +
                         ") " +
                         "VALUES(:klass.classId, :klass.version, :klass.createdBy, " +
-                        ":klass.className, :klass.termId, :klass.votes, :klass.timestamp)"
+                        ":klass.className, :klass.termId, :klass.votes, :klass.timestamp, :klass.programmeId)"
         )
         @GetGeneratedKeys
         override fun createClass(klass: Class): Class
@@ -282,7 +285,8 @@ class ClassDAOImpl : ClassDAO {
                         "$CLASS_NAME = :updatedClass.className, " +
                         "$CLASS_TERM_ID = :updatedClass.termId, " +
                         "$CLASS_VOTES = :updatedClass.votes, " +
-                        "$CLASS_TIMESTAMP = :updatedClass.timestamp " +
+                        "$CLASS_TIMESTAMP = :updatedClass.timestamp, " +
+                        "$CLASS_PROGRAMME_ID = :updatedClass.programmeId" +
                         "WHERE $CLASS_ID = :classId"
         )
         @GetGeneratedKeys
@@ -314,11 +318,12 @@ class ClassDAOImpl : ClassDAO {
 
         @SqlUpdate(
                 "INSERT INTO :schema.$CLASS_STAGE_TABLE ( " +
-                        "$CLASS_TERM_ID, " +
-                        "$CLASS_NAME, " +
-                        "$CLASS_CREATED_BY, " +
-                        "$CLASS_VOTES, " +
-                        "$CLASS_TIMESTAMP " +
+                        "$CLASS_STAGE_TERM_ID, " +
+                        "$CLASS_STAGE_NAME, " +
+                        "$CLASS_STAGE_CREATED_BY, " +
+                        "$CLASS_STAGE_VOTES, " +
+                        "$CLASS_STAGE_TIMESTAMP, " +
+                        "$CLASS_STAGE_PROGRAMME_ID " +
                         ") " +
                         "VALUES(:classStage.termId, :classStage.className, :classStage.createdBy, " +
                         ":classStage.votes, :classStage.timestamp)"
@@ -357,10 +362,11 @@ class ClassDAOImpl : ClassDAO {
                         "$CLASS_NAME, " +
                         "$CLASS_REPORTED_BY, " +
                         "$CLASS_VOTES, " +
-                        "$CLASS_TIMESTAMP " +
+                        "$CLASS_TIMESTAMP, " +
+                        "$CLASS_PROGRAMME_ID " +
                         ") " +
                         "VALUES(:report.reportId, :classId, :report.termId, :report.className, " +
-                        ":report.reportedBy, :report.votes, :report.timestamp)"
+                        ":report.reportedBy, :report.votes, :report.timestamp, :report.programmeId)"
         )
         @GetGeneratedKeys
         override fun reportClass(classId: Int, report: ClassReport): ClassReport
@@ -386,10 +392,11 @@ class ClassDAOImpl : ClassDAO {
                         "$CLASS_VERSION, " +
                         "$CLASS_NAME, " +
                         "$CLASS_CREATED_BY, " +
-                        "$CLASS_TIMESTAMP " +
+                        "$CLASS_TIMESTAMP, " +
+                        "$CLASS_PROGRAMME_ID " +
                         ") " +
                         "VALUES(:classVersion.classId, :classVersion.termId, :classVersion.version, " +
-                        ":classVersion.className, :classVersion.createdBy, :classVersion.timestamp)"
+                        ":classVersion.className, :classVersion.createdBy, :classVersion.timestamp, :classVersion.programmeId)"
         )
         @GetGeneratedKeys
         override fun createClassVersion(classVersion: ClassVersion): ClassVersion

@@ -3,6 +3,7 @@ package isel.leic.ps.eduWikiAPI.domain.model.version
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_CREATED_BY
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_NAME
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_PROGRAMME_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_TIMESTAMP
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_VERSION
@@ -15,6 +16,8 @@ data class ClassVersion(
         val version: Int = 1,
         @ColumnName(CLASS_ID)
         val classId: Int = 0,
+        @ColumnName(CLASS_PROGRAMME_ID)
+        val programmeId: Int = 0,
         @ColumnName(CLASS_TERM_ID)
         val termId: Int = 0,
         @ColumnName(CLASS_NAME)

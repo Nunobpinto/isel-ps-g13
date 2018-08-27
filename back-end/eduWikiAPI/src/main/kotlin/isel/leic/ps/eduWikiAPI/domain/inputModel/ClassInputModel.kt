@@ -6,5 +6,7 @@ class ClassInputModel (
         @JsonProperty("class_name")
         val className: String = "",
         @JsonProperty("term_id")
-        val termId: Int = 0
+        val termId: Int = 0,
+        @JsonProperty("programme_id")
+        val programmeId: Int = 0
 )

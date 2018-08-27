@@ -8,6 +8,7 @@ import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_TIMESTAMP
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_VERSION
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_VOTES
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_PROGRAMME_ID
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.sql.Timestamp
 import java.time.LocalDateTime
@@ -23,6 +24,8 @@ data class Class(
         val className: String = "",
         @ColumnName(CLASS_TERM_ID)
         val termId: Int = 0,
+        @ColumnName(CLASS_PROGRAMME_ID)
+        val programmeId: Int = 0,
         @ColumnName(CLASS_VOTES)
         val votes: Int = 0,
         @ColumnName(CLASS_LOG_ID)

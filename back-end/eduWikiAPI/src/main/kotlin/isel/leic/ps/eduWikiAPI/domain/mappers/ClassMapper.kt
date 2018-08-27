@@ -24,13 +24,15 @@ import java.time.LocalDateTime
 fun toClass(input: ClassInputModel, createdBy: String) = Class(
         termId = input.termId,
         className = input.className,
-        createdBy = createdBy
+        createdBy = createdBy,
+        programmeId = input.programmeId
 )
 
 fun toClassStage(input: ClassInputModel, createdBy: String): ClassStage = ClassStage(
         termId = input.termId,
         className = input.className,
-        createdBy = createdBy
+        createdBy = createdBy,
+        programmeId = input.programmeId
 )
 
 fun toClassReport(classId: Int, report: ClassReportInputModel, reportedBy: String) = ClassReport(
@@ -38,13 +40,15 @@ fun toClassReport(classId: Int, report: ClassReportInputModel, reportedBy: Strin
         termId = report.termId,
         className = report.className,
         reportedBy = reportedBy,
-        timestamp = Timestamp.valueOf(LocalDateTime.now())
+        timestamp = Timestamp.valueOf(LocalDateTime.now()),
+        programmeId = report.programmeId
 )
 
 fun stagedToClass(stage: ClassStage) = Class(
         termId = stage.termId,
         className = stage.className,
-        createdBy = stage.createdBy
+        createdBy = stage.createdBy,
+        programmeId = stage.programmeId
 )
 
 fun toClassVersion(klass: Class) = ClassVersion(
@@ -53,7 +57,8 @@ fun toClassVersion(klass: Class) = ClassVersion(
         version = klass.version,
         className = klass.className,
         createdBy = klass.createdBy,
-        timestamp = klass.timestamp
+        timestamp = klass.timestamp,
+        programmeId = klass.programmeId
 )
 
 fun toClassOutputModel(klass: Class, term: Term) = ClassOutputModel(

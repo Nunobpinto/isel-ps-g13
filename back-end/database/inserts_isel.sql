@@ -76,23 +76,23 @@ insert into isel.term (term_short_name, term_year, term_type, time_stamp)
 
 -- Classes Insert
 
-insert into isel.class (created_by, class_name, term_id, time_stamp)
-  values ('ze','LI51D',1,current_timestamp);
+insert into isel.class (created_by, class_name, term_id, programme_id, time_stamp)
+  values ('ze','LI51D',1, 1, current_timestamp);
 
-insert into isel.class_version (class_id, class_version, created_by, class_name, term_id, time_stamp)
-  values (1, 1, 'ze','LI51D',1,current_timestamp);
+insert into isel.class_version (class_id, class_version, created_by, class_name, term_id, programme_id, time_stamp)
+  values (1, 1, 'ze','LI51D',1, 1, current_timestamp);
 
-insert into isel.class (created_by, class_name, term_id, time_stamp)
-  values ('ze','LI41D',2,current_timestamp);
+insert into isel.class (created_by, class_name, term_id, programme_id, time_stamp)
+  values ('ze','LI41D',2,1,current_timestamp);
 
-insert into isel.class_version (class_id, class_version, created_by, class_name, term_id, time_stamp)
-  values (2, 1, 'ze','LI41D',2,current_timestamp);
+insert into isel.class_version (class_id, class_version, created_by, class_name, term_id, programme_id, time_stamp)
+  values (2, 1, 'ze','LI41D',2,1,current_timestamp);
 
-insert into isel.class (created_by, class_name, term_id, time_stamp)
-  values ('ze','LEIM41D',2,current_timestamp);
+insert into isel.class (created_by, class_name, term_id, programme_id, time_stamp)
+  values ('ze','LEIM41D',2,2,current_timestamp);
 
-insert into isel.class_version (class_id, class_version, created_by, class_name, term_id, time_stamp)
-  values (3, 1, 'ze','LEIM41D',2,current_timestamp);
+insert into isel.class_version (class_id, class_version, created_by, class_name, term_id, programme_id, time_stamp)
+  values (3, 1, 'ze','LEIM41D',2,2,current_timestamp);
 
 -- Course-Term Insert
 

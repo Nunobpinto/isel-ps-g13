@@ -82,6 +82,8 @@ class ClassServiceImpl : ClassService {
     @Autowired
     lateinit var courseDAO: CourseDAO
     @Autowired
+    lateinit var programmeDAO: ProgrammeDAO
+    @Autowired
     lateinit var lectureDAO: LectureDAO
     @Autowired
     lateinit var homeworkDAO: HomeworkDAO
@@ -119,6 +121,10 @@ class ClassServiceImpl : ClassService {
     }
 
     override fun createClass(input: ClassInputModel, principal: Principal): ClassOutputModel {
+        programmeDAO.getSpecificProgramme(input.programmeId)
+                .orElseThrow { NotFoundException("No programme found", "Please select a valid programme") }
+        termDAO.getTerm(input.termId)
+                .orElseThrow { NotFoundException("Term not found", "Please specify a valid term") }
         val klass = classDAO.createClass(toClass(input, principal.name))
         classDAO.createClassVersion(toClassVersion(klass))
         publisher.publishEvent(ResourceCreatedEvent(
@@ -147,6 +153,8 @@ class ClassServiceImpl : ClassService {
     }
 
     override fun partialUpdateOnClass(classId: Int, input: ClassInputModel, principal: Principal): ClassOutputModel {
+        if(input.programmeId != 0)programmeDAO.getSpecificProgramme(input.programmeId)
+                .orElseThrow { NotFoundException("No programme found", "Please select a valid programme") }
         val oldClass = classDAO.getSpecificClass(classId)
                 .orElseThrow { NotFoundException("No class found with id $classId", "Try other ID") }
         val newClass = classDAO.updateClass(Class(
@@ -154,7 +162,8 @@ class ClassServiceImpl : ClassService {
                 version = oldClass.version.inc(),
                 logId = oldClass.logId,
                 createdBy = principal.name,
-                className = if(input.className.isEmpty()) oldClass.className else input.className
+                className = if(input.className.isEmpty()) oldClass.className else input.className,
+                programmeId = if(input.programmeId == 0) oldClass.programmeId else input.programmeId
         ))
         classDAO.createClassVersion(toClassVersion(newClass))
         publisher.publishEvent(ResourceUpdatedEvent(
@@ -233,6 +242,7 @@ class ClassServiceImpl : ClassService {
                 termId = report.termId,
                 version = klass.version.inc(),
                 className = report.className ?: klass.className,
+                programmeId = report.programmeId ?: klass.programmeId,
                 createdBy = report.reportedBy
         ))
         classDAO.createClassVersion(toClassVersion(updatedClass))

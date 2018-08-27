@@ -95,6 +95,7 @@ CREATE TABLE IF NOT EXISTS <schema>.class (
   class_version INTEGER NOT NULL DEFAULT 1,
   created_by VARCHAR(20) NOT NULL,
   class_name VARCHAR(10) NOT NULL,
+  programme_id INTEGER REFERENCES <schema>.programme NOT NULL,
   term_id INTEGER REFERENCES <schema>.term ON DELETE RESTRICT,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
@@ -299,6 +300,7 @@ CREATE TABLE IF NOT EXISTS <schema>.course_programme_stage (
 CREATE TABLE IF NOT EXISTS <schema>.class_stage (
   class_stage_id SERIAL,
   term_id INTEGER REFERENCES <schema>.term ON DELETE CASCADE,
+  programme_id INTEGER REFERENCES <schema>.programme ON DELETE CASCADE NOT NULL,
   class_name VARCHAR(10) NOT NULL,
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
@@ -461,6 +463,7 @@ CREATE TABLE IF NOT EXISTS <schema>.class_report (
   class_id INTEGER NOT NULL,
   term_id INTEGER NOT NULL,
   class_name VARCHAR(10),
+  programme_id INTEGER,
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
@@ -612,6 +615,7 @@ CREATE TABLE IF NOT EXISTS <schema>.class_version (
   term_id INTEGER,
   class_version INTEGER,
   class_name VARCHAR(10) NOT NULL,
+  programme_id INTEGER NOT NULL,
   created_by VARCHAR(20) NOT NULL,
   time_stamp timestamp NOT NULL,
   PRIMARY KEY (class_id, term_id, class_version)

@@ -7,6 +7,7 @@ import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_STAGE_NAM
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_STAGE_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_STAGE_TIMESTAMP
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_STAGE_VOTES
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_STAGE_PROGRAMME_ID
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.sql.Timestamp
 import java.time.LocalDateTime
@@ -18,6 +19,8 @@ data class ClassStage(
         val className: String = "",
         @ColumnName(CLASS_STAGE_TERM_ID)
         val termId: Int = 0,
+        @ColumnName(CLASS_STAGE_PROGRAMME_ID)
+        val programmeId: Int = 0,
         @ColumnName(CLASS_STAGE_CREATED_BY)
         val createdBy: String = "",
         @ColumnName(CLASS_STAGE_VOTES)

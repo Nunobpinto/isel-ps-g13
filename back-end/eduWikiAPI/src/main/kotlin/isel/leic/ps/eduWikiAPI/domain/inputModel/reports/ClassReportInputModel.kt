@@ -8,5 +8,7 @@ class ClassReportInputModel (
         @JsonProperty("term_id")
         val termId: Int = 0,
         @JsonProperty("class_name")
-        val className: String? = null
+        val className: String? = null,
+        @JsonProperty("programme_id")
+        val programmeId: Int? = null
 )
