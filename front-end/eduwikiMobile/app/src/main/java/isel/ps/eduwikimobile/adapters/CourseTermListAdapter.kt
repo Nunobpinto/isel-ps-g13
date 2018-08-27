@@ -15,7 +15,7 @@ import isel.ps.eduwikimobile.ui.fragments.collection.ClassCollectionOfSpecificCo
 import isel.ps.eduwikimobile.ui.fragments.collection.ExamCollectionFragment
 import isel.ps.eduwikimobile.ui.fragments.collection.WorkAssignmentCollectionFragment
 
-class CourseListTermsAdapter (var context: Context, var list: MutableList<Term>) : RecyclerView.Adapter<CourseListTermsAdapter.ListViewHolder>() {
+class CourseTermListAdapter (var context: Context, var list: MutableList<Term>) : RecyclerView.Adapter<CourseTermListAdapter.ListViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ListViewHolder {
         val view: View = LayoutInflater.from(parent!!.context).inflate(R.layout.course_details_item_row, parent, false)

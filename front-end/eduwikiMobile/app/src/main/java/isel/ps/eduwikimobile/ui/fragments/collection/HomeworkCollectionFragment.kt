@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.Toast
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
@@ -45,7 +46,7 @@ class HomeworkCollectionFragment: Fragment() {
         if (homeworkList.size > 0) {
             homeworkList.clear()
         }
-
+        view.findViewById<ProgressBar>(R.id.homeworks_progress_bar).visibility = View.VISIBLE
         fetchHomeworksOfCourseClass(courseClass!!.courseId, courseClass.classId)
 
         homeworkAdapter = HomeworkListAdapter(context, homeworkList)
@@ -68,8 +69,8 @@ class HomeworkCollectionFragment: Fragment() {
                         successCb = { homeworks ->
                             homeworkList.addAll(homeworks.homeworkList)
                             homeworkAdapter.notifyDataSetChanged()
-                            recyclerView.visibility = View.VISIBLE;
-                            homeworks_progress_bar.visibility = View.GONE;
+                            recyclerView.visibility = View.VISIBLE
+                            homeworks_progress_bar.visibility = View.GONE
                         },
                         errorCb = { error -> Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show() }
                 )

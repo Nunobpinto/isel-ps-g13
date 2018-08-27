@@ -22,11 +22,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="36dp"
         android:text="Late Delivery:"
         android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@+id/homework_multiple_deliveries_checkbox"
+        app:layout_constraintEnd_toStartOf="@+id/homework_late_delivey_swich"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -34,41 +34,38 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="36dp"
         android:text="Multiple Deliveries:"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/homework_sheet"
-        android:layout_width="129dp"
-        android:layout_height="52dp"
+    <Switch
+        android:id="@+id/homework_late_delivey_swich"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="64dp"
-        android:text="Sheet"
+        android:layout_marginTop="32dp"
+        android:clickable="false"
+        android:showText="true"
+        android:textOff="No"
+        android:textOn="Yes"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <CheckBox
-        android:id="@+id/homework_late_delivey_checkbox"
-        android:layout_width="30dp"
-        android:layout_height="20dp"
+    <Switch
+        android:id="@+id/homework_multiple_deliveries_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="32dp"
         android:clickable="false"
-        app:layout_constraintStart_toEndOf="@+id/homework_late_delivery"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <CheckBox
-        android:id="@+id/homework_multiple_deliveries_checkbox"
-        android:layout_width="30dp"
-        android:layout_height="20dp"
-        android:layout_marginTop="32dp"
-        android:clickable="false"
+        android:showText="true"
+        android:textOff="No"
+        android:textOn="Yes"
+        app:layout_constraintEnd_toStartOf="@+id/homework_late_delivery"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/homework_multiple_deliveries"
         app:layout_constraintTop_toTopOf="parent" />
 

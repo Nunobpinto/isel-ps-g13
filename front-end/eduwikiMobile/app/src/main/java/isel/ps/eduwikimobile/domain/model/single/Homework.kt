@@ -6,8 +6,9 @@ import android.os.Parcelable
 data class Homework(
         val homeworkId: Int = 0,
         val version: Int = 0,
+        val homeworkName: String = "",
         val createdBy: String = "",
-        val sheetId: String = "",
+        val sheetId: String? = null,
         val dueDate: String = "",
         val lateDelivery: Boolean = false,
         val multipleDeliveries: Boolean = false,
@@ -20,6 +21,7 @@ data class Homework(
             parcel.readString(),
             parcel.readString(),
             parcel.readString(),
+            parcel.readString(),
             parcel.readByte() != 0.toByte(),
             parcel.readByte() != 0.toByte(),
             parcel.readInt(),
@@ -29,6 +31,7 @@ data class Homework(
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(homeworkId)
         parcel.writeInt(version)
+        parcel.writeString(homeworkName)
         parcel.writeString(createdBy)
         parcel.writeString(sheetId)
         parcel.writeString(dueDate)

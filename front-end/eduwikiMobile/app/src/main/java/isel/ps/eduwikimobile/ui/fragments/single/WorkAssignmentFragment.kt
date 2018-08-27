@@ -13,6 +13,8 @@ import android.widget.Toast
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.controller.AppController
+import isel.ps.eduwikimobile.domain.model.single.Course
+import isel.ps.eduwikimobile.domain.model.single.Term
 import isel.ps.eduwikimobile.domain.model.single.WorkAssignment
 import isel.ps.eduwikimobile.paramsContainer.ResourceParametersContainer
 import isel.ps.eduwikimobile.ui.IDataComunication
@@ -24,6 +26,8 @@ class WorkAssignmentFragment : Fragment() {
     lateinit var workAssignment: WorkAssignment
     lateinit var mainActivity: MainActivity
     lateinit var app: EduWikiApplication
+    var course: Course? = null
+    var term: Term? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,25 +37,28 @@ class WorkAssignmentFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.work_assignment_details_fragment, container, false)
-
         val bundle: Bundle = arguments
         workAssignment = bundle.getParcelable("item_selected")
-
         dataComunication.setWorkAssignment(workAssignment)
+        course = dataComunication.getCourse()
+        term = dataComunication.getTerm()
 
         val workAssignmentName = view.findViewById<TextView>(R.id.work_assignment_details_name)
         val workAssignmentVotes = view.findViewById<TextView>(R.id.work_assignment_votes)
-        val workAssignmentDueDate = view.findViewById<TextView>(R.id.work_assignment_due_date)
+        val workAssignmentDueDate = view.findViewById<TextView>(R.id.lecture_details_week_day)
         val workAssignmentIndividual = view.findViewById<TextView>(R.id.work_assignment_individual)
-        val workAssignmentRequiresReport = view.findViewById<TextView>(R.id.work_assignment_requires_report)
-        val workAssignmentMultipleDeliveries = view.findViewById<TextView>(R.id.work_assignment_multiple_deliveries)
-        val workAssignmentLateDelivery = view.findViewById<TextView>(R.id.work_assignment_late_delivery)
+        val workAssignmentRequiresReport = view.findViewById<TextView>(R.id.insert_lecture_location)
+        val workAssignmentMultipleDeliveries = view.findViewById<TextView>(R.id.lecture_details_duration)
+        val workAssignmentLateDelivery = view.findViewById<TextView>(R.id.lecture_details_begins)
         val workAssignmentSupplement = view.findViewById<Button>(R.id.download_work_assignment_supplement)
         val workAssignmentSheet = view.findViewById<Button>(R.id.download_work_assignment_sheet)
 
         mainActivity.toolbar.displayOptions = ActionBar.DISPLAY_SHOW_TITLE
-        val title: String = dataComunication.getCourse()!!.shortName + "/" + dataComunication.getTerm()!!.shortName + "/" + "Work-Assignments"
-        mainActivity.toolbar.title = title
+        if (course != null && term != null) {
+            mainActivity.toolbar.title = course!!.shortName + "/" + term!!.shortName + "/" + "Work-Assignments"
+        } else { //TODO pedido para obter o course
+            mainActivity.toolbar.title = "Work-Assignments"
+        }
         mainActivity.toolbar.subtitle = workAssignment.createdBy
 
         workAssignmentName.text = workAssignment.phase + "Work-Assignment"
@@ -62,33 +69,36 @@ class WorkAssignmentFragment : Fragment() {
         workAssignmentMultipleDeliveries.text = if (workAssignment.multipleDeliveries) "Yes" else "No"
         workAssignmentLateDelivery.text = if (workAssignment.lateDelivery) "Yes" else "No"
 
-        workAssignmentSheet.visibility = if (workAssignment.sheetId != null) View.VISIBLE else View.GONE
-        workAssignmentSupplement.visibility = if (workAssignment.supplementId != null) View.VISIBLE else View.GONE
-
-        workAssignmentSupplement.setOnClickListener {
-            app.controller.actionHandler(
-                    AppController.SPECIFIC_RESOURCE,
-                    ResourceParametersContainer(
-                            activity = mainActivity,
-                            resourceId = workAssignment.supplementId,
-                            app = app,
-                            successCb = { _ -> Toast.makeText(mainActivity, "Download Completed", Toast.LENGTH_LONG).show() },
-                            errorCb = { error -> Toast.makeText(mainActivity, "Error" + error.message, Toast.LENGTH_LONG).show() }
-                    )
-            )
+        if (workAssignment.supplementId != null) {
+            workAssignmentSupplement.visibility = View.VISIBLE
+            workAssignmentSupplement.setOnClickListener {
+                app.controller.actionHandler(
+                        AppController.SPECIFIC_RESOURCE,
+                        ResourceParametersContainer(
+                                activity = mainActivity,
+                                resourceId = workAssignment.supplementId!!,
+                                app = app,
+                                successCb = { _ -> Toast.makeText(mainActivity, "Download Completed", Toast.LENGTH_LONG).show() },
+                                errorCb = { error -> Toast.makeText(mainActivity, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                        )
+                )
+            }
         }
 
-        workAssignmentSheet.setOnClickListener {
-            app.controller.actionHandler(
-                    AppController.SPECIFIC_RESOURCE,
-                    ResourceParametersContainer(
-                            activity = mainActivity,
-                            resourceId = workAssignment.sheetId,
-                            app = app,
-                            successCb = { _ -> Toast.makeText(mainActivity, "Download Completed", Toast.LENGTH_LONG).show() },
-                            errorCb = { error -> Toast.makeText(mainActivity, "Error" + error.message, Toast.LENGTH_LONG).show() }
-                    )
-            )
+        if (workAssignment.sheetId != null) {
+            workAssignmentSheet.visibility = View.VISIBLE
+            workAssignmentSheet.setOnClickListener {
+                app.controller.actionHandler(
+                        AppController.SPECIFIC_RESOURCE,
+                        ResourceParametersContainer(
+                                activity = mainActivity,
+                                resourceId = workAssignment.sheetId!!,
+                                app = app,
+                                successCb = { _ -> Toast.makeText(mainActivity, "Download Completed", Toast.LENGTH_LONG).show() },
+                                errorCb = { error -> Toast.makeText(mainActivity, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                        )
+                )
+            }
         }
 
         return view

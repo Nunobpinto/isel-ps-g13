@@ -6,8 +6,8 @@ import isel.ps.eduwikimobile.domain.model.collection.CourseClassCollection
 import isel.ps.eduwikimobile.exceptions.AppException
 
 class CourseClassCollectionParametersContainer(
-        val termId: Int?,
-        val courseId: Int?,
+        val termId: Int? = null,
+        val courseId: Int? = null,
         app: EduWikiApplication,
         successCb: (CourseClassCollection) -> Unit,
         errorCb: (AppException) -> Unit

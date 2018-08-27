@@ -8,7 +8,7 @@ data class Exam (
         val version: Int = 1,
         val votes: Int = 0,
         val createdBy: String = "",
-        val sheetId: String = "",
+        val sheetId: String? = null,
         val dueDate: String = "",
         val type: String = "",
         val phase: String = "",

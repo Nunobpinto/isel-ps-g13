@@ -90,7 +90,9 @@ class MainActivity : AppCompatActivity(), IDataComunication {
                 "class_collection" to ClassCollectionFragment(),
                 "course_collection" to CourseCollectionFragment(),
                 "programme_collection" to ProgrammeCollectionFragment(),
-                "course_class" to CourseClassFragment()
+                "course_class" to CourseClassFragment(),
+                "lecture" to LectureFragment(),
+                "homework" to HomeworkFragment()
         )
     }
 

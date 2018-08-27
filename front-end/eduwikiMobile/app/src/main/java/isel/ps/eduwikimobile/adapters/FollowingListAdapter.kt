@@ -57,7 +57,6 @@ class FollowingListAdapter(var context: Context, var list: MutableList<Any>) : R
                 "course_class" -> followingItem.text =  (item as CourseClass).lecturedTerm + "/" + item.className +  "/" + item.courseShortName
                 "course" -> followingItem.text = (item as Course).shortName
                 "programme" -> followingItem.text = (item as Programme).shortName
-                //TODO ORGANIZATION ??
             }
         }
 

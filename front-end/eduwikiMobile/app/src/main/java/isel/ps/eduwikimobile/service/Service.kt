@@ -72,10 +72,10 @@ class Service(
                     params
             )
 
-    override fun getClassesOfSpecificCourse(params: CourseClassCollectionParametersContainer) =
+    override fun getClassesOfSpecificCourse(params: ClassCollectionParametersContainer) =
             repository.getEntity(
                     "$ALL_COURSES_URL/${params.courseId}/terms/${params.termId}/classes",
-                    CourseClassCollection::class.java,
+                    ClassCollection::class.java,
                     params
             )
 

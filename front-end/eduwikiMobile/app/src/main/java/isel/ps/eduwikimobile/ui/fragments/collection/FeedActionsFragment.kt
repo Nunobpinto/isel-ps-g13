@@ -35,10 +35,12 @@ class FeedActionsFragment : Fragment() {
         val view: View = inflater.inflate(R.layout.action_collection_fragment, container, false)
         recyclerView = view.findViewById(R.id.actions_recycler_view)
 
-        if (actionList.size == 0) {
-            view.findViewById<ProgressBar>(R.id.actions_progress_bar).visibility = View.VISIBLE
-            getFeedActions()
+        if (actionList.size != 0) {
+            actionList.clear()
         }
+
+        view.findViewById<ProgressBar>(R.id.actions_progress_bar).visibility = View.VISIBLE
+        getFeedActions()
 
         actionsAdapter = ActionsFeedListAdapter(activity, actionList)
         recyclerView.adapter = actionsAdapter

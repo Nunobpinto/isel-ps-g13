@@ -10,7 +10,7 @@ data class HomeworkOutputModel (
         val version: Int = 0,
         val createdBy: String = "",
         val homeworkName: String = "",
-        val sheetId: UUID? = UUID.randomUUID(),
+        val sheetId: UUID? = null,
         val dueDate: LocalDate = LocalDate.now(),
         val lateDelivery: Boolean = false,
         val multipleDeliveries: Boolean = false,

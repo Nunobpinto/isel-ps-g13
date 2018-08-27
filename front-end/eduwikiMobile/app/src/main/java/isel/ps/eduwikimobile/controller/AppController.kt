@@ -37,7 +37,7 @@ class AppController(
             ORGANIZATION -> getOrganization(params as OrganizationParametersContainer)
             WORK_ASSIGNMENTS -> getWorkAssignmentsOfSpecificCourse(params as WorkAssignmentCollectionParametersContainer)
             EXAMS -> getExamsOfSpecificCourse(params as ExamCollectionParametersContainer)
-            ALL_CLASSES_OF_SPECIFIC_COURSE -> getClassesOfSpecificCourse(params as CourseClassCollectionParametersContainer)
+            ALL_CLASSES_OF_SPECIFIC_COURSE -> getClassesOfSpecificCourse(params as ClassCollectionParametersContainer)
             TERMS_OF_COURSE -> getTermsOfCourse(params as TermCollectionParametersContainer)
             ALL_COURSES_OF_SPECIFIC_CLASS -> getAllCoursesOfSpecificClass(params as CoursesOfSpecificClassParametersContainer)
             ALL_LECTURES_OF_COURSE_CLASS -> getAllLecturesOfCourseClass(params as LectureCollectionParametersContainer)
@@ -72,7 +72,7 @@ class AppController(
     private fun getExamsOfSpecificCourse(params: ExamCollectionParametersContainer) =
             service.getExamsOfSpecificCourse(params)
 
-    private fun getClassesOfSpecificCourse(params: CourseClassCollectionParametersContainer) =
+    private fun getClassesOfSpecificCourse(params: ClassCollectionParametersContainer) =
             service.getClassesOfSpecificCourse(params)
 
     private fun getTermsOfCourse(params: TermCollectionParametersContainer) =

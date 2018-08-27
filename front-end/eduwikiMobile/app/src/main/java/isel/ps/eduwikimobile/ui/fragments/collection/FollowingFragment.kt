@@ -36,10 +36,12 @@ class FollowingFragment : Fragment() {
         val view: View = inflater.inflate(R.layout.following_fragment, container, false)
         recyclerView = view.findViewById(R.id.following_recycler_view)
 
-        if (followingList.size == 0) {
-            view.findViewById<ProgressBar>(R.id.following_progress_bar).visibility = View.VISIBLE
-            getUserFollowingItems()
+        if (followingList.size != 0) {
+            followingList.clear()
         }
+
+        view.findViewById<ProgressBar>(R.id.following_progress_bar).visibility = View.VISIBLE
+        getUserFollowingItems()
 
         followingAdapter = FollowingListAdapter(context, followingList)
         recyclerView.adapter = followingAdapter
@@ -52,21 +54,10 @@ class FollowingFragment : Fragment() {
     }
 
     private fun getUserFollowingItems() {
-        /*«app.repository.getEntity(
-                "$API_URL/user/classes",
-                CourseClassCollection::class.java,
-                EntityParametersContainer(
-                        app = app,
-                        successCb = { courseClassList -> followingList.addAll(courseClassList.courseClassList) },
-                        errorCb = { error -> Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show() }
-                )
-        )*/
-
+        //getting classes
         app.controller.actionHandler(
                 AppController.USER_FOLLOWING_CLASSES,
                 CourseClassCollectionParametersContainer(
-                        courseId = null,
-                        termId = null,
                         app = app,
                         successCb = { courseClassList ->
                             followingList.addAll(courseClassList.courseClassList)
@@ -77,7 +68,7 @@ class FollowingFragment : Fragment() {
                         errorCb = { error -> Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show() }
                 )
         )
-
+        //getting courses
         app.controller.actionHandler(
                 AppController.USER_FOLLOWING_COURSES,
                 CourseCollectionParametersContainer(
@@ -91,7 +82,7 @@ class FollowingFragment : Fragment() {
                         errorCb = { error -> Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show() }
                 )
         )
-
+        //getting programme
         app.controller.actionHandler(
                 AppController.USER_FOLLOWING_PROGRAMME,
                 EntityParametersContainer<Programme>(
@@ -105,8 +96,6 @@ class FollowingFragment : Fragment() {
                         errorCb = { error -> Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show() }
                 )
         )
-
-
     }
 
 }

@@ -12,8 +12,8 @@ data class WorkAssignment(
         val votes: Int = 0,
         val phase: String = "",
         val createdBy: String = "",
-        val sheetId: String = "",
-        val supplementId: String = "",
+        val sheetId: String? = null,
+        val supplementId: String? = null,
         val dueDate: String = "",
         val individual: Boolean = false,
         val lateDelivery: Boolean = false,
@@ -70,4 +70,5 @@ data class WorkAssignment(
     override fun toString(): String {
         return "work_assignment"
     }
+
 }

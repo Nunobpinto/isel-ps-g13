@@ -11,7 +11,7 @@ import android.widget.*
 import android.widget.Toast.LENGTH_LONG
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
-import isel.ps.eduwikimobile.adapters.CourseListTermsAdapter
+import isel.ps.eduwikimobile.adapters.CourseTermListAdapter
 import isel.ps.eduwikimobile.controller.AppController
 import isel.ps.eduwikimobile.domain.model.single.Course
 import isel.ps.eduwikimobile.domain.model.single.Term
@@ -26,7 +26,7 @@ class CourseFragment : Fragment() {
     lateinit var termList: MutableList<Term>
     lateinit var course: Course
     private lateinit var recyclerView: RecyclerView
-    private lateinit var courseTermsAdapter: CourseListTermsAdapter
+    private lateinit var courseTermsAdapter: CourseTermListAdapter
     private lateinit var map: HashMap<Int, MutableList<Term>>
     lateinit var progressBar: ProgressBar
 
@@ -67,7 +67,7 @@ class CourseFragment : Fragment() {
             termList = map[course.courseId]!!
         }
 
-        courseTermsAdapter = CourseListTermsAdapter(context, termList)
+        courseTermsAdapter = CourseTermListAdapter(context, termList)
         recyclerView.adapter = courseTermsAdapter
 
         val mainActivity = context as MainActivity

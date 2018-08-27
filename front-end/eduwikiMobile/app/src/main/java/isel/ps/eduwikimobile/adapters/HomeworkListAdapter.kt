@@ -5,10 +5,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.controller.AppController
@@ -42,17 +39,15 @@ class HomeworkListAdapter(var context: Context, var list: MutableList<Homework>)
     inner class ListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
         var homeworkDueDate: TextView
-        var homeworkLateDelivery: CheckBox
-        var homeworkMultipleDeliveries: CheckBox
-        var homeworkSheet: Button
+        var homeworkLateDelivery: Switch
+        var homeworkMultipleDeliveries: Switch
 
         private lateinit var listener: ListItemClickListener
 
         init {
             homeworkDueDate = itemView.findViewById(R.id.to_insert_homework_due_date)
-            homeworkLateDelivery = itemView.findViewById(R.id.homework_late_delivey_checkbox)
-            homeworkMultipleDeliveries = itemView.findViewById(R.id.homework_multiple_deliveries_checkbox)
-            homeworkSheet = itemView.findViewById(R.id.homework_sheet)
+            homeworkLateDelivery = itemView.findViewById(R.id.homework_late_delivey_swich)
+            homeworkMultipleDeliveries = itemView.findViewById(R.id.homework_multiple_deliveries_switch)
             itemView.setOnClickListener(this)
         }
 
@@ -67,20 +62,6 @@ class HomeworkListAdapter(var context: Context, var list: MutableList<Homework>)
             homeworkDueDate.text = item.dueDate
             homeworkLateDelivery.isChecked = item.lateDelivery
             homeworkMultipleDeliveries.isChecked = item.multipleDeliveries
-            homeworkSheet.visibility = if (item.sheetId != null) View.VISIBLE else View.GONE
-
-            homeworkSheet.setOnClickListener {
-                app.controller.actionHandler(
-                        AppController.SPECIFIC_RESOURCE,
-                        ResourceParametersContainer(
-                                activity = mainActivity,
-                                resourceId = item.sheetId,
-                                app = app,
-                                successCb = { _ -> Toast.makeText(mainActivity, "Download Completed", Toast.LENGTH_LONG).show() },
-                                errorCb = { error -> Toast.makeText(mainActivity, "Error" + error.message, Toast.LENGTH_LONG).show() }
-                        )
-                )
-            }
         }
 
         override fun onClick(v: View) {
