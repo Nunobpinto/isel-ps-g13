@@ -11,11 +11,13 @@ import com.android.volley.VolleyError
 import isel.ps.eduwikimobile.comms.DownloadAsyncTask
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.comms.HttpRequest
-import isel.ps.eduwikimobile.domain.model.collection.*
+import isel.ps.eduwikimobile.comms.Session
+import isel.ps.eduwikimobile.domain.model.single.User
 import java.util.*
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 import isel.ps.eduwikimobile.exceptions.AppException
 import isel.ps.eduwikimobile.paramsContainer.DownloadFileContainer
+import isel.ps.eduwikimobile.paramsContainer.LoginParametersContainer
 import isel.ps.eduwikimobile.paramsContainer.ParametersContainer
 import isel.ps.eduwikimobile.paramsContainer.ResourceParametersContainer
 
@@ -28,8 +30,23 @@ class EduWikiRepository : IEduWikiRepository {
         makeRequest(
                 params.app,
                 uri,
-                "YnJ1bm86MTIzNA==",
+                Session().getAuthToken(params.app),
                 klass,
+                params.successCb,
+                { error: VolleyError -> params.errorCb(AppException(error.message!!)) }
+        )
+    }
+
+    override fun getUser(uri: String, params: LoginParametersContainer) {
+        if (!isConnected(params.app)) {
+            return params.errorCb(AppException("There is no connection"))
+        }
+        val token = Session().encodeToString(params.username, params.password)
+        makeRequest(
+                params.app,
+                uri,
+                token,
+                User::class.java,
                 params.successCb,
                 { error: VolleyError -> params.errorCb(AppException(error.message!!)) }
         )
@@ -51,7 +68,7 @@ class EduWikiRepository : IEduWikiRepository {
     private fun <T> makeRequest(
             ctx: Context,
             url: String,
-            userToken: String,
+            authToken: String,
             klass: Class<T>,
             successCb: (T) -> Unit,
             errorCb: (VolleyError) -> Unit
@@ -59,7 +76,7 @@ class EduWikiRepository : IEduWikiRepository {
         val tag = UUID.randomUUID().toString()
         val req = HttpRequest(
                 url,
-                userToken,
+                authToken,
                 klass,
                 { result -> successCb(result) },
                 errorCb

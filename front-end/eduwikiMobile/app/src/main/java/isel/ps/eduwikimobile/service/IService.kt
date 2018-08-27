@@ -1,6 +1,7 @@
 package isel.ps.eduwikimobile.service
 
 import isel.ps.eduwikimobile.domain.model.single.Programme
+import isel.ps.eduwikimobile.domain.model.single.User
 import isel.ps.eduwikimobile.paramsContainer.*
 
 interface IService {
@@ -21,4 +22,5 @@ interface IService {
     fun getUserFollowingClasses(params: CourseClassCollectionParametersContainer)
     fun getUserFollowingCourses(params: CourseCollectionParametersContainer)
     fun getUserFollowingProgramme(params: EntityParametersContainer<Programme>)
+    fun getAuthUser(params: LoginParametersContainer)
 }

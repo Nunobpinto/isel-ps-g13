@@ -1,6 +1,7 @@
 package isel.ps.eduwikimobile.controller
 
 import isel.ps.eduwikimobile.domain.model.single.Programme
+import isel.ps.eduwikimobile.domain.model.single.User
 import isel.ps.eduwikimobile.paramsContainer.*
 import isel.ps.eduwikimobile.service.IService
 
@@ -26,6 +27,7 @@ class AppController(
         const val USER_FOLLOWING_CLASSES = "USER_FOLLOWING_CLASSES"
         const val USER_FOLLOWING_COURSES = "USER_FOLLOWING_COURSES"
         const val USER_FOLLOWING_PROGRAMME = "USER_FOLLOWING_PROGRAMME"
+        const val AUTH_USER = "AUTH_USER"
     }
 
     fun <T> actionHandler(action: String, params: ParametersContainer<T>) {
@@ -47,9 +49,13 @@ class AppController(
             USER_FOLLOWING_COURSES -> getUserFollowingCourses(params as CourseCollectionParametersContainer)
             USER_FOLLOWING_PROGRAMME -> getUserFollowingProgramme(params as EntityParametersContainer<Programme>)
             SPECIFIC_RESOURCE -> getSpecificResource(params as ResourceParametersContainer)
+            AUTH_USER -> getAuthenticatedUser(params as LoginParametersContainer)
             else -> throw UnsupportedOperationException("Action not supported!")
         }
     }
+
+    private fun getAuthenticatedUser(params: LoginParametersContainer) =
+        service.getAuthUser(params)
 
     private fun getAllProgrammes(params: ProgrammeCollectionParametersContainer) =
             service.getAllProgrammes(params)

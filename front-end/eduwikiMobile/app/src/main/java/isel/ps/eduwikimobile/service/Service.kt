@@ -4,6 +4,7 @@ import isel.ps.eduwikimobile.API_URL
 import isel.ps.eduwikimobile.domain.model.collection.*
 import isel.ps.eduwikimobile.domain.model.single.Organization
 import isel.ps.eduwikimobile.domain.model.single.Programme
+import isel.ps.eduwikimobile.domain.model.single.User
 import isel.ps.eduwikimobile.paramsContainer.*
 import isel.ps.eduwikimobile.repository.IEduWikiRepository
 
@@ -21,6 +22,7 @@ class Service(
         val USER_FOLLOWING_COURSES = API_URL + "/user/courses"
         val USER_FOLLOWING_PROGRAMME = API_URL + "/user/programme"
         val FEED = API_URL + "/user/feed"
+        val AUTH_USER = API_URL + "/user"
     }
 
     override fun getAllProgrammes(params: ProgrammeCollectionParametersContainer) =
@@ -141,6 +143,12 @@ class Service(
             repository.getEntity(
                     USER_FOLLOWING_PROGRAMME,
                     Programme::class.java,
+                    params
+            )
+
+    override fun getAuthUser(params: LoginParametersContainer) =
+            repository.getUser(
+                    AUTH_USER,
                     params
             )
 }
