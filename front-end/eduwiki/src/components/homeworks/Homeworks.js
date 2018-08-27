@@ -22,14 +22,14 @@ export default class extends React.Component {
             <Row gutter={16}>
               <Col span={8} key={work.homeworkId}>
                 <Card
-                  title={`${work.votes} Votes`}
+                  title={`${work.homeworkName} ${work.votes} Votes`}
                   actions={[
                     <Button id='like_btn' shape='circle' icon='like' onClick={() => this.setState({up: true, id: work.examId})} />,
                     <Button id='dislike_btn' shape='circle' icon='dislike' onClick={() => this.setState({down: true, id: work.examId})} />
                   ]}
                 >
-                  <p>Late Delivery : {work.lateDelivery}</p>
-                  <p>Multiple Deliveries : {work.multipleDeliveries}</p>
+                  <p>Late Delivery : {work.lateDelivery ? 'Yes' : 'No'}</p>
+                  <p>Multiple Deliveries : {work.multipleDeliveries ? 'Yes' : 'No'}</p>
                   <p>Added in : {work.timestamp}</p>
                   <p>Created By : {work.createdBy}</p>
                   <button onClick={() => this.showResource(work.sheetId)}> See Homework sheet</button>
