@@ -78,8 +78,8 @@ class ExamCollectionFragment : Fragment() {
                         successCb = { exams ->
                             examList.addAll(exams.examList)
                             examAdapter.notifyDataSetChanged()
-                            recyclerView.visibility = View.VISIBLE;
-                            exams_progress_bar.visibility = View.GONE;
+                            recyclerView.visibility = View.VISIBLE
+                            exams_progress_bar.visibility = View.GONE
                         },
                         errorCb = { error -> Toast.makeText(app, "Error" + error.message, LENGTH_LONG).show() }
                 )

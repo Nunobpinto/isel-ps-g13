@@ -1,5 +1,6 @@
 package isel.ps.eduwikimobile.service
 
+import isel.ps.eduwikimobile.domain.model.single.Programme
 import isel.ps.eduwikimobile.paramsContainer.*
 
 interface IService {
@@ -17,6 +18,7 @@ interface IService {
     fun getAllHomeworksOfCourseClass(params: HomeworkCollectionParametersContainer)
     fun getResourceFile(params: ResourceParametersContainer)
     fun getFeedActions(params: ActionsFeedParametersContainer)
-    fun getUserFollowingItems(params: FollowingParametersContainer)
-    fun getActionEntity()
+    fun getUserFollowingClasses(params: CourseClassCollectionParametersContainer)
+    fun getUserFollowingCourses(params: CourseCollectionParametersContainer)
+    fun getUserFollowingProgramme(params: EntityParametersContainer<Programme>)
 }

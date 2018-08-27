@@ -8,13 +8,10 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import com.android.volley.VolleyError
-import isel.ps.eduwikimobile.API_URL
 import isel.ps.eduwikimobile.comms.DownloadAsyncTask
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.comms.HttpRequest
 import isel.ps.eduwikimobile.domain.model.collection.*
-import isel.ps.eduwikimobile.domain.model.single.Organization
-import isel.ps.eduwikimobile.domain.model.single.Programme
 import java.util.*
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 import isel.ps.eduwikimobile.exceptions.AppException
@@ -43,13 +40,6 @@ class EduWikiRepository : IEduWikiRepository {
             return params.errorCb(AppException("There is no connection"))
         }
         downloadFileRequest(uri, params.activity)
-    }
-
-    override fun getUserFollowingItems(ctx: Context, successCb: (FollowingCollection) -> Unit, errorCb: (VolleyError) -> Unit) {
-        if (!isConnected(ctx)) {
-            return errorCb(VolleyError())
-        }
-        //makeRequest(ctx, USER + "/feed", "emU6MTIzNA==", UserActionCollection::class.java, successCb, errorCb)
     }
 
     private fun isConnected(context: Context): Boolean {

@@ -13,9 +13,11 @@ import android.widget.Toast
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.adapters.ClassListAdapter
+import isel.ps.eduwikimobile.adapters.CourseClassListAdapter
 import isel.ps.eduwikimobile.controller.AppController
 import isel.ps.eduwikimobile.domain.model.single.Class
 import isel.ps.eduwikimobile.domain.model.single.Course
+import isel.ps.eduwikimobile.domain.model.single.CourseClass
 import isel.ps.eduwikimobile.domain.model.single.Term
 import isel.ps.eduwikimobile.paramsContainer.CourseClassCollectionParametersContainer
 import isel.ps.eduwikimobile.ui.IDataComunication
@@ -26,8 +28,8 @@ class ClassCollectionOfSpecificCourseFragment : Fragment() {
 
     lateinit var app: EduWikiApplication
     private lateinit var recyclerView: RecyclerView
-    private lateinit var classesOfSpecificCourseList: MutableList<Class>
-    private lateinit var classAdapter: ClassListAdapter
+    private lateinit var classesOfSpecificCourseList: MutableList<CourseClass>
+    private lateinit var classAdapter: CourseClassListAdapter
     lateinit var dataComunication: IDataComunication
     lateinit var course: Course
 
@@ -54,7 +56,7 @@ class ClassCollectionOfSpecificCourseFragment : Fragment() {
         activity.toolbar.title = course.shortName + "/" + term.shortName + "/" + "Classes"
         activity.toolbar.subtitle = ""
 
-        classAdapter = ClassListAdapter(context, classesOfSpecificCourseList)
+        classAdapter = CourseClassListAdapter(context, classesOfSpecificCourseList)
         recyclerView.adapter = classAdapter
 
         val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(activity)
@@ -62,7 +64,6 @@ class ClassCollectionOfSpecificCourseFragment : Fragment() {
         recyclerView.isNestedScrollingEnabled = true
         return view
     }
-
 
     private fun fetchClassesOfCourse(courseId: Int, termId: Int) {
         app.controller.actionHandler(
@@ -72,7 +73,7 @@ class ClassCollectionOfSpecificCourseFragment : Fragment() {
                         courseId = courseId,
                         app = activity.applicationContext as EduWikiApplication,
                         successCb = { classes ->
-                            classesOfSpecificCourseList.addAll(classes.classList)
+                            classesOfSpecificCourseList.addAll(classes.courseClassList)
                             classAdapter.notifyDataSetChanged()
                             recyclerView.visibility = View.VISIBLE
                             classes_progress_bar.visibility = View.GONE

@@ -1,12 +1,10 @@
 package isel.ps.eduwikimobile.service
 
-import com.android.volley.VolleyError
 import isel.ps.eduwikimobile.API_URL
 import isel.ps.eduwikimobile.domain.model.collection.*
 import isel.ps.eduwikimobile.domain.model.single.Organization
-import isel.ps.eduwikimobile.exceptions.AppException
+import isel.ps.eduwikimobile.domain.model.single.Programme
 import isel.ps.eduwikimobile.paramsContainer.*
-import isel.ps.eduwikimobile.repository.EduWikiRepository
 import isel.ps.eduwikimobile.repository.IEduWikiRepository
 
 class Service(
@@ -19,16 +17,18 @@ class Service(
         val ALL_CLASSES_URL = API_URL + "/classes"
         val ORGANIZATION_URL = API_URL + "/organization"
         val RESOURCES = API_URL + "/resources"
-        val USER = API_URL + "/user"
+        val USER_FOLLOWING_CLASSES = API_URL + "/user/classes"
+        val USER_FOLLOWING_COURSES = API_URL + "/user/courses"
+        val USER_FOLLOWING_PROGRAMME = API_URL + "/user/programme"
+        val FEED = API_URL + "/user/feed"
     }
 
-    override fun getAllProgrammes(params: ProgrammeCollectionParametersContainer) {
-        repository.getEntity(
-                ALL_PROGRAMMES_URL,
-                ProgrammeCollection::class.java,
-                params
-        )
-    }
+    override fun getAllProgrammes(params: ProgrammeCollectionParametersContainer) =
+            repository.getEntity(
+                    ALL_PROGRAMMES_URL,
+                    ProgrammeCollection::class.java,
+                    params
+            )
 
     override fun getAllCourses(params: CourseCollectionParametersContainer) =
             repository.getEntity(
@@ -75,17 +75,17 @@ class Service(
     override fun getClassesOfSpecificCourse(params: CourseClassCollectionParametersContainer) =
             repository.getEntity(
                     "$ALL_COURSES_URL/${params.courseId}/terms/${params.termId}/classes",
-                    ClassCollection::class.java,
+                    CourseClassCollection::class.java,
                     params
             )
 
-    override fun getTermsOfCourse(params: TermCollectionParametersContainer) {
-        repository.getEntity(
-                "$ALL_COURSES_URL/${params.courseId}/terms",
-                TermCollection::class.java,
-                params
-        )
-    }
+    override fun getTermsOfCourse(params: TermCollectionParametersContainer) =
+            repository.getEntity(
+                    "$ALL_COURSES_URL/${params.courseId}/terms",
+                    TermCollection::class.java,
+                    params
+            )
+
 
     override fun getAllCoursesOfSpecificClass(params: CoursesOfSpecificClassParametersContainer) {
         repository.getEntity(
@@ -95,21 +95,19 @@ class Service(
         )
     }
 
-    override fun getAllLecturesOfCourseClass(params: LectureCollectionParametersContainer) {
-        repository.getEntity(
-                "$ALL_CLASSES_URL/${params.classId}/courses/${params.courseId}/lectures",
-                LectureCollection::class.java,
-                params
-        )
-    }
+    override fun getAllLecturesOfCourseClass(params: LectureCollectionParametersContainer) =
+            repository.getEntity(
+                    "$ALL_CLASSES_URL/${params.classId}/courses/${params.courseId}/lectures",
+                    LectureCollection::class.java,
+                    params
+            )
 
-    override fun getAllHomeworksOfCourseClass(params: HomeworkCollectionParametersContainer) {
-        repository.getEntity(
-                "$ALL_CLASSES_URL/${params.classId}/courses/${params.courseId}/homeworks",
-                HomeworkCollection::class.java,
-                params
-        )
-    }
+    override fun getAllHomeworksOfCourseClass(params: HomeworkCollectionParametersContainer) =
+            repository.getEntity(
+                    "$ALL_CLASSES_URL/${params.classId}/courses/${params.courseId}/homeworks",
+                    HomeworkCollection::class.java,
+                    params
+            )
 
     override fun getResourceFile(params: ResourceParametersContainer) =
             repository.getResourceFile(
@@ -117,30 +115,32 @@ class Service(
                     params
             )
 
-    override fun getFeedActions(params: ActionsFeedParametersContainer) {
+    override fun getFeedActions(params: ActionsFeedParametersContainer) =
+            repository.getEntity(
+                    FEED,
+                    UserActionCollection::class.java,
+                    params
+            )
+
+
+    override fun getUserFollowingClasses(params: CourseClassCollectionParametersContainer) =
+            repository.getEntity(
+                    USER_FOLLOWING_CLASSES,
+                    CourseClassCollection::class.java,
+                    params
+            )
+
+    override fun getUserFollowingCourses(params: CourseCollectionParametersContainer) =
         repository.getEntity(
-                "$USER/feed",
-                UserActionCollection::class.java,
+                USER_FOLLOWING_COURSES,
+                CourseCollection::class.java,
                 params
         )
-    }
 
-    override fun getUserFollowingItems(params: FollowingParametersContainer) {
-        repository.getUserFollowingItems(
-                params.app,
-                { items -> params.successCb(items) },
-                { error: VolleyError -> params.errorCb(AppException(error.message!!)) }
-        )
-    }
-
-    override fun getActionEntity() {
-        /*remoteRepository.getActionEntity(
-                ctx,
-                entity,
-                url,
-                { error: VolleyError -> errorCb(AppException(error.message!!)) }
-        )*/
-    }
-
-
+    override fun getUserFollowingProgramme(params: EntityParametersContainer<Programme>) =
+            repository.getEntity(
+                    USER_FOLLOWING_PROGRAMME,
+                    Programme::class.java,
+                    params
+            )
 }

@@ -1,5 +1,6 @@
 package isel.ps.eduwikimobile.controller
 
+import isel.ps.eduwikimobile.domain.model.single.Programme
 import isel.ps.eduwikimobile.paramsContainer.*
 import isel.ps.eduwikimobile.service.IService
 
@@ -22,7 +23,9 @@ class AppController(
         const val ALL_LECTURES_OF_COURSE_CLASS = "ALL_LECTURES_OF_COURSE_CLASS"
         const val ALL_HOMEWORKS_OF_COURSE_CLASS = "ALL_HOMEWORKS_OF_COURSE_CLASS"
         const val FEED_ACTIONS = "FEED_ACTIONS"
-        const val USER_FOLLOWING = "USER_FOLLOWING"
+        const val USER_FOLLOWING_CLASSES = "USER_FOLLOWING_CLASSES"
+        const val USER_FOLLOWING_COURSES = "USER_FOLLOWING_COURSES"
+        const val USER_FOLLOWING_PROGRAMME = "USER_FOLLOWING_PROGRAMME"
     }
 
     fun <T> actionHandler(action: String, params: ParametersContainer<T>) {
@@ -40,7 +43,9 @@ class AppController(
             ALL_LECTURES_OF_COURSE_CLASS -> getAllLecturesOfCourseClass(params as LectureCollectionParametersContainer)
             ALL_HOMEWORKS_OF_COURSE_CLASS -> getAllHomeworksOfCourseClass(params as HomeworkCollectionParametersContainer)
             FEED_ACTIONS -> getFeedActions(params as ActionsFeedParametersContainer)
-            USER_FOLLOWING -> getUserFollowingItems(params as FollowingParametersContainer)
+            USER_FOLLOWING_CLASSES -> getUserFollowingClasses(params as CourseClassCollectionParametersContainer)
+            USER_FOLLOWING_COURSES -> getUserFollowingCourses(params as CourseCollectionParametersContainer)
+            USER_FOLLOWING_PROGRAMME -> getUserFollowingProgramme(params as EntityParametersContainer<Programme>)
             SPECIFIC_RESOURCE -> getSpecificResource(params as ResourceParametersContainer)
             else -> throw UnsupportedOperationException("Action not supported!")
         }
@@ -88,7 +93,13 @@ class AppController(
     private fun getFeedActions(params: ActionsFeedParametersContainer) =
             service.getFeedActions(params)
 
-    private fun getUserFollowingItems(params: FollowingParametersContainer) =
-            service.getUserFollowingItems(params)
+    private fun getUserFollowingClasses(params: CourseClassCollectionParametersContainer) =
+            service.getUserFollowingClasses(params)
+
+    private fun getUserFollowingCourses(params: CourseCollectionParametersContainer) =
+            service.getUserFollowingCourses(params)
+
+    private fun getUserFollowingProgramme(params: EntityParametersContainer<Programme>) =
+            service.getUserFollowingProgramme(params)
 
 }

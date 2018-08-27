@@ -13,10 +13,13 @@ import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.adapters.FollowingListAdapter
 import isel.ps.eduwikimobile.controller.AppController
-import isel.ps.eduwikimobile.paramsContainer.FollowingParametersContainer
+import isel.ps.eduwikimobile.domain.model.single.Programme
+import isel.ps.eduwikimobile.paramsContainer.CourseClassCollectionParametersContainer
+import isel.ps.eduwikimobile.paramsContainer.CourseCollectionParametersContainer
+import isel.ps.eduwikimobile.paramsContainer.EntityParametersContainer
 import kotlinx.android.synthetic.main.following_fragment.*
 
-class FollowingFragment: Fragment() {
+class FollowingFragment : Fragment() {
 
     lateinit var app: EduWikiApplication
     private lateinit var recyclerView: RecyclerView
@@ -33,7 +36,7 @@ class FollowingFragment: Fragment() {
         val view: View = inflater.inflate(R.layout.following_fragment, container, false)
         recyclerView = view.findViewById(R.id.following_recycler_view)
 
-        if (followingList.size == 0){
+        if (followingList.size == 0) {
             view.findViewById<ProgressBar>(R.id.following_progress_bar).visibility = View.VISIBLE
             getUserFollowingItems()
         }
@@ -49,14 +52,24 @@ class FollowingFragment: Fragment() {
     }
 
     private fun getUserFollowingItems() {
-        app.controller.actionHandler(
-                AppController.USER_FOLLOWING,
-                FollowingParametersContainer(
+        /*«app.repository.getEntity(
+                "$API_URL/user/classes",
+                CourseClassCollection::class.java,
+                EntityParametersContainer(
                         app = app,
-                        successCb = { following ->
-                            followingList.addAll(following.classes)
-                            followingList.addAll(following.courses)
-                            followingList.add(following.programme!!)
+                        successCb = { courseClassList -> followingList.addAll(courseClassList.courseClassList) },
+                        errorCb = { error -> Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                )
+        )*/
+
+        app.controller.actionHandler(
+                AppController.USER_FOLLOWING_CLASSES,
+                CourseClassCollectionParametersContainer(
+                        courseId = null,
+                        termId = null,
+                        app = app,
+                        successCb = { courseClassList ->
+                            followingList.addAll(courseClassList.courseClassList)
                             followingAdapter.notifyDataSetChanged()
                             recyclerView.visibility = View.VISIBLE
                             following_progress_bar.visibility = View.GONE
@@ -64,6 +77,36 @@ class FollowingFragment: Fragment() {
                         errorCb = { error -> Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show() }
                 )
         )
+
+        app.controller.actionHandler(
+                AppController.USER_FOLLOWING_COURSES,
+                CourseCollectionParametersContainer(
+                        app = app,
+                        successCb = { course ->
+                            followingList.addAll(course.courseList)
+                            followingAdapter.notifyDataSetChanged()
+                            recyclerView.visibility = View.VISIBLE
+                            following_progress_bar.visibility = View.GONE
+                        },
+                        errorCb = { error -> Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                )
+        )
+
+        app.controller.actionHandler(
+                AppController.USER_FOLLOWING_PROGRAMME,
+                EntityParametersContainer<Programme>(
+                        app = app,
+                        successCb = { programme ->
+                            followingList.addAll(listOf(programme))
+                            followingAdapter.notifyDataSetChanged()
+                            recyclerView.visibility = View.VISIBLE
+                            following_progress_bar.visibility = View.GONE
+                        },
+                        errorCb = { error -> Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                )
+        )
+
+
     }
 
 }
