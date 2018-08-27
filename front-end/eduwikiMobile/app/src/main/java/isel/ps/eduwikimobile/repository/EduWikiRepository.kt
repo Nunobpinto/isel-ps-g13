@@ -1,124 +1,55 @@
 package isel.ps.eduwikimobile.repository
 
 import android.Manifest
-import android.app.DownloadManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.support.v4.app.ActivityCompat
-import android.support.v4.content.PermissionChecker.checkSelfPermission
+import android.support.v4.content.ContextCompat
 import android.util.Log
 import com.android.volley.VolleyError
 import isel.ps.eduwikimobile.API_URL
+import isel.ps.eduwikimobile.comms.DownloadAsyncTask
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.comms.HttpRequest
 import isel.ps.eduwikimobile.domain.model.collection.*
 import isel.ps.eduwikimobile.domain.model.single.Organization
+import isel.ps.eduwikimobile.domain.model.single.Programme
 import java.util.*
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 import isel.ps.eduwikimobile.exceptions.AppException
+import isel.ps.eduwikimobile.paramsContainer.DownloadFileContainer
+import isel.ps.eduwikimobile.paramsContainer.ParametersContainer
 import isel.ps.eduwikimobile.paramsContainer.ResourceParametersContainer
-
 
 class EduWikiRepository : IEduWikiRepository {
 
-    companion object {
-        val ALL_PROGRAMMES_URL = API_URL + "/programmes"
-        val ALL_COURSES_URL = API_URL + "/courses"
-        val ALL_CLASSES_URL = API_URL + "/classes"
-        val ORGANIZATION = API_URL + "/organization"
-        val RESOURCES = API_URL + "/resources"
-    }
-
-    override fun getAllProgrammes(ctx: Context, successCb: (ProgrammeCollection) -> Unit, errorCb: (VolleyError) -> Unit) {
-        if (!isConnected(ctx)) {
-            return errorCb(VolleyError())
-        }
-        makeRequest(ctx, ALL_PROGRAMMES_URL, "emU6MTIzNA==", ProgrammeCollection::class.java, successCb, errorCb)
-    }
-
-    override fun getAllCourses(ctx: Context, successCb: (CourseCollection) -> Unit, errorCb: (VolleyError) -> Unit) {
-        if (!isConnected(ctx)) {
-            return errorCb(VolleyError())
-        }
-        makeRequest(ctx, ALL_COURSES_URL, "emU6MTIzNA==", CourseCollection::class.java, successCb, errorCb)
-    }
-
-    override fun getCoursesOfSpeficiProgramme(programmeId: Int, ctx: Context, successCb: (CourseProgrammeCollection) -> Unit, errorCb: (VolleyError) -> Unit) {
-        if (!isConnected(ctx)) {
-            return errorCb(VolleyError())
-        }
-        makeRequest(ctx, ALL_PROGRAMMES_URL + "/" + programmeId + "/courses", "emU6MTIzNA==", CourseProgrammeCollection::class.java, successCb, errorCb)
-    }
-
-    override fun getAllClasses(ctx: Context, successCb: (ClassCollection) -> Unit, errorCb: (VolleyError) -> Unit) {
-        if (!isConnected(ctx)) {
-            return errorCb(VolleyError())
-        }
-        makeRequest(ctx, ALL_CLASSES_URL, "emU6MTIzNA==", ClassCollection::class.java, successCb, errorCb)
-    }
-
-    override fun getOrganization(ctx: Context, successCb: (Organization) -> Unit, errorCb: (VolleyError) -> Unit) {
-        if (!isConnected(ctx)) {
-            return errorCb(VolleyError())
-        }
-        makeRequest(ctx, ORGANIZATION, "emU6MTIzNA==", Organization::class.java, successCb, errorCb)
-    }
-
-    override fun getWorkAssignmentsOfSpecificCourse(termId: Int, courseId: Int, ctx: Context, successCb: (WorkAssignmentCollection) -> Unit, errorCb: (VolleyError) -> Unit) {
-        if (!isConnected(ctx)) {
-            return errorCb(VolleyError())
-        }
-        makeRequest(ctx, ALL_COURSES_URL + "/" + courseId + "/terms/" + termId + "/work-assignments", "emU6MTIzNA==", WorkAssignmentCollection::class.java, successCb, errorCb)
-    }
-
-    override fun getExamsOfSpecificCourse(termId: Int, courseId: Int, ctx: Context, successCb: (ExamCollection) -> Unit, errorCb: (VolleyError) -> Unit) {
-        if (!isConnected(ctx)) {
-            return errorCb(VolleyError())
-        }
-        makeRequest(ctx, ALL_COURSES_URL + "/" + courseId + "/terms/" + termId + "/exams", "emU6MTIzNA==", ExamCollection::class.java, successCb, errorCb)
-    }
-
-    override fun getClassesOfSpecificCourse(termId: Int, courseId: Int, ctx: Context, successCb: (ClassCollection) -> Unit, errorCb: (VolleyError) -> Unit) {
-        if (!isConnected(ctx)) {
-            return errorCb(VolleyError())
-        }
-        makeRequest(ctx, ALL_COURSES_URL + "/" + courseId + "/terms/" + termId + "/classes", "emU6MTIzNA==", ClassCollection::class.java, successCb, errorCb)
-    }
-
-    override fun getTermsOfCourse(courseId: Int, ctx: Context, successCb: (TermCollection) -> Unit, errorCb: (VolleyError) -> Unit) {
-        if (!isConnected(ctx)) {
-            return errorCb(VolleyError())
-        }
-        makeRequest(ctx, ALL_COURSES_URL + "/" + courseId + "/terms", "emU6MTIzNA==", TermCollection::class.java, successCb, errorCb)
-    }
-
-    override fun getAllCoursesOfSpecificClass(classId: Int, ctx: Context, successCb: (CourseClassCollection) -> Unit, errorCb: (VolleyError) -> Unit) {
-        if (!isConnected(ctx)) {
-            return errorCb(VolleyError())
-        }
-        makeRequest(ctx, ALL_CLASSES_URL + "/" + classId + "/courses", "emU6MTIzNA==", CourseClassCollection::class.java, successCb, errorCb)
-    }
-
-    override fun getAllLecturesOfCourseClass(courseId: Int, classId: Int, ctx: Context, successCb: (LectureCollection) -> Unit, errorCb: (VolleyError) -> Unit) {
-        if (!isConnected(ctx)) {
-            return errorCb(VolleyError())
-        }
-        makeRequest(ctx, ALL_CLASSES_URL + "/" + classId + "/courses/" + courseId + "/lectures", "emU6MTIzNA==", LectureCollection::class.java, successCb, errorCb)
-    }
-
-    override fun getAllHomeworksOfCourseClass(courseId: Int, classId: Int, ctx: Context, successCb: (HomeworkCollection) -> Unit, errorCb: (VolleyError) -> Unit) {
-        if (!isConnected(ctx)) {
-            return errorCb(VolleyError())
-        }
-        makeRequest(ctx, ALL_CLASSES_URL + "/" + classId + "/courses/" + courseId + "/homeworks", "emU6MTIzNA==", HomeworkCollection::class.java, successCb, errorCb)
-    }
-
-    override fun getSpecificResource(params: ResourceParametersContainer) {
+    override fun <T> getEntity(uri: String, klass: Class<T>, params: ParametersContainer<T>) {
         if (!isConnected(params.app)) {
-            return params.errorCb(AppException("No connection detected"))
+            return params.errorCb(AppException("There is no connection"))
         }
-        downloadFileRequest(params.activity, params.app, RESOURCES + "/" + params.resourceId, params.successCb, params.errorCb)
+        makeRequest(
+                params.app,
+                uri,
+                "YnJ1bm86MTIzNA==",
+                klass,
+                params.successCb,
+                { error: VolleyError -> params.errorCb(AppException(error.message!!)) }
+        )
+    }
+
+    override fun getResourceFile(uri: String, params: ResourceParametersContainer) {
+        if (!isConnected(params.app)) {
+            return params.errorCb(AppException("There is no connection"))
+        }
+        downloadFileRequest(uri, params.activity)
+    }
+
+    override fun getUserFollowingItems(ctx: Context, successCb: (FollowingCollection) -> Unit, errorCb: (VolleyError) -> Unit) {
+        if (!isConnected(ctx)) {
+            return errorCb(VolleyError())
+        }
+        //makeRequest(ctx, USER + "/feed", "emU6MTIzNA==", UserActionCollection::class.java, successCb, errorCb)
     }
 
     private fun isConnected(context: Context): Boolean {
@@ -135,7 +66,7 @@ class EduWikiRepository : IEduWikiRepository {
             successCb: (T) -> Unit,
             errorCb: (VolleyError) -> Unit
     ): String {
-        val tag = UUID.randomUUID().toString() //TODO see usage
+        val tag = UUID.randomUUID().toString()
         val req = HttpRequest(
                 url,
                 userToken,
@@ -149,21 +80,17 @@ class EduWikiRepository : IEduWikiRepository {
     }
 
     private fun downloadFileRequest(
-            activity: MainActivity,
-            ctx: Context,
             url: String,
-            successCb: () -> Unit,
-            errorCb: (AppException) -> Unit
+            activity: MainActivity
     ) {
         activity.url = url
-        if (checkSelfPermission(ctx,android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            Log.e("Permission error","You have permission")
-        }
-        else {
-            Log.e("Permission error","You have asked for permission");
-            ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1);
+        if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            Log.e("Permission status", "You have permission")
+            DownloadAsyncTask().execute(DownloadFileContainer(url, activity))
+        } else {
+            Log.e("Permission status", "You have asked for permission")
+            ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
         }
 
-        DownloadManager.ACTION_DOWNLOAD_COMPLETE
     }
 }

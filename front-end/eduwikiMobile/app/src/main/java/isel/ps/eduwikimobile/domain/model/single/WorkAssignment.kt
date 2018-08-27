@@ -68,6 +68,6 @@ data class WorkAssignment(
     }
 
     override fun toString(): String {
-        return "Work Assignment"
+        return "work_assignment"
     }
 }

@@ -1,23 +1,14 @@
 package isel.ps.eduwikimobile.ui.activities
 
-import android.Manifest
-import android.app.DownloadManager
-import android.content.Context
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.os.Parcelable
 import android.support.design.widget.BottomNavigationView
-import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
-import android.webkit.MimeTypeMap
-import android.webkit.URLUtil
-import isel.ps.eduwikimobile.API_URL
+import android.widget.Toast
+import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.domain.model.single.*
 import isel.ps.eduwikimobile.ui.IDataComunication
@@ -25,19 +16,17 @@ import isel.ps.eduwikimobile.ui.fragments.collection.ClassCollectionFragment
 import isel.ps.eduwikimobile.ui.fragments.collection.CourseCollectionFragment
 import isel.ps.eduwikimobile.ui.fragments.collection.ProgrammeCollectionFragment
 import isel.ps.eduwikimobile.ui.fragments.single.*
-import android.content.Intent
-import android.os.AsyncTask
-import isel.ps.eduwikimobile.DownloadTask
+import isel.ps.eduwikimobile.comms.DownloadAsyncTask
+import isel.ps.eduwikimobile.controller.AppController
 import isel.ps.eduwikimobile.paramsContainer.DownloadFileContainer
-import java.io.BufferedInputStream
-import java.net.HttpURLConnection
-import java.net.URL
+import isel.ps.eduwikimobile.paramsContainer.ResourceParametersContainer
 
 
 class MainActivity : AppCompatActivity(), IDataComunication {
 
     lateinit var toolbar: ActionBar
-    lateinit var map: HashMap<String, Fragment>
+    lateinit var fragmentsMap: HashMap<String, Fragment>
+    lateinit var app: EduWikiApplication
     var actualProgramme: Programme? = null
     var actualCourse: Course? = null
     var actualClass: Class? = null
@@ -49,64 +38,65 @@ class MainActivity : AppCompatActivity(), IDataComunication {
     var actualLecture: Lecture? = null
     var actualHomework: Homework? = null
     lateinit var url: String
-    lateinit var user: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        app = this.applicationContext as EduWikiApplication
         setContentView(R.layout.activity_main)
-        initiateAndPopulateMap()
+        initiateAndPopulateFragmentsMap()
+
         toolbar = this.supportActionBar!!
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNavigation.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
 
         toolbar.title = "Home"
-        loadFragment(HomeFragment())
+        loadFragment(fragmentsMap["home"]!!)
     }
 
     val onNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_home -> {
-                toolbar.title = "Home"
-                toolbar.subtitle = ""
-                loadFragment(HomeFragment())
+                loadFragment(fragmentsMap["home"]!!)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_classes -> {
-                loadFragment(map["Class Collection"]!!)
+                loadFragment(fragmentsMap["class_collection"]!!)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_programmes -> {
-                loadFragment(map["Programme Collection"]!!)
+                loadFragment(fragmentsMap["programme_collection"]!!)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_courses -> {
-                loadFragment(map["Course Collection"]!!)
+                loadFragment(fragmentsMap["course_collection"]!!)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_organization -> {
-                loadFragment(map["Organization"]!!)
+                loadFragment(fragmentsMap["organization"]!!)
                 return@OnNavigationItemSelectedListener true
             }
         }
         false
     }
 
-    private fun initiateAndPopulateMap() {
-        map = HashMap()
-        map.put("Programme", ProgrammeFragment())
-        map.put("Course", CourseFragment())
-        map.put("Class", ClassFragment())
-        map.put("Organization", OrganizationFragment())
-        map.put("Exam", ExamFragment())
-        map.put("Work Assignment", WorkAssignmentFragment())
-        map.put("Class Collection", ClassCollectionFragment())
-        map.put("Course Collection", CourseCollectionFragment())
-        map.put("Programme Collection", ProgrammeCollectionFragment())
-        map.put("Course Class", CourseClassFragment())
+    private fun initiateAndPopulateFragmentsMap() {
+        fragmentsMap = hashMapOf(
+                "home" to HomeFragment(),
+                "programme" to ProgrammeFragment(),
+                "course" to CourseFragment(),
+                "class" to ClassFragment(),
+                "organization" to OrganizationFragment(),
+                "exam" to ExamFragment(),
+                "work_assignment" to WorkAssignmentFragment(),
+                "class_collection" to ClassCollectionFragment(),
+                "course_collection" to CourseCollectionFragment(),
+                "programme_collection" to ProgrammeCollectionFragment(),
+                "course_class" to CourseClassFragment()
+        )
     }
 
     fun <T> navigateToListItem(item: T, path: String?) {
-        val mFragment = map[item.toString()]
+        val mFragment = fragmentsMap[item.toString()]
         val mBundle = Bundle()
         if (path != null) {
             mBundle.putString("path", path)
@@ -187,21 +177,22 @@ class MainActivity : AppCompatActivity(), IDataComunication {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            //you have the permission now.
-            val container = DownloadFileContainer(url, applicationContext)
-           DownloadTask(container).execute(container)
-
-            /*val request = DownloadManager.Request(Uri.parse(url))
-            request.allowScanningByMediaScanner()
-            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-            request.setVisibleInDownloadsUi(true)
-            val filename = "exam.${type}"
-            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename)
-            val manager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-            val id = manager.enqueue(request)
-            //val myIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-            //startActivity(myIntent)*/
+            DownloadAsyncTask().execute(DownloadFileContainer(url, applicationContext))
         }
     }
+
+    fun downloadResource(sheetId: String) {
+        app.controller.actionHandler(
+                AppController.SPECIFIC_RESOURCE,
+                ResourceParametersContainer(
+                        activity = this,
+                        resourceId = sheetId,
+                        app = applicationContext as EduWikiApplication,
+                        successCb = { _ -> Toast.makeText(this, "Download Completed", Toast.LENGTH_LONG).show() },
+                        errorCb = { error -> Toast.makeText(this, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                )
+        )
+    }
+
 }
 

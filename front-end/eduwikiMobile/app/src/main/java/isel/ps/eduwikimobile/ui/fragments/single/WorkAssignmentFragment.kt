@@ -9,25 +9,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
-import android.widget.Toast.LENGTH_LONG
-import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
-import isel.ps.eduwikimobile.controller.AppController
 import isel.ps.eduwikimobile.domain.model.single.WorkAssignment
-import isel.ps.eduwikimobile.paramsContainer.ResourceParametersContainer
 import isel.ps.eduwikimobile.ui.IDataComunication
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 
 class WorkAssignmentFragment : Fragment() {
 
-    lateinit var app: EduWikiApplication
     lateinit var dataComunication: IDataComunication
     lateinit var workAssignment: WorkAssignment
+    lateinit var mainActivity: MainActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        app = activity.applicationContext as EduWikiApplication
+        mainActivity = activity as MainActivity
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -48,7 +43,6 @@ class WorkAssignmentFragment : Fragment() {
         val workAssignmentSupplement = view.findViewById<Button>(R.id.download_work_assignment_supplement)
         val workAssignmentSheet = view.findViewById<Button>(R.id.download_work_assignment_sheet)
 
-        val mainActivity = context as MainActivity
         mainActivity.toolbar.displayOptions = ActionBar.DISPLAY_SHOW_TITLE
         val title: String = dataComunication.getCourse()!!.shortName + "/" + dataComunication.getTerm()!!.shortName + "/" + "Work-Assignments"
         mainActivity.toolbar.title = title
@@ -57,66 +51,23 @@ class WorkAssignmentFragment : Fragment() {
         workAssignmentName.text = workAssignment.phase + "Work-Assignment"
         workAssignmentVotes.text = workAssignment.votes.toString()
         workAssignmentDueDate.text = workAssignment.dueDate
-        workAssignmentIndividual.text = if(workAssignment.individual) "Yes" else "No"
-        workAssignmentRequiresReport.text = if(workAssignment.requiresReport) "Yes" else "No"
-        workAssignmentMultipleDeliveries.text = if(workAssignment.multipleDeliveries) "Yes" else "No"
-        workAssignmentLateDelivery.text = if(workAssignment.lateDelivery) "Yes" else "No"
+        workAssignmentIndividual.text = if (workAssignment.individual) "Yes" else "No"
+        workAssignmentRequiresReport.text = if (workAssignment.requiresReport) "Yes" else "No"
+        workAssignmentMultipleDeliveries.text = if (workAssignment.multipleDeliveries) "Yes" else "No"
+        workAssignmentLateDelivery.text = if (workAssignment.lateDelivery) "Yes" else "No"
+
+        workAssignmentSheet.visibility = if (workAssignment.sheetId != null) View.VISIBLE else View.GONE
+        workAssignmentSupplement.visibility = if (workAssignment.supplementId != null) View.VISIBLE else View.GONE
 
         workAssignmentSupplement.setOnClickListener {
-            downloadWorkAssignmentSupplement(workAssignment.supplementId)
+            mainActivity.downloadResource(workAssignment.supplementId)
         }
 
         workAssignmentSheet.setOnClickListener {
-            downloadWorkAssignmentSheet(mainActivity, workAssignment.supplementId)
+            mainActivity.downloadResource(workAssignment.sheetId)
         }
 
         return view
-    }
-
-    private fun downloadWorkAssignmentSheet(activity: MainActivity, sheetId: String) {
-        AppController.actionHandler(
-                AppController.SPECIFIC_RESOURCE,
-                ResourceParametersContainer(
-                        activity = activity,
-                        resourceId = sheetId,
-                        app = activity.applicationContext as EduWikiApplication,
-                        successCb = { },
-                        errorCb = { error -> Toast.makeText(app, "Error" + error.message, LENGTH_LONG).show() }
-                )
-        )
-
-
-        //Toast.makeText(context, "Download", Toast.LENGTH_LONG).show()
-        /* val uri = Uri.parse(API_URL + "/resources/" + sheetId)
-         val req = DownloadManager.Request(uri)
-         req.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
-         req.setAllowedOverRoaming(false)
-         req.setTitle(exam.phase + exam.type)
-         req.setVisibleInDownloadsUi(true)
-         req.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, exam.phase + exam.type)
-
-         //if(ContextCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-
-         val activity = activity as MainActivity
-         activity.refId = activity.downloadManager.enqueue(req)
-         activity.resourceList.add(activity.refId!!)*/
-    }
-
-    private fun downloadWorkAssignmentSupplement(supplementId: String) {
-        Toast.makeText(context, "Download", Toast.LENGTH_LONG).show()
-        /* val uri = Uri.parse(API_URL + "/resources/" + sheetId)
-         val req = DownloadManager.Request(uri)
-         req.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
-         req.setAllowedOverRoaming(false)
-         req.setTitle(exam.phase + exam.type)
-         req.setVisibleInDownloadsUi(true)
-         req.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, exam.phase + exam.type)
-
-         //if(ContextCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-
-         val activity = activity as MainActivity
-         activity.refId = activity.downloadManager.enqueue(req)
-         activity.resourceList.add(activity.refId!!)*/
     }
 
     override fun onAttach(context: Context?) {

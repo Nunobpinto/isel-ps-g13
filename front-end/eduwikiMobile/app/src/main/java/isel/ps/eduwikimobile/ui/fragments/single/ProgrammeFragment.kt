@@ -20,22 +20,20 @@ import isel.ps.eduwikimobile.domain.model.single.Programme
 import isel.ps.eduwikimobile.ui.IDataComunication
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 
-class ProgrammeFragment : Fragment(){
+class ProgrammeFragment : Fragment() {
 
-    lateinit var app: EduWikiApplication
     lateinit var dataComunication: IDataComunication
+    lateinit var programme: Programme
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        app = activity.applicationContext as EduWikiApplication
+        val bundle: Bundle = arguments
+        programme = bundle.getParcelable<Programme>("item_selected")
+        dataComunication.setProgramme(programme)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.programme_details_fragment, container, false)
-
-        val bundle: Bundle = arguments
-        val programme = bundle.getParcelable<Programme>("item_selected")
-        dataComunication.setProgramme(programme)
 
         val viewPager = view.findViewById<ViewPager>(R.id.programme_view_pager)
         val tabLayout = view.findViewById<TabLayout>(R.id.programme_tab_layout)
@@ -61,8 +59,7 @@ class ProgrammeFragment : Fragment(){
 
         try {
             dataComunication = context as IDataComunication
-        }
-        catch (e: ClassCastException) {
+        } catch (e: ClassCastException) {
             throw ClassCastException(e.message)
         }
     }

@@ -7,7 +7,7 @@ import isel.ps.eduwikimobile.exceptions.AppException
 class LectureCollectionParametersContainer (
         val courseId: Int,
         val classId: Int,
-        val app: EduWikiApplication,
-        val successCb: (LectureCollection) -> Unit,
-        val errorCb: (AppException) -> Unit
-) : IParametersContainer
+        app: EduWikiApplication,
+        successCb: (LectureCollection) -> Unit,
+        errorCb: (AppException) -> Unit
+) : ParametersContainer<LectureCollection>(app, successCb, errorCb)

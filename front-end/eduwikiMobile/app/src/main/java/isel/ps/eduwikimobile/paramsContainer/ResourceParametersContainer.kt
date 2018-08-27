@@ -7,7 +7,7 @@ import isel.ps.eduwikimobile.ui.activities.MainActivity
 class ResourceParametersContainer (
         val activity: MainActivity,
         val resourceId: String,
-        val app: EduWikiApplication,
-        val successCb: () -> Unit,
-        val errorCb: (AppException) -> Unit
-) : IParametersContainer
+        app: EduWikiApplication,
+        successCb: (Unit) -> Unit,
+        errorCb: (AppException) -> Unit
+) : ParametersContainer<Unit>(app, successCb, errorCb)

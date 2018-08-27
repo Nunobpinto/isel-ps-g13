@@ -59,15 +59,15 @@ class CourseCollectionFragment : Fragment() {
     }
 
     private fun fetchCourseItems() {
-        AppController.actionHandler(
+        app.controller.actionHandler(
                 AppController.ALL_COURSES,
                 CourseCollectionParametersContainer(
                         app = activity.applicationContext as EduWikiApplication,
                         successCb = { courses ->
                             courseList.addAll(courses.courseList)
                             cAdapter.notifyDataSetChanged()
-                            recyclerView.visibility = View.VISIBLE;
-                            courses_progress_bar.visibility = View.GONE;
+                            recyclerView.visibility = View.VISIBLE
+                            courses_progress_bar.visibility = View.GONE
                         },
                         errorCb = { error -> Toast.makeText(app, "Error" + error.message, LENGTH_LONG).show() }
                 )

@@ -29,7 +29,7 @@ data class Course (
             parcel.readValue(Boolean::class.java.classLoader) as? Boolean,
             parcel.readValue(Int::class.java.classLoader) as? Int,
             parcel.readInt(),
-            TODO("timestamp")) {
+            parcel.readString()) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -44,6 +44,7 @@ data class Course (
         parcel.writeValue(optional)
         parcel.writeValue(credits)
         parcel.writeInt(votes)
+        parcel.writeString(timestamp)
     }
 
     override fun describeContents(): Int {
@@ -61,6 +62,7 @@ data class Course (
     }
 
     override fun toString(): String {
-        return "Course"
+        return "course"
     }
 }
+

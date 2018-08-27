@@ -15,5 +15,8 @@ interface IService {
     fun getAllCoursesOfSpecificClass(params: CoursesOfSpecificClassParametersContainer)
     fun getAllLecturesOfCourseClass(params: LectureCollectionParametersContainer)
     fun getAllHomeworksOfCourseClass(params: HomeworkCollectionParametersContainer)
-    fun getSpecificResource(params: ResourceParametersContainer)
+    fun getResourceFile(params: ResourceParametersContainer)
+    fun getFeedActions(params: ActionsFeedParametersContainer)
+    fun getUserFollowingItems(params: FollowingParametersContainer)
+    fun getActionEntity()
 }

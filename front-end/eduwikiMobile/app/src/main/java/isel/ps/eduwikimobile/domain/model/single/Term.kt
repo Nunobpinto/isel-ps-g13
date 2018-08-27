@@ -41,6 +41,6 @@ data class Term(
     }
 
     override fun toString(): String {
-        return shortName
+        return "term"
     }
 }

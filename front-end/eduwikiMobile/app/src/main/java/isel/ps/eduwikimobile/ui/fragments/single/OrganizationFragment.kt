@@ -29,17 +29,15 @@ class OrganizationFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.organization_fragment, container, false)
-
         fetchOrganizationInfo()
-
         return view
     }
 
     private fun fetchOrganizationInfo() {
-        AppController.actionHandler(
+        app.controller.actionHandler(
                 AppController.ORGANIZATION,
                 OrganizationParametersContainer(
-                        app = activity.applicationContext as EduWikiApplication,
+                        app = app,
                         successCb = { organization ->
                             organization_name.text = organization.fullName
                             organization_address.text = organization.address

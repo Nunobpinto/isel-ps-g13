@@ -102,11 +102,11 @@ class CourseFragment : Fragment() {
     }
 
     private fun getCourseTerms(courseId: Int) {
-        AppController.actionHandler(
+        app.controller.actionHandler(
                 AppController.TERMS_OF_COURSE,
                 TermCollectionParametersContainer(
                         courseId = courseId,
-                        app = activity.applicationContext as EduWikiApplication,
+                        app = app,
                         successCb = { terms ->
                             termList.addAll(terms.termList)
                             map[courseId] = terms.termList.toMutableList()

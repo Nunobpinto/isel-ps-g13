@@ -50,7 +50,6 @@ class LectureListAdapter (var context: Context, var list: MutableList<Lecture>) 
             location = itemView.findViewById(R.id.to_insert_lecture_location)
             begins = itemView.findViewById(R.id.to_insert_lecture_begins)
             duration = itemView.findViewById(R.id.to_insert_lecture_duration)
-
             itemView.setOnClickListener(this)
         }
 

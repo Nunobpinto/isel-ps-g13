@@ -53,6 +53,6 @@ data class Organization (
     }
 
     override fun toString(): String {
-        return "Organization"
+        return "organization"
     }
 }

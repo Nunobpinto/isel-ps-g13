@@ -59,6 +59,6 @@ data class CourseClass (
     }
 
     override fun toString(): String {
-        return "Course Class"
+        return "course_class"
     }
 }

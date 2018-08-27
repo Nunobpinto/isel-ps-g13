@@ -62,7 +62,7 @@ class ClassCollectionFragment : Fragment() {
     }
 
     private fun fetchClassItems() {
-        AppController.actionHandler(
+        app.controller.actionHandler(
                 AppController.ALL_CLASSES,
                 ClassCollectionParametersContainer(
                         app = activity.applicationContext as EduWikiApplication,

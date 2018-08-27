@@ -69,7 +69,7 @@ class ExamCollectionFragment : Fragment() {
     }
 
     private fun fetchExamItems(courseId: Int, termId: Int) {
-        AppController.actionHandler(
+        app.controller.actionHandler(
                 AppController.EXAMS,
                 ExamCollectionParametersContainer(
                         termId = termId,

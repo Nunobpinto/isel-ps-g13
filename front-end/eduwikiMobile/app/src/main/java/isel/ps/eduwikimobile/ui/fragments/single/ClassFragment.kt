@@ -63,12 +63,12 @@ class ClassFragment : Fragment() {
         return view
     }
 
-    fun fetchAllCoursesOfClass(classId: Int) {
-        AppController.actionHandler(
+    private fun fetchAllCoursesOfClass(classId: Int) {
+        app.controller.actionHandler(
                 AppController.ALL_COURSES_OF_SPECIFIC_CLASS,
                 CoursesOfSpecificClassParametersContainer(
                         classId = classId,
-                        app = activity.applicationContext as EduWikiApplication,
+                        app = app,
                         successCb = { courses ->
                             courseClassList.addAll(courses.courseClassList)
                             courseAdapter.notifyDataSetChanged()

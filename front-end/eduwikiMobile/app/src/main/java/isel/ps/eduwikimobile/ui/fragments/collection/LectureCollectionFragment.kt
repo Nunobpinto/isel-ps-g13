@@ -58,7 +58,7 @@ class LectureCollectionFragment: Fragment() {
     }
 
     private fun fetchLecturesOfCourseClass(courseId: Int, classId: Int) {
-        AppController.actionHandler(
+        app.controller.actionHandler(
                 AppController.ALL_LECTURES_OF_COURSE_CLASS,
                 LectureCollectionParametersContainer(
                         courseId = courseId,

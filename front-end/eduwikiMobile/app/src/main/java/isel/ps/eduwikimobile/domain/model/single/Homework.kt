@@ -53,6 +53,6 @@ data class Homework(
     }
 
     override fun toString(): String {
-        return "Homework"
+        return "homework"
     }
 }

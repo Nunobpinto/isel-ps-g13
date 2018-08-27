@@ -2,6 +2,7 @@ package isel.ps.eduwikimobile.ui.fragments.single
 
 import android.content.Context
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
 import android.support.v7.app.ActionBar
 import android.view.LayoutInflater
@@ -13,27 +14,30 @@ import android.widget.Toast
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.controller.AppController
+import isel.ps.eduwikimobile.domain.model.single.Course
 import isel.ps.eduwikimobile.domain.model.single.Exam
 import isel.ps.eduwikimobile.paramsContainer.ResourceParametersContainer
 import isel.ps.eduwikimobile.ui.IDataComunication
 import isel.ps.eduwikimobile.ui.activities.MainActivity
+
 class ExamFragment : Fragment() {
 
-    lateinit var app: EduWikiApplication
     lateinit var dataComunication: IDataComunication
     lateinit var exam: Exam
+    var course: Course? = null
+
+    lateinit var mainActivity: MainActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        app = activity.applicationContext as EduWikiApplication
+        mainActivity = activity as MainActivity
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.exam_details_fragment, container, false)
-
         val bundle: Bundle = arguments
-        exam = bundle.getParcelable<Exam>("item_selected")
-
+        exam = bundle.getParcelable("item_selected")
+        course = dataComunication.getCourse()
         dataComunication.setExam(exam)
 
         val examName = view.findViewById<TextView>(R.id.exam_details_name)
@@ -42,50 +46,26 @@ class ExamFragment : Fragment() {
         val examLocation = view.findViewById<TextView>(R.id.exam_location)
         val examSheet = view.findViewById<Button>(R.id.download_exam_sheet)
 
-        val mainActivity = context as MainActivity
         mainActivity.toolbar.displayOptions = ActionBar.DISPLAY_SHOW_TITLE
-        val title: String = dataComunication.getCourse()!!.shortName + "/" + dataComunication.getTerm()!!.shortName + "/" + "Exams"
-        mainActivity.toolbar.title = title
-        mainActivity.toolbar.subtitle = exam.createdBy
+        if (course != null) {
+            mainActivity.toolbar.title = course!!.shortName+"/"+dataComunication.getTerm()!!.shortName+"/"+"Exams"
+            mainActivity.toolbar.subtitle = exam.createdBy
+        }
+        else { //TODO pedido para obter o course
+            mainActivity.toolbar.title = "Exam"
+            mainActivity.toolbar.subtitle = exam.createdBy
+        }
 
         examName.text = exam.phase + " " + exam.type
         examVotes.text = exam.votes.toString()
         examDueDate.text = exam.dueDate
         examLocation.text = exam.location
+        examSheet.visibility = if (exam.sheetId != null) View.VISIBLE else View.GONE
 
         examSheet.setOnClickListener {
-            downloadExamSheet(exam.sheetId)
+            mainActivity.downloadResource(exam.sheetId)
         }
-
         return view
-    }
-
-    private fun downloadExamSheet(sheetId: String) {
-        /*AppController.actionHandler(
-                AppController.SPECIFIC_RESOURCE,
-                ResourceParametersContainer(
-                        activity = activity,
-                        resourceId = sheetId,
-                        app = activity.applicationContext as EduWikiApplication,
-                        successCb = { },
-                        errorCb = { error -> Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show() }
-                )
-        )*/
-
-        Toast.makeText(context, "Download", Toast.LENGTH_LONG).show()
-       /* val uri = Uri.parse(API_URL + "/resources/" + sheetId)
-        val req = DownloadManager.Request(uri)
-        req.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
-        req.setAllowedOverRoaming(false)
-        req.setTitle(exam.phase + exam.type)
-        req.setVisibleInDownloadsUi(true)
-        req.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, exam.phase + exam.type)
-
-        //if(ContextCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-
-        val activity = activity as MainActivity
-        activity.refId = activity.downloadManager.enqueue(req)
-        activity.resourceList.add(activity.refId!!)*/
     }
 
     override fun onAttach(context: Context?) {

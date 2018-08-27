@@ -56,7 +56,7 @@ class CourseCollectionOfSpecificProgrammeFragment : Fragment() {
     }
 
     private fun fetchCoursesOfProgramme(programmeId: Int) {
-        AppController.actionHandler(
+        app.controller.actionHandler(
                 AppController.ALL_COURSES_OF_SPECIFIC_PROGRAMME,
                 CourseProgrammeCollectionParametersContainer(
                         programmeId = programmeId,

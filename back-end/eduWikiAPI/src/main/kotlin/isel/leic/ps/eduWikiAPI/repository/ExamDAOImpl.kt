@@ -346,7 +346,7 @@ class ExamDAOImpl : ExamDAO {
                         "C.$COURSE_MISC_UNIT_TERM_ID " +
                         "FROM :schema.$EXAM_TABLE AS E " +
                         "INNER JOIN :schema.$COURSE_MISC_UNIT_TABLE AS C " +
-                        "ON E.$EXAM_ID = C.$COURSE_MISC_UNIT_ID" +
+                        "ON E.$EXAM_ID = C.$COURSE_MISC_UNIT_ID " +
                         "WHERE C.$COURSE_MISC_UNIT_COURSE_ID = :courseId " +
                         "AND C.$COURSE_MISC_UNIT_TERM_ID = :termId " +
                         "AND C.$COURSE_MISC_UNIT_ID = :examId"

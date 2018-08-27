@@ -15,6 +15,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.widget.ProgressBar
 import isel.ps.eduwikimobile.adapters.ProgrammeListAdapter
+import isel.ps.eduwikimobile.domain.model.collection.ProgrammeCollection
 import isel.ps.eduwikimobile.domain.model.single.Programme
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 import kotlinx.android.synthetic.main.programme_collection_fragment.*
@@ -25,6 +26,11 @@ class ProgrammeCollectionFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var programmeList: MutableList<Programme>
     private lateinit var pAdapter: ProgrammeListAdapter
+
+    companion object {
+        val type = ProgrammeCollection::class.java
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +64,7 @@ class ProgrammeCollectionFragment : Fragment() {
     }
 
     private fun fetchProgrammeItems() {
-        AppController.actionHandler(
+        app.controller.actionHandler(
                 AppController.ALL_PROGRAMMES,
                 ProgrammeCollectionParametersContainer(
                         app = activity.applicationContext as EduWikiApplication,

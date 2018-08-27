@@ -64,7 +64,7 @@ class WorkAssignmentCollectionFragment : Fragment() {
 
 
     private fun fetchWorkAssignmentItems(courseId: Int, termId: Int) {
-        AppController.actionHandler(
+        app.controller.actionHandler(
                 AppController.WORK_ASSIGNMENTS,
                 WorkAssignmentCollectionParametersContainer(
                         termId = termId,

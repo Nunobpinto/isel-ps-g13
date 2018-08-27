@@ -53,6 +53,6 @@ data class Lecture (
     }
 
     override fun toString(): String {
-        return "Lecture"
+        return "lecture"
     }
 }

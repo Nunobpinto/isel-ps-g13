@@ -1,30 +1,27 @@
-package isel.ps.eduwikimobile
+package isel.ps.eduwikimobile.comms
 
 import android.app.DownloadManager
 import android.content.Context
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Environment
-import android.widget.Toast
 import isel.ps.eduwikimobile.paramsContainer.DownloadFileContainer
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 
-class DownloadTask(
-        val container: DownloadFileContainer
-) : AsyncTask<DownloadFileContainer, Int, String>() {
+class DownloadAsyncTask : AsyncTask<DownloadFileContainer, Int, String>() {
 
     override fun doInBackground(vararg objs: DownloadFileContainer): String {
         val urlRequest: URL
-        var filename: String = ""
+        var filename = ""
         try {
             urlRequest = URL(objs[0].url)
             val con = urlRequest.openConnection() as HttpURLConnection
-            con.setInstanceFollowRedirects(false)
+            con.instanceFollowRedirects = false
             con.connect()
-            val content = con.getHeaderField("Content-Disposition");
-            val contentSplit = content.split("filename=");
+            val contentDispositionHeader = con.getHeaderField("Content-Disposition")
+            val contentSplit = contentDispositionHeader.split("filename=")
             filename = contentSplit[1].replace("filename=", "").replace("\"", "").trim()
             val request = DownloadManager.Request(Uri.parse(objs[0].url))
             request.allowScanningByMediaScanner()
@@ -44,6 +41,6 @@ class DownloadTask(
     }
 
     override fun onPostExecute(result: String) {
-        Toast.makeText(container.ctx, "File Downloaded", Toast.LENGTH_LONG).show()
+        super.onPostExecute(result)
     }
 }

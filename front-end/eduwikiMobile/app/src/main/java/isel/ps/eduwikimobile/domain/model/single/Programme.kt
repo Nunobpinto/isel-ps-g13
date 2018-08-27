@@ -55,7 +55,7 @@ data class Programme (
         }
     }
     override fun toString(): String {
-        return "Programme"
+        return "programme"
     }
 
 }

@@ -65,7 +65,7 @@ class ClassCollectionOfSpecificCourseFragment : Fragment() {
 
 
     private fun fetchClassesOfCourse(courseId: Int, termId: Int) {
-        AppController.actionHandler(
+        app.controller.actionHandler(
                 AppController.ALL_CLASSES_OF_SPECIFIC_COURSE,
                 CourseClassCollectionParametersContainer(
                         termId = termId,
@@ -74,8 +74,8 @@ class ClassCollectionOfSpecificCourseFragment : Fragment() {
                         successCb = { classes ->
                             classesOfSpecificCourseList.addAll(classes.classList)
                             classAdapter.notifyDataSetChanged()
-                            recyclerView.visibility = View.VISIBLE;
-                            classes_progress_bar.visibility = View.GONE;
+                            recyclerView.visibility = View.VISIBLE
+                            classes_progress_bar.visibility = View.GONE
                         },
                         errorCb = { error -> Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show() }
                 )

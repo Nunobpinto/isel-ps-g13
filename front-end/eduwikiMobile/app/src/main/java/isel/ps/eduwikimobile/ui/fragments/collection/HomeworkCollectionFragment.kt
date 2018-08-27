@@ -59,7 +59,7 @@ class HomeworkCollectionFragment: Fragment() {
     }
 
     private fun fetchHomeworksOfCourseClass(courseId: Int, classId: Int) {
-        AppController.actionHandler(
+        app.controller.actionHandler(
                 AppController.ALL_HOMEWORKS_OF_COURSE_CLASS,
                 HomeworkCollectionParametersContainer(
                         courseId = courseId,

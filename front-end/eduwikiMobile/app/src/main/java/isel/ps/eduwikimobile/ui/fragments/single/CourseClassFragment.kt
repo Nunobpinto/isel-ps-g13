@@ -19,12 +19,10 @@ import isel.ps.eduwikimobile.ui.activities.MainActivity
 
 class CourseClassFragment : Fragment() {
 
-    lateinit var app: EduWikiApplication
     lateinit var dataComunication: IDataComunication
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        app = activity.applicationContext as EduWikiApplication
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
