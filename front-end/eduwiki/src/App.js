@@ -16,7 +16,7 @@ import Home from './components/home/Home'
 import Logout from './components/auth/Logout'
 import CourseClass from './components/classes/CourseClass'
 import ProtectedRoute from './components/auth/ProtectedRoute'
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom'
 
 export default () => (
   <div>
@@ -38,6 +38,7 @@ export default () => (
         <ProtectedRoute exact path='/logout' component={Logout} />
         <ProtectedRoute exact path='/user' component={Profile} />
         <ProtectedRoute exact path='/users/:username' component={OtherUser} />
+        <Redirect from='*' to='/' />
       </Switch>
     </BrowserRouter>
   </div>

@@ -157,7 +157,7 @@ class UserServiceImpl : UserService {
         return toAuthUserOutputModel(user, reputation)
     }
 
-    override fun confirmUser(username: String, token: UUID): AuthUserOutputModel {
+    override fun confirmUser(username: String, token: UUID): String {
         val validationToken = tokenDAO.getToken(token)
                 .orElseThrow { NotFoundException("Invalid token", "Verify if the token is the same as the one in the email we sent") }
         val currentTimestamp = Timestamp.valueOf(LocalDateTime.now())
@@ -170,7 +170,7 @@ class UserServiceImpl : UserService {
 
         val role = reputationDAO.updateUserRole(username, ROLE_BEGINNER.minPoints, ROLE_BEGINNER.name)
         val userChanged = userDAO.confirmUser(username)
-        return toAuthUserOutputModel(userChanged, role)
+        return "User Confirmed!!"
     }
 
     override fun deleteUser(username: String): Int =
