@@ -7,7 +7,9 @@ export default class extends React.Component {
     super(props)
     this.state = {
       tenants: [],
-      pending: []
+      pending: [],
+      loadingTenants: true,
+      loadingPending: false
     }
   }
   render () {
@@ -16,6 +18,7 @@ export default class extends React.Component {
         <h2>All existing Tenants</h2>
         <List
           bordered
+          loading={this.state.loadingTenants}
           dataSource={this.state.tenants}
           renderItem={item => (
             <List.Item>
@@ -29,6 +32,7 @@ export default class extends React.Component {
           footer={<div><Button onClick={() => this.props.history.push('/create-tenant')}>Petition to create Tenant</Button></div>}
           bordered
           dataSource={this.state.pending}
+          loading={this.state.loadingPending}
           renderItem={item => (
             <List.Item>
               <p>{item.fullName} ({item.shortName})</p>
@@ -56,7 +60,10 @@ export default class extends React.Component {
         }
         return resp.json()
       })
-      .then(json => this.setState({tenants: json.tenantList}))
+      .then(json => this.setState({
+        tenants: json.tenantList,
+        loadingTenants: false
+      }))
       .catch(() => message.error('Error fetching tenants'))
   }
   componentDidUpdate () {
@@ -76,6 +83,7 @@ export default class extends React.Component {
         })
         .then(json => this.setState({
           pending: json.pendingTenantList,
+          loadingPending: false,
           seePending: false,
           showPendingList: true
         }))

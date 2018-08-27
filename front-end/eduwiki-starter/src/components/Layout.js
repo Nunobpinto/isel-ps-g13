@@ -33,6 +33,29 @@ export default(props) => (
                 Create Tenant
           </Button>
         </Menu.Item>
+        {props.auth
+          ? <Menu.Item>
+            <Button
+              type='default'
+              ghost
+              onClick={() => {
+                props.history.push('/logout')
+              }}
+            >
+              Sign Out
+            </Button>
+          </Menu.Item>
+          : <Menu.Item>
+            <Button
+              type='default'
+              ghost
+              onClick={() => {
+                props.history.push('/login')
+              }}
+            >
+            Admin Login
+            </Button>
+          </Menu.Item>}
       </Menu>
     </Header>
     <Content style={{ padding: '2%' }}>
