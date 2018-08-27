@@ -214,29 +214,29 @@ insert into isel.lecture_version (lecture_id, lecture_version, created_by, weekd
 insert into isel.class_misc_unit (misc_type, course_class_id)
     values ('HOMEWORK', 1);
 
-insert into isel.homework (homework_id, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (4,'bruno',gen_random_uuid(), current_date, true, true, current_timestamp );
+insert into isel.homework (homework_id, created_by, homework_name, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
+    values (4,'bruno', 'TPC01',gen_random_uuid(), current_date, true, true, current_timestamp );
 
-insert into isel.homework_version (homework_id, homework_version, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (4, 1, 'bruno',gen_random_uuid(), current_date, true, true, current_timestamp );
+insert into isel.homework_version (homework_id, homework_version, homework_name, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
+    values (4, 1, 'TPC01', 'bruno',gen_random_uuid(), current_date, true, true, current_timestamp );
 
 insert into isel.class_misc_unit (misc_type, course_class_id)
     values ('HOMEWORK', 2);
 
-insert into isel.homework (homework_id, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (5, 'ze', gen_random_uuid(),current_date, false , true , current_timestamp);
+insert into isel.homework (homework_id, created_by, homework_name, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
+    values (5, 'ze', 'TPC02', gen_random_uuid(),current_date, false , true , current_timestamp);
 
-insert into isel.homework_version (homework_id, homework_version, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (5, 1, 'ze', gen_random_uuid(),current_date, false , true , current_timestamp);
+insert into isel.homework_version (homework_id, homework_version, homework_name, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
+    values (5, 1, 'TPC02', 'ze', gen_random_uuid(),current_date, false , true , current_timestamp);
 
 insert into isel.class_misc_unit (misc_type, course_class_id)
     values ('HOMEWORK', 1);
 
-insert into isel.homework(homework_id, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (6, 'ze',gen_random_uuid(), current_date, true , true , current_timestamp);
+insert into isel.homework(homework_id, created_by, homework_name, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
+    values (6, 'ze', 'TPC03', gen_random_uuid(), current_date, true , true , current_timestamp);
 
-insert into isel.homework_version (homework_id, homework_version, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (6, 1, 'ze',gen_random_uuid(), current_date, true , true , current_timestamp);
+insert into isel.homework_version (homework_id, homework_version, homework_name, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
+    values (6, 1, 'TPC03', 'ze', gen_random_uuid(), current_date, true , true , current_timestamp);
 
 -- Student Insert
 

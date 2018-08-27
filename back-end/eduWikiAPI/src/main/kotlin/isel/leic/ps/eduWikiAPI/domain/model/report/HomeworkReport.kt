@@ -1,9 +1,7 @@
 package isel.leic.ps.eduWikiAPI.domain.model.report
 
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_CLASS_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_COURSE_ID
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_REPORTED_BY
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_REPORT_DUE_DATE
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_REPORT_HOMEWORK_ID
@@ -14,6 +12,7 @@ import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_REP
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_REPORT_LOG_ID
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_REPORT_TIMESTAMP
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_REPORT_VOTES
+import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_REPORT_NAME
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.sql.Timestamp
 import java.time.LocalDate
@@ -31,6 +30,8 @@ data class HomeworkReport (
         val courseId: Int = 0,
         @ColumnName(HOMEWORK_REPORT_LOG_ID)
         val logId: Int = 0,
+        @ColumnName(HOMEWORK_REPORT_NAME)
+        val homeworkName: String? = null,
         @ColumnName(HOMEWORK_REPORT_SHEET_ID)
         val sheetId: UUID? = null,
         @ColumnName(HOMEWORK_REPORT_DUE_DATE)

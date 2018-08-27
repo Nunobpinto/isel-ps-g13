@@ -1,15 +1,14 @@
 package isel.leic.ps.eduWikiAPI.domain.model;
 
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_CLASS_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_COURSE_ID
-import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.COURSE_CLASS_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_CREATED_BY
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_DUE_DATE
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_ID
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_LATE_DELIVERY
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_LOG_ID
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_MULTIPLE_DELIVERIES
+import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_NAME
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_SHEET_ID
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_TIMESTAMP
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_VERSION
@@ -27,6 +26,8 @@ data class Homework (
         val classId: Int = 0,
         @ColumnName(COURSE_CLASS_COURSE_ID)
         val courseId: Int = 0,
+        @ColumnName(HOMEWORK_NAME)
+        val homeworkName: String = "",
         @ColumnName(HOMEWORK_VERSION)
         val version: Int = 1,
         @ColumnName(HOMEWORK_LOG_ID)

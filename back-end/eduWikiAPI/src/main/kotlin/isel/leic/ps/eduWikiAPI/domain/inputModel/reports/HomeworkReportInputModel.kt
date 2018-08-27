@@ -10,6 +10,8 @@ class HomeworkReportInputModel (
         val dueDate: LocalDate? =null,
         @JsonProperty("late_delivery")
         val lateDelivery: Boolean? =null,
-        @JsonProperty("multipleDeliveries")
-        val multipleDeliveries: Boolean? = null
+        @JsonProperty("multiple_deliveries")
+        val multipleDeliveries: Boolean? = null,
+        @JsonProperty("homework_name")
+        val homeworkName: String? = null
 )

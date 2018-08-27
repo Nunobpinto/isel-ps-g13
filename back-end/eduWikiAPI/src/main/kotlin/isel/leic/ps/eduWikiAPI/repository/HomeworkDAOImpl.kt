@@ -40,6 +40,7 @@ class HomeworkDAOImpl : HomeworkDAO {
         const val HOMEWORK_REPORT_TABLE = "homework_report"
         // HOMEWORK FIELDS
         const val HOMEWORK_VERSION = "homework_version"
+        const val HOMEWORK_NAME = "homework_name"
         const val HOMEWORK_LOG_ID = "log_id"
         const val HOMEWORK_ID = "homework_id"
         const val HOMEWORK_SHEET_ID = "sheet_id"
@@ -51,6 +52,7 @@ class HomeworkDAOImpl : HomeworkDAO {
         const val HOMEWORK_CREATED_BY = "created_by"
         // HOMEWORK REPORT FIELDS
         const val HOMEWORK_REPORT_ID = "homework_report_id"
+        const val HOMEWORK_REPORT_NAME = "homework_name"
         const val HOMEWORK_REPORT_HOMEWORK_ID = "homework_id"
         const val HOMEWORK_REPORTED_BY = "reported_by"
         const val HOMEWORK_REPORT_LOG_ID = "log_id"
@@ -62,6 +64,7 @@ class HomeworkDAOImpl : HomeworkDAO {
         const val HOMEWORK_REPORT_TIMESTAMP = "time_stamp"
         // HOMEWORK STAGE FIELDS
         const val HOMEWORK_STAGE_ID = "homework_stage_id"
+        const val HOMEWORK_STAGE_NAME = "homework_name"
         const val HOMEWORK_STAGE_CREATED_BY = "created_by"
         const val HOMEWORK_STAGE_LOG_ID = "log_id"
         const val HOMEWORK_STAGE_SHEET_ID = "sheet_id"
@@ -73,6 +76,7 @@ class HomeworkDAOImpl : HomeworkDAO {
         // HOMEWORK VERSION FIELDS
         const val HOMEWORK_VERSION_ID = "homework_version"
         const val HOMEWORK_VERSION_HOMEWORK_ID = "homework_id"
+        const val HOMEWORK_VERSION_NAME = "homework_name"
         const val HOMEWORK_VERSION_SHEET_ID = "sheet_id"
         const val HOMEWORK_VERSION_DUE_DATE = "due_date"
         const val HOMEWORK_VERSION_LATE_DELIVERY = "late_delivery"
@@ -158,6 +162,7 @@ class HomeworkDAOImpl : HomeworkDAO {
 
         @SqlQuery(
                 "SELECT H.$HOMEWORK_ID, " +
+                        "H.$HOMEWORK_NAME, " +
                         "H.$HOMEWORK_VERSION, " +
                         "H.$HOMEWORK_CREATED_BY, " +
                         "H.$HOMEWORK_SHEET_ID, " +
@@ -180,6 +185,7 @@ class HomeworkDAOImpl : HomeworkDAO {
 
         @SqlQuery(
                 "SELECT H.$HOMEWORK_ID, " +
+                        "H.$HOMEWORK_NAME, " +
                         "H.$HOMEWORK_VERSION, " +
                         "H.$HOMEWORK_CREATED_BY, " +
                         "H.$HOMEWORK_SHEET_ID, " +
@@ -204,6 +210,7 @@ class HomeworkDAOImpl : HomeworkDAO {
         @SqlUpdate(
                 "INSERT INTO :schema.$HOMEWORK_TABLE ( " +
                         "$HOMEWORK_ID, " +
+                        "$HOMEWORK_NAME, " +
                         "$HOMEWORK_VERSION, " +
                         "$HOMEWORK_CREATED_BY, " +
                         "$HOMEWORK_SHEET_ID, " +
@@ -213,7 +220,7 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "$HOMEWORK_VOTES, " +
                         "$HOMEWORK_TIMESTAMP " +
                         ") " +
-                        "VALUES (:classMiscUnitId, :homework.version, :homework.createdBy, " +
+                        "VALUES (:classMiscUnitId, :homework.homeworkName, :homework.version, :homework.createdBy, " +
                         ":homework.sheetId, :homework.dueDate, :homework.lateDelivery, " +
                         ":homework.multipleDeliveries, :homework.votes, :homework.timestamp)"
         )
@@ -244,6 +251,7 @@ class HomeworkDAOImpl : HomeworkDAO {
 
         @SqlQuery(
                 "SELECT H.$HOMEWORK_STAGE_ID, " +
+                        "H.$HOMEWORK_STAGE_NAME, " +
                         "H.$HOMEWORK_STAGE_SHEET_ID, " +
                         "H.$HOMEWORK_STAGE_DUE_DATE, " +
                         "H.$HOMEWORK_STAGE_LATE_DELIVERY, " +
@@ -265,6 +273,7 @@ class HomeworkDAOImpl : HomeworkDAO {
 
         @SqlQuery(
                 "SELECT H.$HOMEWORK_STAGE_ID, " +
+                        "H.$HOMEWORK_STAGE_NAME, " +
                         "H.$HOMEWORK_STAGE_SHEET_ID, " +
                         "H.$HOMEWORK_STAGE_DUE_DATE, " +
                         "H.$HOMEWORK_STAGE_LATE_DELIVERY, " +
@@ -288,6 +297,7 @@ class HomeworkDAOImpl : HomeworkDAO {
         @SqlUpdate(
                 "INSERT INTO :schema.$HOMEWORK_STAGE_TABLE ( " +
                         "$HOMEWORK_STAGE_ID, " +
+                        "$HOMEWORK_STAGE_NAME, " +
                         "$HOMEWORK_STAGE_SHEET_ID, " +
                         "$HOMEWORK_STAGE_DUE_DATE, " +
                         "$HOMEWORK_STAGE_LATE_DELIVERY, " +
@@ -296,7 +306,7 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "$HOMEWORK_STAGE_VOTES," +
                         "$HOMEWORK_STAGE_CREATED_BY " +
                         ") " +
-                        "VALUES(:stagedClassMiscUnitId, :homeworkStage.sheetId, :homeworkStage.dueDate, " +
+                        "VALUES(:stagedClassMiscUnitId, :homeworkStage.homeworkName, :homeworkStage.sheetId, :homeworkStage.dueDate, " +
                         ":homeworkStage.lateDelivery, :homeworkStage.multipleDeliveries, :homeworkStage.timestamp, " +
                         ":homeworkStage.votes, :homeworkStage.createdBy)"
         )
@@ -315,6 +325,7 @@ class HomeworkDAOImpl : HomeworkDAO {
         @SqlUpdate(
                 "INSERT INTO :schema.$HOMEWORK_VERSION_TABLE ( " +
                         "$HOMEWORK_VERSION_HOMEWORK_ID, " +
+                        "$HOMEWORK_VERSION_NAME, " +
                         "$HOMEWORK_VERSION_ID, " +
                         "$HOMEWORK_VERSION_CREATED_BY, " +
                         "$HOMEWORK_VERSION_SHEET_ID, " +
@@ -323,7 +334,7 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "$HOMEWORK_VERSION_MULTIPLE_DELIVERIES, " +
                         "$HOMEWORK_VERSION_TIMESTAMP " +
                         ") " +
-                        "VALUES (:homeworkVersion.homeworkId, :homeworkVersion.version, :homeworkVersion.createdBy, " +
+                        "VALUES (:homeworkVersion.homeworkId, :homeworkVersion.homeworkName :homeworkVersion.version, :homeworkVersion.createdBy, " +
                         ":homeworkVersion.sheetId, :homeworkVersion.dueDate, :homeworkVersion.lateDelivery, " +
                         ":homeworkVersion.multipleDeliveries, :homeworkVersion.timestamp)"
         )
@@ -341,6 +352,7 @@ class HomeworkDAOImpl : HomeworkDAO {
         @SqlQuery(
                 "SELECT H.$HOMEWORK_REPORT_ID, " +
                         "H.$HOMEWORK_REPORT_HOMEWORK_ID, " +
+                        "H.$HOMEWORK_REPORT_NAME, " +
                         "H.$HOMEWORK_REPORT_SHEET_ID, " +
                         "H.$HOMEWORK_REPORT_DUE_DATE, " +
                         "H.$HOMEWORK_REPORT_LATE_DELIVERY, " +
@@ -364,6 +376,7 @@ class HomeworkDAOImpl : HomeworkDAO {
         @SqlQuery(
                 "SELECT H.$HOMEWORK_REPORT_ID, " +
                         "H.$HOMEWORK_REPORT_HOMEWORK_ID, " +
+                        "H.$HOMEWORK_REPORT_NAME, " +
                         "H.$HOMEWORK_REPORT_SHEET_ID, " +
                         "H.$HOMEWORK_REPORT_DUE_DATE, " +
                         "H.$HOMEWORK_REPORT_LATE_DELIVERY, " +
@@ -388,6 +401,7 @@ class HomeworkDAOImpl : HomeworkDAO {
         @SqlUpdate(
                 "INSERT INTO :schema.$HOMEWORK_REPORT_TABLE ( " +
                         "$HOMEWORK_REPORT_HOMEWORK_ID, " +
+                        "$HOMEWORK_REPORT_NAME, " +
                         "$HOMEWORK_REPORT_SHEET_ID, " +
                         "$HOMEWORK_REPORT_DUE_DATE, " +
                         "$HOMEWORK_REPORT_LATE_DELIVERY, " +
@@ -396,7 +410,7 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "$HOMEWORK_REPORT_VOTES, " +
                         "$HOMEWORK_REPORT_TIMESTAMP " +
                         ") " +
-                        "VALUES (:homeworkReport.homeworkId, :homeworkReport.sheetId, :homeworkReport.dueDate, " +
+                        "VALUES (:homeworkReport.homeworkId, :homeworkReport.homeworkName, :homeworkReport.sheetId, :homeworkReport.dueDate, " +
                         ":homeworkReport.lateDelivery, :homeworkReport.multipleDeliveries, " +
                         ":homeworkReport.reportedBy, :homeworkReport.votes, :homeworkReport.timestamp)"
         )
@@ -406,6 +420,7 @@ class HomeworkDAOImpl : HomeworkDAO {
         @SqlUpdate(
                 "UPDATE :schema.$HOMEWORK_TABLE SET " +
                         "$HOMEWORK_VERSION = :homework.version, " +
+                        "$HOMEWORK_NAME = :homework.homeworkName" +
                         "$HOMEWORK_CREATED_BY = :homework.createdBy, " +
                         "$HOMEWORK_SHEET_ID = :homework.sheetId, " +
                         "$HOMEWORK_DUE_DATE = :homework.dueDate, " +
@@ -440,6 +455,7 @@ class HomeworkDAOImpl : HomeworkDAO {
         @SqlQuery(
                 "SELECT H.$HOMEWORK_VERSION_ID, " +
                         "H.$HOMEWORK_VERSION_HOMEWORK_ID, " +
+                        "H.$HOMEWORK_VERSION_NAME, " +
                         "H.$HOMEWORK_VERSION_CREATED_BY, " +
                         "H.$HOMEWORK_VERSION_SHEET_ID, " +
                         "H.$HOMEWORK_VERSION_DUE_DATE, " +
@@ -457,6 +473,7 @@ class HomeworkDAOImpl : HomeworkDAO {
         @SqlQuery(
                 "SELECT H.$HOMEWORK_VERSION_ID, " +
                         "H.$HOMEWORK_VERSION_HOMEWORK_ID, " +
+                        "H.$HOMEWORK_VERSION_NAME, " +
                         "H.$HOMEWORK_VERSION_CREATED_BY, " +
                         "H.$HOMEWORK_VERSION_SHEET_ID, " +
                         "H.$HOMEWORK_VERSION_DUE_DATE, " +
@@ -474,6 +491,7 @@ class HomeworkDAOImpl : HomeworkDAO {
 
         @SqlQuery(
                 "SELECT H.$HOMEWORK_ID, " +
+                        "H.$HOMEWORK_NAME, " +
                         "H.$HOMEWORK_VERSION, " +
                         "H.$HOMEWORK_CREATED_BY, " +
                         "H.$HOMEWORK_SHEET_ID, " +
@@ -497,6 +515,7 @@ class HomeworkDAOImpl : HomeworkDAO {
         @SqlQuery(
                 "SELECT H.$HOMEWORK_REPORT_ID, " +
                         "H.$HOMEWORK_REPORT_HOMEWORK_ID, " +
+                        "H.$HOMEWORK_REPORT_NAME, " +
                         "H.$HOMEWORK_REPORT_SHEET_ID, " +
                         "H.$HOMEWORK_REPORT_DUE_DATE, " +
                         "H.$HOMEWORK_REPORT_LATE_DELIVERY, " +
@@ -518,6 +537,7 @@ class HomeworkDAOImpl : HomeworkDAO {
 
         @SqlQuery(
                 "SELECT H.$HOMEWORK_STAGE_ID, " +
+                        "H.$HOMEWORK_STAGE_NAME, " +
                         "H.$HOMEWORK_STAGE_SHEET_ID, " +
                         "H.$HOMEWORK_STAGE_DUE_DATE, " +
                         "H.$HOMEWORK_STAGE_LATE_DELIVERY, " +

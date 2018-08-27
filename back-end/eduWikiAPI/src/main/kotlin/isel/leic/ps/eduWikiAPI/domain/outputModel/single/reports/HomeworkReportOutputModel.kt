@@ -8,6 +8,7 @@ import java.util.*
 data class HomeworkReportOutputModel (
         val reportId: Int = -1,
         val homeworkId: Int = 0,
+        val homeworkName: String? = null,
         val sheetId: UUID? = null,
         val dueDate: LocalDate? = null,
         val lateDelivery: Boolean? = null,

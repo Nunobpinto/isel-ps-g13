@@ -9,6 +9,7 @@ import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_STA
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_STAGE_SHEET_ID
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_STAGE_ID
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_STAGE_LOG_ID
+import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_STAGE_NAME
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_STAGE_TIMESTAMP
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_STAGE_VOTES
 import org.jdbi.v3.core.mapper.reflect.ColumnName
@@ -26,6 +27,8 @@ data class HomeworkStage (
         val courseId: Int = 0,
         @ColumnName(HOMEWORK_STAGE_LOG_ID)
         val logId: Int = -1,
+        @ColumnName(HOMEWORK_STAGE_NAME)
+        val homeworkName: String = "",
         @ColumnName(HOMEWORK_STAGE_SHEET_ID)
         val sheetId: UUID? = UUID.randomUUID(),
         @ColumnName(HOMEWORK_STAGE_DUE_DATE)

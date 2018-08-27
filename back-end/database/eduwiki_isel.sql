@@ -190,7 +190,8 @@ CREATE TABLE IF NOT EXISTS isel.lecture (
 
 CREATE TABLE IF NOT EXISTS isel.homework (
   homework_id INTEGER REFERENCES isel.class_misc_unit ON DELETE CASCADE,
-  homework_version INTEGER NOT NULL DEFAULT 1,  
+  homework_version INTEGER NOT NULL DEFAULT 1,
+  homework_name VARCHAR(20) NOT NULL,  
   created_by VARCHAR(20) NOT NULL,
   sheet_id UUID,
   due_date DATE NOT NULL,
@@ -386,6 +387,7 @@ CREATE TABLE IF NOT EXISTS isel.lecture_stage (
 CREATE TABLE IF NOT EXISTS isel.homework_stage (
   homework_stage_id INTEGER REFERENCES isel.class_misc_unit_stage ON DELETE CASCADE,
   sheet_id UUID,
+  homework_name VARCHAR(20) NOT NULL,
   due_date DATE NOT NULL,
   late_delivery BOOLEAN NOT NULL,
   multiple_deliveries BOOLEAN NOT NULL,
@@ -534,6 +536,7 @@ CREATE TABLE IF NOT EXISTS isel.lecture_report (
 CREATE TABLE IF NOT EXISTS isel.homework_report (
   homework_report_id SERIAL,
   homework_id INTEGER REFERENCES isel.class_misc_unit ON DELETE CASCADE,
+  homework_name VARCHAR(20),
   sheet_id UUID,
   due_date DATE,
   late_delivery BOOLEAN,
@@ -662,6 +665,7 @@ CREATE TABLE IF NOT EXISTS isel.homework_version (
   homework_id INTEGER,
   homework_version INTEGER,
   sheet_id UUID,
+  homework_name VARCHAR(20) NOT NULL,
   due_date DATE NOT NULL,
   created_by VARCHAR(20) NOT NULL,
   late_delivery BOOLEAN NOT NULL,

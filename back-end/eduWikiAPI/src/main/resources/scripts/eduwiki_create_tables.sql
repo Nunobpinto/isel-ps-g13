@@ -188,6 +188,7 @@ CREATE TABLE IF NOT EXISTS <schema>.lecture (
 CREATE TABLE IF NOT EXISTS <schema>.homework (
   homework_id INTEGER REFERENCES <schema>.class_misc_unit ON DELETE CASCADE,
   homework_version INTEGER NOT NULL DEFAULT 1,
+  homework_name VARCHAR(20) NOT NULL,
   created_by VARCHAR(20) NOT NULL,
   sheet_id UUID,
   due_date DATE NOT NULL,
@@ -383,6 +384,7 @@ CREATE TABLE IF NOT EXISTS <schema>.lecture_stage (
 CREATE TABLE IF NOT EXISTS <schema>.homework_stage (
   homework_stage_id INTEGER REFERENCES <schema>.class_misc_unit_stage ON DELETE CASCADE,
   sheet_id UUID,
+  homework_name VARCHAR(20) NOT NULL,
   due_date DATE NOT NULL,
   late_delivery BOOLEAN NOT NULL,
   multiple_deliveries BOOLEAN NOT NULL,
@@ -531,6 +533,7 @@ CREATE TABLE IF NOT EXISTS <schema>.lecture_report (
 CREATE TABLE IF NOT EXISTS <schema>.homework_report (
   homework_report_id SERIAL,
   homework_id INTEGER REFERENCES <schema>.class_misc_unit ON DELETE CASCADE,
+  homework_name VARCHAR(20),
   sheet_id UUID,
   due_date DATE,
   late_delivery BOOLEAN,
@@ -658,6 +661,7 @@ CREATE TABLE IF NOT EXISTS <schema>.lecture_version (
 CREATE TABLE IF NOT EXISTS <schema>.homework_version (
   homework_id INTEGER,
   homework_version INTEGER,
+  homework_name VARCHAR(20) NOT NULL,
   sheet_id UUID,
   due_date DATE NOT NULL,
   created_by VARCHAR(20) NOT NULL,

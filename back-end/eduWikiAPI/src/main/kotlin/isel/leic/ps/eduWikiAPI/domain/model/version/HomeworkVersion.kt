@@ -8,6 +8,7 @@ import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_VER
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_VERSION_SHEET_ID
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_VERSION_TIMESTAMP
 import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_VERSION_ID
+import isel.leic.ps.eduWikiAPI.repository.HomeworkDAOImpl.Companion.HOMEWORK_VERSION_NAME
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.sql.Timestamp
 import java.time.LocalDate
@@ -21,6 +22,8 @@ data class HomeworkVersion(
         val homeworkId: Int = 0,
         @ColumnName(HOMEWORK_VERSION_SHEET_ID)
         val sheetId: UUID? = UUID.randomUUID(),
+        @ColumnName(HOMEWORK_VERSION_NAME)
+        val homeworkName: String = "",
         @ColumnName(HOMEWORK_VERSION_DUE_DATE)
         val dueDate: LocalDate = LocalDate.now(),
         @ColumnName(HOMEWORK_VERSION_CREATED_BY)
