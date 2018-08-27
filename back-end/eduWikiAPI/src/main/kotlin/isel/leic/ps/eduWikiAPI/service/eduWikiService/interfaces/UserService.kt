@@ -56,7 +56,7 @@ interface UserService {
 
     fun confirmUser(username: String, token: UUID): AuthUserOutputModel
 
-    fun getUserFeed(principal: Principal): Any
+    fun getUserFeed(principal: Principal): UserActionCollectionOutputModel
 
     fun getUserReputation(principal: Principal): UserReputationCollectionOutputModel
 

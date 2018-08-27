@@ -92,7 +92,7 @@ fun Organization.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutpu
         action_type = actionLog.actionType.name,
         action_user = actionLog.user,
         entity_type = actionLog.entity,
-        entity_link = "/organization",
+        entity_link = "organization",
         timestamp = actionLog.timestamp
 )
 
@@ -100,6 +100,6 @@ fun OrganizationReport.toUserActionOutputModel(actionLog: ActionLog) = UserActio
         action_type = actionLog.actionType.name,
         action_user = actionLog.user,
         entity_type = actionLog.entity,
-        entity_link = "/organization/reports/$reportId",
+        entity_link = "organization/reports/$reportId",
         timestamp = actionLog.timestamp
 )

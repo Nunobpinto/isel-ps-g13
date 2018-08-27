@@ -12,6 +12,7 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.ExamOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ExamCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.ExamReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.ExamVersionCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserActionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.ExamReportOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.ExamStageOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.ExamVersionOutputModel
@@ -128,7 +129,7 @@ fun toExamVersionCollectionOutputModel(examVersionList: List<ExamVersionOutputMo
         examVersionList = examVersionList
 )
 
-fun Exam.toUserActionOutputModel(actionLog: ActionLog) = isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserActionOutputModel(
+fun Exam.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
         action_user = actionLog.user,
         entity_type = actionLog.entity,
@@ -136,7 +137,7 @@ fun Exam.toUserActionOutputModel(actionLog: ActionLog) = isel.leic.ps.eduWikiAPI
         timestamp = actionLog.timestamp
 )
 
-fun ExamReport.toUserActionOutputModel(actionLog: ActionLog) = isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserActionOutputModel(
+fun ExamReport.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
         action_user = actionLog.user,
         entity_type = actionLog.entity,
@@ -144,7 +145,7 @@ fun ExamReport.toUserActionOutputModel(actionLog: ActionLog) = isel.leic.ps.eduW
         timestamp = actionLog.timestamp
 )
 
-fun ExamStage.toUserActionOutputModel(actionLog: ActionLog) = isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserActionOutputModel(
+fun ExamStage.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
         action_type = actionLog.actionType.name,
         action_user = actionLog.user,
         entity_type = actionLog.entity,

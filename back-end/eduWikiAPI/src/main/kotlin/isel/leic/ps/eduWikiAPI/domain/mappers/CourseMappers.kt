@@ -109,7 +109,7 @@ fun Course.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel
         action_type = actionLog.actionType.name,
         action_user = actionLog.user,
         entity_type = actionLog.entity,
-        entity_link = "/courses/$courseId",
+        entity_link = "courses/$courseId",
         timestamp = actionLog.timestamp
 )
 
@@ -117,7 +117,7 @@ fun CourseStage.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutput
         action_type = actionLog.actionType.name,
         action_user = actionLog.user,
         entity_type = actionLog.entity,
-        entity_link = "/courses/stage/$stageId",
+        entity_link = "courses/stage/$stageId",
         timestamp = actionLog.timestamp
 )
 
@@ -125,6 +125,6 @@ fun CourseReport.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutpu
         action_type = actionLog.actionType.name,
         action_user = actionLog.user,
         entity_type = actionLog.entity,
-        entity_link = "/courses/$courseId/reports/$reportId",
+        entity_link = "courses/$courseId/reports/$reportId",
         timestamp = actionLog.timestamp
 )
