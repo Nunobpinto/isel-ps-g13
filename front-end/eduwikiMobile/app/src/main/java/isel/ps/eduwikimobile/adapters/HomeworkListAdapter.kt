@@ -8,13 +8,18 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.TextView
+import android.widget.Toast
+import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
+import isel.ps.eduwikimobile.controller.AppController
 import isel.ps.eduwikimobile.domain.model.single.Homework
+import isel.ps.eduwikimobile.paramsContainer.ResourceParametersContainer
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 
 class HomeworkListAdapter(var context: Context, var list: MutableList<Homework>) : RecyclerView.Adapter<HomeworkListAdapter.ListViewHolder>() {
 
     var mainActivity: MainActivity = context as MainActivity
+    var app: EduWikiApplication = mainActivity.applicationContext as EduWikiApplication
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ListViewHolder {
         val view: View = LayoutInflater.from(parent!!.context).inflate(R.layout.homework_item_row, parent, false)
@@ -65,7 +70,16 @@ class HomeworkListAdapter(var context: Context, var list: MutableList<Homework>)
             homeworkSheet.visibility = if (item.sheetId != null) View.VISIBLE else View.GONE
 
             homeworkSheet.setOnClickListener {
-                mainActivity.downloadResource(item.sheetId)
+                app.controller.actionHandler(
+                        AppController.SPECIFIC_RESOURCE,
+                        ResourceParametersContainer(
+                                activity = mainActivity,
+                                resourceId = item.sheetId,
+                                app = app,
+                                successCb = { _ -> Toast.makeText(mainActivity, "Download Completed", Toast.LENGTH_LONG).show() },
+                                errorCb = { error -> Toast.makeText(mainActivity, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                        )
+                )
             }
         }
 

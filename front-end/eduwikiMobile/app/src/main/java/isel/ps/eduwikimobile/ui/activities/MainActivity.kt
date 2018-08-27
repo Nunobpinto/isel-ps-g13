@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity(), IDataComunication {
 
     lateinit var toolbar: ActionBar
     lateinit var fragmentsMap: HashMap<String, Fragment>
-    lateinit var app: EduWikiApplication
     var actualProgramme: Programme? = null
     var actualCourse: Course? = null
     var actualClass: Class? = null
@@ -37,11 +36,11 @@ class MainActivity : AppCompatActivity(), IDataComunication {
     var actualCourseClass: CourseClass? = null
     var actualLecture: Lecture? = null
     var actualHomework: Homework? = null
-    lateinit var url: String
+
+    lateinit var url: String //TODO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        app = this.applicationContext as EduWikiApplication
         setContentView(R.layout.activity_main)
         initiateAndPopulateFragmentsMap()
 
@@ -179,19 +178,6 @@ class MainActivity : AppCompatActivity(), IDataComunication {
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             DownloadAsyncTask().execute(DownloadFileContainer(url, applicationContext))
         }
-    }
-
-    fun downloadResource(sheetId: String) {
-        app.controller.actionHandler(
-                AppController.SPECIFIC_RESOURCE,
-                ResourceParametersContainer(
-                        activity = this,
-                        resourceId = sheetId,
-                        app = applicationContext as EduWikiApplication,
-                        successCb = { _ -> Toast.makeText(this, "Download Completed", Toast.LENGTH_LONG).show() },
-                        errorCb = { error -> Toast.makeText(this, "Error" + error.message, Toast.LENGTH_LONG).show() }
-                )
-        )
     }
 
 }

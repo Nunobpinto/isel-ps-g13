@@ -9,8 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
+import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
+import isel.ps.eduwikimobile.controller.AppController
 import isel.ps.eduwikimobile.domain.model.single.WorkAssignment
+import isel.ps.eduwikimobile.paramsContainer.ResourceParametersContainer
 import isel.ps.eduwikimobile.ui.IDataComunication
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 
@@ -19,10 +23,12 @@ class WorkAssignmentFragment : Fragment() {
     lateinit var dataComunication: IDataComunication
     lateinit var workAssignment: WorkAssignment
     lateinit var mainActivity: MainActivity
+    lateinit var app: EduWikiApplication
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainActivity = activity as MainActivity
+        app = activity.applicationContext as EduWikiApplication
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -60,11 +66,29 @@ class WorkAssignmentFragment : Fragment() {
         workAssignmentSupplement.visibility = if (workAssignment.supplementId != null) View.VISIBLE else View.GONE
 
         workAssignmentSupplement.setOnClickListener {
-            mainActivity.downloadResource(workAssignment.supplementId)
+            app.controller.actionHandler(
+                    AppController.SPECIFIC_RESOURCE,
+                    ResourceParametersContainer(
+                            activity = mainActivity,
+                            resourceId = workAssignment.supplementId,
+                            app = app,
+                            successCb = { _ -> Toast.makeText(mainActivity, "Download Completed", Toast.LENGTH_LONG).show() },
+                            errorCb = { error -> Toast.makeText(mainActivity, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                    )
+            )
         }
 
         workAssignmentSheet.setOnClickListener {
-            mainActivity.downloadResource(workAssignment.sheetId)
+            app.controller.actionHandler(
+                    AppController.SPECIFIC_RESOURCE,
+                    ResourceParametersContainer(
+                            activity = mainActivity,
+                            resourceId = workAssignment.sheetId,
+                            app = app,
+                            successCb = { _ -> Toast.makeText(mainActivity, "Download Completed", Toast.LENGTH_LONG).show() },
+                            errorCb = { error -> Toast.makeText(mainActivity, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                    )
+            )
         }
 
         return view

@@ -23,6 +23,7 @@ import isel.ps.eduwikimobile.ui.activities.MainActivity
 class ExamFragment : Fragment() {
 
     lateinit var dataComunication: IDataComunication
+    lateinit var app: EduWikiApplication
     lateinit var exam: Exam
     var course: Course? = null
 
@@ -31,6 +32,7 @@ class ExamFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainActivity = activity as MainActivity
+        app = activity.applicationContext as EduWikiApplication
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -48,10 +50,9 @@ class ExamFragment : Fragment() {
 
         mainActivity.toolbar.displayOptions = ActionBar.DISPLAY_SHOW_TITLE
         if (course != null) {
-            mainActivity.toolbar.title = course!!.shortName+"/"+dataComunication.getTerm()!!.shortName+"/"+"Exams"
+            mainActivity.toolbar.title = course!!.shortName + "/" + dataComunication.getTerm()!!.shortName + "/" + "Exams"
             mainActivity.toolbar.subtitle = exam.createdBy
-        }
-        else { //TODO pedido para obter o course
+        } else { //TODO pedido para obter o course
             mainActivity.toolbar.title = "Exam"
             mainActivity.toolbar.subtitle = exam.createdBy
         }
@@ -63,7 +64,16 @@ class ExamFragment : Fragment() {
         examSheet.visibility = if (exam.sheetId != null) View.VISIBLE else View.GONE
 
         examSheet.setOnClickListener {
-            mainActivity.downloadResource(exam.sheetId)
+            app.controller.actionHandler(
+                    AppController.SPECIFIC_RESOURCE,
+                    ResourceParametersContainer(
+                            activity = mainActivity,
+                            resourceId = exam.sheetId,
+                            app = app,
+                            successCb = { _ -> Toast.makeText(mainActivity, "Download Completed", Toast.LENGTH_LONG).show() },
+                            errorCb = { error -> Toast.makeText(mainActivity, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                    )
+            )
         }
         return view
     }
