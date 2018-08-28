@@ -8,14 +8,18 @@ data class User (
         val givenName: String = "",
         val familyName: String = "",
         val personalEmail: String = "",
-        val organizationEmail: String = ""
+        val organizationEmail: String = "",
+        val confirmed: Boolean = false,
+        val reputation: Reputation?
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
             parcel.readString(),
             parcel.readString(),
             parcel.readString(),
             parcel.readString(),
-            parcel.readString()) {
+            parcel.readString(),
+            parcel.readByte() != 0.toByte(),
+            parcel.readParcelable(Reputation::class.java.classLoader)) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -24,10 +28,12 @@ data class User (
         parcel.writeString(familyName)
         parcel.writeString(personalEmail)
         parcel.writeString(organizationEmail)
+        parcel.writeByte(if (confirmed) 1 else 0)
+        parcel.writeParcelable(reputation, flags)
     }
 
     override fun describeContents(): Int {
-       return 0
+        return 0
     }
 
     companion object CREATOR : Parcelable.Creator<User> {
@@ -43,4 +49,5 @@ data class User (
     override fun toString(): String {
         return "user"
     }
+
 }

@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import isel.ps.eduwikimobile.EduWikiApplication
@@ -42,8 +43,8 @@ class HomeworkFragment : Fragment() {
 
         val homeworkName = view.findViewById<TextView>(R.id.homework_details_name)
         val homeworkDueDate = view.findViewById<TextView>(R.id.homework_details_insert_due_date)
-        val homeworkLateDelivery = view.findViewById<CheckBox>(R.id.homework_details_switch_late_delivery)
-        val homeworkMultipleDeliveries = view.findViewById<CheckBox>(R.id.homework_details_switch_multiple_deliveries)
+        val homeworkLateDelivery = view.findViewById<Switch>(R.id.homework_details_switch_late_delivery)
+        val homeworkMultipleDeliveries = view.findViewById<Switch>(R.id.homework_details_switch_multiple_deliveries)
         val homeworkSheet = view.findViewById<TextView>(R.id.homework_details_sheet)
 
         mainActivity.toolbar.displayOptions = ActionBar.DISPLAY_SHOW_TITLE

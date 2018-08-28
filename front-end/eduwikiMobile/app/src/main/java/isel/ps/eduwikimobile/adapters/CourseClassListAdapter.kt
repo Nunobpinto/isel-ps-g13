@@ -49,7 +49,8 @@ class CourseClassListAdapter(var context: Context, var list: MutableList<CourseC
         fun getItem(position: Int) = list[position]
 
         fun bindView(position: Int) {
-            courseClassName.text = list[position].courseShortName
+            val item = list[position]
+            courseClassName.text = "${item.lecturedTerm}/${item.className}/${item.courseShortName}"
         }
 
         override fun onClick(v: View) {

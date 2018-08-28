@@ -133,11 +133,11 @@ class Service(
             )
 
     override fun getUserFollowingCourses(params: CourseCollectionParametersContainer) =
-        repository.getEntity(
-                USER_FOLLOWING_COURSES,
-                CourseCollection::class.java,
-                params
-        )
+            repository.getEntity(
+                    USER_FOLLOWING_COURSES,
+                    CourseCollection::class.java,
+                    params
+            )
 
     override fun getUserFollowingProgramme(params: EntityParametersContainer<Programme>) =
             repository.getEntity(
@@ -151,4 +151,13 @@ class Service(
                     AUTH_USER,
                     params
             )
+
+    override fun getUserProfileInfo(params: EntityParametersContainer<User>) =
+            repository.getEntity(
+                    AUTH_USER,
+                    User::class.java,
+                    params
+            )
+
+
 }

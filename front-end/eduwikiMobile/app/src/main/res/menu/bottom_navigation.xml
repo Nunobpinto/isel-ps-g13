@@ -22,8 +22,8 @@
         android:title="@string/navigation_programmes" />
 
     <item
-        android:id="@+id/navigation_organization"
-        android:icon="@drawable/ic_organization"
-        android:title="@string/navigation_organization" />
+        android:id="@+id/navigation_profile"
+        android:icon="@drawable/ic_profile"
+        android:title="@string/navigation_profile" />
 
 </menu>

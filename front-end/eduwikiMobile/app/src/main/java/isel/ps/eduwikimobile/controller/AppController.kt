@@ -28,6 +28,7 @@ class AppController(
         const val USER_FOLLOWING_COURSES = "USER_FOLLOWING_COURSES"
         const val USER_FOLLOWING_PROGRAMME = "USER_FOLLOWING_PROGRAMME"
         const val AUTH_USER = "AUTH_USER"
+        const val USER_PROFILE_INFO = "USER_PROFILE_INFO"
     }
 
     fun <T> actionHandler(action: String, params: ParametersContainer<T>) {
@@ -50,12 +51,16 @@ class AppController(
             USER_FOLLOWING_PROGRAMME -> getUserFollowingProgramme(params as EntityParametersContainer<Programme>)
             SPECIFIC_RESOURCE -> getSpecificResource(params as ResourceParametersContainer)
             AUTH_USER -> getAuthenticatedUser(params as LoginParametersContainer)
+            USER_PROFILE_INFO -> getUserProfileInfo(params as EntityParametersContainer<User>)
             else -> throw UnsupportedOperationException("Action not supported!")
         }
     }
 
     private fun getAuthenticatedUser(params: LoginParametersContainer) =
         service.getAuthUser(params)
+
+    private fun getUserProfileInfo(params: EntityParametersContainer<User>) =
+            service.getUserProfileInfo(params)
 
     private fun getAllProgrammes(params: ProgrammeCollectionParametersContainer) =
             service.getAllProgrammes(params)
@@ -107,5 +112,7 @@ class AppController(
 
     private fun getUserFollowingProgramme(params: EntityParametersContainer<Programme>) =
             service.getUserFollowingProgramme(params)
+
+
 
 }

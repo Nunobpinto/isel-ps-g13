@@ -70,8 +70,8 @@ class MainActivity : AppCompatActivity(), IDataComunication {
                 loadFragment(fragmentsMap["course_collection"]!!)
                 return@OnNavigationItemSelectedListener true
             }
-            R.id.navigation_organization -> {
-                loadFragment(fragmentsMap["organization"]!!)
+            R.id.navigation_profile -> {
+                loadFragment(fragmentsMap["profile"]!!)
                 return@OnNavigationItemSelectedListener true
             }
         }
@@ -92,7 +92,8 @@ class MainActivity : AppCompatActivity(), IDataComunication {
                 "programme_collection" to ProgrammeCollectionFragment(),
                 "course_class" to CourseClassFragment(),
                 "lecture" to LectureFragment(),
-                "homework" to HomeworkFragment()
+                "homework" to HomeworkFragment(),
+                "profile" to ProfileFragment()
         )
     }
 

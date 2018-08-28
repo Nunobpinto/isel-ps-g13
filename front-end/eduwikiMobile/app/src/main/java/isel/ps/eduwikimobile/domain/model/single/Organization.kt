@@ -11,12 +11,14 @@ data class Organization (
         val shortName: String = "",
         val address: String = "",
         val contact: String = "",
+        val website: String = "",
         val votes: Int = 0,
         val timestamp: String = ""
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
             parcel.readInt(),
             parcel.readInt(),
+            parcel.readString(),
             parcel.readString(),
             parcel.readString(),
             parcel.readString(),
@@ -34,6 +36,7 @@ data class Organization (
         parcel.writeString(shortName)
         parcel.writeString(address)
         parcel.writeString(contact)
+        parcel.writeString(website)
         parcel.writeInt(votes)
         parcel.writeString(timestamp)
     }
