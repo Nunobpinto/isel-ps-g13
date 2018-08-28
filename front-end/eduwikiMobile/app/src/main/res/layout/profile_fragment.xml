@@ -26,8 +26,8 @@
 
         <android.support.design.widget.TabLayout
             android:id="@+id/profile_tab_layout"
-            android:layout_width="368dp"
-            android:layout_height="43dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
@@ -79,6 +79,7 @@
             android:layout_marginTop="8dp"
             android:text="Programme"
             android:textSize="18sp"
+            android:visibility="invisible"
             app:layout_constraintStart_toEndOf="@+id/user_profile_name"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -90,8 +91,8 @@
             android:layout_marginStart="32dp"
             android:layout_marginTop="8dp"
             android:text="Reputation"
-            android:visibility="invisible"
             android:textSize="18sp"
+            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/user_profile_programme"
             app:layout_constraintTop_toTopOf="parent" />
