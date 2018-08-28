@@ -45,4 +45,9 @@ class Session {
         val sharePref = getPreferences(ctx)
         return sharePref.getBoolean(LOGGED_IN, false)
     }
+
+    fun setLogout(ctx: Context) {
+        getPreferences(ctx).edit().clear().apply()
+    }
+
 }

@@ -10,4 +10,5 @@
     <string name="noResultsFound">No Results Found</string>
     <string name="side_navigation_open">Open</string>
     <string name="side_navigation_Close">Close</string>
+    <string name="logout">Logout</string>
 </resources>
