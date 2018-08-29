@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import isel.ps.eduwikimobile.R
-import isel.ps.eduwikimobile.domain.model.single.Lecture
+import isel.ps.eduwikimobile.domain.single.Lecture
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 import org.w3c.dom.Text
 import java.time.Duration

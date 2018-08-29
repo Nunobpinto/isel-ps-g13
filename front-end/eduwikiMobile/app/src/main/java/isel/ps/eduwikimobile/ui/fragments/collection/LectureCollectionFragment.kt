@@ -16,9 +16,9 @@ import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.adapters.CourseClassListAdapter
 import isel.ps.eduwikimobile.adapters.LectureListAdapter
 import isel.ps.eduwikimobile.controller.AppController
-import isel.ps.eduwikimobile.domain.model.single.CourseClass
-import isel.ps.eduwikimobile.domain.model.single.Lecture
-import isel.ps.eduwikimobile.paramsContainer.LectureCollectionParametersContainer
+import isel.ps.eduwikimobile.domain.single.CourseClass
+import isel.ps.eduwikimobile.domain.single.Lecture
+import isel.ps.eduwikimobile.domain.paramsContainer.LectureCollectionParametersContainer
 import isel.ps.eduwikimobile.ui.IDataComunication
 import kotlinx.android.synthetic.main.lecture_collection_fragment.*
 

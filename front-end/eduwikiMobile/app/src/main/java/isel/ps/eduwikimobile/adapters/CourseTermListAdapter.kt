@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import isel.ps.eduwikimobile.R
-import isel.ps.eduwikimobile.domain.model.single.Term
+import isel.ps.eduwikimobile.domain.single.Term
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 import isel.ps.eduwikimobile.ui.fragments.collection.ClassCollectionOfSpecificCourseFragment
 import isel.ps.eduwikimobile.ui.fragments.collection.ExamCollectionFragment

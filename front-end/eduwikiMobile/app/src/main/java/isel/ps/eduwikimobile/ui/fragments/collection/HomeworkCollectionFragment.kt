@@ -15,9 +15,9 @@ import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.adapters.HomeworkListAdapter
 import isel.ps.eduwikimobile.adapters.LectureListAdapter
 import isel.ps.eduwikimobile.controller.AppController
-import isel.ps.eduwikimobile.domain.model.single.Homework
-import isel.ps.eduwikimobile.paramsContainer.HomeworkCollectionParametersContainer
-import isel.ps.eduwikimobile.paramsContainer.LectureCollectionParametersContainer
+import isel.ps.eduwikimobile.domain.single.Homework
+import isel.ps.eduwikimobile.domain.paramsContainer.HomeworkCollectionParametersContainer
+import isel.ps.eduwikimobile.domain.paramsContainer.LectureCollectionParametersContainer
 import isel.ps.eduwikimobile.ui.IDataComunication
 import kotlinx.android.synthetic.main.homework_collection_fragment.*
 import kotlinx.android.synthetic.main.lecture_collection_fragment.*

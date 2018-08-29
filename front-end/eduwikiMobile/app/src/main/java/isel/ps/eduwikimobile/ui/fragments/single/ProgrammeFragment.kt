@@ -16,7 +16,7 @@ import android.widget.TextView
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.adapters.ProgrammeViewPagerAdapter
-import isel.ps.eduwikimobile.domain.model.single.Programme
+import isel.ps.eduwikimobile.domain.single.Programme
 import isel.ps.eduwikimobile.ui.IDataComunication
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 

@@ -13,7 +13,7 @@ import android.widget.TextView
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.adapters.CourseClassViewPagerAdapter
-import isel.ps.eduwikimobile.domain.model.single.CourseClass
+import isel.ps.eduwikimobile.domain.single.CourseClass
 import isel.ps.eduwikimobile.ui.IDataComunication
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 

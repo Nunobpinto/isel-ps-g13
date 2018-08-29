@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import isel.ps.eduwikimobile.R
-import isel.ps.eduwikimobile.domain.model.single.CourseClass
+import isel.ps.eduwikimobile.domain.single.CourseClass
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 
 class CourseClassListAdapter(var context: Context, var list: MutableList<CourseClass>) : RecyclerView.Adapter<CourseClassListAdapter.ListViewHolder>() {

@@ -3,18 +3,13 @@ package isel.ps.eduwikimobile.ui.activities
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.view.View
 import android.widget.Toast
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.comms.Session
 import isel.ps.eduwikimobile.controller.AppController
-import isel.ps.eduwikimobile.domain.model.single.Programme
-import isel.ps.eduwikimobile.domain.model.single.User
-import isel.ps.eduwikimobile.paramsContainer.EntityParametersContainer
-import isel.ps.eduwikimobile.paramsContainer.LoginParametersContainer
+import isel.ps.eduwikimobile.domain.paramsContainer.LoginParametersContainer
 import kotlinx.android.synthetic.main.activity_login.*
-import kotlinx.android.synthetic.main.following_fragment.*
 
 class LoginActivity : AppCompatActivity() {
 

@@ -29,6 +29,13 @@
         <activity android:name=".ui.activities.LoginActivity"/>
         <activity android:name=".ui.activities.MainActivity"/>
 
+        <provider
+            android:name=".repos.local.contentProvider.ContentProvider"
+            android:authorities="ps.isel.eduWikiMobileApplication"
+            android:enabled="true"
+            android:exported="true"
+            android:multiprocess="false" />
+
     </application>
 
 </manifest>

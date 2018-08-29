@@ -14,10 +14,10 @@ import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.adapters.WorkAssignmentListAdapter
 import isel.ps.eduwikimobile.controller.AppController
-import isel.ps.eduwikimobile.domain.model.single.Course
-import isel.ps.eduwikimobile.domain.model.single.Term
-import isel.ps.eduwikimobile.domain.model.single.WorkAssignment
-import isel.ps.eduwikimobile.paramsContainer.WorkAssignmentCollectionParametersContainer
+import isel.ps.eduwikimobile.domain.single.Course
+import isel.ps.eduwikimobile.domain.single.Term
+import isel.ps.eduwikimobile.domain.single.WorkAssignment
+import isel.ps.eduwikimobile.domain.paramsContainer.WorkAssignmentCollectionParametersContainer
 import isel.ps.eduwikimobile.ui.IDataComunication
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 import kotlinx.android.synthetic.main.work_assignment_collection_fragment.*
