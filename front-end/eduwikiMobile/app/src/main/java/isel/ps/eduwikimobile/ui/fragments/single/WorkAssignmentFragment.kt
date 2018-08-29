@@ -13,10 +13,10 @@ import android.widget.Toast
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.controller.AppController
-import isel.ps.eduwikimobile.domain.model.single.Course
-import isel.ps.eduwikimobile.domain.model.single.Term
-import isel.ps.eduwikimobile.domain.model.single.WorkAssignment
-import isel.ps.eduwikimobile.paramsContainer.ResourceParametersContainer
+import isel.ps.eduwikimobile.domain.single.Course
+import isel.ps.eduwikimobile.domain.single.Term
+import isel.ps.eduwikimobile.domain.single.WorkAssignment
+import isel.ps.eduwikimobile.domain.paramsContainer.ResourceParametersContainer
 import isel.ps.eduwikimobile.ui.IDataComunication
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 

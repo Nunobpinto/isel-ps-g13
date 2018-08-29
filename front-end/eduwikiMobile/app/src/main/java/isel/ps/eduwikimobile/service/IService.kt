@@ -1,8 +1,8 @@
 package isel.ps.eduwikimobile.service
 
-import isel.ps.eduwikimobile.domain.model.single.Programme
-import isel.ps.eduwikimobile.domain.model.single.User
-import isel.ps.eduwikimobile.paramsContainer.*
+import isel.ps.eduwikimobile.domain.single.Programme
+import isel.ps.eduwikimobile.domain.single.User
+import isel.ps.eduwikimobile.domain.paramsContainer.*
 
 interface IService {
     fun getAllProgrammes(params : ProgrammeCollectionParametersContainer)

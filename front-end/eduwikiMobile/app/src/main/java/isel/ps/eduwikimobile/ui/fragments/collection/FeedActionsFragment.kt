@@ -13,8 +13,8 @@ import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.adapters.ActionsFeedListAdapter
 import isel.ps.eduwikimobile.controller.AppController
-import isel.ps.eduwikimobile.domain.model.single.UserAction
-import isel.ps.eduwikimobile.paramsContainer.ActionsFeedParametersContainer
+import isel.ps.eduwikimobile.domain.single.UserAction
+import isel.ps.eduwikimobile.domain.paramsContainer.ActionsFeedParametersContainer
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 import kotlinx.android.synthetic.main.action_collection_fragment.*
 

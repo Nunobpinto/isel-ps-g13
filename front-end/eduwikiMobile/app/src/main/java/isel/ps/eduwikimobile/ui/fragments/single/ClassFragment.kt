@@ -15,9 +15,9 @@ import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.adapters.CourseClassListAdapter
 import isel.ps.eduwikimobile.controller.AppController
-import isel.ps.eduwikimobile.domain.model.single.Class
-import isel.ps.eduwikimobile.domain.model.single.CourseClass
-import isel.ps.eduwikimobile.paramsContainer.CoursesOfSpecificClassParametersContainer
+import isel.ps.eduwikimobile.domain.single.Class
+import isel.ps.eduwikimobile.domain.single.CourseClass
+import isel.ps.eduwikimobile.domain.paramsContainer.CoursesOfSpecificClassParametersContainer
 import isel.ps.eduwikimobile.ui.IDataComunication
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 import kotlinx.android.synthetic.main.course_collection_fragment.*

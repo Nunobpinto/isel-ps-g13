@@ -14,9 +14,9 @@ import android.widget.Toast
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.controller.AppController
-import isel.ps.eduwikimobile.domain.model.single.CourseClass
-import isel.ps.eduwikimobile.domain.model.single.Homework
-import isel.ps.eduwikimobile.paramsContainer.ResourceParametersContainer
+import isel.ps.eduwikimobile.domain.single.CourseClass
+import isel.ps.eduwikimobile.domain.single.Homework
+import isel.ps.eduwikimobile.domain.paramsContainer.ResourceParametersContainer
 import isel.ps.eduwikimobile.ui.IDataComunication
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 

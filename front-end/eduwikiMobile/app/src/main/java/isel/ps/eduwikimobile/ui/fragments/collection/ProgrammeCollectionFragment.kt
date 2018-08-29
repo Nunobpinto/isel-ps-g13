@@ -10,13 +10,13 @@ import android.widget.Toast.LENGTH_LONG
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.controller.AppController
-import isel.ps.eduwikimobile.paramsContainer.ProgrammeCollectionParametersContainer
+import isel.ps.eduwikimobile.domain.paramsContainer.ProgrammeCollectionParametersContainer
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.widget.ProgressBar
 import isel.ps.eduwikimobile.adapters.ProgrammeListAdapter
-import isel.ps.eduwikimobile.domain.model.collection.ProgrammeCollection
-import isel.ps.eduwikimobile.domain.model.single.Programme
+import isel.ps.eduwikimobile.domain.collection.ProgrammeCollection
+import isel.ps.eduwikimobile.domain.single.Programme
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 import kotlinx.android.synthetic.main.programme_collection_fragment.*
 

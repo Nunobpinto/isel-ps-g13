@@ -4,8 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.util.Base64
-import java.io.UnsupportedEncodingException
-import java.nio.charset.Charset
+import isel.ps.eduwikimobile.R
 
 class Session {
     companion object {

@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import isel.ps.eduwikimobile.R
-import isel.ps.eduwikimobile.domain.model.single.Class
+import isel.ps.eduwikimobile.domain.single.Class
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 
 class ClassListAdapter (var context: Context, var list: MutableList<Class>) : RecyclerView.Adapter<ClassListAdapter.ListViewHolder>() {

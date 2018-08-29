@@ -11,7 +11,7 @@ import android.widget.Toast.LENGTH_LONG
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.controller.AppController
-import isel.ps.eduwikimobile.paramsContainer.OrganizationParametersContainer
+import isel.ps.eduwikimobile.domain.paramsContainer.OrganizationParametersContainer
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 import kotlinx.android.synthetic.main.organization_fragment.*
 

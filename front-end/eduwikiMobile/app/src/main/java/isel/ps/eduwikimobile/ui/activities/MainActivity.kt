@@ -2,7 +2,6 @@ package isel.ps.eduwikimobile.ui.activities
 
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.PorterDuff
 import android.os.Bundle
 import android.os.Parcelable
 import android.support.design.widget.BottomNavigationView
@@ -11,10 +10,8 @@ import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
-import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
-import isel.ps.eduwikimobile.domain.model.single.*
+import isel.ps.eduwikimobile.domain.single.*
 import isel.ps.eduwikimobile.ui.IDataComunication
 import isel.ps.eduwikimobile.ui.fragments.collection.ClassCollectionFragment
 import isel.ps.eduwikimobile.ui.fragments.collection.CourseCollectionFragment
@@ -22,9 +19,7 @@ import isel.ps.eduwikimobile.ui.fragments.collection.ProgrammeCollectionFragment
 import isel.ps.eduwikimobile.ui.fragments.single.*
 import isel.ps.eduwikimobile.comms.DownloadAsyncTask
 import isel.ps.eduwikimobile.comms.Session
-import isel.ps.eduwikimobile.controller.AppController
-import isel.ps.eduwikimobile.paramsContainer.DownloadFileContainer
-import isel.ps.eduwikimobile.paramsContainer.ResourceParametersContainer
+import isel.ps.eduwikimobile.domain.paramsContainer.DownloadFileContainer
 
 
 class MainActivity : AppCompatActivity(), IDataComunication {
@@ -190,6 +185,7 @@ class MainActivity : AppCompatActivity(), IDataComunication {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.toolbar_menu, menu)
+        menu!!.getItem(0).title = Session().getAuthUsername(this)
         return super.onCreateOptionsMenu(menu)
     }
 

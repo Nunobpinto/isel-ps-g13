@@ -8,10 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import isel.ps.eduwikimobile.R
-import isel.ps.eduwikimobile.domain.model.single.Class
-import isel.ps.eduwikimobile.domain.model.single.Course
-import isel.ps.eduwikimobile.domain.model.single.CourseClass
-import isel.ps.eduwikimobile.domain.model.single.Programme
+import isel.ps.eduwikimobile.domain.single.Class
+import isel.ps.eduwikimobile.domain.single.Course
+import isel.ps.eduwikimobile.domain.single.CourseClass
+import isel.ps.eduwikimobile.domain.single.Programme
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 
 class FollowingListAdapter(var context: Context, var list: MutableList<Any>) : RecyclerView.Adapter<FollowingListAdapter.ListViewHolder>() {

@@ -1,6 +1,6 @@
 package isel.ps.eduwikimobile.ui
 
-import isel.ps.eduwikimobile.domain.model.single.*
+import isel.ps.eduwikimobile.domain.single.*
 
 interface IDataComunication {
     fun getProgramme(): Programme?

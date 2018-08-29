@@ -11,11 +11,11 @@ import android.widget.Toast
 import isel.ps.eduwikimobile.API_URL
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
-import isel.ps.eduwikimobile.domain.model.single.*
-import isel.ps.eduwikimobile.paramsContainer.CourseClassCollectionParametersContainer
-import isel.ps.eduwikimobile.paramsContainer.CourseProgrammeCollectionParametersContainer
-import isel.ps.eduwikimobile.paramsContainer.EntityParametersContainer
-import isel.ps.eduwikimobile.paramsContainer.ParametersContainer
+import isel.ps.eduwikimobile.domain.single.*
+import isel.ps.eduwikimobile.domain.paramsContainer.CourseClassCollectionParametersContainer
+import isel.ps.eduwikimobile.domain.paramsContainer.CourseProgrammeCollectionParametersContainer
+import isel.ps.eduwikimobile.domain.paramsContainer.EntityParametersContainer
+import isel.ps.eduwikimobile.domain.paramsContainer.ParametersContainer
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 import isel.ps.eduwikimobile.ui.fragments.single.CourseClassFragment
 

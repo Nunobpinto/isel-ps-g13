@@ -14,10 +14,10 @@ import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.adapters.ProfileViewPagerAdapter
 import isel.ps.eduwikimobile.controller.AppController
-import isel.ps.eduwikimobile.domain.model.single.Programme
-import isel.ps.eduwikimobile.domain.model.single.User
-import isel.ps.eduwikimobile.paramsContainer.EntityParametersContainer
-import isel.ps.eduwikimobile.paramsContainer.UserProgrammeParametersContainer
+import isel.ps.eduwikimobile.domain.single.Programme
+import isel.ps.eduwikimobile.domain.single.User
+import isel.ps.eduwikimobile.domain.paramsContainer.EntityParametersContainer
+import isel.ps.eduwikimobile.domain.paramsContainer.UserProgrammeParametersContainer
 import isel.ps.eduwikimobile.ui.IDataComunication
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 import kotlinx.android.synthetic.main.profile_fragment.*

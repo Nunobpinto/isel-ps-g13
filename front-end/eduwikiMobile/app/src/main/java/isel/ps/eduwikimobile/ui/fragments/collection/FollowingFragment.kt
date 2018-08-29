@@ -13,10 +13,10 @@ import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.adapters.FollowingListAdapter
 import isel.ps.eduwikimobile.controller.AppController
-import isel.ps.eduwikimobile.domain.model.single.Programme
-import isel.ps.eduwikimobile.paramsContainer.CourseClassCollectionParametersContainer
-import isel.ps.eduwikimobile.paramsContainer.CourseCollectionParametersContainer
-import isel.ps.eduwikimobile.paramsContainer.EntityParametersContainer
+import isel.ps.eduwikimobile.domain.single.Programme
+import isel.ps.eduwikimobile.domain.paramsContainer.CourseClassCollectionParametersContainer
+import isel.ps.eduwikimobile.domain.paramsContainer.CourseCollectionParametersContainer
+import isel.ps.eduwikimobile.domain.paramsContainer.EntityParametersContainer
 import kotlinx.android.synthetic.main.following_fragment.*
 
 class FollowingFragment : Fragment() {

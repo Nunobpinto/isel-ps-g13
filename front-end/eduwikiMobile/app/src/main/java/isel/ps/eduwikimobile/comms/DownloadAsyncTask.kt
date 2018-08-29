@@ -5,7 +5,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Environment
-import isel.ps.eduwikimobile.paramsContainer.DownloadFileContainer
+import isel.ps.eduwikimobile.domain.paramsContainer.DownloadFileContainer
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL

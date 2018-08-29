@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import isel.ps.eduwikimobile.R
-import isel.ps.eduwikimobile.domain.model.single.Programme
+import isel.ps.eduwikimobile.domain.single.Programme
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 
 class ProgrammeListAdapter(var context: Context, var list: MutableList<Programme>) : RecyclerView.Adapter<ProgrammeListAdapter.ListViewHolder>() {
