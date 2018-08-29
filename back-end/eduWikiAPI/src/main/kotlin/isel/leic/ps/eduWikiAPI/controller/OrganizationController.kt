@@ -21,14 +21,7 @@ class OrganizationController {
     // ----------------------------
 
     @GetMapping
-    fun getAllOrganizations() = organizationService.getOrganization()
-
-    //TODO: Create somewhere else? (schema creation endpoint?)
-    @PostMapping
-    fun createOrganization(
-            @RequestBody input: OrganizationInputModel,
-            principal: Principal
-    ) = organizationService.createOrganization(input, principal)
+    fun getOrganization() = organizationService.getOrganization()
 
     @PatchMapping("")
     fun partialUpdateOnOrganization(

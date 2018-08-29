@@ -37,9 +37,9 @@ data class WorkAssignmentReport (
         @ColumnName(WORK_ASSIGNMENT_REPORT_PHASE)
         val phase: String? = null,
         @ColumnName(WORK_ASSIGNMENT_REPORT_SHEET_ID)
-        val sheetId: UUID = UUID.randomUUID(),
+        val sheetId: UUID? = null,
         @ColumnName(WORK_ASSIGNMENT_REPORT_SUPPLEMENT)
-        val supplementId: UUID = UUID.randomUUID(),
+        val supplementId: UUID? = null,
         @ColumnName(WORK_ASSIGNMENT_REPORT_DUE_DATE)
         val dueDate: LocalDate? = null,
         @ColumnName(WORK_ASSIGNMENT_REPORT_INDIVIDUAL)

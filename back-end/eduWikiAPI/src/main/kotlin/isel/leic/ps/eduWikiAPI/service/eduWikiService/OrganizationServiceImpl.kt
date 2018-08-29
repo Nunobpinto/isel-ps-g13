@@ -48,26 +48,12 @@ class OrganizationServiceImpl : OrganizationService {
                     .orElseThrow { NotFoundException("No organization found", "Try other ID") }
             )
 
-    override fun createOrganization(organizationInputModel: OrganizationInputModel, principal: Principal): OrganizationOutputModel {
-        val organization = organizationDAO.createOrganization(toOrganization(organizationInputModel, principal.name))
-
-        organizationDAO.createOrganizationVersion(toOrganizationVersion(organization))
-
-        publisher.publishEvent(ResourceCreatedEvent(
-                principal.name,
-                ORGANIZATION_TABLE,
-                organization.logId
-        ))
-        return toOrganizationOutputModel(organization)
-    }
-
     override fun updateOrganization(organizationInputModel: OrganizationInputModel, principal: Principal): OrganizationOutputModel {
         val prevOrganization = organizationDAO.getOrganization()
                 .orElseThrow { NotFoundException("No organization found", "Try other ID") }
         val updatedOrganization = organizationDAO.updateOrganization(Organization(
                 organizationId = prevOrganization.organizationId,
                 version = prevOrganization.version.inc(),
-                createdBy = principal.name,
                 logId = prevOrganization.logId,
                 fullName = if(organizationInputModel.fullName.isEmpty()) prevOrganization.fullName else organizationInputModel.fullName,
                 shortName = if(organizationInputModel.shortName.isEmpty()) prevOrganization.shortName else organizationInputModel.shortName,
@@ -163,7 +149,6 @@ class OrganizationServiceImpl : OrganizationService {
         val updatedOrganization = organizationDAO.updateOrganization(Organization(
                 organizationId = prevOrganization.organizationId,
                 version = prevOrganization.version.inc(),
-                createdBy = report.reportedBy,
                 fullName = report.fullName ?: prevOrganization.fullName,
                 shortName = report.shortName ?: prevOrganization.shortName,
                 contact = report.contact ?: prevOrganization.contact,

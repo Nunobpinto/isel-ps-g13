@@ -32,9 +32,10 @@ class UserDetailsServiceImpl : UserDetailsService {
         if(TenantContext.getTenantSchema() == NO_TENANT_PROVIDED)
             throw UsernameNotFoundException("A tenant must be provided")
         // Retrieve user details
-        return toUserDetails(userDAO.getUser(username).orElseThrow {
+        val user = userDAO.getUser(username).orElseThrow {
             UsernameNotFoundException("User $username does not exist at specified tenant")
-        })
+        }
+        return toUserDetails(user)
     }
 
     private fun toUserDetails(user: User): UserDetails = org.springframework.security.core.userdetails

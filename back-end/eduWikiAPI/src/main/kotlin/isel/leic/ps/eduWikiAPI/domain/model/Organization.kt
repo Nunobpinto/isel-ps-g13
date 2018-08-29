@@ -1,7 +1,6 @@
 package isel.leic.ps.eduWikiAPI.domain.model
 
 import isel.leic.ps.eduWikiAPI.repository.OrganizationDAOImpl.Companion.ORGANIZATION_ID
-import isel.leic.ps.eduWikiAPI.repository.OrganizationDAOImpl.Companion.ORGANIZATION_CREATED_BY
 import isel.leic.ps.eduWikiAPI.repository.OrganizationDAOImpl.Companion.ORGANIZATION_TIMESTAMP
 import isel.leic.ps.eduWikiAPI.repository.OrganizationDAOImpl.Companion.ORGANIZATION_CONTACT
 import isel.leic.ps.eduWikiAPI.repository.OrganizationDAOImpl.Companion.ORGANIZATION_ADDRESS
@@ -19,8 +18,6 @@ data class Organization(
         val organizationId: Char = 'X',
         @ColumnName(ORGANIZATION_VERSION)
         val version: Int = 1,
-        @ColumnName(ORGANIZATION_CREATED_BY)
-        val createdBy: String = "",
         @ColumnName(ORGANIZATION_FULL_NAME)
         val fullName: String = "",
         @ColumnName(ORGANIZATION_SHORT_NAME)

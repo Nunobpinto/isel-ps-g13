@@ -16,8 +16,6 @@ interface OrganizationDAO {
 
     fun updateOrganization(organization: Organization) : Organization
 
-    fun createOrganization(organization: Organization) : Organization
-
     /**
      * Version entity queries
      */

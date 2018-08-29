@@ -32,12 +32,27 @@ class OrganizationDAOImpl : OrganizationDAO {
         const val ORGANIZATION_CONTACT = "organization_contact"
         const val ORGANIZATION_WEBSITE = "organization_website"
         const val ORGANIZATION_LOG_ID = "log_id"
-        const val ORGANIZATION_REPORT_LOG_ID = "log_id"
         const val ORGANIZATION_TIMESTAMP = "time_stamp"
+        // ORGANIZATION REPORT FIELDS
         const val ORGANIZATION_REPORT_ID = "organization_report_id"
-        const val ORGANIZATION_CREATED_BY = "created_by"
+        const val ORGANIZATION_REPORT_LOG_ID = "log_id"
+        const val ORGANIZATION_REPORT_FULL_NAME = "organization_full_name"
+        const val ORGANIZATION_REPORT_SHORT_NAME = "organization_short_name"
+        const val ORGANIZATION_REPORT_ADDRESS = "organization_address"
+        const val ORGANIZATION_REPORT_CONTACT = "organization_contact"
+        const val ORGANIZATION_REPORT_WEBSITE = "organization_website"
+        const val ORGANIZATION_REPORT_TIMESTAMP = "time_stamp"
         const val ORGANIZATION_REPORTED_BY = "reported_by"
         const val ORGANIZATION_REPORT_VOTES = "votes"
+        // ORGANIZATION VERSION FIELDS
+        const val ORGANIZATION_VERSION_VERSION_ID = "organization_version"
+        const val ORGANIZATION_VERSION_CREATED_BY = "created_by"
+        const val ORGANIZATION_VERSION_FULL_NAME = "organization_full_name"
+        const val ORGANIZATION_VERSION_SHORT_NAME = "organization_short_name"
+        const val ORGANIZATION_VERSION_ADDRESS = "organization_address"
+        const val ORGANIZATION_VERSION_CONTACT = "organization_contact"
+        const val ORGANIZATION_VERSION_WEBSITE = "organization_website"
+        const val ORGANIZATION_VERSION_TIMESTAMP = "time_stamp"
     }
 
     @Qualifier("MainJdbi")
@@ -49,9 +64,6 @@ class OrganizationDAOImpl : OrganizationDAO {
 
     override fun updateOrganization(organization: Organization): Organization =
             jdbi.open().attach(OrganizationDAOJdbi::class.java).updateOrganization(organization)
-
-    override fun createOrganization(organization: Organization): Organization =
-            jdbi.open().attach(OrganizationDAOJdbi::class.java).createOrganization(organization)
 
     override fun getAllVersionsOfOrganization(): List<OrganizationVersion> =
             jdbi.open().attach(OrganizationDAOJdbi::class.java).getAllVersionsOfOrganization()
@@ -97,7 +109,6 @@ class OrganizationDAOImpl : OrganizationDAO {
         @SqlUpdate(
                 "UPDATE :schema.$ORGANIZATION_TABLE SET " +
                         "$ORGANIZATION_VERSION = :organization.version, " +
-                        "$ORGANIZATION_CREATED_BY = :organization.createdBy, " +
                         "$ORGANIZATION_FULL_NAME = :organization.fullName, " +
                         "$ORGANIZATION_SHORT_NAME = :organization.shortName, " +
                         "$ORGANIZATION_ADDRESS = :organization.address, " +
@@ -110,31 +121,15 @@ class OrganizationDAOImpl : OrganizationDAO {
         override fun updateOrganization(organization: Organization): Organization
 
         @SqlUpdate(
-                "INSERT INTO :schema.$ORGANIZATION_TABLE (" +
-                        "$ORGANIZATION_VERSION, " +
-                        "$ORGANIZATION_CREATED_BY, " +
-                        "$ORGANIZATION_FULL_NAME, " +
-                        "$ORGANIZATION_SHORT_NAME, " +
-                        "$ORGANIZATION_ADDRESS, " +
-                        "$ORGANIZATION_CONTACT, " +
-                        "$ORGANIZATION_WEBSITE, " +
-                        "$ORGANIZATION_TIMESTAMP) " +
-                        "VALUES(:organization.version, :organization.createdBy, :organization.fullName, :organization.shortName, " +
-                        ":organization.address, :organization.contact, :organization.website, :organization.timestamp)"
-        )
-        @GetGeneratedKeys
-        override fun createOrganization(organization: Organization): Organization
-
-        @SqlUpdate(
                 "INSERT INTO :schema.$ORGANIZATION_REPORT_TABLE( " +
-                        "$ORGANIZATION_FULL_NAME, " +
-                        "$ORGANIZATION_SHORT_NAME, " +
-                        "$ORGANIZATION_ADDRESS, " +
-                        "$ORGANIZATION_CONTACT, " +
-                        "$ORGANIZATION_WEBSITE, " +
+                        "$ORGANIZATION_REPORT_FULL_NAME, " +
+                        "$ORGANIZATION_REPORT_SHORT_NAME, " +
+                        "$ORGANIZATION_REPORT_ADDRESS, " +
+                        "$ORGANIZATION_REPORT_CONTACT, " +
+                        "$ORGANIZATION_REPORT_WEBSITE, " +
                         "$ORGANIZATION_REPORTED_BY, " +
                         "$ORGANIZATION_REPORT_VOTES, " +
-                        "$ORGANIZATION_TIMESTAMP) " +
+                        "$ORGANIZATION_REPORT_TIMESTAMP) " +
                         "VALUES(:organizationReport.fullName, :organizationReport.shortName, " +
                         ":organizationReport.address, :organizationReport.contact, :organizationReport.website, :organizationReport.reportedBy, " +
                         ":organizationReport.votes, :organizationReport.timestamp)"
@@ -163,20 +158,20 @@ class OrganizationDAOImpl : OrganizationDAO {
         @SqlQuery("SELECT * FROM :schema.$ORGANIZATION_VERSION_TABLE")
         override fun getAllVersionsOfOrganization(): List<OrganizationVersion>
 
-        @SqlQuery("SELECT * FROM :schema.$ORGANIZATION_VERSION_TABLE WHERE $ORGANIZATION_VERSION = :version"
+        @SqlQuery("SELECT * FROM :schema.$ORGANIZATION_VERSION_TABLE WHERE $ORGANIZATION_VERSION_VERSION_ID = :version"
         )
         override fun getSpecificVersionOfOrganization(version: Int): Optional<OrganizationVersion>
 
         @SqlUpdate(
                 "INSERT INTO :schema.$ORGANIZATION_VERSION_TABLE (" +
-                        "$ORGANIZATION_VERSION, " +
-                        "$ORGANIZATION_CREATED_BY, " +
-                        "$ORGANIZATION_FULL_NAME," +
-                        "$ORGANIZATION_SHORT_NAME, " +
-                        "$ORGANIZATION_ADDRESS, " +
-                        "$ORGANIZATION_CONTACT, " +
-                        "$ORGANIZATION_WEBSITE, " +
-                        "$ORGANIZATION_TIMESTAMP) " +
+                        "$ORGANIZATION_VERSION_VERSION_ID, " +
+                        "$ORGANIZATION_VERSION_CREATED_BY, " +
+                        "$ORGANIZATION_VERSION_FULL_NAME," +
+                        "$ORGANIZATION_VERSION_SHORT_NAME, " +
+                        "$ORGANIZATION_VERSION_ADDRESS, " +
+                        "$ORGANIZATION_VERSION_CONTACT, " +
+                        "$ORGANIZATION_VERSION_WEBSITE, " +
+                        "$ORGANIZATION_VERSION_TIMESTAMP) " +
                         "VALUES (:version.version, :version.createdBy, :version.fullName, :version.shortName, " +
                         ":version.address, :version.contact, :version.website, :version.timestamp)"
         )

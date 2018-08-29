@@ -1,6 +1,5 @@
 package isel.leic.ps.eduWikiAPI.domain.mappers
 
-import isel.leic.ps.eduWikiAPI.domain.inputModel.OrganizationInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.OrganizationReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.ActionLog
 import isel.leic.ps.eduWikiAPI.domain.model.Organization
@@ -14,15 +13,6 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserActionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.OrganizationReportOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.OrganizationVersionOutputModel
 
-fun toOrganization(organizationInputModel: OrganizationInputModel, user: String) = Organization(
-        fullName = organizationInputModel.fullName,
-        shortName = organizationInputModel.shortName,
-        address = organizationInputModel.address,
-        website = organizationInputModel.website,
-        createdBy = user,
-        contact = organizationInputModel.contact
-)
-
 fun toOrganizationReport(input: OrganizationReportInputModel, principal: String) = OrganizationReport(
         fullName = input.fullName,
         shortName = input.shortName,
@@ -34,7 +24,6 @@ fun toOrganizationReport(input: OrganizationReportInputModel, principal: String)
 
 fun toOrganizationVersion(organization: Organization) = OrganizationVersion(
         version = organization.version,
-        createdBy = organization.createdBy,
         fullName = organization.fullName,
         shortName = organization.shortName,
         contact = organization.contact,
@@ -50,8 +39,7 @@ fun toOrganizationOutputModel(organization: Organization) = OrganizationOutputMo
         shortName = organization.shortName,
         fullName = organization.fullName,
         website = organization.website,
-        timestamp = organization.timestamp,
-        createdBy = organization.createdBy
+        timestamp = organization.timestamp
 )
 
 fun toOrganizationReportOutputModel(organizationReport: OrganizationReport) = OrganizationReportOutputModel(

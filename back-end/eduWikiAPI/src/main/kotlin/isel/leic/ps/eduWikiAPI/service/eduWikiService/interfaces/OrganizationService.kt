@@ -15,8 +15,6 @@ interface OrganizationService {
 
     fun getOrganization(): OrganizationOutputModel
 
-    fun createOrganization(organizationInputModel: OrganizationInputModel, principal: Principal) : OrganizationOutputModel
-
     fun updateOrganization(organizationInputModel: OrganizationInputModel, principal: Principal): OrganizationOutputModel
 
     fun getAllReportsOnOrganization(): OrganizationReportCollectionOutputModel
