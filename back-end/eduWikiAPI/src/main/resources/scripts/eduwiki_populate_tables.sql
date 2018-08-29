@@ -51,11 +51,20 @@ INSERT INTO <schema>.term (term_short_name, term_year, term_type, time_stamp)
 
 -- Insert organization
 
-insert into <schema>.organization (organization_full_name, organization_short_name, organization_address, organization_contact, organization_website ,time_stamp)
-    values (<org.fullName>, <org.shortName>, <org.address>, <org.website>, current_timestamp);
+INSERT INTO <schema>.organization(organization_full_name, organization_short_name, organization_address, organization_contact, organization_website, time_stamp)
+  VALUES('<org.fullName>', '<org.shortName>', '<org.address>', '<org.contact>', '<org.website>', current_timestamp);
 
-insert into <schema>.organization_version(organization_version, created_by, organization_full_name, organization_short_name, organization_address, organization_contact, organization_website, time_stamp)
-	values(1, '', <org.fullName>, <org.shortName>, <org.address>, <org.website>, current_timestamp);
+INSERT INTO <schema>.organization_version(organization_version, created_by, organization_full_name, organization_short_name, organization_address, organization_contact, organization_website, time_stamp)
+  VALUES(1, 'Community', '<org.fullName>', '<org.shortName>', '<org.address>', '<org.contact>', '<org.website>', current_timestamp);
 
 -- Insert users
 
+<users:{user|
+INSERT INTO <schema>.user_account (user_username, user_password, user_given_name, user_family_name, user_confirmed, user_email, user_locked)
+  VALUES('<user.username>', '<user.password>', '<user.givenName>', '<user.familyName>', <user.confirmed>, '<user.email>', false);
+}>
+
+<reputations:{rep|
+INSERT INTO <schema>.reputation (points, role, user_username)
+  VALUES(<rep.points>, '<rep.role>', '<rep.username>');
+}>

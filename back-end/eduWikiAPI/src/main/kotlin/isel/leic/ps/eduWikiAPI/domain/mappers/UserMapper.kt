@@ -16,9 +16,8 @@ fun toUser(inputModel: UserInputModel) = User(
         username = inputModel.username,
         familyName = inputModel.familyName,
         givenName = inputModel.givenName,
-        organizationEmail = inputModel.organizationEmail,
-        password = inputModel.password,
-        personalEmail = inputModel.personalEmail,
+        email = inputModel.email,
+        password = inputModel.password, //todo hash password before getting here
         confirmed = false
 )
 
@@ -32,8 +31,7 @@ fun toAuthUserOutputModel(user: User, reputation: Reputation) = AuthUserOutputMo
         username = user.username,
         givenName = user.givenName,
         familyName = user.familyName,
-        personalEmail = user.personalEmail,
-        organizationEmail = user.organizationEmail,
+        email = user.email,
         confirmed = user.confirmed,
         reputation = toReputationOutputModel(reputation)
 )

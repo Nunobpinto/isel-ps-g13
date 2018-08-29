@@ -28,26 +28,29 @@ class UsersController {
     ) = userService.getSpecificReportOfUser(username, reportId)
 
     @GetMapping("/{username}/confirm/{token}")
-    fun confirmUser(@PathVariable username: String, @PathVariable token: UUID)
-            = userService.confirmUser(username, token)
+    fun confirmUser(
+            @PathVariable username: String,
+            @PathVariable token: UUID
+    ) = userService.confirmUser(username, token)
 
     @PostMapping
-    fun registerUser(@RequestBody inputUser: UserInputModel) = userService.saveUser(inputUser)
+    fun registerUser(
+            @RequestBody inputUser: UserInputModel
+    ) = userService.saveUser(inputUser)
 
     @PostMapping("/{username}/report")
     fun reportUser(
             principal: Principal,
             @PathVariable username: String,
             @RequestBody report: UserReportInputModel
-    ) = userService.reportUser(username,principal.name, report)
+    ) = userService.reportUser(username, report, principal)
 
-    //TODO What to do if report on User is Approved
     @PostMapping("/{username}/report/{reportId}")
     fun approveUserReport(
             principal: Principal,
             @PathVariable username: String,
             @PathVariable reportId: Int
-    ) = userService.approveReport(username, reportId)
+    ) = userService.approveReport(username, reportId, principal)
 
     @DeleteMapping("/{username}/report/{reportId}")
     fun deleteReportOnUser(

@@ -24,6 +24,9 @@ import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_T
 import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_TOTAL_CREDITS
 import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_VERSION
 import isel.leic.ps.eduWikiAPI.repository.ProgrammeDAOImpl.Companion.PROGRAMME_VOTES
+import isel.leic.ps.eduWikiAPI.repository.ReputationDAOImpl.Companion.REPUTATION_ROLE
+import isel.leic.ps.eduWikiAPI.repository.ReputationDAOImpl.Companion.REPUTATION_TABLE
+import isel.leic.ps.eduWikiAPI.repository.ReputationDAOImpl.Companion.REPUTATION_USER
 import isel.leic.ps.eduWikiAPI.repository.TenantDAOImpl.Companion.MASTER_SCHEMA
 import isel.leic.ps.eduWikiAPI.repository.interfaces.UserDAO
 import org.jdbi.v3.core.Jdbi
@@ -49,23 +52,21 @@ class UserDAOImpl : UserDAO {
         const val USER_PASSWORD = "user_password"
         const val USER_GIVEN_NAME = "user_given_name"
         const val USER_FAMILY_NAME = "user_family_name"
-        const val USER_PERSONAL_EMAIL = "user_personal_email"
-        const val USER_ORG_EMAIL = "user_organization_email"
-        // USER_COURSE_CLASS FIELDS
-        const val USER_COURSE_CLASS_TABLE_COURSE_ID = "course_id"
-        const val CLASS_ID = "class_id"
-        const val TERM_ID = "term_id"
-        const val USER_PROGRAMME_PROGRAMME_ID = "programme_id"
-        const val REASON = "reason"
-        const val REPORTED_BY = "reported_by"
-        const val TIMESTAMP = "time_stamp"
-        const val REPORT_ID = "report_id"
+        const val USER_EMAIL = "user_email"
         const val USER_CONFIRMED_FLAG = "user_confirmed"
-        // USER_DEV FIELDS
-        const val DEV_EMAIL = "dev_email"
-        const val DEV_PASSWORD = "dev_password"
-        const val DEV_GIVEN_NAME = "dev_given_name"
-        const val DEV_FAMILY_NAME = "dev_family_name"
+        const val USER_LOCKED = "user_locked"
+        // USER_REPORT FIELDS
+        const val USER_REPORT_USER = "user_username"
+        const val USER_REPORT_REPORT_ID = "report_id"
+        const val USER_REPORT_LOG_ID = "log_id"
+        const val USER_REPORT_REASON = "reason"
+        const val USER_REPORT_REPORTED_BY = "reported_by"
+        const val USER_REPORT_TIMESTAMP = "time_stamp"
+        // USER_COURSE_CLASS FIELDS
+        const val USER_COURSE_CLASS_COURSE_ID = "course_id"
+        const val USER_COURSE_CLASS_CLASS_ID = "course_class_id"
+        // USER_PROGRAMME FIELDS
+        const val USER_PROGRAMME_PROGRAMME_ID = "programme_id"
     }
 
     @Qualifier("MainJdbi")
@@ -120,8 +121,8 @@ class UserDAOImpl : UserDAO {
     override fun deleteSpecificReportOfUser(username: String, reportId: Int): Int =
             jdbi.open().attach(UserDAOJdbi::class.java).deleteSpecificReportOfUser(username, reportId)
 
-    override fun getSpecficReportOfUser(username: String, reportId: Int): UserReport =
-            jdbi.open().attach(UserDAOJdbi::class.java).getSpecficReportOfUser(username, reportId)
+    override fun getSpecificReportOfUser(username: String, reportId: Int): Optional<UserReport> =
+            jdbi.open().attach(UserDAOJdbi::class.java).getSpecificReportOfUser(username, reportId)
 
     override fun getAllReportsOfUser(username: String): List<UserReport> =
             jdbi.open().attach(UserDAOJdbi::class.java).getAllReportsOfUser(username)
@@ -135,6 +136,18 @@ class UserDAOImpl : UserDAO {
     override fun getDevs(): List<User> =
             jdbi.open().attach(UserDAOJdbi::class.java).getDevs()
 
+    override fun getUsersByRole(role: String): List<User> =
+            jdbi.open().attach(UserDAOJdbi::class.java).getUsersByRole(role)
+
+    override fun lockUser(username: String): User =
+            jdbi.open().attach(UserDAOJdbi::class.java).lockUser(username)
+
+    override fun deleteAllReportsOnUser(username: String) =
+            jdbi.open().attach(UserDAOJdbi::class.java).deleteAllReportsOnUser(username)
+
+    override fun getUserByEmail(email: String): Optional<User> =
+            jdbi.open().attach(UserDAOJdbi::class.java).getUserByEmail(email)
+
     interface UserDAOJdbi : UserDAO {
 
         @SqlQuery("SELECT * FROM :schema.$USER_TABLE where $USER_USERNAME = :username")
@@ -145,18 +158,18 @@ class UserDAOImpl : UserDAO {
                 "$USER_PASSWORD," +
                 "$USER_GIVEN_NAME," +
                 "$USER_FAMILY_NAME," +
-                "$USER_PERSONAL_EMAIL," +
                 "$USER_CONFIRMED_FLAG," +
-                USER_ORG_EMAIL +
+                "$USER_EMAIL, "+
+                "$USER_LOCKED "+
                 ") VALUES ( " +
                 ":user.username," +
                 ":user.password," +
                 ":user.givenName," +
                 ":user.familyName," +
-                ":user.personalEmail," +
                 ":user.confirmed," +
-                ":user.organizationEmail " +
-                ")")
+                ":user.email, " +
+                ":user.locked)"
+        )
         @GetGeneratedKeys
         override fun createUser(user: User): User
 
@@ -178,7 +191,7 @@ class UserDAOImpl : UserDAO {
                         "C.$COURSE_CREATED_BY " +
                         "FROM :schema.$USER_COURSE_CLASS_TABLE AS U " +
                         "INNER JOIN :schema.$COURSE_TABLE AS C " +
-                        "ON U.$USER_COURSE_CLASS_TABLE_COURSE_ID = C.$COURSE_ID " +
+                        "ON U.$USER_COURSE_CLASS_COURSE_ID = C.$COURSE_ID " +
                         "WHERE $USER_USERNAME = :username"
         )
         override fun getCoursesOfUser(username: String): List<Course>
@@ -207,19 +220,19 @@ class UserDAOImpl : UserDAO {
         override fun getProgrammeOfUser(username: String): Optional<Programme>
 
         @SqlUpdate("INSERT INTO :schema.$USER_COURSE_CLASS_TABLE (" +
-                "$USER_USERNAME," +
-                COURSE_CLASS_ID +
-                ") VALUES ( " +
+                "$USER_USERNAME, " +
+                "$COURSE_CLASS_ID)"+
+                " VALUES ( " +
                 ":userCourseClass.username," +
                 ":userCourseClass.courseId," +
                 ":userCourseClass.courseClassId)")
         @GetGeneratedKeys
         override fun addCourseToUser(userCourseClass: UserCourseClass): UserCourseClass
 
-        @SqlUpdate("UPDATE :schema.$USER_COURSE_CLASS_TABLE" +
-                " SET $COURSE_CLASS_ID = :userCourseClass.courseClassId " +
+        @SqlUpdate("UPDATE :schema.$USER_COURSE_CLASS_TABLE " +
+                "SET $USER_COURSE_CLASS_CLASS_ID = :userCourseClass.courseClassId " +
                 "WHERE $USER_USERNAME = :userCourseClass.username " +
-                "AND $USER_COURSE_CLASS_TABLE_COURSE_ID = :userCourseClass.courseId"
+                "AND $USER_COURSE_CLASS_COURSE_ID = :userCourseClass.courseId"
         )
         @GetGeneratedKeys
         override fun addClassToUser(userCourseClass: UserCourseClass): UserCourseClass
@@ -240,15 +253,15 @@ class UserDAOImpl : UserDAO {
 
         @SqlUpdate("DELETE FROM :schema.$USER_COURSE_CLASS_TABLE " +
                 "WHERE $USER_USERNAME = :username " +
-                "AND $USER_COURSE_CLASS_TABLE_COURSE_ID = :courseId")
+                "AND $USER_COURSE_CLASS_COURSE_ID = :courseId")
         override fun deleteSpecificCourseOfUser(username: String, courseId: Int): Int
 
         @SqlUpdate("INSERT INTO :schema.$USER_REPORT_TABLE (" +
-                "$USER_USERNAME," +
-                "$REASON," +
-                "$REPORTED_BY," +
-                TIMESTAMP +
-                ") VALUES ( " +
+                "$USER_USERNAME, " +
+                "$USER_REPORT_REASON, " +
+                "$USER_REPORT_REPORTED_BY, " +
+                "$USER_REPORT_TIMESTAMP)" +
+                "VALUES (" +
                 ":report.username," +
                 ":report.reason, " +
                 ":report.reportedBy, " +
@@ -261,10 +274,8 @@ class UserDAOImpl : UserDAO {
         override fun deleteProgramme(username: String): Int
 
         @SqlUpdate("UPDATE :schema.$USER_TABLE" +
-                " SET $USER_PASSWORD = :newUser.password," +
-                "$USER_GIVEN_NAME = :newUser.givenName," +
+                " SET $USER_GIVEN_NAME = :newUser.givenName," +
                 "$USER_FAMILY_NAME = :newUser.familyName," +
-                "$USER_PERSONAL_EMAIL = :newUser.personalEmail " +
                 "WHERE $USER_USERNAME = :newUser.username")
         @GetGeneratedKeys
         override fun updateUser(newUser: User): User
@@ -272,14 +283,14 @@ class UserDAOImpl : UserDAO {
         @SqlUpdate("DELETE FROM :schema.$USER_TABLE WHERE $USER_USERNAME = :username")
         override fun deleteUser(username: String): Int
 
-        @SqlUpdate("DELETE FROM :schema.$USER_REPORT_TABLE WHERE $USER_USERNAME = :username AND $REPORT_ID = :reportId")
+        @SqlUpdate("DELETE FROM :schema.$USER_REPORT_TABLE WHERE $USER_USERNAME = :username AND $USER_REPORT_REPORT_ID = :reportId")
         override fun deleteSpecificReportOfUser(username: String, reportId: Int): Int
 
         @SqlQuery("SELECT * FROM :schema.$USER_REPORT_TABLE WHERE $USER_USERNAME = :username")
         override fun getAllReportsOfUser(username: String): List<UserReport>
 
-        @SqlQuery("SELECT * FROM :schema.$USER_REPORT_TABLE WHERE $USER_USERNAME = :username AND $REPORT_ID = :reportId")
-        override fun getSpecficReportOfUser(username: String, reportId: Int): UserReport
+        @SqlQuery("SELECT * FROM :schema.$USER_REPORT_TABLE WHERE $USER_USERNAME = :username AND $USER_REPORT_REPORT_ID = :reportId")
+        override fun getSpecificReportOfUser(username: String, reportId: Int): Optional<UserReport>
 
         @SqlUpdate("UPDATE :schema.$USER_COURSE_CLASS_TABLE" +
                 " SET $COURSE_CLASS_ID = NULL " +
@@ -295,6 +306,37 @@ class UserDAOImpl : UserDAO {
 
         @SqlQuery("SELECT * FROM $MASTER_SCHEMA.$USER_TABLE")
         override fun getDevs(): List<User>
+
+        @SqlQuery(
+                "SELECT " +
+                        "U.$USER_USERNAME, " +
+                        "U.$USER_PASSWORD, " +
+                        "U.$USER_GIVEN_NAME, " +
+                        "U.$USER_FAMILY_NAME, " +
+                        "U.$USER_CONFIRMED_FLAG, " +
+                        "U.$USER_EMAIL, " +
+                        "U.$USER_LOCKED " +
+                        "FROM :schema.$USER_TABLE AS U " +
+                        "INNER JOIN :schema.$REPUTATION_TABLE AS R " +
+                        "ON U.$USER_USERNAME = R.$REPUTATION_USER " +
+                        "WHERE R.$REPUTATION_ROLE = :role"
+        )
+        override fun getUsersByRole(role: String): List<User>
+
+        @SqlUpdate(
+                "UPDATE :schema.$USER_TABLE " +
+                        "SET $USER_LOCKED = true " +
+                        "WHERE $USER_USERNAME = :username"
+        )
+        @GetGeneratedKeys
+        override fun lockUser(username: String): User
+
+        @SqlUpdate("DELETE FROM :schema.$USER_REPORT_TABLE WHERE $USER_USERNAME = :username")
+        override fun deleteAllReportsOnUser(username: String)
+
+        @SqlQuery("SELECT * FROM :schema.$USER_TABLE where $USER_EMAIL = :email")
+        override fun getUserByEmail(email: String): Optional<User>
+
     }
 
 }

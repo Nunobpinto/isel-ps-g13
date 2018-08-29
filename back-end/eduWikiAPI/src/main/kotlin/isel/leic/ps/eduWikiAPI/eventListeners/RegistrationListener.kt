@@ -28,7 +28,7 @@ class RegistrationListener {
                 "Please follow this link to confirm your account " +
                         "" + "http://localhost:8080/users/" + user.username + "/confirm/" + token.token
         emailService.sendSimpleMessage(
-                to = user.organizationEmail,
+                to = user.email,
                 subject = "Verify your Eduwiki account",
                 text = message
         )

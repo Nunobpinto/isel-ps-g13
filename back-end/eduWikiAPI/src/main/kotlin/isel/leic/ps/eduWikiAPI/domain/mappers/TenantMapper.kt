@@ -35,7 +35,7 @@ fun tenantRequestDetailsToPendingTenantDetails(requestDetails: TenantRequestDeta
 
 fun tenantRequestDetailsToPendingTenantCreator(requestDetails: TenantRequester, pendingTenantUuid: UUID) = PendingTenantCreator(
         username = requestDetails.username,
-        organizationEmail = requestDetails.organizationEmail,
+        email = requestDetails.email,
         pendingTenantUuid = pendingTenantUuid,
         givenName = requestDetails.givenName,
         familyName = requestDetails.familyName,
@@ -57,7 +57,7 @@ fun toPendingTenantDetailsOutputModel(pendingTenantDetails: PendingTenantDetails
 
 fun toPendingTenantCreatorOutputModel(pendingCreator: PendingTenantCreator) = PendingTenantCreatorOutputModel(
         username = pendingCreator.username,
-        organizationEmail = pendingCreator.organizationEmail,
+        email = pendingCreator.email,
         givenName = pendingCreator.givenName,
         familyName = pendingCreator.familyName,
         isPrincipal = pendingCreator.principal

@@ -154,8 +154,6 @@ class ReputationEventListeners {
     @Transactional
     @TransactionalEventListener
     fun handleVoteOnResourceEvent(event: VoteOnResourceEvent) {
-        //TODO CHECK IF VOTING ON SELF OR ALREADY VOTED
-
         // Log action
         val actionLog = reputationDAO.registerActionLog(
                 event.voter,

@@ -1,6 +1,7 @@
 package isel.leic.ps.eduWikiAPI.repository.interfaces
 
 import isel.leic.ps.eduWikiAPI.domain.model.*
+import java.sql.Timestamp
 import java.util.*
 
 interface TenantDAO {
@@ -23,6 +24,16 @@ interface TenantDAO {
 
     fun createTenantBasedOnPendingTenant(schema: String)
 
-    fun populateTenant(schema: String, organization: Organization, usersAndRep: List<Pair<User, Reputation>>)
+    fun populateTenant(schema: String, organization: Organization, users: List<User>, reputations: List<Reputation>)
+
+    fun getCurrentTenantDetails(): Optional<TenantDetails>
+
+    fun getPendingTenantById(tenantUuid: String): Optional<PendingTenantDetails>
+
+    fun getPendingTenantCreators(tenantUuid: String): List<PendingTenantCreator>
+
+    fun deletePendingTenantById(tenantUuid: String): Int
+
+    fun createActiveTenantEntry(dev: String, timestamp: Timestamp, pendingTenant: PendingTenantDetails): PendingTenantDetails
 
 }

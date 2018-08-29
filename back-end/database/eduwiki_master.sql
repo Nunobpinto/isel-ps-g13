@@ -10,9 +10,10 @@ CREATE SCHEMA IF NOT EXISTS master;
 
 CREATE TABLE IF NOT EXISTS master.tenants (
 	uuid VARCHAR(255),
-	schema_name VARCHAR(255) UNIQUE,
+	schema_name VARCHAR(255) UNIQUE NOT NULL,
 	email_pattern VARCHAR(30) UNIQUE,
-	created_at TIMESTAMP,
+	created_at TIMESTAMP NOT NULL,
+	created_by VARCHAR(20) NOT NULL,
 	PRIMARY KEY(uuid)
 );
 
@@ -37,8 +38,8 @@ CREATE TABLE IF NOT EXISTS master.pending_tenants (
 
 CREATE TABLE IF NOT EXISTS master.pending_tenant_creators (
 	user_username VARCHAR(20),
-	pending_tenant_uuid VARCHAR(255) REFERENCES master.pending_tenants,
-	user_organization_email varchar(35) NOT NULL UNIQUE,
+	pending_tenant_uuid VARCHAR(255) REFERENCES master.pending_tenants ON DELETE CASCADE,
+	user_email varchar(35) NOT NULL UNIQUE,
 	user_given_name VARCHAR(15) NOT NULL,
 	user_family_name VARCHAR(15) NOT NULL,
 	principal_user BOOLEAN NOT NULL,
@@ -51,7 +52,7 @@ CREATE TABLE IF NOT EXISTS master.user_account (
   user_given_name VARCHAR(15) NOT NULL,
   user_confirmed BOOLEAN NOT NULL DEFAULT true,
   user_family_name VARCHAR(15) NOT NULL,
-  user_personal_email varchar(35) UNIQUE NOT NULL,
+  user_email varchar(35) UNIQUE NOT NULL,
   PRIMARY KEY (user_username)
 );
 

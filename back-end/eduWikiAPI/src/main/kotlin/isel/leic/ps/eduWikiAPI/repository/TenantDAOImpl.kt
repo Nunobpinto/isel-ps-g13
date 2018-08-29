@@ -5,13 +5,12 @@ import isel.leic.ps.eduWikiAPI.repository.interfaces.TenantDAO
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.locator.ClasspathSqlLocator
 import org.jdbi.v3.sqlobject.customizer.BindBean
-import org.jdbi.v3.sqlobject.customizer.Define
-import org.jdbi.v3.sqlobject.locator.UseClasspathSqlLocator
 import org.jdbi.v3.sqlobject.statement.*
 import org.jdbi.v3.stringtemplate4.StringTemplateEngine
 import org.springframework.stereotype.Repository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
+import java.sql.Timestamp
 import java.util.*
 
 
@@ -43,12 +42,12 @@ class TenantDAOImpl : TenantDAO {
         const val PENDING_TENANTS_TIMESTAMP = "tenant_timestamp"
         const val PENDING_TENANTS_ORG_SUMMARY = "tenant_organization_summary"
         // PENDINT_TENANTS_CREATOR FIELDS
-        const val PENDING_TENANTS_CREATOR_ORG_EMAIL = "user_organization_email"
+        const val PENDING_TENANTS_CREATOR_EMAIL = "user_email"
         const val PENDING_TENANTS_CREATOR_USERNAME = "user_username"
         const val PENDING_TENANTS_CREATOR_TENANT_UUID = "pending_tenant_uuid"
         const val PENDING_TENANTS_CREATOR_GIVEN_NAME = "user_given_name"
         const val PENDING_TENANTS_CREATOR_FAMILY_NAME = "user_family_name"
-        const val PENDING_TENANTS_CREATOR_IS_PRINCIPAL = "is_principal"
+        const val PENDING_TENANTS_CREATOR_IS_PRINCIPAL = "principal_user"
         // REGISTERED_USERS FIELDS
         const val REGISTERED_USER_USERNAME = "user_username"
         const val REGISTERED_TENANT_UUID = "tenant_uuid"
@@ -82,19 +81,36 @@ class TenantDAOImpl : TenantDAO {
     override fun findPendingTenantCreatorsByTenantId(tenantUuid: String): List<PendingTenantCreator> =
             jdbi.open().attach(TenantDAOJdbi::class.java).findPendingTenantCreatorsByTenantId(tenantUuid)
 
+    override fun getCurrentTenantDetails(): Optional<TenantDetails> =
+            jdbi.open().attach(TenantDAOJdbi::class.java).getCurrentTenantDetails()
+
+    override fun getPendingTenantById(tenantUuid: String): Optional<PendingTenantDetails> =
+            jdbi.open().attach(TenantDAOJdbi::class.java).getPendingTenantById(tenantUuid)
+
+    override fun getPendingTenantCreators(tenantUuid: String): List<PendingTenantCreator> =
+            jdbi.open().attach(TenantDAOJdbi::class.java).getPendingTenantCreators(tenantUuid)
+
+    override fun deletePendingTenantById(tenantUuid: String): Int =
+            jdbi.open().attach(TenantDAOJdbi::class.java).deletePendingTenantById(tenantUuid)
+
+    override fun createActiveTenantEntry(dev: String, timestamp: Timestamp, pendingTenant: PendingTenantDetails): PendingTenantDetails =
+            jdbi.open().attach(TenantDAOJdbi::class.java).createActiveTenantEntry(dev, timestamp, pendingTenant)
+
     override fun createTenantBasedOnPendingTenant(schema: String) {
-        jdbi.open().createScript(ClasspathSqlLocator.getResourceOnClasspath("scripts/eduwiki_create_tables.sql"))
+        jdbi.open().createScript(ClasspathSqlLocator.getResourceOnClasspath("scripts/eduwiki_create_tenant.sql"))
                 .setTemplateEngine(StringTemplateEngine())
                 .define("schema", schema)
                 .execute()
     }
 
-    override fun populateTenant(schema: String, organization: Organization, usersAndRep: List<Pair<User, Reputation>>) {
+    override fun populateTenant(schema: String, organization: Organization, users: List<User>, reputations: List<Reputation>) {
         jdbi.open().createScript(ClasspathSqlLocator.getResourceOnClasspath("scripts/eduwiki_populate_tables.sql"))
                 .setTemplateEngine(StringTemplateEngine())
                 .define("schema", schema)
                 .define("org", organization)
-                //todo Not finished
+                .define("users", users)
+                .define("reputations", reputations)
+                .execute()
     }
 
     interface TenantDAOJdbi : TenantDAO {
@@ -127,13 +143,13 @@ class TenantDAOImpl : TenantDAO {
         @SqlBatch(
                 "INSERT INTO $MASTER_SCHEMA.$PENDING_TENANTS_CREATOR_TABLE (" +
                         "$PENDING_TENANTS_CREATOR_USERNAME, " +
-                        "$PENDING_TENANTS_CREATOR_ORG_EMAIL, " +
+                        "$PENDING_TENANTS_CREATOR_EMAIL, " +
                         "$PENDING_TENANTS_CREATOR_TENANT_UUID, " +
                         "$PENDING_TENANTS_CREATOR_GIVEN_NAME, " +
                         "$PENDING_TENANTS_CREATOR_IS_PRINCIPAL, " +
                         "$PENDING_TENANTS_CREATOR_FAMILY_NAME )" +
                         "VALUES (" +
-                        ":tenantCreator.username, :tenantCreator.organizationEmail, :tenantCreator.pendingTenantUuid, " +
+                        ":tenantCreator.username, :tenantCreator.email, :tenantCreator.pendingTenantUuid, " +
                         ":tenantCreator.givenName, :tenantCreator.principal, :tenantCreator.familyName)"
         )
         @GetGeneratedKeys
@@ -153,7 +169,32 @@ class TenantDAOImpl : TenantDAO {
 
         override fun createTenantBasedOnPendingTenant(schema: String) = Unit
 
-        override fun populateTenant(schema: String, organization: Organization, usersAndRep: List<Pair<User, Reputation>>) = Unit
+        override fun populateTenant(schema: String, organization: Organization, users: List<User>, reputations: List<Reputation>) = Unit
+
+        @SqlQuery("SELECT * FROM $MASTER_SCHEMA.$TENANTS_TABLE WHERE $TENANTS_SCHEMA_NAME = ':schema'")
+        override fun getCurrentTenantDetails(): Optional<TenantDetails>
+
+        @SqlQuery("SELECT * FROM $MASTER_SCHEMA.$PENDING_TENANTS_TABLE WHERE $PENDING_TENANTS_UUID = :tenantUuid")
+        override fun getPendingTenantById(tenantUuid: String): Optional<PendingTenantDetails>
+
+        @SqlQuery("SELECT * FROM $MASTER_SCHEMA.$PENDING_TENANTS_CREATOR_TABLE WHERE $PENDING_TENANTS_CREATOR_TENANT_UUID = :tenantUuid")
+        override fun getPendingTenantCreators(tenantUuid: String): List<PendingTenantCreator>
+
+        @SqlUpdate("DELETE FROM $MASTER_SCHEMA.$PENDING_TENANTS_TABLE WHERE $PENDING_TENANTS_UUID = :tenantUuid")
+        override fun deletePendingTenantById(tenantUuid: String): Int
+
+        @SqlUpdate(
+                "INSERT INTO $MASTER_SCHEMA.$TENANTS_TABLE (" +
+                        "$TENANTS_CREATED_BY, " +
+                        "$TENANTS_CREATED_AT, " +
+                        "$TENANTS_EMAIL_PATTERN, " +
+                        "$TENANTS_SCHEMA_NAME, " +
+                        "$TENANTS_UUID)" +
+                        "VALUES (:dev, :timestamp, " +
+                        ":pendingTenant.emailPattern, :pendingTenant.shortName, :pendingTenant.tenantUuid)"
+        )
+        @GetGeneratedKeys
+        override fun createActiveTenantEntry(dev: String, timestamp: Timestamp, pendingTenant: PendingTenantDetails): PendingTenantDetails
 
     }
 }

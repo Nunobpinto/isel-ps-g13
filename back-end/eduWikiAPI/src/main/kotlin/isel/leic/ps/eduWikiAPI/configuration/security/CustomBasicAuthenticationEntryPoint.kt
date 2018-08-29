@@ -5,10 +5,7 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.error.ErrorOutputModel
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.*
 import org.springframework.http.MediaType
-import org.springframework.security.authentication.BadCredentialsException
-import org.springframework.security.authentication.DisabledException
-import org.springframework.security.authentication.InsufficientAuthenticationException
-import org.springframework.security.authentication.InternalAuthenticationServiceException
+import org.springframework.security.authentication.*
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint
@@ -25,7 +22,7 @@ class CustomBasicAuthenticationEntryPoint : BasicAuthenticationEntryPoint() {
             is DisabledException -> {
                 val error = ErrorOutputModel(
                         title = "Unconfirmed Account",
-                        detail = "Please confirm your organization email",
+                        detail = "Please confirm your email",
                         status = UNAUTHORIZED.value(),
                         type = "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
                 )
@@ -56,6 +53,16 @@ class CustomBasicAuthenticationEntryPoint : BasicAuthenticationEntryPoint() {
             is UsernameNotFoundException -> {
                 val error = ErrorOutputModel(
                         title = "Could not find user",
+                        detail = authException.message!!,
+                        status = UNAUTHORIZED.value(),
+                        type = "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
+                )
+                content = mapper.writeValueAsString(error)
+                response.status = UNAUTHORIZED.value()
+            }
+            is LockedException -> {
+                val error = ErrorOutputModel(
+                        title = "The account is banned",
                         detail = authException.message!!,
                         status = UNAUTHORIZED.value(),
                         type = "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"

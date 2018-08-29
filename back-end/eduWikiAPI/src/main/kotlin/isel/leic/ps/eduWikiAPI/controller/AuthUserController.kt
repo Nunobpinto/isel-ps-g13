@@ -10,7 +10,6 @@ import java.security.Principal
 @RequestMapping("/user")
 class AuthUserController {
 
-    //TODO implementation of Authenticated User Controller methods
     @Autowired
     lateinit var userService: UserService
 
@@ -19,16 +18,16 @@ class AuthUserController {
      */
 
     @GetMapping
-    fun getAuthenticatedUser(principal: Principal) = userService.getAuthenticatedUser(principal.name)
+    fun getAuthenticatedUser(principal: Principal) = userService.getAuthenticatedUser(principal)
 
     @GetMapping("/courses")
-    fun getCoursesOfUser(principal: Principal) = userService.getCoursesOfUser(principal.name)
+    fun getCoursesOfUser(principal: Principal) = userService.getCoursesOfUser(principal)
 
     @GetMapping("/classes")
-    fun getClassesOfUser(principal: Principal) = userService.getClassesOfCOurseOfUser(principal.name)
+    fun getClassesOfUser(principal: Principal) = userService.getClassesOfCOurseOfUser(principal)
 
     @GetMapping("/programme")
-    fun getProgrammeOfUser(principal: Principal) = userService.getProgrammeOfUser(principal.name)
+    fun getProgrammeOfUser(principal: Principal) = userService.getProgrammeOfUser(principal)
 
     @GetMapping("/feed")
     fun getUserFeed(principal: Principal) = userService.getUserFeed(principal)
@@ -44,20 +43,23 @@ class AuthUserController {
      */
 
     @PatchMapping("/user")
-    fun updateAuthenticatedUser(@RequestBody input: UserInputModel) = userService.updateUser(input)
+    fun updateAuthenticatedUser(
+            principal: Principal,
+            @RequestBody input: UserUpdateInputModel
+    ) = userService.updateUser(input, principal)
 
     /**
      * All POST Routes
      */
 
     @PostMapping("/courses")
-    fun addCourseToUser(principal: Principal, @RequestBody input: UserCourseClassInputModel) = userService.addCourseToUser(principal.name, input)
+    fun addCourseToUser(principal: Principal, @RequestBody input: UserCourseClassInputModel) = userService.addCourseToUser(principal, input)
 
     @PostMapping("/classes")
-    fun addClassToUser(principal: Principal, @RequestBody input: UserCourseClassInputModel) = userService.addClassToUser(principal.name, input)
+    fun addClassToUser(principal: Principal, @RequestBody input: UserCourseClassInputModel) = userService.addClassToUser(principal, input)
 
     @PostMapping("/programme")
-    fun addProgrammeToUser(principal: Principal, @RequestBody input: UserProgrammeInputModel) = userService.addProgrammeToUSer(principal.name, input)
+    fun addProgrammeToUser(principal: Principal, @RequestBody input: UserProgrammeInputModel) = userService.addProgrammeToUSer(principal, input)
 
 
     /**
@@ -65,23 +67,27 @@ class AuthUserController {
      */
 
     @DeleteMapping
-    fun deleteAuthUser(principal: Principal) = userService.deleteUser(principal.name)
+    fun deleteAuthUser(principal: Principal) = userService.deleteUser(principal)
 
     @DeleteMapping("/courses")
-    fun deleteAllCoursesOfUser(principal: Principal) = userService.deleteAllCoursesOfUser(principal.name)
+    fun deleteAllCoursesOfUser(principal: Principal) = userService.deleteAllCoursesOfUser(principal)
 
     @DeleteMapping("/courses/{courseId}")
-    fun deleteSpecificCourseOfUser(principal: Principal, @PathVariable courseId: Int) =
-            userService.deleteSpecificCourseOfUser(principal.name, courseId)
+    fun deleteSpecificCourseOfUser(
+            principal: Principal,
+            @PathVariable courseId: Int
+    ) = userService.deleteSpecificCourseOfUser(principal, courseId)
 
     @DeleteMapping("/classes")
-    fun deleteAllClassesOfUser(principal: Principal) = userService.deleteAllClassesOfUser(principal.name)
+    fun deleteAllClassesOfUser(principal: Principal) = userService.deleteAllClassesOfUser(principal)
 
     @DeleteMapping("/classes/{classId}")
-    fun deleteSpecificClassOfUser(principal: Principal, @PathVariable classId: Int) =
-            userService.deleteSpecificClassOfUser(principal.name, classId)
+    fun deleteSpecificClassOfUser(
+            principal: Principal,
+            @PathVariable classId: Int
+    ) = userService.deleteSpecificClassOfUser(principal, classId)
 
     @DeleteMapping("/programme")
-    fun deleteProgrammeOfUser(principal: Principal) = userService.deleteProgrammeOfUser(principal.name)
+    fun deleteProgrammeOfUser(principal: Principal) = userService.deleteProgrammeOfUser(principal)
 
 }

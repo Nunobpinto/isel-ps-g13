@@ -38,7 +38,7 @@ interface UserDAO {
 
     fun deleteSpecificReportOfUser(username: String, reportId: Int): Int
 
-    fun getSpecficReportOfUser(username: String, reportId: Int): UserReport
+    fun getSpecificReportOfUser(username: String, reportId: Int): Optional<UserReport>
 
     fun getAllReportsOfUser(username: String): List<UserReport>
 
@@ -47,4 +47,12 @@ interface UserDAO {
     fun deleteSpecificClassOfUser(username: String, courseClassId: Int): Int
 
     fun getDevs(): List<User>
+
+    fun getUsersByRole(role: String): List<User>
+
+    fun lockUser(username: String): User
+
+    fun deleteAllReportsOnUser(username: String)
+
+    fun getUserByEmail(email: String): Optional<User>
 }

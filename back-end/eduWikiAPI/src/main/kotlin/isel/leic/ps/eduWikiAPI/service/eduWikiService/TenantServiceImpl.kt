@@ -11,6 +11,7 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.TenantDetailsColle
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.PendingTenantDetailsOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.TenantDetailsOutputModel
 import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.BadRequestException
+import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.ConflictException
 import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.NotFoundException
 import isel.leic.ps.eduWikiAPI.repository.interfaces.TenantDAO
 import isel.leic.ps.eduWikiAPI.repository.interfaces.UserDAO
@@ -21,6 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
+import org.postgresql.util.PSQLException
+import java.sql.Timestamp
+import java.time.LocalDateTime
+
 
 @Transactional
 @Service
@@ -65,18 +70,27 @@ class TenantServiceImpl : TenantService {
         }
         // Check if emails are on par with provided email pattern
         requestDetails.requesters.forEach {
-            if(! isEmailValid(it.organizationEmail) || ! it.organizationEmail.contains(requestDetails.emailPattern))
+            if(! isEmailValid(it.email) || ! it.email.contains(requestDetails.emailPattern))
                 throw BadRequestException("Bad email", "${it.givenName} ${it.familyName}'s email is not valid. Either it does not match the email pattern provided or it's not a valid email")
         }
         // Check if there's any repeated emails
-        if(requestDetails.requesters.map { it.organizationEmail }.toSet().size != requestDetails.requesters.size)
+        if(requestDetails.requesters.map { it.email }.toSet().size != requestDetails.requesters.size)
             throw BadRequestException("Repeated emails", "Some users seem to have the same email, make sure each one is unique")
         // Check if number of requesters is in fact the required count
         if(requestDetails.requesters.size != REQUIRED_REQUEST_COUNT)
             throw BadRequestException("Not enough requesters", "The required number of requesters to make an EduWiki request is $REQUIRED_REQUEST_COUNT")
 
         // Register request in database
-        val pendingTenant = tenantDAO.createPendingTenant(tenantRequestDetailsToPendingTenantDetails(requestDetails))
+        val pendingTenant = try {
+            tenantDAO.createPendingTenant(tenantRequestDetailsToPendingTenantDetails(requestDetails))
+        } catch(e: Exception) {
+            // hmm, well this is awkward...
+            if(e.cause is PSQLException && (e.cause as PSQLException).sqlState == "23505") {
+                // return an HTTP 409
+                throw ConflictException("There's a similar tenant already pending approval", "Please check the already pending tenants")
+            }
+            throw e
+        }
         val creators = tenantDAO.bulkCreatePendingTenantCreators(requestDetails.requesters.map { tenantRequestDetailsToPendingTenantCreator(it, pendingTenant.tenantUuid) })
 
         // Notify requesters
@@ -99,26 +113,43 @@ class TenantServiceImpl : TenantService {
                 fullName = pendingTenant.fullName,
                 shortName = pendingTenant.shortName,
                 address = pendingTenant.address,
+                contact = pendingTenant.contact,
                 website = pendingTenant.website
         )
-        val usersAndRep = tenantCreators.map {
+        val users = tenantCreators.map {
             User(
                     username = it.username,
                     password = "1234", //todo gen random password
                     givenName = it.givenName,
                     familyName = it.familyName,
-                    organizationEmail = it.organizationEmail,
+                    email = it.email,
                     confirmed = true
-            ) to Reputation(
+            )
+        }
+        val reputations = tenantCreators.map {
+            Reputation(
                     username = it.username,
                     points = ROLE_ADMIN.maxPoints,
                     role = ROLE_ADMIN.name
             )
         }
-        tenantDAO.populateTenant(pendingTenant.shortName, organization, usersAndRep)
+        tenantDAO.populateTenant(pendingTenant.shortName, organization, users, reputations)
+
+        // Delete pending tenant and its creators from pending tables
+        tenantDAO.deletePendingTenantById(tenantUuid)
+        // Register tenant in tenant details
+        tenantDAO.createActiveTenantEntry(principal.name, Timestamp.valueOf(LocalDateTime.now()), pendingTenant)
     }
 
     override fun rejectPendingTenant(tenantUuid: String, principal: Principal) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val pendingTenant = tenantDAO.getPendingTenantById(tenantUuid)
+                .orElseThrow { NotFoundException("No pending tenant found", "Are you sure the specified tenant exists?") }
+        val pendingTenantCreators = tenantDAO.getPendingTenantCreators(tenantUuid)
+
+        // Delete pending tenant and its creators
+        tenantDAO.deletePendingTenantById(tenantUuid)
+
+        // Notify creators
+        pendingTenantCreators.forEach { emailService.sendTenantRejectedEmail(it, pendingTenant) }
     }
 }

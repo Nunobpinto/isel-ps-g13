@@ -7,7 +7,8 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserCourseOutputModel
 
 fun toUserCourseClass(username: String, inputModel: UserCourseClassInputModel) = UserCourseClass(
         username = username,
-        courseId = inputModel.courseId
+        courseId = inputModel.courseId,
+        courseClassId = inputModel.courseClassId
 )
 
 fun toUserCourseOutputModel(userCourseClass: UserCourseClass) = UserCourseOutputModel(

@@ -209,9 +209,9 @@ CREATE TABLE IF NOT EXISTS isel.user_account (
   user_password VARCHAR(60),
   user_given_name VARCHAR(15) NOT NULL,
   user_family_name VARCHAR(15) NOT NULL,
+  user_locked BOOLEAN NOT NULL,
   user_confirmed BOOLEAN NOT NULL,
-  user_personal_email varchar(35) UNIQUE NOT NULL,
-  user_organization_email varchar(35) UNIQUE NOT NULL,
+  user_email varchar(35) UNIQUE NOT NULL,
   PRIMARY KEY (user_username)
 );
 

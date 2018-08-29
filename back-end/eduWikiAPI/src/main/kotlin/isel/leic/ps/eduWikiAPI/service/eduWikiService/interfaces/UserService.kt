@@ -3,6 +3,7 @@ package isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserCourseClassInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserProgrammeInputModel
+import isel.leic.ps.eduWikiAPI.domain.inputModel.UserUpdateInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.UserReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.*
@@ -12,43 +13,43 @@ import java.util.*
 
 interface UserService {
 
-    fun getAuthenticatedUser(username: String): AuthUserOutputModel
+    fun getAuthenticatedUser(principal: Principal): AuthUserOutputModel
 
     fun saveUser(inputUser: UserInputModel): AuthUserOutputModel
 
-    fun deleteUser(username: String): Int
+    fun deleteUser(principal: Principal): Int
 
-    fun getCoursesOfUser(username: String): CourseCollectionOutputModel
+    fun getCoursesOfUser(principal: Principal): CourseCollectionOutputModel
 
-    fun getClassesOfCOurseOfUser(username: String): CourseClassCollectionOutputModel
+    fun getClassesOfCOurseOfUser(principal: Principal): CourseClassCollectionOutputModel
 
-    fun getProgrammeOfUser(username: String): ProgrammeOutputModel
+    fun getProgrammeOfUser(principal: Principal): ProgrammeOutputModel
 
-    fun addCourseToUser(username: String, input: UserCourseClassInputModel): UserCourseOutputModel
+    fun addCourseToUser(principal: Principal, input: UserCourseClassInputModel): UserCourseOutputModel
 
-    fun updateUser(input: UserInputModel): AuthUserOutputModel
+    fun updateUser(input: UserUpdateInputModel, principal: Principal): AuthUserOutputModel
 
-    fun addClassToUser(username: String, input: UserCourseClassInputModel): UserCourseClassOutputModel
+    fun addClassToUser(principal: Principal, input: UserCourseClassInputModel): UserCourseClassOutputModel
 
-    fun addProgrammeToUSer(username: String, input: UserProgrammeInputModel): ProgrammeOutputModel
+    fun addProgrammeToUSer(principal: Principal, input: UserProgrammeInputModel): ProgrammeOutputModel
 
-    fun deleteAllCoursesOfUser(username: String): Int
+    fun deleteAllCoursesOfUser(principal: Principal): Int
 
-    fun deleteProgrammeOfUser(username: String): Int
+    fun deleteProgrammeOfUser(principal: Principal): Int
 
-    fun deleteSpecificCourseOfUser(username: String, courseId: Int): Int
+    fun deleteSpecificCourseOfUser(principal: Principal, courseId: Int): Int
 
-    fun reportUser(username: String, reportedBy: String, reportInput: UserReportInputModel): UserReportOutputModel
+    fun reportUser(username: String, reportInput: UserReportInputModel, principal: Principal): UserReportOutputModel
 
-    fun deleteSpecificClassOfUser(username: String, courseClassId: Int): Int
+    fun deleteSpecificClassOfUser(principal: Principal, courseClassId: Int): Int
 
-    fun deleteAllClassesOfUser(username: String): Int
+    fun deleteAllClassesOfUser(principal: Principal): Int
 
     fun getUser(username: String): UserOutputModel
 
-    fun approveReport(username: String, reportId: Int): Int
+    fun approveReport(username: String, reportId: Int, principal: Principal): UserReportOutputModel
 
-    fun getAllReportsOfUser(username: String): List<UserReportOutputModel>
+    fun getAllReportsOfUser(username: String): UserReportCollectionOutputModel
 
     fun getSpecificReportOfUser(username: String, reportId: Int): UserReportOutputModel
 

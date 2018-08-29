@@ -240,14 +240,14 @@ insert into isel.homework_version (homework_id, homework_version, homework_name,
 
 -- Student Insert
 
-insert into isel.user_account (user_username, user_password, user_given_name, user_family_name, user_confirmed, user_personal_email, user_organization_email)
-    values ('ze', 1234, 'José', 'Antunes', true, 'ze@gmail.com', 'ze@isel.pt');
+insert into isel.user_account (user_username, user_password, user_given_name, user_family_name, user_confirmed, user_email, user_locked)
+    values ('ze', 1234, 'José', 'Antunes', true, 'ze@isel.pt', false);
 
-insert into isel.user_account (user_username, user_password, user_given_name, user_family_name, user_confirmed, user_personal_email, user_organization_email)
-    values ('bruno', 1234, 'Bruno', 'Filipe', true, 'bruno@gmail.com', 'bruno@isel.pt');
+insert into isel.user_account (user_username, user_password, user_given_name, user_family_name, user_confirmed, user_email, user_locked)
+    values ('bruno', 1234, 'Bruno', 'Filipe', true, 'bruno@isel.pt', false);
 
-insert into isel.user_account (user_username, user_password, user_given_name, user_family_name, user_confirmed, user_personal_email, user_organization_email)
-    values ('jg', 1234, 'João', 'Gameiro', true, 'jg@gmail.com', 'jg@isel.pt');
+insert into isel.user_account (user_username, user_password, user_given_name, user_family_name, user_confirmed, user_email, user_locked)
+    values ('jg', 1234, 'João', 'Gameiro', true, 'jg@isel.pt', false);
 
 -- Reputation Insert
 

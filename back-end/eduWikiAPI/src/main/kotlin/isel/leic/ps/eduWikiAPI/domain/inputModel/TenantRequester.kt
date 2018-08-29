@@ -9,8 +9,7 @@ data class TenantRequester(
         val familyName: String,
         @JsonProperty("given_name")
         val givenName: String,
-        @JsonProperty("organization_email")
-        val organizationEmail: String,
+        val email: String,
         @JsonProperty("principal")
         val principal: Boolean
 )

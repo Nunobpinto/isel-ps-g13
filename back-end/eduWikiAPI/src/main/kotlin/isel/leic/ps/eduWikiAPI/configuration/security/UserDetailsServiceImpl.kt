@@ -41,6 +41,7 @@ class UserDetailsServiceImpl : UserDetailsService {
             .User
             .withUsername(user.username)
             .disabled(!user.confirmed)
+            .accountLocked(user.locked)
             .password(passwordEncoder.encode(user.password)) //TODO Nao te esqueças de tirar esta merda
             .authorities(reputationDAO.getReputationRoleOfUser(user.username).orElseThrow { UsernameNotFoundException("Could not find a valid role for user ${user.username}") })
             .build()
