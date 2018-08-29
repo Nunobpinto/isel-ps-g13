@@ -413,26 +413,31 @@ class ProgrammeServiceImpl : ProgrammeService {
     // -------------------------------
 
     override fun getAllCourseStageEntriesOfSpecificProgramme(programmeId: Int): CourseProgrammeStageCollectionOutputModel {
-        val courseProgrammeStageEntries = courseDAO.getAllCourseStageEntriesOfSpecificProgramme(programmeId).map { toCourseProgrammeStageOutputModel(it) }
+        val courseProgrammeStageEntries =
+                courseDAO.getAllCourseStageEntriesOfSpecificProgramme(programmeId)
+                        .map {
+                            val course = courseDAO.getSpecificCourse(it.courseId).get()
+                            toCourseProgrammeStageOutputModel(course,it)
+                        }
         return toCourseProgrammeStageCollectionOutputModel(courseProgrammeStageEntries)
     }
 
     override fun getSpecificStagedCourseOfProgramme(programmeId: Int, stageId: Int): CourseProgrammeStageOutputModel {
-        return toCourseProgrammeStageOutputModel(
-                courseDAO.getSpecificStagedCourseProgramme(programmeId, stageId)
-                        .orElseThrow { NotFoundException("No staged version of course with this id in this programme", "Search other staged version") }
-        )
+        val courseProgramme = courseDAO.getSpecificStagedCourseProgramme(programmeId, stageId)
+                .orElseThrow { NotFoundException("No staged version of course with this id in this programme", "Search other staged version") }
+        val course = courseDAO.getSpecificCourse(courseProgramme.courseId).get()
+        return toCourseProgrammeStageOutputModel(course, courseProgramme)
     }
 
     override fun createStagingCourseOnProgramme(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel, principal: Principal): CourseProgrammeStageOutputModel {
         val courseProgrammeStage = courseDAO.createStagingCourseOfProgramme(toCourseProgrammeStage(programmeId, inputCourseProgramme, principal.name))
-
+        val course = courseDAO.getSpecificCourse(courseProgrammeStage.courseId).get()
         publisher.publishEvent(ResourceCreatedEvent(
                 principal.name,
                 COURSE_PROGRAMME_STAGE_TABLE,
                 courseProgrammeStage.logId
         ))
-        return toCourseProgrammeStageOutputModel(courseProgrammeStage)
+        return toCourseProgrammeStageOutputModel(course, courseProgrammeStage)
     }
 
     override fun createCourseProgrammeFromStaged(programmeId: Int, stageId: Int, principal: Principal): CourseProgrammeOutputModel {

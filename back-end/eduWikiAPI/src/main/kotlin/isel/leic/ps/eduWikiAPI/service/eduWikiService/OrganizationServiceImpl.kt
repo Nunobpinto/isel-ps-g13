@@ -60,7 +60,7 @@ class OrganizationServiceImpl : OrganizationService {
                 address = if(organizationInputModel.address.isEmpty()) prevOrganization.address else organizationInputModel.address,
                 contact = if(organizationInputModel.contact.isEmpty()) prevOrganization.contact else organizationInputModel.contact
         ))
-        organizationDAO.createOrganizationVersion(toOrganizationVersion(updatedOrganization))
+        organizationDAO.createOrganizationVersion(toOrganizationVersion(principal.name, updatedOrganization))
 
         publisher.publishEvent(ResourceUpdatedEvent(
                 principal.name,
@@ -152,9 +152,10 @@ class OrganizationServiceImpl : OrganizationService {
                 fullName = report.fullName ?: prevOrganization.fullName,
                 shortName = report.shortName ?: prevOrganization.shortName,
                 contact = report.contact ?: prevOrganization.contact,
-                address = report.address ?: prevOrganization.address
+                address = report.address ?: prevOrganization.address,
+                website = report.website ?: prevOrganization.website
         ))
-        organizationDAO.createOrganizationVersion(toOrganizationVersion(updatedOrganization))
+        organizationDAO.createOrganizationVersion(toOrganizationVersion(principal.name, updatedOrganization))
         organizationDAO.deleteReportOnOrganization(reportId)
 
         publisher.publishEvent(ResourceApprovedEvent(

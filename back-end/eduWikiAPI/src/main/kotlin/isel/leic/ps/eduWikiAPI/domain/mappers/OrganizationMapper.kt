@@ -22,14 +22,15 @@ fun toOrganizationReport(input: OrganizationReportInputModel, principal: String)
         reportedBy = principal
 )
 
-fun toOrganizationVersion(organization: Organization) = OrganizationVersion(
+fun toOrganizationVersion(username: String, organization: Organization) = OrganizationVersion(
         version = organization.version,
         fullName = organization.fullName,
         shortName = organization.shortName,
         contact = organization.contact,
         address = organization.address,
         website = organization.website,
-        timestamp = organization.timestamp
+        timestamp = organization.timestamp,
+        createdBy = username
 )
 
 fun toOrganizationOutputModel(organization: Organization) = OrganizationOutputModel(

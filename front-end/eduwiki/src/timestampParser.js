@@ -4,7 +4,7 @@ export default (timestamp) => {
     const hourParsed = parseInt(toPresent.hour) + 1
     const hour = hourParsed < 10 ? '0' + hourParsed : hourParsed
     const day = `${toPresent.day}-${toPresent.month + 1}-${toPresent.year}`
-    const time = `${hour}:${toPresent.minute}`
+    const time = `${hour}h:${toPresent.minute}m`
     return day + '-' + time
   }
   return ''

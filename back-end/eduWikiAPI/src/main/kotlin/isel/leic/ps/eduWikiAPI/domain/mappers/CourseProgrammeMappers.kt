@@ -103,7 +103,7 @@ fun toCourseProgrammeVersionOutput(courseProgrammeVersion: CourseProgrammeVersio
         createdBy = courseProgrammeVersion.createdBy
 )
 
-fun toCourseProgrammeStageOutputModel(courseProgrammeStage: CourseProgrammeStage) = CourseProgrammeStageOutputModel(
+fun toCourseProgrammeStageOutputModel(course: Course, courseProgrammeStage: CourseProgrammeStage) = CourseProgrammeStageOutputModel(
         stagedId = courseProgrammeStage.stageId,
         courseId = courseProgrammeStage.courseId,
         votes = courseProgrammeStage.votes,
@@ -112,7 +112,8 @@ fun toCourseProgrammeStageOutputModel(courseProgrammeStage: CourseProgrammeStage
         programmeId = courseProgrammeStage.programmeId,
         optional = courseProgrammeStage.optional,
         credits = courseProgrammeStage.credits,
-        lecturedTerm = courseProgrammeStage.lecturedTerm
+        lecturedTerm = courseProgrammeStage.lecturedTerm,
+        courseShortName = course.shortName
 )
 
 fun toCourseProgrammeCollectionOutputModel(courseProgrammeList: List<CourseProgrammeOutputModel>) = CourseProgrammeCollectionOutputModel(
