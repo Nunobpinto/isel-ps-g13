@@ -18,6 +18,7 @@ class DownloadAsyncTask : AsyncTask<DownloadFileContainer, Int, String>() {
         try {
             urlRequest = URL(objs[0].url)
             val con = urlRequest.openConnection() as HttpURLConnection
+            con.requestMethod = "HEAD"
             con.instanceFollowRedirects = false
             con.connect()
             val contentDispositionHeader = con.getHeaderField("Content-Disposition")

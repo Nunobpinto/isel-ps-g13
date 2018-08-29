@@ -41,7 +41,7 @@ class DbHelper (
         const val DROP_ORGANIZATION =
                 "drop table if exists ${ContentProvider.ORGANIZATION}"
 
-        const val CREATE_CLASS =
+        /*const val CREATE_CLASS =
                 "create table ${ContentProvider.CLASS} ( " +
                         "${ContentProvider.MOVIE_ID} integer primary key, " +
                         "${ContentProvider.TITLE} text not null , " +
@@ -68,7 +68,7 @@ class DbHelper (
                         "${ContentProvider.MOVIE_ID} integer primary key, " +
                         "${ContentProvider.POSTER} text ," +
                         "${ContentProvider.TITLE} text not null, " +
-                        "${ContentProvider.RELEASE_DATE} text)"
+                        "${ContentProvider.RELEASE_DATE} text)"*/
     }
 
     override fun onCreate(db: SQLiteDatabase?) {

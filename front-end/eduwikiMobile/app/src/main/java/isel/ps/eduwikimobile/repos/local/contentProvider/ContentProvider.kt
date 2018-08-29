@@ -181,17 +181,18 @@ class ContentProvider : ContentProvider() {
     }
 
     override fun insert(uri: Uri?, values: ContentValues?): Uri {
-        val tableInfo = getTable(uri)
+       /* val tableInfo = getTable(uri)
         val db = dbHelper.writableDatabase
         return db.use {
             val id = db.insert(tableInfo.first, null, values)
-            if (id < 0) {
+           if (id < 0) {
                 null
             } else {
                 context.contentResolver.notifyChange(uri, null)
                 Uri.parse("content://$AUTHORITY/${tableInfo.second}/$id")
             }
-        }
+        }*/
+        return Uri.parse("bla")
     }
 
     override fun query(uri: Uri?, projection: Array<out String>?, selection: String?, selectionArgs: Array<out String>?, sortOrder: String?): Cursor {
@@ -210,15 +211,15 @@ class ContentProvider : ContentProvider() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    private fun getTableEntry(uri: Uri, selection: String?, selectionArgs: Array<String>?): Triple<String, String?, Array<String>?> {
-        val itemSelection = "$MOVIE_ID = ${uri.pathSegments.last()}"
+    /*private fun getTableEntry(uri: Uri, selection: String?, selectionArgs: Array<String>?): Triple<String, String?, Array<String>?> {
+       /* val itemSelection = "$MOVIE_ID = ${uri.pathSegments.last()}"
         return when (uriMatcher.match(uri)) {
             UPCOMING_ITEM_CODE -> Triple(UPCOMING, itemSelection, null)
             NOW_PLAYING_ITEM_CODE -> Triple(NOW_PLAYING, itemSelection, null)
             FOLLOWING_ITEM_CODE -> Triple(FOLLOWING, itemSelection, null)
             else -> getTable(uri).let { Triple(it.first, selection, selectionArgs) }
-        }
-    }
+        }*/
+    }*/
 
     private fun getTable(uri: Uri): Pair<String, String> = when (uriMatcher.match(uri)) {
         COURSE_LIST_CODE -> Pair(COURSE, COURSE_PATH)
