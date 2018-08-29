@@ -10,7 +10,8 @@ export default class extends React.Component {
         fullName: '',
         shortName: ''
       },
-      error: 'Follow a programme'
+      error: 'Follow a programme',
+      loadingProgramme: true
     }
   }
   render () {
@@ -18,6 +19,7 @@ export default class extends React.Component {
       <div className='side_item'>
         <Card
           title='My Programme'
+          loading={this.state.loadingProgramme}
           actions={[
             <p onClick={() => this.props.history.push('/programmes')}>
                     See all programmes
@@ -50,8 +52,12 @@ export default class extends React.Component {
     fetcher('http://localhost:8080/user/programme', options)
       .then(json => this.setState({
         programme: json,
+        loadingProgramme: false,
         error: undefined
       }))
-      .catch(_ => this.setState({error: 'Try following a programme or try later'}))
+      .catch(_ => this.setState({
+        error: 'Try following a programme or try later',
+        loadingProgramme: false
+      }))
   }
 }

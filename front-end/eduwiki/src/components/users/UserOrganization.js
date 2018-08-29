@@ -11,7 +11,8 @@ export default class extends React.Component {
         shortName: '',
         address: '',
         contact: ''
-      }
+      },
+      loadingOrganization: true
     }
   }
   render () {
@@ -19,6 +20,7 @@ export default class extends React.Component {
       <div className='side_item'>
         <Card
           title='My organization'
+          loading={this.state.loadingOrganization}
           actions={[
             <p onClick={() => this.props.history.push('/organization')}>
                     See full organization page
@@ -41,7 +43,13 @@ export default class extends React.Component {
       }
     }
     fetcher('http://localhost:8080/organization', options)
-      .then(json => this.setState({organization: json}))
-      .catch(_ => message.error('Try Later'))
+      .then(json => this.setState({
+        organization: json,
+        loadingOrganization: false
+      }))
+      .catch(_ => {
+        message.error('Try Later')
+        this.setState({loadingOrganization: false})
+      })
   }
 }

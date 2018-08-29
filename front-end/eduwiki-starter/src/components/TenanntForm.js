@@ -26,24 +26,24 @@ class TenantCreator extends React.Component {
       if (!err) {
         const requesters = [
           {
-            username: values.pioneer_username,
-            family_name: values.pioneer_familyName,
-            given_name: values.pioneer_givenName,
-            organization_email: values.pioneer_organizationEmail,
+            username: values.principal_username,
+            family_name: values.principal_familyName,
+            given_name: values.principal_givenName,
+            organization_email: values.principal_organizationEmail,
             principal: true
           },
           {
-            username: values.first_guest_username,
-            family_name: values.first_guest_familyName,
-            given_name: values.first_guest_givenName,
-            organization_email: values.first_guest_organizationEmail,
+            username: values.user1_username,
+            family_name: values.user1_familyName,
+            given_name: values.user1_givenName,
+            organization_email: values.user1_organizationEmail,
             principal: false
           },
           {
-            username: values.second_guest_username,
-            family_name: values.second_guest_familyName,
-            given_name: values.second_guest_givenName,
-            organization_email: values.second_guest_organizationEmail,
+            username: values.user2_username,
+            family_name: values.user2_familyName,
+            given_name: values.user2_givenName,
+            organization_email: values.user2_organizationEmail,
             principal: false
           }
         ]
@@ -204,18 +204,18 @@ class TenantCreator extends React.Component {
           )}
         </Form.Item>
         <p>
-          Now please gather 4 more people and write here their information,
+          Now please gather 2 more people and write here their information,
               so that all of you become administrators in your newly tenant created for your organization.
         </p>
         <p>
-              Describe your own information, you'll be the Pioneer user, the devs will reach you for every information they need
+              Describe your own information, you'll be the Principal user, the devs will reach you for every information they need
         </p>
-        <p>Pioneer</p>
-        {this.userForm('pioneer', getFieldDecorator)}
-        <p>First Guest</p>
-        {this.userForm('first_guest', getFieldDecorator)}
-        <p>Second Guest</p>
-        {this.userForm('second_guest', getFieldDecorator)}
+        <p>Principal</p>
+        {this.userForm('principal', getFieldDecorator)}
+        <p>Other User 1</p>
+        {this.userForm('user1', getFieldDecorator)}
+        <p>Other User 2</p>
+        {this.userForm('user2', getFieldDecorator)}
         <Form.Item {...tailFormItemLayout}>
           <Button type='primary' htmlType='submit'>submit</Button>
         </Form.Item>
