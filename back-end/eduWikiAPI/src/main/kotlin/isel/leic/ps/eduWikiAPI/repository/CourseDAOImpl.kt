@@ -13,6 +13,7 @@ import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_CREATED_B
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_LOG_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_NAME
+import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_PROGRAMME_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_TABLE
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_TERM_ID
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_TIMESTAMP
@@ -361,6 +362,7 @@ class CourseDAOImpl : CourseDAO {
 
         @SqlQuery(
                 "SELECT C.$CLASS_ID, " +
+                        "C.$CLASS_PROGRAMME_ID, " +
                         "C.$CLASS_VERSION, " +
                         "C.$CLASS_CREATED_BY, " +
                         "C.$CLASS_NAME, " +
@@ -390,7 +392,7 @@ class CourseDAOImpl : CourseDAO {
                         "$COURSE_SHORT_NAME = :course.shortName, " +
                         "$COURSE_VOTES = :course.votes, " +
                         "$COURSE_TIMESTAMP = :course.timestamp " +
-                        "WHERE $COURSE_ID = :courseId"
+                        "WHERE $COURSE_ID = :course.courseId"
         )
         @GetGeneratedKeys
         override fun updateCourse(course: Course): Course

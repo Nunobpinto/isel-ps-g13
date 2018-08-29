@@ -7,8 +7,8 @@ public class TenantContext {
         return tenantSchema.get();
     }
 
-    public static void setTenantSchema(String uuid) {
-        tenantSchema.set(uuid);
+    public static void setTenantSchema(String schema) {
+        tenantSchema.set(schema);
     }
 
     public static void resetTenantSchema() {
