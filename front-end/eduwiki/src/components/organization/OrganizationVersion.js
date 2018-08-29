@@ -35,7 +35,7 @@ export default class extends React.Component {
               <h1>{this.state.organization.fullName} - {this.state.organization.shortName} <small>({this.state.organization.timestamp})</small></h1>
             </div>
             <div className='version_div'>
-              <p>version {this.props.version}</p>
+              <p>version {this.props.match.params.version}</p>
             </div>
             <p>Created By: {this.state.organization.createdBy}</p>
             <Row gutter={16}>

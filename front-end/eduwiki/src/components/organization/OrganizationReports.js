@@ -3,9 +3,10 @@ import { List, message } from 'antd'
 import IconText from '../comms/IconText'
 import Cookies from 'universal-cookie'
 import fetcher from '../../fetcher'
+import Layout from '../layout/Layout';
 const cookies = new Cookies()
 
-export default class extends React.Component {
+class OrganizationReports extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
@@ -13,51 +14,84 @@ export default class extends React.Component {
     }
     this.voteUp = this.voteUp.bind(this)
     this.voteDown = this.voteDown.bind(this)
+    this.approve = this.approve.bind(this)
+    this.reject = this.reject.bind(this)
   }
   render () {
     return (
       <List
         itemLayout='vertical'
+        header={<div><h1>Organization Reports</h1></div>}
         bordered
         dataSource={this.state.reports}
         renderItem={item => (
-          <List.Item
-            actions={[
-              <IconText
-                type='like-o'
-                id='like_btn'
-                onClick={() =>
-                  this.setState({
-                    voteUp: true,
-                    reportId: item.reportId
-                  })}
-              />,
-              <IconText
-                type='dislike-o'
-                id='dislike_btn'
-                onClick={() =>
-                  this.setState({
-                    voteDown: true,
-                    reportId: item.reportId
-                  })}
+          <div>
+            {item.reportedBy !== this.props.user.username &&
+            <List.Item
+              actions={[
+                <IconText
+                  type='like-o'
+                  id='like_btn'
+                  onClick={() =>
+                    this.setState({
+                      voteUp: true,
+                      reportId: item.reportId
+                    })}
+                />,
+                <IconText
+                  type='dislike-o'
+                  id='dislike_btn'
+                  onClick={() =>
+                    this.setState({
+                      voteDown: true,
+                      reportId: item.reportId
+                    })}
+                />
+              ]}
+            >
+              <List.Item.Meta
+                title={`Reported by ${item.reportedBy}`}
+                description={`Votes: ${item.votes}`}
               />
-            ]}
-          >
-            <List.Item.Meta
-              title={`Reported by ${item.reportedBy}`}
-              description={`Votes: ${item.votes}`}
-            />
-            {item.fullName && `Full name: ${item.fullName}`}
-            <br />
-            {item.shortName && `Short name: ${item.shortName}`}
-            <br />
-            {item.address && `Address: ${item.address}`}
-            <br />
-            {item.contact && `Total Credits: ${item.contact}`}
-            <br />
-            {item.website && `Website: ${item.website}`}
-          </List.Item>
-        )}
+              {item.fullName && `Full name: ${item.fullName}`}
+              <br />
+              {item.shortName && `Short name: ${item.shortName}`}
+              <br />
+              {item.address && `Address: ${item.address}`}
+              <br />
+              {item.contact && `Contact: ${item.contact}`}
+              <br />
+              {item.website && `Website: ${item.website}`}
+              {
+                this.props.user.reputation.role === 'ROLE_ADMIN' &&
+                <div>
+                  <IconText
+                    type='check-circle'
+                    id='like_btn'
+                    text='Approve Report'
+                    onClick={() =>
+                      this.setState({
+                        approved: true,
+                        reportId: item.reportId
+                      })}
+                  />
+                  <IconText
+                    type='close-circle'
+                    id='dislike_btn'
+                    text='Reject Report'
+                    onClick={() =>
+                      this.setState({
+                        rejected: true,
+                        reportId: item.reportId
+                      })}
+                  />
+                </div>
+              }
+            </List.Item>
+            }
+          </div>
+        )
+        }
       />
     )
   }
@@ -103,8 +137,12 @@ export default class extends React.Component {
           })
         })
       )
-      .catch(_ => {
-        message.error('Cannot vote up')
+      .catch(error => {
+        if (error.detail) {
+          message.error(error.detail)
+        } else {
+          message.error('Cannot vote up')
+        }
         this.setState({voteUp: false})
       })
   }
@@ -137,9 +175,80 @@ export default class extends React.Component {
           })
         })
       )
-      .catch(_ => {
-        message.error('Cannot vote down')
+      .catch(error => {
+        if (error.detail) {
+          message.error(error.detail)
+        } else {
+          message.error('Cannot vote down')
+        }
         this.setState({voteDown: false})
+      })
+  }
+
+  approve () {
+    const reportId = this.state.reportId
+    const url = `http://localhost:8080/organization/reports/${reportId}`
+    const body = {
+      method: 'POST',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
+      }
+    }
+    fetcher(url, body)
+      .then(_ => {
+        this.setState(prevState => {
+          message.success('Approved report!!')
+          let newArray = [...prevState.reports]
+          newArray = newArray.filter(report => report.reportId !== this.state.reportId)
+          return ({
+            reports: newArray,
+            approved: false
+          })
+        })
+      })
+      .catch(error => {
+        if (error.detail) {
+          message.error(error.detail)
+        } else {
+          message.error('Cannot approve report')
+        }
+        this.setState({approved: false})
+      })
+  }
+
+  reject () {
+    const reportId = this.state.reportId
+    const url = `http://localhost:8080/organization/reports/${reportId}`
+    const body = {
+      method: 'DELETE',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
+      }
+    }
+    fetcher(url, body)
+      .then(_ =>
+        this.setState(prevState => {
+          message.success('Rejected report!!')
+          let newArray = [...prevState.reports]
+          newArray = newArray.filter(report => report.reportId !== this.state.reportId)
+          return ({
+            reports: newArray,
+            rejected: false
+          })
+        })
+      )
+      .catch(error => {
+        if (error.detail) {
+          message.error(error.detail)
+        } else {
+          message.error('Cannot reject report')
+        }
+        this.setState({rejected: false})
       })
   }
 
@@ -148,6 +257,16 @@ export default class extends React.Component {
       this.voteDown()
     } else if (this.state.voteUp) {
       this.voteUp()
+    } else if (this.state.approved) {
+      this.approve()
+    } else if (this.state.rejected) {
+      this.reject()
     }
   }
 }
+
+export default (props) => (
+  <Layout>
+    <OrganizationReports />
+  </Layout>
+)

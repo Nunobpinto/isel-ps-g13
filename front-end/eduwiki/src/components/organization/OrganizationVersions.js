@@ -25,7 +25,6 @@ export default class extends React.Component {
     )
   }
   componentDidMount () {
-    const versionNumber = this.props.version
     const url = 'http://localhost:8080/organization/versions'
     const body = {
       headers: {
@@ -36,7 +35,9 @@ export default class extends React.Component {
     }
     fetcher(url, body)
       .then(versions => {
-        const organizationVersions = versions.filter(version => version.version !== versionNumber)
+        const versionNumber = this.props.version
+        const versionsArray = versions.organizationVersionList
+        const organizationVersions = versionsArray.filter(version => version.version !== versionNumber)
         this.setState({versions: organizationVersions})
       })
       .catch(_ => message.error('Error obtaining versions'))

@@ -21,6 +21,7 @@ import Logout from './components/auth/Logout'
 import CourseClass from './components/classes/CourseClass'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom'
+import OrganizationReports from './components/organization/OrganizationReports'
 
 export default () => (
   <div>
@@ -29,6 +30,8 @@ export default () => (
         <Route exact path='/' component={Home} />
         <Route exact path='/register' component={Register} />
         <ProtectedRoute exact path='/organization' component={Organization} />
+        <ProtectedRoute exact path='/organization/versions/:version' component={OrganizationVersion} />
+        <ProtectedRoute exact path='/organization/reports' component={OrganizationReports} />
         <ProtectedRoute exact path='/programmes' component={Programmes} />
         <ProtectedRoute exact path='/programmes/:id' component={Programme} />
         <ProtectedRoute exact path='/courses' component={Courses} />
@@ -41,7 +44,6 @@ export default () => (
         <ProtectedRoute exact path='/classes/:classId/courses/:courseId/lectures/:lectureId' component={Lecture} />
         <ProtectedRoute exact path='/classes/:classId/courses/:courseId/homeworks/:homeworkId' component={Homework} />
         <ProtectedRoute exact path='/programmes/:programmeId/versions/:version' component={ProgrammeVersion} />
-        <ProtectedRoute exact path='/organization/versions/:version' component={OrganizationVersion} />
         <ProtectedRoute exact path='/courses/:courseId/versions/:version' component={CourseVersion} />
         <ProtectedRoute exact path='/logout' component={Logout} />
         <ProtectedRoute exact path='/user' component={Profile} />

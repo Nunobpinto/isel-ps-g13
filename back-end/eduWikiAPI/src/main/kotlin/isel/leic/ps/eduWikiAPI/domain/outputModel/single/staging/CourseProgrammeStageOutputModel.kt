@@ -13,5 +13,6 @@ data class CourseProgrammeStageOutputModel (
         val optional: Boolean = false,
         val credits: Int = 0,
         val votes: Int = 0,
-        val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
+        val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now()),
+        val courseShortName: String = ""
 )

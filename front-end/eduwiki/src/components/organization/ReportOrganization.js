@@ -8,11 +8,11 @@ export default class extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      full_name: undefined,
-      short_name: undefined,
-      address: undefined,
-      contact: undefined,
-      website: undefined,
+      organization_full_name: undefined,
+      organization_short_name: undefined,
+      organization_address: undefined,
+      organization_contact: undefined,
+      organization_website: undefined,
       history: props.history
     }
     this.handleChange = this.handleChange.bind(this)
@@ -27,11 +27,6 @@ export default class extends React.Component {
   handleSubmit (ev) {
     ev.preventDefault()
     this.setState({
-      full_name: this.state.full_name,
-      short_name: this.state.short_name,
-      address: this.state.address,
-      contact: this.state.contact,
-      website: this.state.website,
       reported: true
     })
   }
@@ -41,19 +36,19 @@ export default class extends React.Component {
         <h1>Report the fields that you don't agree</h1>
         <Form>
         Full name: <br />
-          <Input name='full_name' onChange={this.handleChange} />
+          <Input name='organization_full_name' onChange={this.handleChange} />
           <br />
         Short name: <br />
-          <Input name='short_name' onChange={this.handleChange} />
+          <Input name='organization_short_name' onChange={this.handleChange} />
           <br />
         Address: <br />
-          <Input name='address' onChange={this.handleChange} />
+          <Input name='organization_address' onChange={this.handleChange} />
           <br />
         Contact: <br />
-          <Input name='contact' onChange={this.handleChange} />
+          <Input name='organization_contact' onChange={this.handleChange} />
           <br />
           Website: <br />
-          <Input name='website' onChange={this.handleChange} />
+          <Input name='organization_website' onChange={this.handleChange} />
           <br />
           <Button type='primary' onClick={this.handleSubmit}>Create</Button>
         </Form>
@@ -80,13 +75,13 @@ export default class extends React.Component {
         },
         body: JSON.stringify(data)
       }
-      const url = `http://localhost:8080/organizations/${this.props.id}/reports`
+      const url = `http://localhost:8080/organization/reports`
       fetcher(url, options)
         .then(_ => {
-          this.state.history.push('/programmes/' + this.props.id)
+          message.success('Reported !!')
           this.setState({reported: false})
         })
-        .catch(_ => {
+        .catch(error => {
           message.error('Error while processing your report!!')
           this.setState({reported: false})
         })

@@ -12,9 +12,8 @@ class RegisterForm extends React.Component {
     this.state = {
       username: '',
       password: '',
-      organizationEmail: '',
+      email: '',
       personalEmail: '',
-      familyName: '',
       givenName: '',
       register: false,
       current: 0,
@@ -66,19 +65,8 @@ class RegisterForm extends React.Component {
             <Input />
           )}
         </Form.Item>
-        <Form.Item
-          label='Personal Email'
-        >
-          {getFieldDecorator('personalEmail', {
-            rules: [
-              {type: 'email', message: 'The input is not valid E-mail!'},
-              { required: true, message: 'Please input your personal email!' }]
-          })(
-            <Input />
-          )}
-        </Form.Item>
         <Form.Item label='Organization Email'>
-          {getFieldDecorator('organizationEmail', {
+          {getFieldDecorator('email', {
             rules: [
               {type: 'email', message: 'The input is not valid E-mail!'},
               { required: true, message: 'Please input your organization email!' }]
