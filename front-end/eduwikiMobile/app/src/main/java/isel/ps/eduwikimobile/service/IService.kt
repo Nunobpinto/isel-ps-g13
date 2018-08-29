@@ -23,4 +23,5 @@ interface IService {
     fun getUserFollowingCourses(params: CourseCollectionParametersContainer)
     fun getUserFollowingProgramme(params: EntityParametersContainer<Programme>)
     fun getAuthUser(params: LoginParametersContainer)
+    fun getUserProfileInfo(params: EntityParametersContainer<User>)
 }

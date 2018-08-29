@@ -31,7 +31,7 @@ class DownloadAsyncTask : AsyncTask<DownloadFileContainer, Int, String>() {
             val manager = objs[0].ctx.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
             manager.enqueue(request)
         } catch (e: IOException) {
-
+            throw IOException(e.message)
         }
         return filename
     }

@@ -1,12 +1,16 @@
 package isel.ps.eduwikimobile.ui.activities
 
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.os.Parcelable
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
@@ -17,6 +21,7 @@ import isel.ps.eduwikimobile.ui.fragments.collection.CourseCollectionFragment
 import isel.ps.eduwikimobile.ui.fragments.collection.ProgrammeCollectionFragment
 import isel.ps.eduwikimobile.ui.fragments.single.*
 import isel.ps.eduwikimobile.comms.DownloadAsyncTask
+import isel.ps.eduwikimobile.comms.Session
 import isel.ps.eduwikimobile.controller.AppController
 import isel.ps.eduwikimobile.paramsContainer.DownloadFileContainer
 import isel.ps.eduwikimobile.paramsContainer.ResourceParametersContainer
@@ -70,8 +75,8 @@ class MainActivity : AppCompatActivity(), IDataComunication {
                 loadFragment(fragmentsMap["course_collection"]!!)
                 return@OnNavigationItemSelectedListener true
             }
-            R.id.navigation_organization -> {
-                loadFragment(fragmentsMap["organization"]!!)
+            R.id.navigation_profile -> {
+                loadFragment(fragmentsMap["profile"]!!)
                 return@OnNavigationItemSelectedListener true
             }
         }
@@ -92,7 +97,8 @@ class MainActivity : AppCompatActivity(), IDataComunication {
                 "programme_collection" to ProgrammeCollectionFragment(),
                 "course_class" to CourseClassFragment(),
                 "lecture" to LectureFragment(),
-                "homework" to HomeworkFragment()
+                "homework" to HomeworkFragment(),
+                "profile" to ProfileFragment()
         )
     }
 
@@ -180,6 +186,20 @@ class MainActivity : AppCompatActivity(), IDataComunication {
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             DownloadAsyncTask().execute(DownloadFileContainer(url, applicationContext))
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.toolbar_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        val id = item!!.itemId
+        if(id == R.id.logoutBtn) {
+            Session().setLogout(this)
+            startActivity(Intent(baseContext, LoginActivity::class.java))
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 }

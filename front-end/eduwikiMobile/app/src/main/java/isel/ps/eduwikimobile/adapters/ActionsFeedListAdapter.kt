@@ -29,19 +29,42 @@ class ActionsFeedListAdapter(var context: Context, var list: MutableList<UserAct
                     "ALTER" to "altered",
                     "DELETE" to "deleted",
                     "VOTE_UP" to "upvoted",
-                    "VOTE_DOWN" to "downvoted"
+                    "VOTE_DOWN" to "downvoted",
+                    "APPROVE_REPORT" to "approved",
+                    "APPROVE_STAGE" to "approved",
+                    "REJECT_REPORT" to "rejected",
+                    "REJECT_STAGE" to "rejected"
             )
+
     var supportedEntitiesMap: HashMap<String, String> =
             hashMapOf(
                     "course_class" to "Course in Class",
+                    "course_class_stage" to "Staged Course in Class",
+                    "course_class_report" to "Reported Course in Class",
                     "course_programme" to "Course in Programme",
+                    "course_programme_stage" to "Staged Course in Programme",
+                    "course_programme_report" to "Reported Course in Programme",
                     "class" to "Class",
+                    "class_stage" to "Staged Class",
+                    "class_report" to "Reported Class",
                     "course" to "Course",
+                    "course_stage" to "Staged Course",
+                    "course_report" to "Reported Course",
                     "programme" to "Programme",
+                    "programme_stage" to "Staged Programme",
+                    "programme_report" to "Reported Programme",
                     "exam" to "Exam",
+                    "exam_stage" to "Staged Exam",
+                    "exam_report" to "Reported Exam",
                     "homework" to "Homework",
+                    "homework_stage" to "Staged Homework",
+                    "homework_report" to "Reported Homework",
                     "work_assignment" to "WorkAssignment",
-                    "lecture" to "Lecture"
+                    "work_assignment_stage" to "Staged Work Assignment",
+                    "work_assignment_report" to "Reported Work Assignment",
+                    "lecture" to "Lecture",
+                    "lecture_stage" to "Staged Work Lecture",
+                    "lecture_report" to "Reported Work Lecture"
             )
 
     private fun getType(type: String) =
@@ -54,7 +77,7 @@ class ActionsFeedListAdapter(var context: Context, var list: MutableList<UserAct
                 "homework" -> Homework::class.java
                 "work_assignment" -> WorkAssignment::class.java
                 "lecture" -> Lecture::class.java
-                else -> throw UnsupportedOperationException("Type not supported!")
+                else -> null
             }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ListViewHolder {
@@ -106,18 +129,21 @@ class ActionsFeedListAdapter(var context: Context, var list: MutableList<UserAct
             actionType.text = userActionsMap[item.action_type]
             entity.text = supportedEntitiesMap[item.entity_type]
             createdBy.text = item.action_user
-            resource.setOnClickListener {
-                app.repository.getEntity(
-                        "$API_URL/${item.entity_link}",
-                        getType(item.entity_type),
-                        EntityParametersContainer(
-                                app = app,
-                                successCb = { entity ->
-                                    mainActivity.navigateToListItem(entity, null)
-                                },
-                                errorCb = { error -> Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show() }
-                        )
-                )
+            if (getType(item.entity_type) != null) {
+                resource.visibility = View.VISIBLE
+                resource.setOnClickListener {
+                    app.repository.getEntity(
+                            "$API_URL/${item.entity_link}",
+                            getType(item.entity_type)!!,
+                            EntityParametersContainer(
+                                    app = app,
+                                    successCb = { entity ->
+                                        mainActivity.navigateToListItem(entity, null)
+                                    },
+                                    errorCb = { error -> Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                            )
+                    )
+                }
             }
         }
 

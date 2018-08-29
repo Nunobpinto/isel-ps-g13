@@ -18,13 +18,12 @@ import kotlinx.android.synthetic.main.organization_fragment.*
 class OrganizationFragment : Fragment() {
 
     lateinit var app: EduWikiApplication
+    lateinit var mainActivity: MainActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        app = activity.applicationContext as EduWikiApplication
-        val activity = activity as MainActivity
-        activity.toolbar.title = "Organization"
-        activity.toolbar.subtitle = ""
+        mainActivity = activity as MainActivity
+        app = mainActivity.applicationContext as EduWikiApplication
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -42,12 +41,12 @@ class OrganizationFragment : Fragment() {
                             organization_name.text = organization.fullName
                             organization_address.text = organization.address
                             organization_contacts.text = organization.contact
-                            val activity = activity as MainActivity
-                            activity.toolbar.title = organization.shortName
+                            organization_website.text = organization.website
                             organization_progress_bar.visibility = View.GONE
                             organization_name.visibility = View.VISIBLE
                             organization_address.visibility = View.VISIBLE
                             organization_contacts.visibility = View.VISIBLE
+                            organization_website.visibility = View.VISIBLE
                         },
                         errorCb = { error -> Toast.makeText(app, "Error" + error.message, LENGTH_LONG).show() }
                 )
