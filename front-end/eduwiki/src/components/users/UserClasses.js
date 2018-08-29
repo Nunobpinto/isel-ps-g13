@@ -7,7 +7,8 @@ export default class extends React.Component {
     super(props)
     this.state = {
       classes: [],
-      error: 'Follow a course'
+      error: 'Follow a course',
+      loadingClasses: true
     }
   }
   render () {
@@ -15,6 +16,7 @@ export default class extends React.Component {
       <div className='side_item'>
         <Card
           title='My Classes'
+          loading={this.state.loadingClasses}
           actions={[
             <p onClick={() => this.props.history.push('/classes')}>
                     See all classes
@@ -49,8 +51,12 @@ export default class extends React.Component {
     fetcher('http://localhost:8080/user/classes', options)
       .then(json => this.setState({
         classes: json.courseClassList,
+        loadingClasses: false,
         error: undefined
       }))
-      .catch(_ => this.setState({error: 'Try following a class or try later'}))
+      .catch(_ => this.setState({
+        error: 'Try following a class or try later',
+        loadingClasses: false
+      }))
   }
 }

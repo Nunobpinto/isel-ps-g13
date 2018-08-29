@@ -66,44 +66,44 @@ import java.util.Objects.*
 class UserServiceImpl : UserService {
 
     val entityToAction = mapOf<String, (ActionLog) -> UserActionOutputModel>(
-            CLASS_TABLE to { actionLog -> classDAO.getClassByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
-            CLASS_REPORT_TABLE to { actionLog -> classDAO.getClassReportByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
-            CLASS_STAGE_TABLE to { actionLog -> classDAO.getClassStageByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
+            CLASS_TABLE to { actionLog -> classDAO.getClassByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
+            CLASS_REPORT_TABLE to { actionLog -> classDAO.getClassReportByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
+            CLASS_STAGE_TABLE to { actionLog -> classDAO.getClassStageByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
 
-            HOMEWORK_TABLE to { actionLog -> homeworkDAO.getHomeworkByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
-            HOMEWORK_REPORT_TABLE to { actionLog -> homeworkDAO.getHomeworkReportByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
-            HOMEWORK_STAGE_TABLE to { actionLog -> homeworkDAO.getHomeworkStageByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
+            HOMEWORK_TABLE to { actionLog -> homeworkDAO.getHomeworkByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
+            HOMEWORK_REPORT_TABLE to { actionLog -> homeworkDAO.getHomeworkReportByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
+            HOMEWORK_STAGE_TABLE to { actionLog -> homeworkDAO.getHomeworkStageByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
 
-            LECTURE_TABLE to { actionLog -> lectureDAO.getLectureByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
-            LECTURE_REPORT_TABLE to { actionLog -> lectureDAO.getLectureReportByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
-            LECTURE_STAGE_TABLE to { actionLog -> lectureDAO.getLectureStageByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
+            LECTURE_TABLE to { actionLog -> lectureDAO.getLectureByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
+            LECTURE_REPORT_TABLE to { actionLog -> lectureDAO.getLectureReportByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
+            LECTURE_STAGE_TABLE to { actionLog -> lectureDAO.getLectureStageByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
 
-            COURSE_TABLE to { actionLog -> courseDAO.getCourseByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
-            COURSE_REPORT_TABLE to { actionLog -> courseDAO.getCourseReportByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
-            COURSE_STAGE_TABLE to { actionLog -> courseDAO.getCourseStageByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
+            COURSE_TABLE to { actionLog -> courseDAO.getCourseByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
+            COURSE_REPORT_TABLE to { actionLog -> courseDAO.getCourseReportByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
+            COURSE_STAGE_TABLE to { actionLog -> courseDAO.getCourseStageByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
 
-            COURSE_CLASS_TABLE to { actionLog -> classDAO.getCourseClassByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
-            COURSE_CLASS_REPORT_TABLE to { actionLog -> classDAO.getCourseClassReportByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
-            COURSE_CLASS_STAGE_TABLE to { actionLog -> classDAO.getCourseClassStageByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
+            COURSE_CLASS_TABLE to { actionLog -> classDAO.getCourseClassByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
+            COURSE_CLASS_REPORT_TABLE to { actionLog -> classDAO.getCourseClassReportByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
+            COURSE_CLASS_STAGE_TABLE to { actionLog -> classDAO.getCourseClassStageByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
 
-            COURSE_PROGRAMME_TABLE to { actionLog -> courseDAO.getCourseProgrammeByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
-            COURSE_PROGRAMME_REPORT_TABLE to { actionLog -> courseDAO.getCourseProgrammeReportByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
-            COURSE_PROGRAMME_STAGE_TABLE to { actionLog -> courseDAO.getCourseProgrammeStageByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
+            COURSE_PROGRAMME_TABLE to { actionLog -> courseDAO.getCourseProgrammeByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
+            COURSE_PROGRAMME_REPORT_TABLE to { actionLog -> courseDAO.getCourseProgrammeReportByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
+            COURSE_PROGRAMME_STAGE_TABLE to { actionLog -> courseDAO.getCourseProgrammeStageByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
 
-            WORK_ASSIGNMENT_TABLE to { actionLog -> workAssignmentDAO.getWorkAssignmentByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
-            WORK_ASSIGNMENT_REPORT_TABLE to { actionLog -> workAssignmentDAO.getWorkAssignmentReportByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
-            WORK_ASSIGNMENT_STAGE_TABLE to { actionLog -> workAssignmentDAO.getWorkAssignmentStageByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
+            WORK_ASSIGNMENT_TABLE to { actionLog -> workAssignmentDAO.getWorkAssignmentByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
+            WORK_ASSIGNMENT_REPORT_TABLE to { actionLog -> workAssignmentDAO.getWorkAssignmentReportByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
+            WORK_ASSIGNMENT_STAGE_TABLE to { actionLog -> workAssignmentDAO.getWorkAssignmentStageByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
 
-            EXAM_TABLE to { actionLog -> examDAO.getExamByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
-            EXAM_REPORT_TABLE to { actionLog -> examDAO.getExamStageByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
-            EXAM_STAGE_TABLE to { actionLog -> examDAO.getExamReportByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
+            EXAM_TABLE to { actionLog -> examDAO.getExamByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
+            EXAM_REPORT_TABLE to { actionLog -> examDAO.getExamStageByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
+            EXAM_STAGE_TABLE to { actionLog -> examDAO.getExamReportByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
 
-            PROGRAMME_TABLE to { actionLog -> programmeDAO.getProgrammeByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
-            PROGRAMME_REPORT_TABLE to { actionLog -> programmeDAO.getProgrammeReportByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
-            PROGRAMME_STAGE_TABLE to { actionLog -> programmeDAO.getProgrammeStageByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
+            PROGRAMME_TABLE to { actionLog -> programmeDAO.getProgrammeByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
+            PROGRAMME_REPORT_TABLE to { actionLog -> programmeDAO.getProgrammeReportByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
+            PROGRAMME_STAGE_TABLE to { actionLog -> programmeDAO.getProgrammeStageByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
 
-            ORGANIZATION_TABLE to { actionLog -> organizationDAO.getOrganization().orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) },
-            ORGANIZATION_REPORT_TABLE to { actionLog -> organizationDAO.getOrganizationReportByLogId(actionLog.logId).orElseThrow { noActionException() }.toUserActionOutputModel(actionLog) }
+            ORGANIZATION_TABLE to { actionLog -> organizationDAO.getOrganization().map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } },
+            ORGANIZATION_REPORT_TABLE to { actionLog -> organizationDAO.getOrganizationReportByLogId(actionLog.logId).map { it.toUserActionOutputModel(actionLog) }.orElseGet { actionLog.toUserActionOutputModel() } }
     )
 
     @Autowired
@@ -422,3 +422,11 @@ class UserServiceImpl : UserService {
     private fun noActionException(): Nothing = throw UnknownDataException("An error occured while loading the actions", "Try again alter or contact the EduWiki team")
 
 }
+
+private fun ActionLog.toUserActionOutputModel() = UserActionOutputModel (
+        action_type = actionType.name,
+        action_user = user,
+        entity_type = entity,
+        entity_link = "",
+        timestamp = timestamp
+)

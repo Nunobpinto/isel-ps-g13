@@ -146,7 +146,7 @@ class ReputationDAOImpl : ReputationDAO {
                 "UPDATE :schema.$REPUTATION_TABLE SET " +
                         "$REPUTATION_ROLE = :reputationDetails.role, " +
                         "$REPUTATION_POINTS = :reputationDetails.points " +
-                        "WHERE $REPUTATION_USER = :reputationDetails.user AND $REPUTATION_ID = :reputationDetails.repId"
+                        "WHERE $REPUTATION_USER = :reputationDetails.username AND $REPUTATION_ID = :reputationDetails.reputationId"
         )
         override fun updateUserReputation(reputationDetails: Reputation): Int
 

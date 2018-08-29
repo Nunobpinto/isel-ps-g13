@@ -8,6 +8,7 @@ export default class extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      loadingFeed: true,
       actions: [{
         action_type: '',
         entity_type: '',
@@ -21,6 +22,7 @@ export default class extends React.Component {
   render () {
     return (
       <List
+        loading={this.state.loadingFeed}
         itemLayout='horizontal'
         dataSource={this.state.actions}
         renderItem={item => (
@@ -96,10 +98,16 @@ export default class extends React.Component {
       }
     }
     fetcher(uri, options)
-      .then(json => this.setState({actions: json.actions}))
+      .then(json => this.setState({
+        actions: json.actions,
+        loadingFeed: false
+      }))
       .catch(error => {
         console.log(error)
         message.error('Error getting your past actions')
+        this.setState({
+          loadingFeed: false
+        })
       })
   }
 }

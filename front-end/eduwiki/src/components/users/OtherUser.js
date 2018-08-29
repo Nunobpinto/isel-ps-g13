@@ -4,12 +4,13 @@ import fetcher from '../../fetcher'
 import MyLayout from '../layout/Layout'
 import ReportUser from './ReportUser'
 import {message, Layout} from 'antd'
+import {Redirect} from 'react-router-dom'
 import Cookies from 'universal-cookie'
 const cookies = new Cookies()
 
 const { Content, Sider } = Layout
 
-export default class extends React.Component {
+class OtherUserDetail extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
@@ -26,7 +27,8 @@ export default class extends React.Component {
   }
   render () {
     return (
-      <MyLayout>
+      <div>
+        {this.props.user.username === this.props.match.params.username && <Redirect to='/user' />}
         <Layout style={{ padding: '24px 0', background: '#fff' }}>
           <Sider width={200} style={{ background: '#fff' }}>
             <img src='defaultUser.png' />
@@ -36,7 +38,7 @@ export default class extends React.Component {
             <ReportUser username={this.state.user.username} />
           </Content>
         </Layout>
-      </MyLayout>
+      </div>
     )
   }
   componentDidMount () {
@@ -60,3 +62,9 @@ export default class extends React.Component {
       .catch(_ => message.error('Error fetching user'))
   }
 }
+
+export default (props) => (
+  <MyLayout>
+    <OtherUserDetail match={props.match} />
+  </MyLayout>
+)
