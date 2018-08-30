@@ -262,9 +262,6 @@ class CourseDAOImpl : CourseDAO {
     override fun createStagingCourseOfProgramme(courseProgrammeStage: CourseProgrammeStage): CourseProgrammeStage =
             jdbi.open().attach(CourseDAOJdbi::class.java).createStagingCourseOfProgramme(courseProgrammeStage)
 
-    override fun deleteStagedCourseProgramme(stageId: Int): Int =
-            jdbi.open().attach(CourseDAOJdbi::class.java).deleteStagedCourseProgramme(stageId)
-
     override fun deleteSpecificStagedCourseProgramme(programmeId: Int, stageId: Int): Int =
             jdbi.open().attach(CourseDAOJdbi::class.java).deleteSpecificStagedCourseProgramme(programmeId, stageId)
 
@@ -648,12 +645,6 @@ class CourseDAOImpl : CourseDAO {
                         "AND $COURSE_PROGRAMME_STAGE_PROGRAMME_ID = :programmeId"
         )
         override fun getSpecificStagedCourseProgramme(programmeId: Int, stageId: Int): Optional<CourseProgrammeStage>
-
-        @SqlUpdate(
-                "DELETE FROM :schema.$COURSE_PROGRAMME_STAGE_TABLE " +
-                        "WHERE $COURSE_PROGRAMME_STAGE_ID = :stageId"
-        )
-        override fun deleteStagedCourseProgramme(stageId: Int): Int
 
         @SqlUpdate(
                 "UPDATE :schema.$COURSE_PROGRAMME_STAGE_TABLE " +

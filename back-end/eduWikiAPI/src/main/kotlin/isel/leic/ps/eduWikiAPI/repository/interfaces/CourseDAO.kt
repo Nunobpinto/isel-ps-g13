@@ -100,8 +100,6 @@ interface CourseDAO {
 
     fun createStagingCourseOfProgramme(courseProgrammeStage: CourseProgrammeStage): CourseProgrammeStage
 
-    fun deleteStagedCourseProgramme(stageId: Int): Int
-
     fun deleteSpecificStagedCourseProgramme(programmeId: Int, stageId: Int): Int
 
     fun updateVotesOnStagedCourseProgramme(programmeId: Int, stageId: Int, votes: Int): Int

@@ -447,7 +447,7 @@ class ProgrammeServiceImpl : ProgrammeService {
         resolveApproval(principal.name, courseProgrammeStage.createdBy)
 
         val courseProgramme = courseDAO.addCourseToProgramme(programmeId, stagedToCourseProgramme(programmeId, courseProgrammeStage))
-        courseDAO.deleteStagedCourseProgramme(stageId)
+        courseDAO.deleteSpecificStagedCourseProgramme(programmeId, stageId)
         courseDAO.createCourseProgrammeVersion(toCourseProgrammeVersion(courseProgramme))
         val course = courseDAO.getSpecificCourse(courseProgramme.courseId)
                 .orElseThrow { NotFoundException("The course id in this stage is not valid", "Contact admins") }
