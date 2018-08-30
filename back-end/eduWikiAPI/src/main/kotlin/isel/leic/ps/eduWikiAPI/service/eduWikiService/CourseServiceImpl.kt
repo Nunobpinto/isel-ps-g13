@@ -310,7 +310,8 @@ class CourseServiceImpl : CourseService {
                 version = course.version.inc(),
                 createdBy = report.reportedBy,
                 fullName = report.fullName ?: course.fullName,
-                shortName = report.shortName ?: course.shortName
+                shortName = report.shortName ?: course.shortName,
+                votes = course.votes
         ))
         courseDAO.createCourseVersion(toCourseVersion(updatedCourse))
         courseDAO.deleteReportOnCourse(reportId)
@@ -605,7 +606,8 @@ class CourseServiceImpl : CourseService {
                 dueDate = report.dueDate ?: exam.dueDate,
                 type = report.type ?: exam.type,
                 phase = report.phase ?: exam.phase,
-                location = report.location ?: exam.location
+                location = report.location ?: exam.location,
+                votes = exam.votes
         ))
         examDAO.createExamVersion(toExamVersion(updatedExam))
         examDAO.deleteReportOnExam(courseId, termId, examId, reportId)
@@ -904,7 +906,8 @@ class CourseServiceImpl : CourseService {
                 individual = report.individual ?: workAssignment.individual,
                 lateDelivery = report.lateDelivery ?: workAssignment.lateDelivery,
                 multipleDeliveries = report.multipleDeliveries ?: workAssignment.multipleDeliveries,
-                requiresReport = report.requiresReport ?: workAssignment.requiresReport
+                requiresReport = report.requiresReport ?: workAssignment.requiresReport,
+                votes = workAssignment.votes
         ))
         workAssignmentDAO.createWorkAssignmentVersion(toWorkAssignmentVersion(updatedWorkAssignment))
         workAssignmentDAO.deleteReportOnWorkAssignment(termId, courseId, workAssignmentId, reportId)

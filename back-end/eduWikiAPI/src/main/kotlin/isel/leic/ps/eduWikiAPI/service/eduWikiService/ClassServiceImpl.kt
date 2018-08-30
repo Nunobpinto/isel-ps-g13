@@ -243,7 +243,8 @@ class ClassServiceImpl : ClassService {
                 version = klass.version.inc(),
                 className = report.className ?: klass.className,
                 programmeId = report.programmeId ?: klass.programmeId,
-                createdBy = report.reportedBy
+                createdBy = report.reportedBy,
+                votes = klass.votes
         ))
         classDAO.createClassVersion(toClassVersion(updatedClass))
         classDAO.deleteSpecificReportInClass(classId, reportId)
@@ -490,7 +491,8 @@ class ClassServiceImpl : ClassService {
                             createdBy = courseClassReport.reportedBy,
                             courseId = courseClassReport.courseId ?: courseClass.courseId,
                             classId = courseClassReport.classId ?: courseClass.courseId,
-                            termId = courseClassReport.termId ?: courseClass.termId
+                            termId = courseClassReport.termId ?: courseClass.termId,
+                            votes = courseClass.votes
                     )),
                     term
             )
@@ -788,7 +790,8 @@ class ClassServiceImpl : ClassService {
                 weekDay = lectureReport.weekDay ?: lecture.weekDay,
                 begins = lectureReport.begins ?: lecture.begins,
                 duration = lectureReport.duration ?: lecture.duration,
-                location = lectureReport.location ?: lecture.location
+                location = lectureReport.location ?: lecture.location,
+                votes = lecture.votes
         ))
         lectureDAO.createLectureVersion(toLectureVersion(res))
         lectureDAO.deleteSpecificReportOnLectureOfCourseInClass(courseClassId, lectureId, reportId)
@@ -1170,7 +1173,8 @@ class ClassServiceImpl : ClassService {
                 sheetId = homeworkReport.sheetId ?: homework.sheetId,
                 dueDate = homeworkReport.dueDate ?: homework.dueDate,
                 lateDelivery = homeworkReport.lateDelivery ?: homework.lateDelivery,
-                multipleDeliveries = homeworkReport.multipleDeliveries ?: homework.multipleDeliveries
+                multipleDeliveries = homeworkReport.multipleDeliveries ?: homework.multipleDeliveries,
+                votes = homework.votes
         ))
         homeworkDAO.createHomeworkVersion(toHomeworkVersion(res))
         homeworkDAO.deleteSpecificReportOnHomeworkOfCourseInClass(courseClassId, homeworkId, reportId)

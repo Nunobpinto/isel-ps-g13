@@ -281,7 +281,8 @@ class ProgrammeServiceImpl : ProgrammeService {
                 shortName = report.shortName ?: programme.shortName,
                 academicDegree = report.academicDegree ?: programme.academicDegree,
                 totalCredits = report.totalCredits ?: programme.totalCredits,
-                duration = report.duration ?: programme.duration
+                duration = report.duration ?: programme.duration,
+                votes = programme.votes
         ))
         programmeDAO.createProgrammeVersion(toProgrammeVersion(res))
         programmeDAO.deleteSpecificReportOnProgramme(programmeId, reportId)
@@ -543,7 +544,8 @@ class ProgrammeServiceImpl : ProgrammeService {
                 createdBy = report.reportedBy,
                 lecturedTerm = report.lecturedTerm ?: courseProgramme.lecturedTerm,
                 optional = report.optional ?: courseProgramme.optional,
-                credits = report.credits ?: courseProgramme.credits
+                credits = report.credits ?: courseProgramme.credits,
+                votes = courseProgramme.votes
         )
 
         courseDAO.deleteReportOnCourseProgramme(programmeId, courseId, reportId)
