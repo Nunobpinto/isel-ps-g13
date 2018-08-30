@@ -8,7 +8,7 @@ import Cookies from 'universal-cookie'
 import CreateProgramme from './CreateProgramme'
 const cookies = new Cookies()
 
-export default class extends React.Component {
+class Programmes extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
@@ -35,6 +35,7 @@ export default class extends React.Component {
     this.voteUpStaged = this.voteUpStaged.bind(this)
     this.voteDownStaged = this.voteDownStaged.bind(this)
     this.createStagedProgramme = this.createStagedProgramme.bind(this)
+    this.createDefinitiveProgramme = this.createDefinitiveProgramme.bind(this)
     this.filterStagedByName = this.filterStagedByName.bind(this)
     this.filterProgrammesByName = this.filterProgrammesByName.bind(this)
   }
@@ -65,61 +66,66 @@ export default class extends React.Component {
 
   render () {
     return (
-      <Layout>
-        <div className='container'>
-          <div className='left-div'>
-            {this.state.error
-              ? <p> Error getting all the programmes (Maybe there aren´t any programms) </p>
-              : <div>
-                <h1>All Programmes in ISEL</h1>
-                <p> Filter By Name </p>
-                <Input.Search
-                  name='nameFilter'
-                  placeholder='Search name'
-                  onChange={this.filterProgrammesByName}
-                />
-                <List
-                  itemLayout='vertical'
-                  size='large'
-                  bordered
-                  dataSource={this.state.viewProgrammes}
-                  renderItem={item => (
-                    <List.Item
-                      actions={[
-                        <IconText
-                          type='like-o'
-                          id='like_btn'
-                          onClick={() =>
-                            this.setState({
-                              voteUp: true,
-                              progID: item.programmeId
-                            })}
-                          text={item.votes}
-                        />,
-                        <IconText
-                          type='dislike-o'
-                          id='dislike_btn'
-                          onClick={() =>
-                            this.setState({
-                              voteDown: true,
-                              progID: item.programmeId
-                            })}
-                        />
-                      ]}
-                    >
-                      <List.Item.Meta
-                        title={<Link to={{ pathname: `/programmes/${item.programmeId}` }}> {item.fullName} ({item.shortName})</Link>}
-                        description={`Created by ${item.createdBy}`}
+      <div className='container'>
+        <div className='left-div'>
+          {this.state.error
+            ? <p> Error getting all the programmes (Maybe there aren´t any programms) </p>
+            : <div>
+              <h1>All Programmes in ISEL</h1>
+              <p> Filter By Name </p>
+              <Input.Search
+                name='nameFilter'
+                placeholder='Search name'
+                onChange={this.filterProgrammesByName}
+              />
+              <List
+                itemLayout='vertical'
+                size='large'
+                bordered
+                dataSource={this.state.viewProgrammes}
+                renderItem={item => (
+                  <List.Item
+                    actions={[
+                      <IconText
+                        type='like-o'
+                        id='like_btn'
+                        onClick={() =>
+                          this.setState({
+                            voteUp: true,
+                            progID: item.programmeId
+                          })}
+                        text={item.votes}
+                      />,
+                      <IconText
+                        type='dislike-o'
+                        id='dislike_btn'
+                        onClick={() =>
+                          this.setState({
+                            voteDown: true,
+                            progID: item.programmeId
+                          })}
                       />
-                    </List.Item>
-                  )}
-                />
-              </div>
-            }
-            <Button icon='plus' id='create_btn' type='primary' onClick={() => this.setState({stagedProgrammeView: true})}>Create Programme</Button>
-          </div>
-          <div className='right-div'>
-            {this.state.stagedProgrammeView &&
+                    ]}
+                  >
+                    <List.Item.Meta
+                      title={<Link to={{ pathname: `/programmes/${item.programmeId}` }}> {item.fullName} ({item.shortName})</Link>}
+                      description={`Created by ${item.createdBy}`}
+                    />
+                  </List.Item>
+                )}
+              />
+            </div>
+          }
+          {this.props.user.reputation.role === 'ROLE_ADMIN'
+            ? <Button icon='plus' id='create_btn' type='primary' onClick={() => this.setState({createProgrammeView: true})}>Create Programme</Button>
+            : <Button icon='plus' id='create_btn' type='primary' onClick={() => this.setState({stagedProgrammeView: true})}>Create Programme</Button>
+          }
+        </div>
+        <div className='right-div'>
+          {this.state.createProgrammeView &&
+            <CreateProgramme action={this.createDefinitiveProgramme} />
+          }
+          {this.state.stagedProgrammeView &&
             <div id='stagedProgrammes'>
               <h1>All staged programmes</h1>
               <p> Filter By Name : </p>
@@ -164,10 +170,9 @@ export default class extends React.Component {
               <Button type='primary' onClick={() => this.setState({createProgrammeForm: true})}>Still want to create?</Button>
               {this.state.createProgrammeForm && <CreateProgramme action={this.createStagedProgramme} />}
             </div>
-            }
-          </div>
+          }
         </div>
-      </Layout>
+      </div>
     )
   }
 
@@ -227,10 +232,10 @@ export default class extends React.Component {
     fetcher(url, options)
       .then(staged => {
         const newItem = {
-          fullName: staged.full_name,
-          shortName: staged.short_name,
-          academicDegree: staged.academic_degree,
-          totalCredits: staged.total_credits,
+          fullName: staged.fullName,
+          shortName: staged.shortName,
+          academicDegree: staged.academicDegree,
+          totalCredits: staged.totalCredits,
           duration: staged.duration,
           votes: staged.votes,
           timestamp: staged.timestamp,
@@ -241,6 +246,51 @@ export default class extends React.Component {
         this.setState(prevState => ({
           staged: [...prevState.staged, newItem],
           viewStaged: [...prevState.staged, newItem],
+          createProgrammeFlag: false
+        }))
+      })
+      .catch(error => {
+        message.error('Error ocurred while creating the programme')
+        this.setState({ progError: error, createProgrammeFlag: false })
+      })
+  }
+
+  createDefinitiveProgramme (data) {
+    const body = {
+      programme_full_name: data.full_name,
+      programme_short_name: data.short_name,
+      programme_academic_degree: data.academic_degree,
+      programme_total_credits: data.total_credits,
+      programme_duration: data.duration
+    }
+    const options = {
+      method: 'POST',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
+      },
+      body: JSON.stringify(body)
+    }
+    const url = 'http://localhost:8080/programmes'
+    fetcher(url, options)
+      .then(json => {
+        const newItem = {
+          fullName: json.fullName,
+          shortName: json.shortName,
+          academicDegree: json.academicDegree,
+          totalCredits: json.totalCredits,
+          duration: json.duration,
+          votes: json.votes,
+          timestamp: json.timestamp,
+          programmeId: json.programmeId,
+          createdBy: json.createdBy
+        }
+        message.success('Successfully created programme')
+        this.setState(prevState => ({
+          programmes: [...prevState.programmes, newItem],
+          viewProgrammes: [...prevState.programmes, newItem],
           createProgrammeFlag: false
         }))
       })
@@ -277,8 +327,12 @@ export default class extends React.Component {
           voteUp: false
         })
       }))
-      .catch(_ => {
-        message.error('Error while processing your vote!!')
+      .catch(error => {
+        if (error.detail) {
+          message.error(error.detail)
+        } else {
+          message.error('Cannot vote up')
+        }
         this.setState({voteUp: false})
       })
   }
@@ -310,8 +364,12 @@ export default class extends React.Component {
           voteDown: false
         })
       }))
-      .catch(_ => {
-        message.error('Error while processing your vote!!')
+      .catch(error => {
+        if (error.detail) {
+          message.error(error.detail)
+        } else {
+          message.error('Cannot vote down')
+        }
         this.setState({voteDown: false})
       })
   }
@@ -394,3 +452,9 @@ export default class extends React.Component {
     }
   }
 }
+
+export default (props) => (
+  <Layout>
+    <Programmes />
+  </Layout>
+)
