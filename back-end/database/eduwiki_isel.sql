@@ -481,7 +481,7 @@ CREATE TABLE IF NOT EXISTS isel.course_class_report (
   course_id INTEGER,
   class_id INTEGER,
   term_id INTEGER,
-  delete_permanently BOOLEAN,
+  to_delete BOOLEAN,
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,

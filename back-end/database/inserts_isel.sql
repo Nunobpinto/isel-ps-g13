@@ -24,9 +24,12 @@ insert into isel.programme_version (programme_id, programme_version, created_by,
 
 insert into isel.course (created_by, course_full_name, course_short_name, time_stamp)
     values ('ze', 'Programação na Internet', 'PI', current_timestamp);
-    
+
 insert into isel.course_version (course_id, course_version, created_by, course_full_name, course_short_name, time_stamp)
     values (1, 1, 'ze', 'Programação na Internet', 'PI', current_timestamp);
+
+insert into isel.course_version (course_id, course_version, created_by, course_full_name, course_short_name, time_stamp)
+    values (1, 2, 'jg', 'Programacao na Internet', 'PI', current_timestamp);
 
 insert into isel.course (created_by, course_full_name, course_short_name, time_stamp)
     values ('ze', 'Redes de Computadores', 'RCP', current_timestamp);
@@ -40,6 +43,23 @@ insert into isel.course (created_by, course_full_name, course_short_name, time_s
 insert into isel.course_version (course_id, course_version, created_by, course_full_name, course_short_name, time_stamp)
     values (3, 1, 'ze', 'Modelação de Ambientes Virtuais', 'MAV', current_timestamp);
 
+insert into isel.course_stage (course_full_name, course_short_name, created_by, votes, time_stamp)
+    values ('Programação', 'PG', 'jg', 0, current_timestamp);
+
+insert into isel.course_stage (course_full_name, course_short_name, created_by, votes, time_stamp)
+    values ('Quimica I', 'QI', 'jg', 0, current_timestamp);
+
+insert into isel.course_stage (course_full_name, course_short_name, created_by, votes, time_stamp)
+    values ('Estruturas II', 'EII', 'jg', 0, current_timestamp);
+
+insert into isel.course_report (course_id, course_full_name, course_short_name, reported_by, votes, time_stamp)
+    values (3, 'Modelacao Ambientes Virtuais', 'MAV', 'Gedson', 2, current_timestamp);
+
+insert into isel.course_report (course_id, course_full_name, course_short_name, reported_by, votes, time_stamp)
+    values (3, 'Modelação Ambientes Virtuais', 'MAV', 'Paulo', 7, current_timestamp);
+
+
+
 -- Course-Programme Insert
 
 insert into isel.course_programme (course_id, programme_id, course_lectured_term, course_optional, course_credits, time_stamp, created_by)
@@ -47,6 +67,9 @@ insert into isel.course_programme (course_id, programme_id, course_lectured_term
 
 insert into isel.course_programme_version(course_id, programme_id, course_programme_version, course_lectured_term, course_optional, course_credits, time_stamp, created_by)
 	values(1, 1, 1, 'quinto', false, 6, current_timestamp, 'ze');
+
+insert into isel.course_programme_version(course_id, programme_id, course_programme_version, course_lectured_term, course_optional, course_credits, time_stamp, created_by)
+	values(1, 1, 2, 'sexto', true, 6, current_timestamp, 'ze');
 
 insert into isel.course_programme (course_id, programme_id, course_lectured_term, course_optional, course_credits, time_stamp, created_by)
     values(2,1,'quarto',false,6,current_timestamp,'ze');
@@ -65,6 +88,22 @@ insert into isel.course_programme (course_id, programme_id, course_lectured_term
 
 insert into isel.course_programme_version(course_id, programme_id, course_programme_version, course_lectured_term, course_optional, course_credits, time_stamp, created_by)
 	values(3, 2, 1, 'quinto', false, 6, current_timestamp, 'ze');
+
+insert into isel.course_programme_stage(course_id, programme_id, course_lectured_term, course_optional,course_credits, created_by,votes,time_stamp)
+  values(1, 1, 'sixth', false, 7, 'ruben', 3, current_timestamp);
+
+insert into isel.course_programme_stage(course_id, programme_id, course_lectured_term, course_optional,course_credits, created_by,votes,time_stamp)
+  values(3, 1, 'thirth', true, 6, 'rui', 2, current_timestamp);
+
+insert into isel.course_programme_stage(course_id, programme_id, course_lectured_term, course_optional,course_credits, created_by,votes,time_stamp)
+  values(1, 2, 'second', true, 5, 'igor', 1, current_timestamp);
+
+insert into isel.course_programme_report(course_id, programme_id, course_lectured_term, course_optional, course_credits, to_delete, time_stamp, reported_by, votes)
+  values(2, 1, 'first', true, 6, false, current_timestamp, 'miguel', 24);
+
+insert into isel.course_programme_report(course_id, programme_id, course_lectured_term, course_optional, course_credits, to_delete, time_stamp, reported_by, votes)
+  values(2, 1, 'fourth', false, 6, false, current_timestamp, 'cristiano', 31);
+
 
 -- Terms Insert
 
@@ -115,6 +154,9 @@ insert into isel.course_term (course_id, term_id, time_stamp)
 
 insert into isel.course_misc_unit (misc_type, course_id, term_id)
     values ('WORK_ASSIGNMENT', 1, 1);
+
+insert into isel.course_misc_unit_stage(misc_type, course_id, term_id)
+    values ('EXAM_TEST', 1, 1);
 
 insert into isel.work_assignment (work_assignment_id, created_by, phase, sheet_id, supplement_id, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
     values (1,'ze', '1º',gen_random_uuid(),gen_random_uuid(),current_date,false ,true ,true ,false ,current_timestamp);
@@ -215,10 +257,10 @@ insert into isel.class_misc_unit (misc_type, course_class_id)
     values ('HOMEWORK', 1);
 
 insert into isel.homework (homework_id, created_by, homework_name, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (4,'bruno', 'TPC01',gen_random_uuid(), current_date, true, true, current_timestamp );
+    values (4,'bruno', 'TPC01',gen_random_uuid(), current_date, true, true, current_timestamp);
 
 insert into isel.homework_version (homework_id, homework_version, homework_name, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (4, 1, 'TPC01', 'bruno',gen_random_uuid(), current_date, true, true, current_timestamp );
+    values (4, 1, 'TPC01', 'bruno',gen_random_uuid(), current_date, true, true, current_timestamp);
 
 insert into isel.class_misc_unit (misc_type, course_class_id)
     values ('HOMEWORK', 2);
@@ -290,4 +332,3 @@ insert into isel.user_programme (user_username, programme_id)
 
 insert into isel.user_programme (user_username, programme_id)
   values ('ze', 2);
-  

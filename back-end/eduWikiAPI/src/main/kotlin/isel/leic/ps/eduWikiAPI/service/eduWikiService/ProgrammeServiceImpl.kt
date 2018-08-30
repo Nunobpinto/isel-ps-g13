@@ -548,7 +548,7 @@ class ProgrammeServiceImpl : ProgrammeService {
                 votes = courseProgramme.votes
         )
 
-        courseDAO.deleteReportOnCourseProgramme(programmeId, courseId, reportId)
+        courseDAO.deleteSpecificReportOfCourseProgramme(programmeId, courseId, reportId)
         val action: ActionType
         val toRet = if(report.deleteFlag) {
             courseDAO.deleteSpecificCourseProgramme(programmeId, courseId)
@@ -592,8 +592,21 @@ class ProgrammeServiceImpl : ProgrammeService {
     }
 
 
-    override fun deleteSpecificReportOfCourseProgramme(programmeId: Int, courseId: Int, reportId: Int, principal: Principal): Int =
-            courseDAO.deleteSpecificReportOfCourseProgramme(programmeId, courseId, reportId)
+    override fun deleteSpecificReportOfCourseProgramme(programmeId: Int, courseId: Int, reportId: Int, principal: Principal): Int {
+        val courseProgrammeReport = courseDAO.getSpecificReportOfCourseProgramme(programmeId, courseId, reportId)
+                .orElseThrow { NotFoundException("No report found", "Try with other id") }
+
+        val success = courseDAO.deleteSpecificReportOfCourseProgramme(programmeId, courseId, reportId)
+
+        publisher.publishEvent(ResourceRejectedEvent(
+                principal.name,
+                courseProgrammeReport.reportedBy,
+                ActionType.REJECT_REPORT,
+                COURSE_PROGRAMME_REPORT_TABLE,
+                courseProgrammeReport.logId
+        ))
+        return success
+    }
 
 
     // -------------------------------

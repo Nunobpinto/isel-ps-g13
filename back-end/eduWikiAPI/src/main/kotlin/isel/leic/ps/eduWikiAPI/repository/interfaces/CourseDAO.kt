@@ -116,8 +116,6 @@ interface CourseDAO {
 
     fun reportSpecificCourseOnProgramme(programmeId: Int, courseId: Int, courseProgrammeReport: CourseProgrammeReport): CourseProgrammeReport
 
-    fun deleteReportOnCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int
-
     fun deleteSpecificReportOfCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int
 
     fun updateVotesOnReportedCourseProgramme(programmeId: Int, courseId: Int, reportId: Int, votes: Int): Int
