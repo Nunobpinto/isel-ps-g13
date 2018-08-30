@@ -5,9 +5,11 @@ import Layout from '../layout/Layout'
 import ReportProgramme from './ReportProgramme'
 import IconText from '../comms/IconText'
 import ProgrammeVersions from './ProgrammeVersions'
-import CourseProgramme from '../courses/CourseProgramme'
+import CourseProgramme from '../courseProgrammes/CourseProgramme'
 import {Row, Col, Card, Button, Tooltip, Popover, message} from 'antd'
 import Cookies from 'universal-cookie'
+import ReportCourseProgramme from '../courseProgrammes/ReportCourseProgramme'
+import CoursesProgrammeStage from '../courseProgrammes/CoursesProgrammeStage'
 const cookies = new Cookies()
 
 class Programme extends React.Component {
@@ -25,8 +27,8 @@ class Programme extends React.Component {
       timestamp: '',
       versionNumber: '',
       courses: [],
-      staged: [],
       allCourses: [],
+      staged: undefined,
       versions: [],
       voteUp: false,
       voteDown: false,
@@ -41,13 +43,9 @@ class Programme extends React.Component {
     this.voteUp = this.voteUp.bind(this)
     this.voteDown = this.voteDown.bind(this)
     this.fetchOtherCourses = this.fetchOtherCourses.bind(this)
-    this.fetchAllStaged = this.fetchAllStaged.bind(this)
     this.addCourseToProgramme = this.addCourseToProgramme.bind(this)
     this.followProgramme = this.followProgramme.bind(this)
     this.unFollowProgramme = this.unFollowProgramme.bind(this)
-    this.addStagedCourseToProgramme = this.addStagedCourseToProgramme.bind(this)
-    this.voteUpStaged = this.voteUpStaged.bind(this)
-    this.voteDownStaged = this.voteDownStaged.bind(this)
     this.approveStagedCourseInProgramme = this.approveStagedCourseInProgramme.bind(this)
   }
 
@@ -91,7 +89,6 @@ class Programme extends React.Component {
               <Button id='report_btn' icon='close-circle' onClick={() => this.setState({unFollowProgrammeFlag: true})} />
             </Tooltip>
           }
-
         </p>
         <div style={{ padding: '20px' }}>
           <Row gutter={16}>
@@ -122,6 +119,12 @@ class Programme extends React.Component {
                   {item.optional === false ? <p>Mandatory</p> : <p>Optional</p>}
                   <p>Credits : {item.credits}</p>
                   <p>Lectured in term {item.lecturedTerm} </p>
+                  <p>Created By: {item.createdBy}</p>
+                  <Popover content={<ReportCourseProgramme programmeId={this.props.match.params.id} courseId={item.courseId} />} trigger='click'>
+                    <Tooltip placement='bottom' title='Report this Course Programme'>
+                      <Button id='report_btn' shape='circle' icon='warning' />
+                    </Tooltip>
+                  </Popover>
                   <Link to={{pathname: `/courses/${item.courseId}`}}>See it's page</Link>
                 </Card>
               </Col>
@@ -129,74 +132,22 @@ class Programme extends React.Component {
           </Row>
         </div>
         <div>
-          <Button onClick={() => this.setState({seeAllCourses: true, seeAllStaged: true})}>Add Course To This Programme</Button>
           <div style={{ padding: '30px' }}>
-            <Row gutter={16}>
-              <p>Already staged Courses In Programme</p>
-              {this.state.staged.map(staged =>
-                <Col span={8} key={staged.stageId}>
-                  <Card title={staged.courseShortName}>
-                    <p>Lectured in {staged.lecturedTerm}</p>
-                    <p>Optional : {staged.optional ? 'Yes' : 'No'}</p>
-                    <p>Credits: {staged.credits}</p>
-                    <p>Votes: {staged.votes}</p>
-                    <p>Created By {staged.createdBy}</p>
-                    <p>{staged.timestamp}</p>
-                    <IconText
-                      type='like-o'
-                      id='like_btn'
-                      onClick={() =>
-                        this.setState({
-                          voteStagedCoursesUp: true,
-                          stageId: staged.stagedId
-                        })}
-                    />
-                    <IconText
-                      type='dislike-o'
-                      id='dislike_btn'
-                      onClick={() =>
-                        this.setState({
-                          voteStagedCoursesDown: true,
-                          stageId: staged.stagedId
-                        })}
-                    />
-                    {
-                      this.props.user.reputation.role === 'ROLE_ADMIN' &&
-                      <div>
-                        <IconText
-                          type='check-circle'
-                          id='like_btn'
-                          text='Approve Staged'
-                          onClick={() =>
-                            this.setState({
-                              approved: true,
-                              stageId: staged.stagedId
-                            })}
-                        />
-                        <IconText
-                          type='close-circle'
-                          id='dislike_btn'
-                          text='Reject Staged'
-                          onClick={() =>
-                            this.setState({
-                              rejected: true,
-                              stageId: staged.stagedId
-                            })}
-                        />
-                      </div>
-                    }
-                  </Card>
-                </Col>
-              )}
-              <p>Courses that aren't already associated with {this.state.short_name}</p>
-              {this.state.allCourses.map(crs =>
-                <Col span={8} key={crs.courseId}>
-                  <Card title={crs.shortName}>
-                    <CourseProgramme crs={crs} addCourse={course => this.setState({addCourse: true, course: course})} />
-                  </Card>
-                </Col>
-              )}
-            </Row>
+            <CoursesProgrammeStage
+              programmeId={this.props.match.params.id}
+              isAdmin={this.props.user.reputation.role === 'ROLE_ADMIN'}
+              staged={this.state.staged}
+              adminAction={this.approveStagedCourseInProgramme}
+            />
+            <Button onClick={() => this.setState({seeAllCourses: true})}>Add Course To This Programme</Button>
+            <p>Courses that aren't already associated with {this.state.short_name}</p>
+            {this.state.allCourses.map(crs =>
+              <Col span={8} key={crs.courseId}>
+                <Card title={crs.shortName}>
+                  <CourseProgramme crs={crs} addCourse={course => this.setState({addCourse: true, course: course})} />
+                </Card>
+              </Col>
+            )}
           </div>
         </div>
       </div>
@@ -272,14 +223,10 @@ class Programme extends React.Component {
     }
     fetcher(url, options)
       .then(courseProgramme => {
-        this.setState(prevState => {
-          let staged = prevState.staged
-          staged.push(courseProgramme)
-          message.success('Added staged course to programme with success')
-          return ({
-            addCourse: false,
-            staged: staged
-          })
+        message.success('Added to stage courseProgrammes')
+        this.setState({
+          addCourse: false,
+          staged: courseProgramme
         })
       })
       .catch(_ => {
@@ -371,26 +318,6 @@ class Programme extends React.Component {
         })
       }))
       .catch(_ => message.error('Error fetching other courses'))
-  }
-
-  fetchAllStaged () {
-    const id = this.props.match.params.id
-    const uri = `http://localhost:8080/programmes/${id}/courses/stage`
-    const header = {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth'),
-        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
-      }
-    }
-    fetcher(uri, header)
-      .then(staged => this.setState({
-        staged: staged.courseProgrammeStageList,
-        seeAllStaged: false
-      }))
-      .catch(_ => {
-        message.error('Error loading staged courses of programme')
-      })
   }
 
   componentDidMount () {
@@ -515,87 +442,9 @@ class Programme extends React.Component {
       })
   }
 
-  voteUpStaged () {
-    const voteInput = {
-      vote: 'Up'
-    }
+  approveStagedCourseInProgramme (stageId) {
     const id = this.props.match.params.id
-    const uri = 'http://localhost:8080/programmes/' + id + '/courses/stage/' + this.state.stageId + '/vote'
-    const body = {
-      method: 'POST',
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
-        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
-      },
-      body: JSON.stringify(voteInput)
-    }
-    fetcher(uri, body)
-      .then(_ => {
-        message.success('Voted Up!!')
-        this.setState(prevState => {
-          let staged = prevState.staged
-          const idx = staged.findIndex(st => st.stageId === prevState.stagedId)
-          staged[idx].votes += 1
-          return ({
-            voteStagedCoursesUp: false,
-            staged: staged
-          })
-        })
-      })
-      .catch(error => {
-        if (error.detail) {
-          message.error(error.detail)
-        } else {
-          message.error('Error while processing your vote')
-        }
-        this.setState({ voteStagedCoursesUp: false })
-      })
-  }
-
-  voteDownStaged () {
-    const voteInput = {
-      vote: 'Up'
-    }
-    const id = this.props.match.params.id
-    const uri = 'http://localhost:8080/programmes/' + id + '/courses/stage/' + this.state.stageId + '/vote'
-    const body = {
-      method: 'POST',
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
-        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
-      },
-      body: JSON.stringify(voteInput)
-    }
-    fetcher(uri, body)
-      .then(_ => {
-        message.success('Voted Down!!')
-        this.setState(prevState => {
-          let staged = prevState.staged
-          const idx = staged.findIndex(st => st.stageId === prevState.stagedId)
-          staged[idx].votes -= 1
-          return ({
-            voteStagedCoursesDown: false,
-            staged: staged
-          })
-        })
-      })
-      .catch(error => {
-        if (error.detail) {
-          message.error(error.detail)
-        } else {
-          message.error('Error while processing your vote')
-        }
-        this.setState({ voteStagedCoursesDown: false })
-      })
-  }
-
-  approveStagedCourseInProgramme () {
-    const id = this.props.match.params.id
-    const uri = 'http://localhost:8080/programmes/' + id + '/courses/stage/' + this.state.stageId
+    const uri = 'http://localhost:8080/programmes/' + id + '/courses/stage/' + stageId
     const body = {
       method: 'POST',
       headers: {
@@ -609,17 +458,14 @@ class Programme extends React.Component {
       .then(courseProgramme => {
         message.success('Approved Course Programme!!')
         this.setState(prevState => {
-          let staged = prevState.staged.filter(st => st.stageId !== prevState.stagedId)
           let courses = prevState.courses
           courses.push(courseProgramme)
           let allCourses = prevState.allCourses
           const idx = allCourses.findIndex(crs => crs.courseId === courseProgramme.courseId)
           delete allCourses[idx]
           return ({
-            approved: false,
             courses: courses,
-            allCourses: allCourses,
-            staged: staged
+            allCourses: allCourses
           })
         })
       })
@@ -632,40 +478,6 @@ class Programme extends React.Component {
         this.setState({ approved: false })
       })
   }
-
-  rejectStagedCourseInProgramme () {
-    const id = this.props.match.params.id
-    const uri = 'http://localhost:8080/programmes/' + id + '/courses/stage/' + this.state.stageId
-    const body = {
-      method: 'DELETE',
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
-        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
-      }
-    }
-    fetcher(uri, body)
-      .then(_ => {
-        message.success('Rejected staged Course Programme!!')
-        this.setState(prevState => {
-          let staged = prevState.staged.filter(st => st.stageId !== prevState.stagedId)
-          return ({
-            rejected: false,
-            staged: staged
-          })
-        })
-      })
-      .catch(error => {
-        if (error.detail) {
-          message.error(error.detail)
-        } else {
-          message.error('Error while rejecting this course programme')
-        }
-        this.setState({ rejected: false })
-      })
-  }
-
   componentDidUpdate () {
     if (this.state.voteUp) {
       this.voteUp()
@@ -673,22 +485,12 @@ class Programme extends React.Component {
       this.voteDown()
     } else if (this.state.seeAllCourses) {
       this.fetchOtherCourses()
-    } else if (this.state.seeAllStaged) {
-      this.fetchAllStaged()
     } else if (this.state.addCourse) {
       this.addCourseToProgramme()
     } else if (this.state.unFollowProgrammeFlag) {
       this.unFollowProgramme()
     } else if (this.state.followProgrammeFlag) {
       this.followProgramme()
-    } else if (this.state.voteStagedCoursesUp) {
-      this.voteUpStaged()
-    } else if (this.state.voteStagedCoursesDown) {
-      this.voteDownStaged()
-    } else if (this.state.approved) {
-      this.approveStagedCourseInProgramme()
-    } else if (this.state.rejected) {
-      this.rejectStagedCourseInProgramme()
     }
   }
 }
