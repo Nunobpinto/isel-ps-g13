@@ -51,7 +51,8 @@ fun stagedToCourseProgramme(programmeId: Int, courseProgrammeStage: CourseProgra
         programmeId = programmeId,
         lecturedTerm = courseProgrammeStage.lecturedTerm,
         optional = courseProgrammeStage.optional,
-        credits = courseProgrammeStage.credits
+        credits = courseProgrammeStage.credits,
+        courseId = courseProgrammeStage.courseId
 )
 
 fun toCourseProgrammeVersion(course: CourseProgramme) = CourseProgrammeVersion(

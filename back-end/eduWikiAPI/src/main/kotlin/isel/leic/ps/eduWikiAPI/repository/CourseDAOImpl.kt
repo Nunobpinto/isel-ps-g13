@@ -636,15 +636,15 @@ class CourseDAOImpl : CourseDAO {
                         ") " +
                         "VALUES(:courseProgrammeStage.courseId, :courseProgrammeStage.programmeId, " +
                         ":courseProgrammeStage.lecturedTerm, :courseProgrammeStage.optional, " +
-                        ":courseProgrammeStage.credits, :courseProgrammeStage.votes, " +
-                        ":courseProgrammeStage.createdBy, :courseProgrammeStage.timestamp)"
+                        ":courseProgrammeStage.createdBy, :courseProgrammeStage.credits, " +
+                        ":courseProgrammeStage.votes, :courseProgrammeStage.timestamp)"
         )
         @GetGeneratedKeys
         override fun createStagingCourseOfProgramme(courseProgrammeStage: CourseProgrammeStage): CourseProgrammeStage
 
         @SqlQuery(
                 "SELECT * FROM :schema.$COURSE_PROGRAMME_STAGE_TABLE " +
-                        "WHERE $COURSE_PROGRAMME_STAGE_ID = :stageId" +
+                        "WHERE $COURSE_PROGRAMME_STAGE_ID = :stageId " +
                         "AND $COURSE_PROGRAMME_STAGE_PROGRAMME_ID = :programmeId"
         )
         override fun getSpecificStagedCourseProgramme(programmeId: Int, stageId: Int): Optional<CourseProgrammeStage>
