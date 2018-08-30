@@ -3,23 +3,28 @@ import fetcher from '../../fetcher'
 import { List, message } from 'antd'
 import IconText from '../comms/IconText'
 import Cookies from 'universal-cookie'
+import Layout from '../layout/Layout'
 const cookies = new Cookies()
 
-export default class extends React.Component {
+class ProgrammeReports extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
       reports: [],
-      progID: props.id
+      loading: true
     }
     this.voteUp = this.voteUp.bind(this)
     this.voteDown = this.voteDown.bind(this)
+    this.approve = this.approve.bind(this)
+    this.reject = this.reject.bind(this)
   }
   render () {
     return (
       <List
         itemLayout='vertical'
         bordered
+        loading={this.state.loading}
+        header={<div><h1>Programme with id {this.props.programmeId} reports</h1></div>}
         dataSource={this.state.reports}
         renderItem={item => (
           <List.Item
@@ -48,22 +53,47 @@ export default class extends React.Component {
               title={`Reported by ${item.reportedBy}`}
               description={`Votes: ${item.votes}`}
             />
-            {item.programmeFullName && `Full name: ${item.programmeFullName}`}
+            {item.fullName && `Full name: ${item.fullName}`}
             <br />
-            {item.programmeShortName && `Short name: ${item.programmeShortName}`}
+            {item.shortName && `Short name: ${item.shortName}`}
             <br />
-            {item.programmeAcademicDegree && `Academic Degree: ${item.programmeAcademicDegree}`}
+            {item.academicDegree && `Academic Degree: ${item.academicDegree}`}
             <br />
-            {item.programmeTotalCredits && `Total Credits: ${item.programmeTotalCredits}`}
+            {item.totalCredits && `Total Credits: ${item.totalCredits}`}
             <br />
-            {item.programmeDuration && `Duration: ${item.programmeDuration}`}
+            {item.duration && `Duration: ${item.duration}`}
+            {
+              this.props.user.reputation.role === 'ROLE_ADMIN' &&
+                <div>
+                  <IconText
+                    type='check-circle'
+                    id='like_btn'
+                    text='Approve Report'
+                    onClick={() =>
+                      this.setState({
+                        approved: true,
+                        reportId: item.reportId
+                      })}
+                  />
+                  <IconText
+                    type='close-circle'
+                    id='dislike_btn'
+                    text='Reject Report'
+                    onClick={() =>
+                      this.setState({
+                        rejected: true,
+                        reportId: item.reportId
+                      })}
+                  />
+                </div>
+            }
           </List.Item>
         )}
       />
     )
   }
   componentDidMount () {
-    const url = 'http://localhost:8080/programmes/' + this.state.progID + '/reports'
+    const url = 'http://localhost:8080/programmes/' + this.props.programmeId + '/reports'
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -72,8 +102,15 @@ export default class extends React.Component {
       }
     }
     fetcher(url, options)
-      .then(list => this.setState({ reports: list.programmeReportList }))
-      .catch(_ => message.error('Error obtaining reports of programme'))
+      .then(list => {
+        let reports = list.programmeReportList
+        reports = reports.filter(report => report.reportedBy !== this.props.user.username)
+        this.setState({ reports: reports, loading: false })
+      })
+      .catch(_ => {
+        message.error('Error obtaining reports of programme')
+        this.setState({loading: false})
+      })
   }
 
   voteUp () {
@@ -81,7 +118,7 @@ export default class extends React.Component {
       vote: 'Up'
     }
     const reportId = this.state.reportId
-    const progID = this.state.progID
+    const progID = this.props.programmeId
     const url = `http://localhost:8080/programmes/${progID}/reports/${reportId}/vote`
     const body = {
       method: 'POST',
@@ -115,7 +152,7 @@ export default class extends React.Component {
       vote: 'Down'
     }
     const reportId = this.state.reportId
-    const progID = this.state.progID
+    const progID = this.props.programmeId
     const url = `http://localhost:8080/programmes/${progID}/reports/${reportId}/vote`
     const body = {
       method: 'POST',
@@ -143,12 +180,88 @@ export default class extends React.Component {
         this.setState({voteDown: false})
       })
   }
+  approve () {
+    const reportId = this.state.reportId
+    const url = `http://localhost:8080/programmes/${this.props.programmeId}/reports/${reportId}`
+    const body = {
+      method: 'POST',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
+      }
+    }
+    fetcher(url, body)
+      .then(_ => {
+        this.setState(prevState => {
+          message.success('Approved report!!')
+          let newArray = [...prevState.reports]
+          newArray = newArray.filter(report => report.reportId !== this.state.reportId)
+          return ({
+            reports: newArray,
+            approved: false
+          })
+        })
+      })
+      .catch(error => {
+        if (error.detail) {
+          message.error(error.detail)
+        } else {
+          message.error('Cannot approve report')
+        }
+        this.setState({approved: false})
+      })
+  }
+
+  reject () {
+    const reportId = this.state.reportId
+    const url = `http://localhost:8080/programmes/${this.props.programmeId}/reports/${reportId}`
+    const body = {
+      method: 'DELETE',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
+      }
+    }
+    fetcher(url, body)
+      .then(_ =>
+        this.setState(prevState => {
+          message.success('Rejected report!!')
+          let newArray = [...prevState.reports]
+          newArray = newArray.filter(report => report.reportId !== this.state.reportId)
+          return ({
+            reports: newArray,
+            rejected: false
+          })
+        })
+      )
+      .catch(error => {
+        if (error.detail) {
+          message.error(error.detail)
+        } else {
+          message.error('Cannot reject report')
+        }
+        this.setState({rejected: false})
+      })
+  }
 
   componentDidUpdate () {
     if (this.state.voteDown) {
       this.voteDown()
     } else if (this.state.voteUp) {
       this.voteUp()
+    } else if (this.state.approved) {
+      this.approve()
+    } else if (this.state.rejected) {
+      this.reject()
     }
   }
 }
+
+export default (props) => (
+  <Layout>
+    <ProgrammeReports programmeId={props.match.params.programmeId} />
+  </Layout>
+)

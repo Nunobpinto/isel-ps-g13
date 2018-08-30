@@ -10,7 +10,12 @@ import CoursesStage from '../courses/CoursesStage'
 const cookies = new Cookies()
 const {Content} = Layout
 
-export default class extends React.Component {
+export default (props) => (
+  <MyLayout>
+    <Profile />
+  </MyLayout>
+)
+class Profile extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
@@ -18,8 +23,7 @@ export default class extends React.Component {
         username: '',
         familyName: '',
         givenName: '',
-        personalEmail: '',
-        organizationEmail: ''
+        email: ''
       },
       showProgrammeStage: true,
       showCourseStage: false
@@ -27,63 +31,67 @@ export default class extends React.Component {
   }
   render () {
     return (
-      <MyLayout>
-        <div >
-          <div className='left_side'>
-            <img src='defaultUser.png' />
-            <p>
-              <h1><strong>Username</strong> : {this.state.user.username}</h1>
-              <h1><strong>Name</strong> : {this.state.user.givenName} {this.state.user.familyName}</h1>
-              <h1><strong>Personal email</strong> : {this.state.user.personalEmail}</h1>
-              <h1><strong>Organization email</strong> : {this.state.user.organizationEmail}</h1>
-              <h1>User Activity :</h1>
-              <UserActivity />
-            </p>
-          </div>
-          <div className='centre_div'>
-            <h1>Staged resources</h1>
-            <Layout style={{ background: '#fff' }}>
-              <Menu
-                theme='light'
-                mode='horizontal'
-                defaultSelectedKeys={['1']}
-                defaultOpenKeys={['1']}
-              >
-                <Menu.Item
-                  key={1}
-                  onClick={() => this.setState({
-                    showProgrammeStage: true,
-                    showCourseStage: false
-                  })}
-                >
-                  Programmes
-                </Menu.Item>
-                <Menu.Item
-                  key={2}
-                  onClick={() => this.setState({
-                    showProgrammeStage: false,
-                    showCourseStage: true
-                  })}
-                >
-                  Courses
-                </Menu.Item>
-              </Menu>
-              <Content style={{ padding: '0 24px', minHeight: 280 }}>
-                {this.state.showProgrammeStage &&
-                  <ProgrammesStage />
-                }
-                {this.state.showCourseStage &&
-                  <CoursesStage />
-                }
-              </Content>
-            </Layout>
-          </div>
-          <div className='right_side'>
-            <h1>Reputation</h1>
-            <UserReputation />
-          </div>
+      <div >
+        <div className='left_side'>
+          <img src='defaultUser.png' />
+          <p>
+            <h1><strong>Username</strong> : {this.state.user.username}</h1>
+            <h1><strong>Name</strong> : {this.state.user.givenName} {this.state.user.familyName}</h1>
+            <h1><strong>Email</strong> : {this.state.user.email}</h1>
+            <h1>User Activity :</h1>
+            <UserActivity />
+          </p>
         </div>
-      </MyLayout>
+        {
+          this.props.user.reputation.role === 'ROLE_ADMIN'
+            ? <div>
+              <div className='centre_div'>
+
+                <h1>Staged resources</h1>
+                <Layout style={{ background: '#fff' }}>
+                  <Menu
+                    theme='light'
+                    mode='horizontal'
+                    defaultSelectedKeys={['1']}
+                    defaultOpenKeys={['1']}
+                  >
+                    <Menu.Item
+                      key={1}
+                      onClick={() => this.setState({
+                        showProgrammeStage: true,
+                        showCourseStage: false
+                      })}
+                    >
+                    Programmes
+                    </Menu.Item>
+                    <Menu.Item
+                      key={2}
+                      onClick={() => this.setState({
+                        showProgrammeStage: false,
+                        showCourseStage: true
+                      })}
+                    >
+                    Courses
+                    </Menu.Item>
+                  </Menu>
+                  <Content style={{ padding: '0 24px', minHeight: 280 }}>
+                    {this.state.showProgrammeStage &&
+                      <ProgrammesStage />
+                    }
+                    {this.state.showCourseStage &&
+                      <CoursesStage />
+                    }
+                  </Content>
+                </Layout>
+              </div>
+              <div className='right_side' />
+            </div>
+            : <div className='centre_div'>
+              <h1>Reputation</h1>
+              <UserReputation />
+            </div>
+        }
+      </div>
     )
   }
   componentDidMount () {
@@ -102,8 +110,7 @@ export default class extends React.Component {
             username: user.username,
             familyName: user.familyName,
             givenName: user.givenName,
-            personalEmail: user.personalEmail,
-            organizationEmail: user.organizationEmail
+            email: user.email
           }
         })
       })

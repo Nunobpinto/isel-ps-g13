@@ -81,7 +81,7 @@ export default class extends React.Component {
           message.success('Reported !!')
           this.setState({reported: false})
         })
-        .catch(error => {
+        .catch(_ => {
           message.error('Error while processing your report!!')
           this.setState({reported: false})
         })
