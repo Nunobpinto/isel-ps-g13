@@ -286,9 +286,6 @@ class CourseDAOImpl : CourseDAO {
     override fun reportSpecificCourseOnProgramme(programmeId: Int, courseId: Int, courseProgrammeReport: CourseProgrammeReport): CourseProgrammeReport =
             jdbi.open().attach(CourseDAOJdbi::class.java).reportSpecificCourseOnProgramme(programmeId, courseId, courseProgrammeReport)
 
-    override fun deleteReportOnCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int =
-            jdbi.open().attach(CourseDAOJdbi::class.java).deleteReportOnCourseProgramme(programmeId, courseId, reportId)
-
     override fun deleteSpecificReportOfCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int =
             jdbi.open().attach(CourseDAOJdbi::class.java).deleteSpecificReportOfCourseProgramme(programmeId, courseId, reportId)
 
@@ -703,14 +700,6 @@ class CourseDAOImpl : CourseDAO {
         override fun getSpecificReportOfCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Optional<CourseProgrammeReport>
 
         @SqlUpdate(
-                "DELETE FROM :schema.$COURSE_PROGRAMME_REPORT_TABLE " +
-                        "WHERE $COURSE_PROGRAMME_REPORT_ID = :reportId " +
-                        "AND $COURSE_PROGRAMME_REPORT_COURSE_ID = :courseId " +
-                        "AND $COURSE_PROGRAMME_REPORT_PROGRAMME_ID = :programmeId"
-        )
-        override fun deleteReportOnCourseProgramme(programmeId: Int, courseId: Int, reportId: Int): Int
-
-        @SqlUpdate(
                 "UPDATE :schema.$COURSE_PROGRAMME_REPORT_TABLE " +
                         "SET $COURSE_PROGRAMME_REPORT_VOTES = :votes " +
                         "WHERE $COURSE_PROGRAMME_REPORT_ID = :reportId " +
@@ -799,8 +788,8 @@ class CourseDAOImpl : CourseDAO {
 
         @SqlUpdate(
                 "DELETE FROM :schema.$COURSE_MISC_UNIT_STAGE_TABLE " +
-                        "WHERE $COURSE_MISC_UNIT_STAGE_COURSE_ID = :stageId " +
-                        "WHERE $COURSE_MISC_UNIT_STAGE_COURSE_ID = :courseId " +
+                        "WHERE $COURSE_MISC_UNIT_STAGE_ID = :stageId " +
+                        "AND $COURSE_MISC_UNIT_STAGE_COURSE_ID = :courseId " +
                         "AND $COURSE_MISC_UNIT_STAGE_TERM_ID = :termId "
         )
         override fun deleteSpecificStagedCourseMiscUnitEntry(courseId: Int, termId: Int, stageId: Int): Int

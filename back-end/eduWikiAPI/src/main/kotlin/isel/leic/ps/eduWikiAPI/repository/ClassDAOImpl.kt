@@ -78,7 +78,7 @@ class ClassDAOImpl : ClassDAO {
         const val COURSE_CLASS_REPORT_TERM_ID = "term_id"
         const val COURSE_CLASS_REPORT_CLASS_ID = "class_id"
         const val COURSE_CLASS_REPORT_COURSE_ID = "course_id"
-        const val COURSE_CLASS_REPORT_DELETE_FLAG = "delete_permanently"
+        const val COURSE_CLASS_REPORT_DELETE_FLAG = "to_delete"
         const val COURSE_CLASS_REPORT_VOTES = "votes"
         const val COURSE_CLASS_REPORT_LOG_ID = "log_id"
         const val COURSE_CLASS_REPORT_TIMESTAMP = "time_stamp"

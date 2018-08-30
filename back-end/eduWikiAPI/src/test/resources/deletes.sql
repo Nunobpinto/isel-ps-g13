@@ -1,107 +1,119 @@
 --------------------------
--- Delete Report
+-- Delete Report Tables
 --------------------------
 
-delete from organization_report;
+DELETE FROM isel.organization_report;
 
-delete from programme_report;
+DELETE FROM isel.programme_report;
 
-delete from course_report;
+DELETE FROM isel.course_report;
 
-delete from class_report;
+DELETE FROM isel.course_programme_report;
 
-delete from work_assignment_report;
+DELETE FROM isel.class_report;
 
-delete from exam_report;
+DELETE FROM isel.work_assignment_report;
 
-delete from lecture_report;
+DELETE FROM isel.exam_report;
 
-delete from homework_report;
+DELETE FROM isel.lecture_report;
 
-delete from student_report;
+DELETE FROM isel.homework_report;
 
---------------------------
--- Delete Staged
---------------------------
+DELETE FROM isel.user_report;
 
-delete from programme_stage;
-
-delete from course_stage;
-
-delete from course_programme_stage;
-
-delete from class_stage;
-
-delete from course_class_stage;
-
-delete from work_assignment_stage;
-
-delete from exam_stage;
-
-delete from lecture_stage;
-
-delete from homework_stage;
-
-delete from course_misc_unit_stage;
-
-delete from class_misc_unit_stage;
+DELETE FROM isel.course_class_report;
 
 --------------------------
--- Delete Version from
+-- Delete Staged Tables
 --------------------------
 
-delete from organization_version;
+DELETE FROM isel.programme_stage;
 
-delete from programme_version;
+DELETE FROM isel.course_stage;
 
-delete from course_version;
+DELETE FROM isel.course_programme_stage;
 
-delete from class_version;
+DELETE FROM isel.class_stage;
 
-delete from work_assignment_version;
+DELETE FROM isel.course_class_stage;
 
-delete from exam_version;
+DELETE FROM isel.work_assignment_stage;
 
-delete from lecture_version;
+DELETE FROM isel.exam_stage;
 
-delete from homework_version;
+DELETE FROM isel.lecture_stage;
+
+DELETE FROM isel.homework_stage;
+
+DELETE FROM isel.course_misc_unit_stage;
+
+DELETE FROM isel.class_misc_unit_stage;
 
 --------------------------
--- Delete Main from
+-- Delete Version Tables
 --------------------------
 
-delete from course_programme;
+DELETE FROM isel.organization_version;
 
-delete from work_assignment;
+DELETE FROM isel.programme_version;
 
-delete from exam;
+DELETE FROM isel.course_version;
 
-delete from lecture;
+DELETE FROM isel.course_programme_version;
 
-delete from homework;
+DELETE FROM isel.class_version;
 
-delete from reputation_log;
+DELETE FROM isel.work_assignment_version;
 
-delete from class_misc_unit;
+DELETE FROM isel.exam_version;
 
-delete from course_misc_unit;
+DELETE FROM isel.lecture_version;
 
-delete from student_course_class;
+DELETE FROM isel.homework_version;
 
-delete from reputation;
+--------------------------
+-- Delete Main Tables
+--------------------------
 
-delete from course_term;
+DELETE FROM isel.course_programme;
 
-delete from course_class;
+DELETE FROM isel.validation_token;
 
-delete from class;
+DELETE FROM isel.work_assignment;
 
-delete from term;
+DELETE FROM isel.exam;
 
-delete from programme;
+DELETE FROM isel.lecture;
 
-delete from course;
+DELETE FROM isel.homework;
 
-delete from organization;
+DELETE FROM isel.reputation_log;
 
-delete from student;
+DELETE FROM isel.action_log;
+
+DELETE FROM isel.class_misc_unit;
+
+DELETE FROM isel.course_misc_unit;
+
+DELETE FROM isel.user_course_class;
+
+DELETE FROM isel.user_programme;
+
+DELETE FROM isel.reputation;
+
+DELETE FROM isel.course_term;
+
+DELETE FROM isel.course_class;
+
+DELETE FROM isel.class;
+
+DELETE FROM isel.term;
+
+DELETE FROM isel.programme;
+
+DELETE FROM isel.course;
+
+DELETE FROM isel.organization;
+
+DELETE FROM isel.user_account;
