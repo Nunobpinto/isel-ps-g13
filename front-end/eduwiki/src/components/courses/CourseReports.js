@@ -1,16 +1,18 @@
 import React from 'react'
+import fetcher from '../../fetcher'
 import { List, message } from 'antd'
 import IconText from '../comms/IconText'
 import Cookies from 'universal-cookie'
-import fetcher from '../../fetcher'
-import Layout from '../layout/Layout';
+import Layout from '../layout/Layout'
 const cookies = new Cookies()
 
-class OrganizationReports extends React.Component {
+class CourseReports extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      reports: []
+      reports: [],
+      loading: true,
+      name: ''
     }
     this.voteUp = this.voteUp.bind(this)
     this.voteDown = this.voteDown.bind(this)
@@ -21,49 +23,42 @@ class OrganizationReports extends React.Component {
     return (
       <List
         itemLayout='vertical'
-        header={<div><h1>ISEL Reports</h1></div>}
         bordered
+        loading={this.state.loading}
+        header={<div><h1>{this.state.name} reports</h1></div>}
         dataSource={this.state.reports}
         renderItem={item => (
-          <div>
-            {item.reportedBy !== this.props.user.username &&
-            <List.Item
-              actions={[
-                <IconText
-                  type='like-o'
-                  id='like_btn'
-                  onClick={() =>
-                    this.setState({
-                      voteUp: true,
-                      reportId: item.reportId
-                    })}
-                />,
-                <IconText
-                  type='dislike-o'
-                  id='dislike_btn'
-                  onClick={() =>
-                    this.setState({
-                      voteDown: true,
-                      reportId: item.reportId
-                    })}
-                />
-              ]}
-            >
-              <List.Item.Meta
-                title={`Reported by ${item.reportedBy}`}
-                description={`Votes: ${item.votes}`}
+          <List.Item
+            actions={[
+              <IconText
+                type='like-o'
+                id='like_btn'
+                onClick={() =>
+                  this.setState({
+                    voteUp: true,
+                    reportId: item.reportId
+                  })}
+              />,
+              <IconText
+                type='dislike-o'
+                id='dislike_btn'
+                onClick={() =>
+                  this.setState({
+                    voteDown: true,
+                    reportId: item.reportId
+                  })}
               />
-              {item.fullName && `Full name: ${item.fullName}`}
-              <br />
-              {item.shortName && `Short name: ${item.shortName}`}
-              <br />
-              {item.address && `Address: ${item.address}`}
-              <br />
-              {item.contact && `Contact: ${item.contact}`}
-              <br />
-              {item.website && `Website: ${item.website}`}
-              {
-                this.props.user.reputation.role === 'ROLE_ADMIN' &&
+            ]}
+          >
+            <List.Item.Meta
+              title={`Reported by ${item.reportedBy}`}
+              description={`Votes: ${item.votes}`}
+            />
+            {item.fullName && `Full name: ${item.fullName}`}
+            <br />
+            {item.shortName && `Short name: ${item.shortName}`}
+            {
+              this.props.user.reputation.role === 'ROLE_ADMIN' &&
                 <div>
                   <IconText
                     type='check-circle'
@@ -86,17 +81,14 @@ class OrganizationReports extends React.Component {
                       })}
                   />
                 </div>
-              }
-            </List.Item>
             }
-          </div>
-        )
-        }
+          </List.Item>
+        )}
       />
     )
   }
   componentDidMount () {
-    const url = 'http://localhost:8080/organization/reports'
+    const url = 'http://localhost:8080/courses/' + this.props.courseId + '/reports'
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -104,9 +96,23 @@ class OrganizationReports extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetcher(url, options)
-      .then(list => this.setState({ reports: list.organizationReportList }))
-      .catch(_ => message.error('Error obtaining reports'))
+    fetcher('http://localhost:8080/courses/' + this.props.courseId, options)
+      .then(course => {
+        fetcher(url, options)
+          .then(list => {
+            let reports = list.courseReportList
+            reports = reports.filter(report => report.reportedBy !== this.props.user.username)
+            this.setState({ reports: reports, loading: false, name: course.shortName })
+          })
+          .catch(_ => {
+            message.error('Error obtaining reports of course')
+            this.setState({loading: false})
+          })
+      })
+      .catch(_ => {
+        message.error('Error finding the course')
+        this.setState({loading: false})
+      })
   }
 
   voteUp () {
@@ -114,7 +120,8 @@ class OrganizationReports extends React.Component {
       vote: 'Up'
     }
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/organization/reports/${reportId}/vote`
+    const courseId = this.props.courseId
+    const url = `http://localhost:8080/courses/${courseId}/reports/${reportId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -126,23 +133,18 @@ class OrganizationReports extends React.Component {
       body: JSON.stringify(voteInput)
     }
     fetcher(url, body)
-      .then(_ =>
-        this.setState(prevState => {
-          let newArray = [...prevState.reports]
-          const index = newArray.findIndex(report => report.reportId === reportId)
-          newArray[index].votes = prevState.reports[index].votes + 1
-          return ({
-            reports: newArray,
-            voteUp: false
-          })
+      .then(_ => this.setState(prevState => {
+        let newArray = [...prevState.reports]
+        const index = newArray.findIndex(report => report.reportId === reportId)
+        newArray[index].votes = prevState.reports[index].votes + 1
+        message.success('Vote Up!!!!')
+        return ({
+          reports: newArray,
+          voteUp: false
         })
-      )
-      .catch(error => {
-        if (error.detail) {
-          message.error(error.detail)
-        } else {
-          message.error('Cannot vote up')
-        }
+      }))
+      .catch(_ => {
+        message.error('Error while processing your vote')
         this.setState({voteUp: false})
       })
   }
@@ -152,7 +154,8 @@ class OrganizationReports extends React.Component {
       vote: 'Down'
     }
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/organization/reports/${reportId}/vote`
+    const courseId = this.props.courseId
+    const url = `http://localhost:8080/courses/${courseId}/reports/${reportId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -164,30 +167,25 @@ class OrganizationReports extends React.Component {
       body: JSON.stringify(voteInput)
     }
     fetcher(url, body)
-      .then(_ =>
-        this.setState(prevState => {
-          let newArray = [...prevState.reports]
-          const index = newArray.findIndex(report => report.reportId === reportId)
-          newArray[index].votes = prevState.reports[index].votes - 1
-          return ({
-            reports: newArray,
-            voteDown: false
-          })
+      .then(_ => this.setState(prevState => {
+        let newArray = [...prevState.reports]
+        const index = newArray.findIndex(report => report.reportId === reportId)
+        newArray[index].votes = prevState.reports[index].votes - 1
+        message.success('Vote Down!!!!')
+        return ({
+          reports: newArray,
+          voteDown: false
         })
-      )
-      .catch(error => {
-        if (error.detail) {
-          message.error(error.detail)
-        } else {
-          message.error('Cannot vote down')
-        }
+      }))
+      .catch(_ => {
+        message.error('Error while processing your vote')
         this.setState({voteDown: false})
       })
   }
-
   approve () {
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/organization/reports/${reportId}`
+    const courseId = this.props.courseId
+    const url = `http://localhost:8080/courses/${courseId}/reports/${reportId}`
     const body = {
       method: 'POST',
       headers: {
@@ -221,7 +219,8 @@ class OrganizationReports extends React.Component {
 
   reject () {
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/organization/reports/${reportId}`
+    const courseId = this.props.courseId
+    const url = `http://localhost:8080/courses/${courseId}/reports/${reportId}`
     const body = {
       method: 'DELETE',
       headers: {
@@ -267,6 +266,6 @@ class OrganizationReports extends React.Component {
 
 export default (props) => (
   <Layout>
-    <OrganizationReports />
+    <CourseReports courseId={props.match.params.id} />
   </Layout>
 )

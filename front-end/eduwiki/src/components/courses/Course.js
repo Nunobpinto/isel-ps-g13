@@ -1,17 +1,23 @@
 import React from 'react'
 import fetcher from '../../fetcher'
-import {Link} from 'react-router-dom'
+import ReportCourse from './ReportCourse'
 import MyLayout from '../layout/Layout'
 import CourseVersions from './CourseVersions'
 import Term from '../term/Term'
-import {Button, Card, Col, Row, Tooltip, Menu, Layout, Popover, message} from 'antd'
+import {Button, Tooltip, Menu, Layout, Popover, message} from 'antd'
 import Cookies from 'universal-cookie'
 const cookies = new Cookies()
 
 const { Content, Sider } = Layout
 const { SubMenu } = Menu
 
-export default class extends React.Component {
+export default (props) => (
+  <MyLayout>
+    <Course courseId={props.match.params.id} />
+  </MyLayout>
+)
+
+class Course extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
@@ -52,75 +58,83 @@ export default class extends React.Component {
   render () {
     return (
       <div>
-        <MyLayout>
-          {this.state.courseError
-            ? <p> Error getting this course, please try again !!! </p>
-            : <div>
-              <div className='title_div'>
-                <h1>{this.state.full_name} - {this.state.short_name} <small>({this.state.timestamp})</small></h1>
-              </div>
-              <div className='version_div'>
-                <Popover placement='bottom' content={<CourseVersions auth={cookies.get('auth')} id={this.props.match.params.id} version={this.state.version} />} trigger='click'>
-                  <Button type='primary' id='show_reports_btn' icon='down'>
-              Version {this.state.version}
-                  </Button>
-                </Popover>
-              </div>
-              <div>
-                <p>Created By : {this.state.createdBy}</p>
-                <p>
-                  Votes : {this.state.votes}
-                  <Tooltip placement='bottom' title={`Vote Up on ${this.state.short_name}`}>
-                    <Button id='like_btn' shape='circle' icon='like' onClick={() => this.setState({voteUp: true})} />
-                  </Tooltip>
-                  <Tooltip placement='bottom' title={`Vote Down on ${this.state.short_name}`}>
-                    <Button id='dislike_btn' shape='circle' icon='dislike' onClick={() => this.setState({voteDown: true})} />
-                  </Tooltip>
-                  {this.state.userFollowing
-                    ? <Tooltip placement='bottom' title={'UnFollow this Course'}>
-                      <Button icon='close-circle' onClick={() => this.setState({unFollowCourseFlag: true})} />
-                    </Tooltip>
-                    : <Tooltip placement='bottom' title={'Follow this Course'}>
-                      <Button icon='heart-o' onClick={() => this.setState({followCourseFlag: true})} />
-                    </Tooltip>
-                  }
-                </p>
-                {this.state.termError
-                  ? <p>this.state.termError </p>
-                  : <Layout style={{ padding: '24px 0', background: '#fff' }}>
-                    <Sider width={200} style={{ background: '#fff' }}>
-                      <Menu
-                        mode='inline'
-                        style={{ height: '100%' }}
-                      >
-                        {this.state.terms.map(item =>
-                          <Menu.Item
-                            key={item.termId}
-                            onClick={() => this.showTerm(item)}
-                          >
-                            {item.shortName}
-                          </Menu.Item>
-
-                        )}
-                      </Menu>
-                    </Sider>
-                    <Content style={{ padding: '0 24px', minHeight: 280 }}>
-                      {this.state.term
-                        ? <Term
-                          term={this.state.term}
-                          courseId={this.props.match.params.id}
-                          courseBeingFollowed={this.state.userFollowing}
-                        />
-                        : <h1>Please choose one of the available Terms</h1>
-                      }
-                    </Content>
-                  </Layout>
-                }
-
-              </div>
+        {this.state.courseError
+          ? <p> Error getting this course, please try again !!! </p>
+          : <div>
+            <div className='title_div'>
+              <h1>{this.state.full_name} - {this.state.short_name} <small>({this.state.timestamp})</small></h1>
             </div>
-          }
-        </MyLayout>
+            <div className='version_div'>
+              <Popover placement='bottom' content={<CourseVersions auth={cookies.get('auth')} id={this.props.courseId} version={this.state.version} />} trigger='click'>
+                <Button type='primary' id='show_reports_btn' icon='down'>
+              Version {this.state.version}
+                </Button>
+              </Popover>
+            </div>
+            <div>
+              <p>Created By : {this.state.createdBy}</p>
+              <p>
+                  Votes : {this.state.votes}
+                <Tooltip placement='bottom' title={`Vote Up on ${this.state.short_name}`}>
+                  <Button id='like_btn' shape='circle' icon='like' onClick={() => this.setState({voteUp: true})} />
+                </Tooltip>
+                <Tooltip placement='bottom' title={`Vote Down on ${this.state.short_name}`}>
+                  <Button id='dislike_btn' shape='circle' icon='dislike' onClick={() => this.setState({voteDown: true})} />
+                </Tooltip>
+                <Popover content={<ReportCourse id={this.props.courseId} />} trigger='click'>
+                  <Tooltip placement='bottom' title='Report this Programme'>
+                    <Button id='report_btn' shape='circle' icon='warning' />
+                  </Tooltip>
+                </Popover>
+                <a href={`/courses/${this.props.courseId}/reports`}>
+                  <Button type='primary' id='show_reports_btn'>
+              Show all Reports On This Course
+                  </Button>
+                </a>
+                {this.state.userFollowing
+                  ? <Tooltip placement='bottom' title={'UnFollow this Course'}>
+                    <Button icon='close-circle' onClick={() => this.setState({unFollowCourseFlag: true})} />
+                  </Tooltip>
+                  : <Tooltip placement='bottom' title={'Follow this Course'}>
+                    <Button icon='heart' onClick={() => this.setState({followCourseFlag: true})} />
+                  </Tooltip>
+                }
+              </p>
+              {this.state.termError
+                ? <p>this.state.termError </p>
+                : <Layout style={{ padding: '24px 0', background: '#fff' }}>
+                  <Sider width={200} style={{ background: '#fff' }}>
+                    <Menu
+                      mode='inline'
+                      style={{ height: '100%' }}
+                    >
+                      {this.state.terms.map(item =>
+                        <Menu.Item
+                          key={item.termId}
+                          onClick={() => this.showTerm(item)}
+                        >
+                          {item.shortName}
+                        </Menu.Item>
+
+                      )}
+                    </Menu>
+                  </Sider>
+                  <Content style={{ padding: '0 24px', minHeight: 280 }}>
+                    {this.state.term
+                      ? <Term
+                        term={this.state.term}
+                        courseId={this.props.match.params.id}
+                        courseBeingFollowed={this.state.userFollowing}
+                      />
+                      : <h1>Please choose one of the available Terms</h1>
+                    }
+                  </Content>
+                </Layout>
+              }
+
+            </div>
+          </div>
+        }
       </div>
     )
   }
@@ -129,7 +143,7 @@ export default class extends React.Component {
     const voteInput = {
       vote: 'Up'
     }
-    const id = this.props.match.params.id
+    const id = this.props.courseId
     const uri = 'http://localhost:8080/courses/' + id + '/vote'
     const body = {
       method: 'POST',
@@ -149,8 +163,12 @@ export default class extends React.Component {
           votes: prevState.votes + 1
         }))
       })
-      .catch(_ => {
-        message.error('Error processing your vote')
+      .catch(error => {
+        if (error.detail) {
+          message.error(error.detail)
+        } else {
+          message.error('Cannot vote up')
+        }
         this.setState({voteUp: false})
       })
   }
@@ -159,7 +177,7 @@ export default class extends React.Component {
     const voteInput = {
       vote: 'Down'
     }
-    const id = this.props.match.params.id
+    const id = this.props.courseId
     const uri = 'http://localhost:8080/courses/' + id + '/vote'
     const body = {
       method: 'POST',
@@ -179,14 +197,18 @@ export default class extends React.Component {
           votes: prevState.votes - 1
         }))
       })
-      .catch(_ => {
-        message.error('Error processing your vote')
+      .catch(error => {
+        if (error.detail) {
+          message.error(error.detail)
+        } else {
+          message.error('Cannot vote down')
+        }
         this.setState({voteDown: false})
       })
   }
 
   componentDidMount () {
-    const id = this.props.match.params.id
+    const id = this.props.courseId
     const uri = 'http://localhost:8080/courses/' + id
     const header = {
       headers: {
@@ -237,7 +259,7 @@ export default class extends React.Component {
 
   followCourse () {
     const data = {
-      'course_id': this.state.courseId
+      'course_id': this.props.courseId
     }
     const options = {
       method: 'POST',
@@ -254,13 +276,13 @@ export default class extends React.Component {
       .then(_ => {
         message.success('Followed this course !!!')
         this.setState({
-          followProgrammeFlag: false,
+          followCourseFlag: false,
           userFollowing: true
         })
       })
       .catch(_ => {
         message.error('Error while following this course!!')
-        this.setState({followProgrammeFlag: false})
+        this.setState({followCourseFlag: false})
       })
   }
 
@@ -273,7 +295,7 @@ export default class extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetcher('http://localhost:8080/user/courses/' + this.state.courseId, options)
+    fetcher('http://localhost:8080/user/courses/' + this.props.courseId, options)
       .then(_ => {
         message.success('Unfollowed this course !!!')
         this.setState({

@@ -1,9 +1,7 @@
 import React from 'react'
 import fetcher from '../../fetcher'
-import {Link} from 'react-router-dom'
 import Layout from '../layout/Layout'
 import ReportProgramme from './ReportProgramme'
-import IconText from '../comms/IconText'
 import ProgrammeVersions from './ProgrammeVersions'
 import CourseProgramme from '../courseProgrammes/CourseProgramme'
 import {Row, Col, Card, Button, Tooltip, Popover, message} from 'antd'
@@ -71,7 +69,7 @@ class Programme extends React.Component {
           <Tooltip placement='bottom' title={`Vote Down on ${this.state.short_name}`}>
             <Button id='dislike_btn' shape='circle' icon='dislike' onClick={() => this.setState({voteDown: true})} />
           </Tooltip>
-          <Popover content={<ReportProgramme id={this.props.match.params.id} history={this.props.history} />} trigger='click'>
+          <Popover content={<ReportProgramme id={this.props.match.params.id} />} trigger='click'>
             <Tooltip placement='bottom' title='Report this Programme'>
               <Button id='report_btn' shape='circle' icon='warning' />
             </Tooltip>

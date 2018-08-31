@@ -76,15 +76,18 @@ class Profile extends React.Component {
                   </Menu>
                   <Content style={{ padding: '0 24px', minHeight: 280 }}>
                     {this.state.showProgrammeStage &&
-                      <ProgrammesStage />
+                      <ProgrammesStage username={this.props.user.username} />
                     }
                     {this.state.showCourseStage &&
-                      <CoursesStage />
+                      <CoursesStage username={this.props.user.username} />
                     }
                   </Content>
                 </Layout>
               </div>
-              <div className='right_side' />
+              <div className='right_side'>
+                <h1>Reputation</h1>
+                <UserReputation />
+              </div>
             </div>
             : <div className='centre_div'>
               <h1>Reputation</h1>

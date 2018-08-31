@@ -25,10 +25,10 @@ export default class extends React.Component {
               <h1>{this.state.full_name} - {this.state.short_name} <small>({this.state.timestamp})</small></h1>
             </div>
             <div className='version_div'>
-              <p>version {this.props.version}</p>
+              <p>version {this.props.match.params.version}</p>
             </div>
             <p>Created By: {this.state.createdBy}</p>
-            <Button type='primary' onClick={() => this.props.history.push(`/courses/${this.props.match.params.courseId}`)}>
+            <Button type='primary' onClick={() => this.props.history.push(`/courses/${this.props.match.params.id}`)}>
               <Icon type='left' />Back to actual version
             </Button>
           </div>
@@ -38,7 +38,7 @@ export default class extends React.Component {
   }
 
   componentDidMount () {
-    const url = `http://localhost:8080/courses/${this.props.match.params.courseId}/versions/${this.props.match.params.version}`
+    const url = `http://localhost:8080/courses/${this.props.match.params.id}/versions/${this.props.match.params.version}`
     const headers = {
       headers: {
         'Access-Control-Allow-Origin': '*',
