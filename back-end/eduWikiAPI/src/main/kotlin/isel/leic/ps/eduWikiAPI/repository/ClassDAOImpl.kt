@@ -94,7 +94,6 @@ class ClassDAOImpl : ClassDAO {
         const val COURSE_CLASS_STAGE_LOG_ID = "log_id"
     }
 
-    @Qualifier("MainJdbi")
     @Autowired
     lateinit var jdbi: Jdbi
 

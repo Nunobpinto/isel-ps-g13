@@ -29,7 +29,6 @@ class ResourceDAOImpl : ResourceDAO {
         const val RESOURCE_SIZE = "size"
     }
 
-    @Qualifier("ResourcesJdbi")
     @Autowired
     lateinit var jdbi: Jdbi
 

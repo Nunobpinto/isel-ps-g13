@@ -100,7 +100,6 @@ class WorkAssignmentDAOImpl : WorkAssignmentDAO {
         const val WORK_ASSIGNMENT_VERSION_TIMESTAMP = "time_stamp"
     }
 
-    @Qualifier("MainJdbi")
     @Autowired
     lateinit var jdbi: Jdbi
 

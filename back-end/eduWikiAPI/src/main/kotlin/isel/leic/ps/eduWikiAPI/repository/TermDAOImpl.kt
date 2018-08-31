@@ -23,7 +23,6 @@ class TermDAOImpl : TermDAO {
         const val TERM_TIMESTAMP = "time_stamp"
     }
 
-    @Qualifier("MainJdbi")
     @Autowired
     lateinit var jdbi: Jdbi
 

@@ -55,7 +55,6 @@ class OrganizationDAOImpl : OrganizationDAO {
         const val ORGANIZATION_VERSION_TIMESTAMP = "time_stamp"
     }
 
-    @Qualifier("MainJdbi")
     @Autowired
     lateinit var jdbi: Jdbi
 

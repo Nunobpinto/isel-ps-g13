@@ -83,7 +83,6 @@ class LectureDAOImpl : LectureDAO {
         const val LECTURE_VERSION_CREATED_BY = "created_by"
     }
 
-    @Qualifier("MainJdbi")
     @Autowired
     lateinit var jdbi: Jdbi
 

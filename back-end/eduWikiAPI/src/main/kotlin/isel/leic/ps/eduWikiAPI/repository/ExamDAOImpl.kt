@@ -88,7 +88,6 @@ class ExamDAOImpl : ExamDAO {
 
     }
 
-    @Qualifier("MainJdbi")
     @Autowired
     lateinit var jdbi: Jdbi
 

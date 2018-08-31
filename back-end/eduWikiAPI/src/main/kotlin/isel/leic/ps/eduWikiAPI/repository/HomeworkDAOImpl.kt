@@ -85,7 +85,6 @@ class HomeworkDAOImpl : HomeworkDAO {
         const val HOMEWORK_VERSION_CREATED_BY = "created_by"
     }
 
-    @Qualifier("MainJdbi")
     @Autowired
     lateinit var jdbi: Jdbi
 

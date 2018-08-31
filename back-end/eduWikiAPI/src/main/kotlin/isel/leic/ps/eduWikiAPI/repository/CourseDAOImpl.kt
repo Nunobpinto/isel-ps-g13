@@ -159,7 +159,6 @@ class CourseDAOImpl : CourseDAO {
         const val COURSE_MISC_UNIT_STAGE_TERM_ID = "term_id"
     }
 
-    @Qualifier("MainJdbi")
     @Autowired
     lateinit var jdbi: Jdbi
 

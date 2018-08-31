@@ -74,7 +74,6 @@ class ProgrammeDAOImpl : ProgrammeDAO {
 
     }
 
-    @Qualifier("MainJdbi")
     @Autowired
     lateinit var jdbi: Jdbi
 

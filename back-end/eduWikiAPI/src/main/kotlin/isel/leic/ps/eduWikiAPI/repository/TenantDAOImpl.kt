@@ -53,7 +53,6 @@ class TenantDAOImpl : TenantDAO {
         const val REGISTERED_TENANT_UUID = "tenant_uuid"
     }
 
-    @Qualifier("MainJdbi")
     @Autowired
     lateinit var jdbi: Jdbi
 

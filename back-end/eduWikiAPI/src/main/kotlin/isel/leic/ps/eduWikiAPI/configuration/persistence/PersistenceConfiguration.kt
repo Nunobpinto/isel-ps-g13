@@ -24,51 +24,21 @@ class PersistenceConfiguration {
     // Main database configuration
     // ----------------------------
 
-    @Bean(name = ["mainDatabase"])
-    @Primary
-    @ConfigurationProperties("main-database.datasource")
+    @Bean
+    @ConfigurationProperties("spring.datasource")
     fun mainDatabase(): HikariDataSource =
             DataSourceBuilder.create().type(HikariDataSource::class.java).build()
 
-    @Bean(name = ["transactionAwareMainDataSourceProxy"])
-    fun transactionAwareMainDataSourceProxy(@Qualifier("mainDatabase") dataSource: HikariDataSource): TransactionAwareDataSourceProxy =
+    @Bean
+    fun transactionAwareMainDataSourceProxy(dataSource: HikariDataSource): TransactionAwareDataSourceProxy =
             TransactionAwareDataSourceProxy(dataSource)
 
-    @Bean(name = ["platformMainTransactionManager"])
-    @Primary
-    fun platformMainTransactionManager(@Qualifier("mainDatabase") dataSource: HikariDataSource): PlatformTransactionManager =
+    @Bean
+    fun platformMainTransactionManager(dataSource: HikariDataSource): PlatformTransactionManager =
             DataSourceTransactionManager(dataSource)
 
-    @Bean(name = ["MainJdbi"])
-    @Primary
-    fun jdbiMainDatabaseBean(@Qualifier("transactionAwareMainDataSourceProxy") transactionAwareDataSourceProxy: TransactionAwareDataSourceProxy): Jdbi =
-            Jdbi.create(transactionAwareDataSourceProxy)
-                    // Plugins
-                    .installPlugin(KotlinPlugin())
-                    .installPlugin(PostgresPlugin())
-                    .installPlugin(SqlObjectPlugin())
-                    .installPlugin(KotlinSqlObjectPlugin())
-                    .setTemplateEngine(SchemaReWriter())
-
-    // ----------------------------
-    // Resources database configuration
-    // ----------------------------
-
-    @Bean(name = ["resourcesDatabase"])
-    @ConfigurationProperties("resources-database.datasource")
-    fun resourcesDatabase(): DataSource =
-            DataSourceBuilder.create().build()
-
-    @Bean(name = ["transactionAwareResourcesDataSourceProxy"])
-    fun transactionAwareResourcesDataSourceProxy(@Qualifier("resourcesDatabase") dataSource: DataSource): TransactionAwareDataSourceProxy =
-            TransactionAwareDataSourceProxy(dataSource)
-
-    @Bean(name = ["platformResourcesTransactionManager"])
-    fun platformResourcesTransactionManager(@Qualifier("resourcesDatabase") dataSource: DataSource): PlatformTransactionManager =
-            DataSourceTransactionManager(dataSource)
-
-    @Bean(name = ["ResourcesJdbi"])
-    fun jdbiResourcesDatabaseBean(@Qualifier("transactionAwareResourcesDataSourceProxy") transactionAwareDataSourceProxy: TransactionAwareDataSourceProxy): Jdbi =
+    @Bean
+    fun jdbiMainDatabaseBean(transactionAwareDataSourceProxy: TransactionAwareDataSourceProxy): Jdbi =
             Jdbi.create(transactionAwareDataSourceProxy)
                     // Plugins
                     .installPlugin(KotlinPlugin())

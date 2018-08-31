@@ -21,7 +21,6 @@ class TokenDAOImpl : TokenDAO {
         const val VALIDATION_TOKEN_DATE = "validation_date"
     }
 
-    @Qualifier("MainJdbi")
     @Autowired
     lateinit var jdbi: Jdbi
 

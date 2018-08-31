@@ -42,7 +42,6 @@ class ReputationDAOImpl : ReputationDAO {
         const val REPUTATION_ROLE = "role"
     }
 
-    @Qualifier("MainJdbi")
     @Autowired
     lateinit var jdbi: Jdbi
 

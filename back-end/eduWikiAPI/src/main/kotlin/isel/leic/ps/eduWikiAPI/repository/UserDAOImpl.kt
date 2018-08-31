@@ -69,7 +69,6 @@ class UserDAOImpl : UserDAO {
         const val USER_PROGRAMME_PROGRAMME_ID = "programme_id"
     }
 
-    @Qualifier("MainJdbi")
     @Autowired
     lateinit var jdbi: Jdbi
 
