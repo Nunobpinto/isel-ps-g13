@@ -8,7 +8,13 @@ import { Button, Input, message, List, Card } from 'antd'
 import Cookies from 'universal-cookie'
 const cookies = new Cookies()
 
-export default class extends React.Component {
+export default (props) => (
+  <Layout>
+    <Course />
+  </Layout>
+)
+
+class Course extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
@@ -22,13 +28,23 @@ export default class extends React.Component {
       nameFilter: '',
       stagedNameFilter: ''
     }
+    this.handleChange = this.handleChange.bind(this)
     this.voteUp = this.voteUp.bind(this)
     this.voteDown = this.voteDown.bind(this)
     this.voteUpStaged = this.voteUpStaged.bind(this)
     this.voteDownStaged = this.voteDownStaged.bind(this)
     this.createStagedCourse = this.createStagedCourse.bind(this)
+    this.voteUpStaged = this.voteUpStaged.bind(this)
+    this.voteDownStaged = this.voteDownStaged.bind(this)
+    this.createDefinitiveCourse = this.createDefinitiveCourse.bind(this)
     this.filterCoursesByName = this.filterCoursesByName.bind(this)
     this.filterStagedByName = this.filterStagedByName.bind(this)
+  }
+
+  handleChange (ev) {
+    this.setState({
+      [ev.target.name]: ev.target.value
+    })
   }
 
   filterCoursesByName (ev) {
@@ -51,62 +67,67 @@ export default class extends React.Component {
 
   render () {
     return (
-      <Layout>
-        <div className='container'>
-          <div className='left-div'>
-            {this.state.error
-              ? <p> Error getting all the courses please try again !!! </p>
-              : <div>
-                <h1>All courses in ISEL</h1>
-                <p> Filter By Name </p>
-                <Input.Search
-                  name='nameFilter'
-                  placeholder='Search name'
-                  onChange={this.filterCoursesByName}
-                />
-                <List
-                  itemLayout='vertical'
-                  size='large'
-                  bordered
-                  dataSource={this.state.viewCourses}
-                  renderItem={item => (
-                    <List.Item
-                      actions={[
-                        <IconText
-                          type='like-o'
-                          id='like_btn'
-                          onClick={() =>
-                            this.setState({
-                              voteUp: true,
-                              courseID: item.courseId
-                            })}
-                          text={item.votes}
-                        />,
-                        <IconText
-                          type='dislike-o'
-                          id='dislike_btn'
-                          onClick={() =>
-                            this.setState({
-                              voteDown: true,
-                              courseID: item.courseId
-                            })}
-                        />
-                      ]}
-                    >
-                      <List.Item.Meta
-                        title={<Link to={{ pathname: `/courses/${item.courseId}` }}> {item.fullName} ({item.shortName})</Link>}
-                        description={`Created by ${item.createdBy}`}
+      <div className='container'>
+        <div className='left-div'>
+          {this.state.error
+            ? <p> Error getting all the courses please try again !!! </p>
+            : <div>
+              <h1>All courses in ISEL</h1>
+              <p> Filter By Name </p>
+              <Input.Search
+                name='nameFilter'
+                placeholder='Search name'
+                onChange={this.filterCoursesByName}
+              />
+              <List
+                itemLayout='vertical'
+                size='large'
+                bordered
+                dataSource={this.state.viewCourses}
+                renderItem={item => (
+                  <List.Item
+                    actions={[
+                      <IconText
+                        type='like-o'
+                        id='like_btn'
+                        onClick={() =>
+                          this.setState({
+                            voteUp: true,
+                            courseID: item.courseId
+                          })}
+                        text={item.votes}
+                      />,
+                      <IconText
+                        type='dislike-o'
+                        id='dislike_btn'
+                        onClick={() =>
+                          this.setState({
+                            voteDown: true,
+                            courseID: item.courseId
+                          })}
                       />
-                    </List.Item>
-                  )}
-                />
-              </div>
-            }
-            <Button icon='plus' id='create_btn' type='primary' onClick={() => this.setState({stagedCourseView: true})}>Create Course</Button>
-          </div>
-          <div class='right-div'>
-            {
-              this.state.stagedCourseView &&
+                    ]}
+                  >
+                    <List.Item.Meta
+                      title={<Link to={{ pathname: `/courses/${item.courseId}` }}> {item.fullName} ({item.shortName})</Link>}
+                      description={`Created by ${item.createdBy}`}
+                    />
+                  </List.Item>
+                )}
+              />
+            </div>
+          }
+          {this.props.user.reputation.role === 'ROLE_ADMIN'
+            ? <Button icon='plus' id='create_btn' type='primary' onClick={() => this.setState({createCourseView: true})}>Create Course</Button>
+            : <Button icon='plus' id='create_btn' type='primary' onClick={() => this.setState({stagedCourseView: true})}>Create Course</Button>
+          }
+        </div>
+        <div class='right-div'>
+          {this.state.createCourseView &&
+          <CreateCourse action={this.createDefinitiveCourse} />
+          }
+          {
+            this.state.stagedCourseView &&
               <div id='stagedCourses'>
                 <h1>All staged Courses</h1>
                 <p> Filter By Name : </p>
@@ -148,12 +169,11 @@ export default class extends React.Component {
                   )}
                 />
                 <Button type='primary' onClick={() => this.setState({createCourseForm: true})}>Still want to create?</Button>
-                {this.state.createCourseForm && <CreateCourse action={this.createStagedCourse} />}
+                {this.state.createCourseForm && <CreateCourse action={(data) => this.createStagedCourse(data)} />}
               </div>
-            }
-          </div>
+          }
         </div>
-      </Layout>
+      </div>
     )
   }
 
@@ -194,8 +214,7 @@ export default class extends React.Component {
   createStagedCourse (data) {
     const body = {
       course_full_name: data.full_name,
-      course_short_name: data.short_name,
-      organization_id: data.organization_id
+      course_short_name: data.short_name
     }
     const options = {
       method: 'POST',
@@ -213,22 +232,56 @@ export default class extends React.Component {
         const newItem = {
           fullName: data.full_name,
           shortName: data.short_name,
-          organizationId: data.organization_id,
           votes: json.votes,
           timestamp: json.timestamp,
           stagedId: json.stagedId,
           createdBy: json.createdBy
         }
-        message.success('Successfully created course')
+        message.success('Successfully created staged course')
         this.setState(prevState => ({
           staged: [...prevState.staged, newItem],
-          viewStaged: [...prevState.staged, newItem],
-          createStagedFlag: false
+          viewStaged: [...prevState.staged, newItem]
         }))
       })
-      .catch(error => {
-        message.error('Successfully created course')
-        this.setState({ progError: error, createStagedFlag: false })
+      .catch(_ => {
+        message.error('Error creating staged course')
+      })
+  }
+
+  createDefinitiveCourse (data) {
+    const body = {
+      course_full_name: data.full_name,
+      course_short_name: data.short_name
+    }
+    const options = {
+      method: 'POST',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
+      },
+      body: JSON.stringify(body)
+    }
+    const url = 'http://localhost:8080/courses'
+    fetcher(url, options)
+      .then(json => {
+        const newItem = {
+          fullName: data.full_name,
+          shortName: data.short_name,
+          votes: json.votes,
+          timestamp: json.timestamp,
+          courseId: json.courseId,
+          createdBy: json.createdBy
+        }
+        message.success('Successfully created course')
+        this.setState(prevState => ({
+          courses: [...prevState.courses, newItem],
+          viewCourses: [...prevState.viewCourses, newItem]
+        }))
+      })
+      .catch(_ => {
+        message.error('Error creating course')
       })
   }
 
@@ -259,8 +312,12 @@ export default class extends React.Component {
           voteUp: false
         })
       }))
-      .catch(_ => {
-        message.error('Error processing your vote')
+      .catch(error => {
+        if (error.detail) {
+          message.error(error.detail)
+        } else {
+          message.error('Cannot vote up')
+        }
         this.setState({voteUp: false})
       })
   }
@@ -292,8 +349,12 @@ export default class extends React.Component {
           voteDown: false
         })
       }))
-      .catch(_ => {
-        message.error('Error processing your vote')
+      .catch(error => {
+        if (error.detail) {
+          message.error(error.detail)
+        } else {
+          message.error('Cannot vote down')
+        }
         this.setState({voteDown: false})
       })
   }
@@ -319,7 +380,7 @@ export default class extends React.Component {
         message.success('Voted staged up!!!')
         this.setState(prevState => {
           let newArray = [...prevState.staged]
-          const index = newArray.findIndex(course => course.stageId === stageID)
+          const index = newArray.findIndex(course => course.stagedId === stageID)
           newArray[index].votes = prevState.staged[index].votes + 1
           return ({
             staged: newArray,
@@ -327,8 +388,12 @@ export default class extends React.Component {
           })
         })
       })
-      .catch(_ => {
-        message.error('Error processing your vote')
+      .catch(error => {
+        if (error.detail) {
+          message.error(error.detail)
+        } else {
+          message.error('Cannot vote up')
+        }
         this.setState({voteUpStaged: false})
       })
   }
@@ -354,7 +419,7 @@ export default class extends React.Component {
         message.success('Voted staged up!!!')
         this.setState(prevState => {
           let newArray = [...prevState.staged]
-          const index = newArray.findIndex(course => course.stageId === stageID)
+          const index = newArray.findIndex(course => course.stagedId === stageID)
           newArray[index].votes = prevState.staged[index].votes - 1
           return ({
             staged: newArray,
@@ -362,16 +427,18 @@ export default class extends React.Component {
           })
         })
       })
-      .catch(_ => {
-        message.error('Error processing your vote')
+      .catch(error => {
+        if (error.detail) {
+          message.error(error.detail)
+        } else {
+          message.error('Cannot vote up')
+        }
         this.setState({voteDownStaged: false})
       })
   }
 
   componentDidUpdate () {
-    if (this.state.createStagedFlag) {
-      this.createStagedCourse()
-    } else if (this.state.voteUp) {
+    if (this.state.voteUp) {
       this.voteUp()
     } else if (this.state.voteDown) {
       this.voteDown()

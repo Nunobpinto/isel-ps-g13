@@ -105,7 +105,7 @@ class CourseController {
     ) = courseService.updateReportedCourse(courseId, reportId, principal)
 
     @DeleteMapping("/{courseId}/reports/{reportId}")
-    fun deleteReportOnCourse(@PathVariable courseId: Int, reportId: Int, principal: Principal) = courseService.deleteReportOnCourse(courseId, reportId, principal)
+    fun deleteReportOnCourse(@PathVariable courseId: Int, @PathVariable reportId: Int, principal: Principal) = courseService.deleteReportOnCourse(courseId, reportId, principal)
 
     // ----------------------------
     // Course Stage Endpoints

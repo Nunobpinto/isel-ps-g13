@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form, Input, InputNumber, Button } from 'antd'
+import { Form, Input, Button } from 'antd'
 
 const FormItem = Form.Item
 
@@ -50,17 +50,6 @@ class CreateCourseForm extends React.Component {
               <Input />
             )}
           </FormItem>
-          <FormItem
-            label='Organization Id'
-          >
-            {getFieldDecorator('organization_id', {
-              rules: [{
-                required: true, message: 'Please add an organization id to the new Course'
-              }]
-            })(
-              <InputNumber min={1} />
-            )}
-          </FormItem>
           <FormItem>
             <Button type='primary' htmlType='submit'>Create Course</Button>
           </FormItem>
@@ -73,7 +62,7 @@ class CreateCourseForm extends React.Component {
       this.props.action(this.state.data)
       this.setState({
         data: undefined,
-        createProgrammeFlag: false
+        createCourseFlag: false
       })
     }
   }

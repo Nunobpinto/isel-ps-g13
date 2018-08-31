@@ -393,7 +393,7 @@ class Programmes extends React.Component {
     fetcher(url, body)
       .then(_ => this.setState(prevState => {
         let newArray = [...prevState.staged]
-        const index = newArray.findIndex(programme => programme.stageID === stageID)
+        const index = newArray.findIndex(programme => programme.stagedId === stageID)
         newArray[index].votes = prevState.staged[index].votes + 1
         message.success('Successfully voted up')
         return ({
@@ -426,7 +426,7 @@ class Programmes extends React.Component {
     fetcher(url, body)
       .then(_ => this.setState(prevState => {
         let newArray = [...prevState.staged]
-        const index = newArray.findIndex(programme => programme.stageID === stageID)
+        const index = newArray.findIndex(programme => programme.stagedId === stageID)
         newArray[index].votes = prevState.staged[index].votes - 1
         message.success('Successfully voted down')
         return ({

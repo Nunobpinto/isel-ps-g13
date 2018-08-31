@@ -134,10 +134,14 @@ export default class extends React.Component {
     }
     const stagedUri = 'http://localhost:8080/programmes/stage'
     fetcher(stagedUri, options)
-      .then(json => this.setState({
-        staged: json.programmeStageList,
-        viewStaged: json.programmeStageList
-      }))
+      .then(json => {
+        let staged = json.programmeStageList
+        staged = staged.filter(st => st.createdBy !== this.props.username)
+        this.setState({
+          staged: staged,
+          viewStaged: staged
+        })
+      })
       .catch(_ => message.error('Something bad happened'))
   }
   componentDidUpdate () {

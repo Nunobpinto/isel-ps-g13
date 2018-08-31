@@ -26,7 +26,6 @@ export default class extends React.Component {
   }
   componentDidMount () {
     const courseId = this.props.id
-    const versionNumber = this.props.version
     const url = 'http://localhost:8080/courses/' + courseId + '/versions'
     const body = {
       headers: {
@@ -37,7 +36,7 @@ export default class extends React.Component {
     }
     fetcher(url, body)
       .then(versions => {
-        const courseVersions = versions.filter(version => version.version !== versionNumber)
+        const courseVersions = versions.courseVersionList.filter(version => version.version !== this.props.version)
         this.setState({versions: courseVersions})
       })
       .catch(_ => message.error('Error getting all Versions of Course'))

@@ -26,6 +26,7 @@ import ProgrammeReports from './components/programmes/ProgrammeReports'
 import CourseProgrammeVersion from './components/courseProgrammes/CourseProgrammeVersion'
 import CourseProgrammeReports from './components/courseProgrammes/CourseProgrammeReports'
 import CourseProgrammePage from './components/courseProgrammes/CourseProgrammePage'
+import CourseReports from './components/courses/CourseReports'
 
 export default () => (
   <div>
@@ -40,6 +41,8 @@ export default () => (
         <ProtectedRoute exact path='/programmes/:id' component={Programme} />
         <ProtectedRoute exact path='/courses' component={Courses} />
         <ProtectedRoute exact path='/courses/:id' component={Course} />
+        <ProtectedRoute exact path='/courses/:id/reports' component={CourseReports} />
+        <ProtectedRoute exact path='/courses/:id/versions/:version' component={CourseVersion} />
         <ProtectedRoute exact path='/courses/:courseId/terms/:termId/work-assignments/:workAssignmentId' component={WorkAssignment} />
         <ProtectedRoute exact path='/courses/:courseId/terms/:termId/exams/:examId' component={Exam} />
         <ProtectedRoute exact path='/classes' component={Classes} />
