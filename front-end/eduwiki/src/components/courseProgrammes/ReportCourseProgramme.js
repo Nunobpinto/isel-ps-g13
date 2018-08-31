@@ -1,10 +1,9 @@
 import React from 'react'
 import fetcher from '../../fetcher'
-import {Input, Form, Button, message, Select, Radio} from 'antd'
+import {Input, Form, Button, message, Radio} from 'antd'
 import Cookies from 'universal-cookie'
-import RadioGroup from 'antd/lib/radio/group';
+import RadioGroup from 'antd/lib/radio/group'
 const cookies = new Cookies()
-const Option = Select.Option
 
 export default class extends React.Component {
   constructor (props) {

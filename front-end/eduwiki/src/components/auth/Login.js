@@ -116,7 +116,12 @@ class LoginForm extends React.Component {
           this.props.history.push('/')
         })
         .catch(error => {
-          message.error(error.detail)
+          if (error.detail) {
+            message.error(error.detail)
+          }
+          else {
+            message.error('Error checking your account, please try again')
+          }
           this.setState({redirect: false})
         })
     }

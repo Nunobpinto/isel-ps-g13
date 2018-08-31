@@ -8,7 +8,7 @@ import ProgrammeVersions from './ProgrammeVersions'
 import CourseProgramme from '../courseProgrammes/CourseProgramme'
 import {Row, Col, Card, Button, Tooltip, Popover, message} from 'antd'
 import Cookies from 'universal-cookie'
-import ReportCourseProgramme from '../courseProgrammes/ReportCourseProgramme'
+import CourseProgrammeDetails from '../courseProgrammes/CourseProgrammeDetails'
 import CoursesProgrammeStage from '../courseProgrammes/CoursesProgrammeStage'
 const cookies = new Cookies()
 
@@ -113,21 +113,10 @@ class Programme extends React.Component {
         <div style={{ padding: '30px' }}>
           <Row gutter={16}>
             {this.state.courses.map(item =>
-              <Col span={8} key={item.id}>
-                <Card title={item.shortName}>
-                  <p>{item.fullName} - <small>{item.createdBy}</small> </p>
-                  {item.optional === false ? <p>Mandatory</p> : <p>Optional</p>}
-                  <p>Credits : {item.credits}</p>
-                  <p>Lectured in term {item.lecturedTerm} </p>
-                  <p>Created By: {item.createdBy}</p>
-                  <Popover content={<ReportCourseProgramme programmeId={this.props.match.params.id} courseId={item.courseId} />} trigger='click'>
-                    <Tooltip placement='bottom' title='Report this Course Programme'>
-                      <Button id='report_btn' shape='circle' icon='warning' />
-                    </Tooltip>
-                  </Popover>
-                  <Link to={{pathname: `/courses/${item.courseId}`}}>See it's page</Link>
-                </Card>
-              </Col>
+              <CourseProgrammeDetails
+                course={item}
+                programmeId={this.props.match.params.id}
+              />
             )}
           </Row>
         </div>

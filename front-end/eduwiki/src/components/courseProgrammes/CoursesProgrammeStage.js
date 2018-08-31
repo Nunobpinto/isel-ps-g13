@@ -44,7 +44,7 @@ export default class extends React.Component {
                   onClick={() =>
                     this.setState({
                       voteUp: true,
-                      stageId: staged.stagedId
+                      stagedId: staged.stagedId
                     })}
                 />
                 <IconText
@@ -53,7 +53,7 @@ export default class extends React.Component {
                   onClick={() =>
                     this.setState({
                       voteDown: true,
-                      stageId: staged.stagedId
+                      stagedId: staged.stagedId
                     })}
                 />
                 {
@@ -66,7 +66,7 @@ export default class extends React.Component {
                       onClick={() =>
                         this.setState({
                           approved: true,
-                          stageId: staged.stagedId
+                          stagedId: staged.stagedId
                         })}
                     />
                     <IconText
@@ -76,7 +76,7 @@ export default class extends React.Component {
                       onClick={() =>
                         this.setState({
                           rejected: true,
-                          stageId: staged.stagedId
+                          stagedId: staged.stagedId
                         })}
                     />
                   </div>
@@ -93,7 +93,7 @@ export default class extends React.Component {
       vote: 'Up'
     }
     const id = this.props.programmeId
-    const uri = 'http://localhost:8080/programmes/' + id + '/courses/stage/' + this.state.stageId + '/vote'
+    const uri = 'http://localhost:8080/programmes/' + id + '/courses/stage/' + this.state.stagedId + '/vote'
     const body = {
       method: 'POST',
       headers: {
@@ -109,7 +109,7 @@ export default class extends React.Component {
         message.success('Voted Up!!')
         this.setState(prevState => {
           let staged = prevState.staged
-          const idx = staged.findIndex(st => st.stageId === prevState.stagedId)
+          const idx = staged.findIndex(st => st.stagedId === prevState.stagedId)
           staged[idx].votes += 1
           return ({
             voteStagedCoursesUp: false,
@@ -131,7 +131,7 @@ export default class extends React.Component {
       vote: 'Down'
     }
     const id = this.props.programmeId
-    const uri = 'http://localhost:8080/programmes/' + id + '/courses/stage/' + this.state.stageId + '/vote'
+    const uri = 'http://localhost:8080/programmes/' + id + '/courses/stage/' + this.state.stagedId + '/vote'
     const body = {
       method: 'POST',
       headers: {
@@ -147,7 +147,7 @@ export default class extends React.Component {
         message.success('Voted Down!!')
         this.setState(prevState => {
           let staged = prevState.staged
-          const idx = staged.findIndex(st => st.stageId === prevState.stagedId)
+          const idx = staged.findIndex(st => st.stagedId === prevState.stagedId)
           staged[idx].votes -= 1
           return ({
             voteStagedCoursesDown: false,
@@ -165,10 +165,10 @@ export default class extends React.Component {
       })
   }
   approveStaged () {
-    this.props.adminAction(this.state.stageId)
+    this.props.adminAction(this.state.stagedId)
     this.setState(prevState => {
       let staged = prevState.staged
-      staged = staged.filter(st => st.stageId !== this.state.stageId)
+      staged = staged.filter(st => st.stagedId !== this.state.stagedId)
       return ({
         approved: false,
         staged: staged
@@ -177,7 +177,7 @@ export default class extends React.Component {
   }
   rejectStaged () {
     const id = this.props.programmeId
-    const uri = 'http://localhost:8080/programmes/' + id + '/courses/stage/' + this.state.stageId
+    const uri = 'http://localhost:8080/programmes/' + id + '/courses/stage/' + this.state.stagedId
     const body = {
       method: 'DELETE',
       headers: {
@@ -191,7 +191,7 @@ export default class extends React.Component {
       .then(_ => {
         message.success('Rejected staged Course Programme!!')
         this.setState(prevState => {
-          let staged = prevState.staged.filter(st => st.stageId !== prevState.stagedId)
+          let staged = prevState.staged.filter(st => st.stagedId !== prevState.stagedId)
           return ({
             rejected: false,
             staged: staged

@@ -1,6 +1,5 @@
 import React from 'react'
 import Layout from '../layout/Layout'
-import OrganizationReports from './OrganizationReports'
 import timestampParser from '../../timestampParser'
 import ReportOrganization from './ReportOrganization'
 import {Row, Col, Card, Button, Tooltip, Popover, message} from 'antd'
