@@ -6,6 +6,8 @@ import java.time.LocalDateTime
 data class CourseProgrammeVersionOutputModel(
         val version: Int = 1,
         val courseId: Int = 0,
+        val courseShortName: String = " ",
+        val programmeShortName: String = " ",
         val programmeId: Int = 0,
         val lecturedTerm: String = "",
         val optional: Boolean = false,

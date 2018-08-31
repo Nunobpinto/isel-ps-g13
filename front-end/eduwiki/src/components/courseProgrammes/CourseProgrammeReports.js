@@ -10,11 +10,10 @@ class CourseProgrammeReports extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      reports: [{
-        courseShortName: '',
-        programmeShortName: ''
-      }],
-      loading: true
+      reports: [{}],
+      loading: true,
+      programmeName: '',
+      courseShortName: ''
     }
     this.voteUp = this.voteUp.bind(this)
     this.voteDown = this.voteDown.bind(this)
@@ -27,7 +26,7 @@ class CourseProgrammeReports extends React.Component {
         itemLayout='vertical'
         bordered
         loading={this.state.loading}
-        header={<div><h1>Course {this.props.courseId} on Programme {this.props.programmeId} reports</h1></div>}
+        header={<div><h1>Course {this.state.courseShortName} on {this.state.programmeName} reports</h1></div>}
         dataSource={this.state.reports}
         renderItem={item => (
           <List.Item
@@ -64,8 +63,6 @@ class CourseProgrammeReports extends React.Component {
             <br />
             {item.deleteFlag && 'To Delete'}
             <br />
-            {item.newProgramme !== '' && `Swap for programme ${item.newProgramme}`}
-            <br />
             <p>Created on {item.timestamp}</p>
             {
               this.props.user.reputation.role === 'ROLE_ADMIN' &&
@@ -101,22 +98,25 @@ class CourseProgrammeReports extends React.Component {
     const programmeId = this.props.programmeId
     const courseId = this.props.courseId
     const url = 'http://localhost:8080/programmes/' + programmeId + '/courses/' + courseId + '/reports'
-    const body = {
+    const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Authorization': 'Basic ' + cookies.get('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetcher(url, body)
-      .then(list => {
-        let reports = list.courseProgrammeReportList
-        reports = reports.filter(report => report.reportedBy !== this.props.user.username)
-        this.setState({ reports: reports, loading: false })
-      })
-      .catch(_ => {
-        message.error('Error obtaining reports of course programme')
-        this.setState({loading: false})
+    fetcher('http://localhost:8080/programmes/' + programmeId + '/courses/' + courseId, options)
+      .then(courseProgramme => {
+        fetcher(url, options)
+          .then(list => {
+            let reports = list.courseProgrammeReportList
+            reports = reports.filter(report => report.reportedBy !== this.props.user.username)
+            this.setState({ reports: reports, loading: false, programmeName: courseProgramme.programmeShortName, courseShortName: courseProgramme.shortName })
+          })
+          .catch(_ => {
+            message.error('Error obtaining reports of course programme')
+            this.setState({loading: false})
+          })
       })
   }
 

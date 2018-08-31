@@ -8,6 +8,7 @@ data class CourseProgrammeOutputModel (
         val courseId: Int = 0,
         val programmeId: Int = 0,
         val version: Int = 0,
+        val programmeShortName: String = "",
         val createdBy: String = "",
         val fullName: String = "",
         val shortName: String = "",

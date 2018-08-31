@@ -7,6 +7,8 @@ data class CourseProgrammeReportOutputModel (
         val reportId: Int = -1,
         val courseId: Int = 0,
         val programmeId: Int = 0,
+        val courseShortName: String = " ",
+        val programmeShortName: String = " ",
         val lecturedTerm: String? = null,
         val optional: Boolean? = null,
         val credits: Int? = null,

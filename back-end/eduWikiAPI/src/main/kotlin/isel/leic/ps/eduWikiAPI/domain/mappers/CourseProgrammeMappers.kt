@@ -5,6 +5,7 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.CourseProgrammeReportIn
 import isel.leic.ps.eduWikiAPI.domain.model.ActionLog
 import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.CourseProgramme
+import isel.leic.ps.eduWikiAPI.domain.model.Programme
 import isel.leic.ps.eduWikiAPI.domain.model.report.CourseProgrammeReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.CourseProgrammeStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseProgrammeVersion
@@ -66,7 +67,7 @@ fun toCourseProgrammeVersion(course: CourseProgramme) = CourseProgrammeVersion(
         createdBy = course.createdBy
 )
 
-fun toCourseProgrammeOutputModel(courseProgramme: CourseProgramme, course: Course) = CourseProgrammeOutputModel(
+fun toCourseProgrammeOutputModel(courseProgramme: CourseProgramme, course: Course, programme: Programme) = CourseProgrammeOutputModel(
         courseId = courseProgramme.courseId,
         version = courseProgramme.version,
         votes = courseProgramme.votes,
@@ -77,10 +78,11 @@ fun toCourseProgrammeOutputModel(courseProgramme: CourseProgramme, course: Cours
         programmeId = courseProgramme.programmeId,
         optional = courseProgramme.optional,
         credits = courseProgramme.credits,
-        lecturedTerm = courseProgramme.lecturedTerm
+        lecturedTerm = courseProgramme.lecturedTerm,
+        programmeShortName = programme.shortName
 )
 
-fun toCourseProgrammeReportOutputModel(courseProgrammeReport: CourseProgrammeReport) = CourseProgrammeReportOutputModel(
+fun toCourseProgrammeReportOutputModel(courseProgrammeReport: CourseProgrammeReport, programme: Programme, course: Course) = CourseProgrammeReportOutputModel(
         reportId = courseProgrammeReport.reportId,
         courseId = courseProgrammeReport.courseId,
         programmeId = courseProgrammeReport.programmeId,
@@ -90,10 +92,12 @@ fun toCourseProgrammeReportOutputModel(courseProgrammeReport: CourseProgrammeRep
         timestamp =courseProgrammeReport.timestamp,
         reportedBy = courseProgrammeReport.reportedBy,
         votes = courseProgrammeReport.votes,
-        deleteFlag = courseProgrammeReport.deleteFlag
+        deleteFlag = courseProgrammeReport.deleteFlag,
+        programmeShortName = programme.shortName,
+        courseShortName = course.shortName
 )
 
-fun toCourseProgrammeVersionOutput(courseProgrammeVersion: CourseProgrammeVersion) = CourseProgrammeVersionOutputModel(
+fun toCourseProgrammeVersionOutput(courseProgrammeVersion: CourseProgrammeVersion, programme: Programme, course: Course) = CourseProgrammeVersionOutputModel(
         courseId = courseProgrammeVersion.courseId,
         version = courseProgrammeVersion.version,
         programmeId = courseProgrammeVersion.programmeId,
@@ -101,7 +105,9 @@ fun toCourseProgrammeVersionOutput(courseProgrammeVersion: CourseProgrammeVersio
         optional = courseProgrammeVersion.optional,
         credits = courseProgrammeVersion.credits,
         timestamp =courseProgrammeVersion.timestamp,
-        createdBy = courseProgrammeVersion.createdBy
+        createdBy = courseProgrammeVersion.createdBy,
+        programmeShortName = programme.shortName,
+        courseShortName = course.shortName
 )
 
 fun toCourseProgrammeStageOutputModel(course: Course, courseProgrammeStage: CourseProgrammeStage) = CourseProgrammeStageOutputModel(

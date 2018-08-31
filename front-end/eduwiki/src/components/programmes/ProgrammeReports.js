@@ -11,7 +11,8 @@ class ProgrammeReports extends React.Component {
     super(props)
     this.state = {
       reports: [],
-      loading: true
+      loading: true,
+      name: ''
     }
     this.voteUp = this.voteUp.bind(this)
     this.voteDown = this.voteDown.bind(this)
@@ -24,7 +25,7 @@ class ProgrammeReports extends React.Component {
         itemLayout='vertical'
         bordered
         loading={this.state.loading}
-        header={<div><h1>Programme with id {this.props.programmeId} reports</h1></div>}
+        header={<div><h1>{this.state.name} reports</h1></div>}
         dataSource={this.state.reports}
         renderItem={item => (
           <List.Item
@@ -101,16 +102,20 @@ class ProgrammeReports extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetcher(url, options)
-      .then(list => {
-        let reports = list.programmeReportList
-        reports = reports.filter(report => report.reportedBy !== this.props.user.username)
-        this.setState({ reports: reports, loading: false })
+    fetcher('http://localhost:8080/programmes/' + this.props.programmeId, options)
+      .then(programme => {
+        fetcher(url, options)
+          .then(list => {
+            let reports = list.programmeReportList
+            reports = reports.filter(report => report.reportedBy !== this.props.user.username)
+            this.setState({ reports: reports, loading: false, name: programme.shortName })
+          })
+          .catch(_ => {
+            message.error('Error obtaining reports of programme')
+            this.setState({loading: false})
+          })
       })
-      .catch(_ => {
-        message.error('Error obtaining reports of programme')
-        this.setState({loading: false})
-      })
+      .catch(_ => message.error('Error finding the programme'))
   }
 
   voteUp () {

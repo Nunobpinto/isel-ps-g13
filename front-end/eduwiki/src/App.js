@@ -25,6 +25,7 @@ import OrganizationReports from './components/organization/OrganizationReports'
 import ProgrammeReports from './components/programmes/ProgrammeReports'
 import CourseProgrammeVersion from './components/courseProgrammes/CourseProgrammeVersion'
 import CourseProgrammeReports from './components/courseProgrammes/CourseProgrammeReports'
+import CourseProgrammePage from './components/courseProgrammes/CourseProgrammePage'
 
 export default () => (
   <div>
@@ -47,6 +48,7 @@ export default () => (
         <ProtectedRoute exact path='/classes/:classId/courses/:courseId/lectures/:lectureId' component={Lecture} />
         <ProtectedRoute exact path='/classes/:classId/courses/:courseId/homeworks/:homeworkId' component={Homework} />
         <ProtectedRoute exact path='/programmes/:programmeId/versions/:version' component={ProgrammeVersion} />
+        <ProtectedRoute exact path='/programmes/:programmeId/courses/:courseId' component={CourseProgrammePage} />
         <ProtectedRoute exact path='/programmes/:programmeId/courses/:courseId/reports' component={CourseProgrammeReports} />
         <ProtectedRoute exact path='/programmes/:programmeId/courses/:courseId/versions/:version' component={CourseProgrammeVersion} />
         <ProtectedRoute exact path='/programmes/:programmeId/reports' component={ProgrammeReports} />

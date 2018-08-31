@@ -7,7 +7,6 @@ import java.time.LocalDateTime
 
 data class CourseStageOutputModel(
         val stagedId: Int = 0,
-        val version: Int = 0,
         val createdBy: String = "",
         val fullName: String = "",
         val shortName: String = "",

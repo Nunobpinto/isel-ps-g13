@@ -348,7 +348,9 @@ class ProgrammeServiceImpl : ProgrammeService {
             toCourseProgrammeOutputModel(
                     it,
                     courseDAO.getSpecificCourse(it.courseId)
-                            .orElseThrow { NotFoundException("Course with id ${it.courseId} does not exist", "Try again later") }
+                            .orElseThrow { NotFoundException("Course with id ${it.courseId} does not exist", "Try again later") },
+                    programmeDAO.getSpecificProgramme(it.programmeId)
+                            .orElseThrow { NotFoundException("Programme with id ${it.programmeId} does not exist", "Try again later") }
             )
         })
     }
@@ -358,13 +360,17 @@ class ProgrammeServiceImpl : ProgrammeService {
                 courseDAO.getSpecificCourseOfProgramme(programmeId, courseId)
                         .orElseThrow { NotFoundException("No course with the id in this programme", "Add course to this programme") },
                 courseDAO.getSpecificCourse(courseId)
-                        .orElseThrow { NotFoundException("No course found", "Try another id") }
+                        .orElseThrow { NotFoundException("No course found", "Try another id") },
+                programmeDAO.getSpecificProgramme(programmeId)
+                        .orElseThrow { NotFoundException("No programme found", "Try another id") }
         )
     }
 
     override fun addCourseToProgramme(programmeId: Int, inputCourseProgramme: CourseProgrammeInputModel, principal: Principal): CourseProgrammeOutputModel {
         val course = courseDAO.getSpecificCourse(inputCourseProgramme.courseId)
                 .orElseThrow { NotFoundException("Course does not exist", "Use a valid course") }
+        val programme = programmeDAO.getSpecificProgramme(programmeId)
+                .orElseThrow { NotFoundException("Programme does not exist", "Use a valid programme") }
 
         val newCourseProgramme = courseDAO.addCourseToProgramme(programmeId, toCourseProgramme(inputCourseProgramme, principal.name))
         courseDAO.createCourseProgrammeVersion(toCourseProgrammeVersion(newCourseProgramme))
@@ -374,7 +380,7 @@ class ProgrammeServiceImpl : ProgrammeService {
                 COURSE_PROGRAMME_TABLE,
                 newCourseProgramme.logId
         ))
-        return toCourseProgrammeOutputModel(newCourseProgramme, course)
+        return toCourseProgrammeOutputModel(newCourseProgramme, course, programme)
     }
 
     override fun voteOnCourseProgramme(programmeId: Int, courseId: Int, vote: VoteInputModel, principal: Principal): Int {
@@ -451,6 +457,8 @@ class ProgrammeServiceImpl : ProgrammeService {
         courseDAO.createCourseProgrammeVersion(toCourseProgrammeVersion(courseProgramme))
         val course = courseDAO.getSpecificCourse(courseProgramme.courseId)
                 .orElseThrow { NotFoundException("The course id in this stage is not valid", "Contact admins") }
+        val programme = programmeDAO.getSpecificProgramme(programmeId)
+                .orElseThrow { NotFoundException("The Programme id in this stage is not valid", "Contact admins") }
 
         publisher.publishEvent(ResourceApprovedEvent(
                 principal.name,
@@ -462,7 +470,7 @@ class ProgrammeServiceImpl : ProgrammeService {
                 COURSE_PROGRAMME_TABLE,
                 courseProgramme.logId
         ))
-        return toCourseProgrammeOutputModel(courseProgramme, course)
+        return toCourseProgrammeOutputModel(courseProgramme, course, programme)
     }
 
     override fun voteOnStagedCourseProgramme(programmeId: Int, stageId: Int, vote: VoteInputModel, principal: Principal): Int {
@@ -505,15 +513,21 @@ class ProgrammeServiceImpl : ProgrammeService {
 
     override fun getAllReportsOfCourseOnProgramme(programmeId: Int, courseId: Int): CourseProgrammeReportCollectionOutputModel {
         val reports = courseDAO.getAllReportsOfCourseOnProgramme(programmeId, courseId)
-                .map { toCourseProgrammeReportOutputModel(it) }
+                .map {
+                    val programme = programmeDAO.getSpecificProgramme(programmeId).get()
+                    val course = courseDAO.getSpecificCourse(courseId).get()
+                    toCourseProgrammeReportOutputModel(it, programme, course)
+                }
         return toCourseProgrammeReportCollectionOutputModel(reports)
     }
 
     override fun getSpecificReportOfCourseOnProgramme(programmeId: Int, courseId: Int, reportId: Int): CourseProgrammeReportOutputModel {
-        return toCourseProgrammeReportOutputModel(
+        val report =
                 courseDAO.getSpecificReportOfCourseProgramme(programmeId, courseId, reportId)
                         .orElseThrow { NotFoundException("No report of course with this id in this programme", "Search other report") }
-        )
+        val programme = programmeDAO.getSpecificProgramme(programmeId).get()
+        val course = courseDAO.getSpecificCourse(courseId).get()
+        return toCourseProgrammeReportOutputModel(report, programme, course)
     }
 
     override fun reportSpecificCourseOnProgramme(programmeId: Int, courseId: Int, inputCourseReport: CourseProgrammeReportInputModel, principal: Principal): CourseProgrammeReportOutputModel {
@@ -524,12 +538,16 @@ class ProgrammeServiceImpl : ProgrammeService {
                 COURSE_PROGRAMME_REPORT_TABLE,
                 courseProgrammeReport.logId
         ))
-        return toCourseProgrammeReportOutputModel(courseProgrammeReport)
+        val course = courseDAO.getSpecificCourse(courseId).get()
+        val programme = programmeDAO.getSpecificProgramme(programmeId).get()
+        return toCourseProgrammeReportOutputModel(courseProgrammeReport, programme, course)
     }
 
     override fun updateCourseProgrammeFromReport(programmeId: Int, courseId: Int, reportId: Int, principal: Principal): CourseProgrammeOutputModel {
         val course = courseDAO.getSpecificCourse(courseId)
                 .orElseThrow { NotFoundException("The course is not valid", "Contact admins") }
+        val programme = programmeDAO.getSpecificProgramme(programmeId)
+                .orElseThrow { NotFoundException("The programme is not valid", "Contact admins") }
         val courseProgramme = courseDAO.getSpecificCourseOfProgramme(programmeId, courseId)
                 .orElseThrow { NotFoundException("Can't specified course in programme", "Try other ids") }
         val report = courseDAO.getSpecificReportOfCourseProgramme(programmeId, courseId, reportId)
@@ -553,12 +571,12 @@ class ProgrammeServiceImpl : ProgrammeService {
         val toRet = if(report.deleteFlag) {
             courseDAO.deleteSpecificCourseProgramme(programmeId, courseId)
             action = ActionType.DELETE
-            toCourseProgrammeOutputModel(courseProgramme, course)
+            toCourseProgrammeOutputModel(courseProgramme, course, programme)
         } else {
             val res = courseDAO.updateCourseProgramme(programmeId, courseId, updatedCourseProgramme)
             courseDAO.createCourseProgrammeVersion(toCourseProgrammeVersion(updatedCourseProgramme))
             action = ActionType.ALTER
-            toCourseProgrammeOutputModel(res, course)
+            toCourseProgrammeOutputModel(res, course, programme)
         }
         publisher.publishEvent(ResourceApprovedEvent(
                 principal.name,
@@ -614,14 +632,21 @@ class ProgrammeServiceImpl : ProgrammeService {
     // -------------------------------
 
     override fun getAllVersionsOfCourseOnProgramme(programmeId: Int, courseId: Int): CourseProgrammeVersionCollectionOutputModel {
-        val courseProgrammeVersions = courseDAO.getAllVersionsOfCourseOnProgramme(programmeId, courseId).map { toCourseProgrammeVersionOutput(it) }
+        val courseProgrammeVersions = courseDAO.getAllVersionsOfCourseOnProgramme(programmeId, courseId).map {
+            val programme = programmeDAO.getSpecificProgramme(it.programmeId).get()
+            val course = courseDAO.getSpecificCourse(it.courseId).get()
+            toCourseProgrammeVersionOutput(it, programme, course)
+        }
         return toCourseProgrammeVersionCollectionOutputModel(courseProgrammeVersions)
     }
 
     override fun getSpecificVersionOfCourseOnProgramme(programmeId: Int, courseId: Int, version: Int): CourseProgrammeVersionOutputModel {
+        val courseProgramme = courseDAO.getSpecificVersionOfCourseOnProgramme(programmeId, courseId, version)
+                .orElseThrow { NotFoundException("No version of course with this id in this programme", "Search other version") }
+        val programme = programmeDAO.getSpecificProgramme(courseProgramme.programmeId).get()
+        val course = courseDAO.getSpecificCourse(courseProgramme.courseId).get()
         return toCourseProgrammeVersionOutput(
-                courseDAO.getSpecificVersionOfCourseOnProgramme(programmeId, courseId, version)
-                        .orElseThrow { NotFoundException("No version of course with this id in this programme", "Search other version") }
+                courseProgramme, programme, course
         )
     }
 

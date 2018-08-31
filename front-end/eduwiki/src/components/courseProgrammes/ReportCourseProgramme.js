@@ -14,7 +14,6 @@ export default class extends React.Component {
       optional: undefined,
       to_delete: undefined,
       programme_id: undefined,
-      programmeID: props.programmeId,
       programmes: [],
       reported: false
     }
@@ -33,8 +32,7 @@ export default class extends React.Component {
       course_lectured_term: this.state.course_lectured_term,
       to_delete: this.state.to_delete,
       optional: this.state.optional,
-      credits: this.state.credits,
-      programme_id: this.state.programme_id
+      credits: this.state.credits
     }
     this.setState({
       data: data,
@@ -120,6 +118,6 @@ export default class extends React.Component {
         programmes = programmes.filter(prog => prog.programmeId !== id)
         this.setState({programmes: programmes})
       })
-      .catch(error => message.error('Error fetching programmes '))
+      .catch(_ => message.error('Error fetching programmes '))
   }
 }
