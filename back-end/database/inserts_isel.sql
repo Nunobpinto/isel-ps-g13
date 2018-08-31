@@ -155,9 +155,6 @@ insert into isel.course_term (course_id, term_id, time_stamp)
 insert into isel.course_misc_unit (misc_type, course_id, term_id)
     values ('WORK_ASSIGNMENT', 1, 1);
 
-insert into isel.course_misc_unit_stage(misc_type, course_id, term_id)
-    values ('EXAM_TEST', 1, 1);
-
 insert into isel.work_assignment (work_assignment_id, created_by, phase, sheet_id, supplement_id, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
     values (1,'ze', '1º',gen_random_uuid(),gen_random_uuid(),current_date,false ,true ,true ,false ,current_timestamp);
 
@@ -165,22 +162,34 @@ insert into isel.work_assignment_version (work_assignment_id, work_assignment_ve
     values (1, 1, '1º', 'ze', gen_random_uuid(),gen_random_uuid(),current_date,false ,true ,true ,false ,current_timestamp);
 
 insert into isel.course_misc_unit (misc_type, course_id, term_id)
+    values ('WORK_ASSIGNMENT', 1, 1);
+
+insert into isel.work_assignment (work_assignment_id, created_by, phase, sheet_id, supplement_id, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
+    values (2,'jg', '2º','c811dddc-a8ed-40a5-bbe3-fd68dde3702f', '1a6da1a7-d004-4e7c-a960-afddab36dae4', '2016-03-24', false, false, true , true, current_timestamp);
+
+insert into isel.work_assignment_version (work_assignment_id, work_assignment_version, phase, created_by, sheet_id, supplement_id, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
+    values (2, 1, '2º', 'jg', 'c811dddc-a8ed-40a5-bbe3-fd68dde3702f', '1a6da1a7-d004-4e7c-a960-afddab36dae4', '2016-03-24', false, false, true, true, current_timestamp);
+
+insert into isel.work_assignment_version (work_assignment_id, work_assignment_version, phase, created_by, sheet_id, supplement_id, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
+    values (2, 2, '2º', 'ze', gen_random_uuid(),gen_random_uuid(),current_date,false ,true ,true ,false ,current_timestamp);
+
+insert into isel.course_misc_unit (misc_type, course_id, term_id)
     values ('WORK_ASSIGNMENT', 1, 2);
 
 insert into isel.work_assignment (work_assignment_id, created_by, phase, sheet_id, supplement_id, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
-    values (2,'ze', '2º', gen_random_uuid(), gen_random_uuid(), current_date,false ,true ,true ,false ,current_timestamp);
+    values (3,'ze', '2º', gen_random_uuid(), gen_random_uuid(), current_date,false ,true ,true ,false ,current_timestamp);
 
 insert into isel.work_assignment_version (work_assignment_id, work_assignment_version, phase, created_by, sheet_id, supplement_id, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
-    values (2, 1, '2º' ,'ze', gen_random_uuid(),gen_random_uuid(),current_date,false ,true ,true ,false ,current_timestamp);
+    values (3, 1, '2º' ,'ze', gen_random_uuid(),gen_random_uuid(),current_date,false ,true ,true ,false ,current_timestamp);
 
 insert into isel.course_misc_unit (misc_type, course_id, term_id)
     values ('WORK_ASSIGNMENT', 3, 2);
 
 insert into isel.work_assignment (work_assignment_id, created_by, phase, sheet_id, supplement_id, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
-    values (3,'ze', '3º',gen_random_uuid(),gen_random_uuid(),current_date,false ,true ,true ,false ,current_timestamp);
+    values (4,'ze', '3º',gen_random_uuid(),gen_random_uuid(),current_date,false ,true ,true ,false ,current_timestamp);
 
 insert into isel.work_assignment_version (work_assignment_id, work_assignment_version, created_by, phase, sheet_id, supplement_id, due_date, individual, late_delivery, multiple_deliveries, requires_report, time_stamp)
-    values (3, 1, 'ze', '3º', gen_random_uuid(),gen_random_uuid(),current_date,false ,true ,true ,false ,current_timestamp);
+    values (4, 1, 'ze', '3º', gen_random_uuid(),gen_random_uuid(),current_date,false ,true ,true ,false ,current_timestamp);
 
 -- Exam Insert
 
@@ -188,28 +197,58 @@ insert into isel.course_misc_unit (misc_type, course_id, term_id)
     values ('EXAM_TEST', 1, 1);
 
 insert into isel.exam (exam_id, created_by, sheet_id, due_date, exam_type, phase, location, time_stamp)
-    values (4, 'ze', gen_random_uuid() ,current_date,'EXAM', '1ª','A.2.14',current_timestamp);
+    values (5, 'ze', gen_random_uuid() ,current_date,'EXAM', '1ª','A.2.14',current_timestamp);
 
 insert into isel.exam_version (exam_id, exam_version, created_by, sheet_id, due_date, exam_type, phase, location, time_stamp)
-    values (4, 1, 'ze', gen_random_uuid() ,current_date,'EXAM', '1ª','A.2.14',current_timestamp);
+    values (5, 1, 'ze', gen_random_uuid(), '2012-07-14','EXAM', '1ª','A.2.14',current_timestamp);
+
+insert into isel.exam_version (exam_id, exam_version, created_by, sheet_id, due_date, exam_type, phase, location, time_stamp)
+    values (5, 2, 'jg', gen_random_uuid(), '2012-07-14','TEST', '2ª','A.2.11',current_timestamp);
+
+insert into isel.course_misc_unit (misc_type, course_id, term_id)
+    values ('EXAM_TEST', 1, 1);
+
+insert into isel.exam (exam_id, created_by, sheet_id, due_date, exam_type, phase, location, time_stamp)
+    values (6, 'ze', null ,current_date,'EXAM', '2ª','G.0.14',current_timestamp);
+
+insert into isel.exam_version (exam_id, exam_version, created_by, sheet_id, due_date, exam_type, phase, location, time_stamp)
+    values (6, 1, 'ze', null ,current_date,'EXAM', '2ª','G.0.14',current_timestamp);
 
 insert into isel.course_misc_unit (misc_type, course_id, term_id)
     values ('EXAM_TEST', 2, 1);
 
 insert into isel.exam (exam_id, created_by, sheet_id, due_date, exam_type, phase, location, time_stamp)
-    values (5, 'ze', gen_random_uuid() ,current_date,'TEST', '1ª','A.2.14',current_timestamp);
+    values (7, 'ze', gen_random_uuid() ,current_date,'TEST', '1ª','A.2.14',current_timestamp);
 
 insert into isel.exam_version (exam_id, exam_version, created_by, sheet_id, due_date, exam_type, phase, location, time_stamp)
-    values (5, 1, 'ze', gen_random_uuid(),current_date,'TEST', '1ª','A.2.14',current_timestamp);
+    values (7, 1, 'ze', gen_random_uuid(),current_date,'TEST', '1ª','A.2.14',current_timestamp);
 
 insert into isel.course_misc_unit (misc_type, course_id, term_id)
     values ('EXAM_TEST', 2, 2);
 
 insert into isel.exam (exam_id, created_by, sheet_id, due_date, exam_type, phase, location, time_stamp)
-    values (6, 'ze', gen_random_uuid() ,current_date,'EXAM', '2ª','A.2.14',current_timestamp);
+    values (8, 'ze', gen_random_uuid() ,current_date,'EXAM', '2ª','A.2.14',current_timestamp);
 
 insert into isel.exam_version (exam_id, exam_version, created_by, sheet_id, due_date, exam_type, phase, location, time_stamp)
-    values (6, 1, 'ze', gen_random_uuid(),current_date,'EXAM', '2ª','A.2.14',current_timestamp);
+    values (8, 1, 'ze', gen_random_uuid(),current_date,'EXAM', '2ª','A.2.14',current_timestamp);
+
+insert into isel.course_misc_unit_stage(misc_type, course_id, term_id)
+    values ('EXAM_TEST', 1, 1);
+
+insert into isel.course_misc_unit_stage(misc_type, course_id, term_id)
+    values ('EXAM_TEST', 1, 1);
+
+insert into isel.exam_stage (exam_stage_id, sheet_id, due_date, exam_type, phase, location, time_stamp, created_by, votes)
+    values (1, gen_random_uuid(), '2015-06-30', 'EXAM', '1ª','F.0.1',current_timestamp, 'jg', 24);
+
+insert into isel.exam_stage (exam_stage_id, sheet_id, due_date, exam_type, phase,  location, time_stamp, created_by, votes)
+    values (2, gen_random_uuid(), '2015-07-15', 'EXAM', '2ª', 'F.0.2', current_timestamp, 'igor', 7);
+
+insert into isel.exam_report (exam_id, sheet_id, due_date, exam_type, phase, location, reported_by, votes, time_stamp)
+    values (5, gen_random_uuid(), '2015-07-11', 'TEST', '1ª', 'E.2.20', 'sara', 14, current_timestamp);
+
+insert into isel.exam_report (exam_id, sheet_id, due_date, exam_type, phase, location, reported_by, votes, time_stamp)
+    values (5, gen_random_uuid(), '2015-07-09', 'TEST', '1ª', 'E.2.20', 'rita', 81, current_timestamp);
 
 -- Course-class Insert
 
