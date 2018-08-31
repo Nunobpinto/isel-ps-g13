@@ -173,7 +173,7 @@ class ExamDAOImpl : ExamDAO {
                 createCourseDAO().deleteSpecificCourseMiscUnitEntry(courseId, termId, examId)
 
         @SqlUpdate(
-                "update $EXAM_TABLE SET " +
+                "update :schema.$EXAM_TABLE SET " +
                         "$EXAM_VERSION = :exam.version, " +
                         "$EXAM_CREATED_BY = :exam.createdBy, " +
                         "$EXAM_SHEET_ID = :exam.sheetId, " +
@@ -299,7 +299,7 @@ class ExamDAOImpl : ExamDAO {
 
         @SqlUpdate(
                 "DELETE FROM :schema.$EXAM_REPORT_TABLE AS E " +
-                        "USING $COURSE_MISC_UNIT_TABLE AS C " +
+                        "USING :schema.$COURSE_MISC_UNIT_TABLE AS C " +
                         "WHERE E.$EXAM_REPORT_EXAM_ID = C.$COURSE_MISC_UNIT_ID AND " +
                         "C.$COURSE_MISC_UNIT_COURSE_ID = :courseId AND " +
                         "C.$COURSE_MISC_UNIT_TERM_ID = :termId AND " +
@@ -358,9 +358,9 @@ class ExamDAOImpl : ExamDAO {
                         "E.$EXAM_STAGE_SHEET_ID, " +
                         "E.$EXAM_STAGE_DUE_DATE, " +
                         "E.$EXAM_STAGE_TYPE, " +
-                        "E.$EXAM_STAGE_PHASE " +
+                        "E.$EXAM_STAGE_PHASE, " +
                         "E.$EXAM_STAGE_LOCATION, " +
-                        "E.$EXAM_STAGE_CREATED_BY " +
+                        "E.$EXAM_STAGE_CREATED_BY, " +
                         "E.$EXAM_STAGE_VOTES, " +
                         "E.$EXAM_STAGE_TIMESTAMP, " +
                         "E.$EXAM_STAGE_LOG_ID, " +
@@ -379,9 +379,9 @@ class ExamDAOImpl : ExamDAO {
                         "E.$EXAM_STAGE_SHEET_ID, " +
                         "E.$EXAM_STAGE_DUE_DATE, " +
                         "E.$EXAM_STAGE_TYPE, " +
-                        "E.$EXAM_STAGE_PHASE " +
+                        "E.$EXAM_STAGE_PHASE, " +
                         "E.$EXAM_STAGE_LOCATION, " +
-                        "E.$EXAM_STAGE_CREATED_BY " +
+                        "E.$EXAM_STAGE_CREATED_BY, " +
                         "E.$EXAM_STAGE_VOTES, " +
                         "E.$EXAM_STAGE_TIMESTAMP, " +
                         "E.$EXAM_STAGE_LOG_ID, " +
@@ -429,7 +429,7 @@ class ExamDAOImpl : ExamDAO {
                         "E.$EXAM_REPORTED_BY, " +
                         "E.$EXAM_REPORT_VOTES, " +
                         "E.$EXAM_REPORT_TIMESTAMP, " +
-                        "E.$EXAM_REPORT_LOG_ID " +
+                        "E.$EXAM_REPORT_LOG_ID, " +
                         "C.$COURSE_MISC_UNIT_COURSE_ID, " +
                         "C.$COURSE_MISC_UNIT_TERM_ID " +
                         "FROM :schema.$COURSE_MISC_UNIT_TABLE as C " +
@@ -505,8 +505,7 @@ class ExamDAOImpl : ExamDAO {
         override fun getExamByLogId(logId: Int): Optional<Exam>
 
         @SqlQuery(
-                "SELECT " +
-                        "E.$EXAM_REPORT_ID, " +
+                "SELECT E.$EXAM_REPORT_ID, " +
                         "E.$EXAM_REPORT_EXAM_ID, " +
                         "E.$EXAM_REPORT_SHEET_ID, " +
                         "E.$EXAM_REPORT_DUE_DATE, " +
@@ -516,7 +515,7 @@ class ExamDAOImpl : ExamDAO {
                         "E.$EXAM_REPORTED_BY, " +
                         "E.$EXAM_REPORT_VOTES, " +
                         "E.$EXAM_REPORT_TIMESTAMP, " +
-                        "E.$EXAM_REPORT_LOG_ID " +
+                        "E.$EXAM_REPORT_LOG_ID, " +
                         "C.$COURSE_MISC_UNIT_COURSE_ID, " +
                         "C.$COURSE_MISC_UNIT_TERM_ID " +
                         "FROM :schema.$COURSE_MISC_UNIT_TABLE as C " +
@@ -531,9 +530,9 @@ class ExamDAOImpl : ExamDAO {
                         "E.$EXAM_STAGE_SHEET_ID, " +
                         "E.$EXAM_STAGE_DUE_DATE, " +
                         "E.$EXAM_STAGE_TYPE, " +
-                        "E.$EXAM_STAGE_PHASE " +
+                        "E.$EXAM_STAGE_PHASE, " +
                         "E.$EXAM_STAGE_LOCATION, " +
-                        "E.$EXAM_STAGE_CREATED_BY " +
+                        "E.$EXAM_STAGE_CREATED_BY, " +
                         "E.$EXAM_STAGE_VOTES, " +
                         "E.$EXAM_STAGE_TIMESTAMP, " +
                         "E.$EXAM_STAGE_LOG_ID, " +
