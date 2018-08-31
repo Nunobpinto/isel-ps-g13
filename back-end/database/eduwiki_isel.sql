@@ -1,4 +1,3 @@
-
 CREATE SCHEMA IF NOT EXISTS isel;
 
 --------------------------
@@ -38,7 +37,7 @@ CREATE TABLE IF NOT EXISTS isel.organization (
   organization_contact VARCHAR (20) NOT NULL,
   organization_website VARCHAR (50) NOT NULL,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (organization_id)
 );
 
@@ -53,7 +52,7 @@ CREATE TABLE IF NOT EXISTS isel.programme (
   programme_duration INTEGER NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (programme_id)
 );
 
@@ -66,7 +65,7 @@ CREATE TABLE IF NOT EXISTS isel.course (
   course_short_name VARCHAR(10) UNIQUE NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (course_id)
 );
 
@@ -79,8 +78,8 @@ CREATE TABLE IF NOT EXISTS isel.course_programme (
   course_credits INTEGER NOT NULL,
   time_stamp timestamp NOT NULL,
   created_by VARCHAR(20) NOT NULL,
-  votes INTEGER DEFAULT 0, 
-  log_id SERIAL UNIQUE NOT NULL,
+  votes INTEGER DEFAULT 0,
+  log_id SERIAL,
   PRIMARY KEY (course_id, programme_id)
 );
 
@@ -102,7 +101,7 @@ CREATE TABLE IF NOT EXISTS isel.class (
   term_id INTEGER REFERENCES isel.term ON DELETE RESTRICT,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (class_id, term_id)
 );
 
@@ -125,7 +124,7 @@ CREATE TABLE IF NOT EXISTS isel.course_misc_unit (
 CREATE TABLE IF NOT EXISTS isel.work_assignment (
   work_assignment_id INTEGER REFERENCES isel.course_misc_unit ON DELETE CASCADE,
   work_assignment_version INTEGER NOT NULL DEFAULT 1,
-  phase VARCHAR(5) NOT NULL,
+  phase VARCHAR(20) NOT NULL,
   created_by VARCHAR(20) NOT NULL,
   sheet_id UUID,
   supplement_id UUID,
@@ -136,7 +135,7 @@ CREATE TABLE IF NOT EXISTS isel.work_assignment (
   requires_report BOOLEAN NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (work_assignment_id)
 );
 
@@ -147,23 +146,23 @@ CREATE TABLE IF NOT EXISTS isel.exam (
   sheet_id UUID,
   due_date date NOT NULL,
   exam_type isel.exam_type NOT NULL,
-  phase VARCHAR(30) NOT NULL,
+  phase VARCHAR(20) NOT NULL,
   location VARCHAR(30) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (exam_id)
 );
 
 CREATE TABLE IF NOT EXISTS isel.course_class (
-  course_class_id SERIAL, 
+  course_class_id SERIAL,
   course_id INTEGER REFERENCES isel.course ON DELETE CASCADE NOT NULL,
   class_id INTEGER NOT NULL,
   term_id INTEGER NOT NULL,
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   FOREIGN KEY (class_id, term_id) REFERENCES isel.class(class_id, term_id) ON DELETE CASCADE,
   PRIMARY KEY (course_class_id)
 );
@@ -185,14 +184,14 @@ CREATE TABLE IF NOT EXISTS isel.lecture (
   location varchar(30) NOT NULL,
   votes INTEGER DEFAULT 0 NOT NULL,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (lecture_id)
 );
 
 CREATE TABLE IF NOT EXISTS isel.homework (
   homework_id INTEGER REFERENCES isel.class_misc_unit ON DELETE CASCADE,
   homework_version INTEGER NOT NULL DEFAULT 1,
-  homework_name VARCHAR(20) NOT NULL,  
+  homework_name VARCHAR(20) NOT NULL,
   created_by VARCHAR(20) NOT NULL,
   sheet_id UUID,
   due_date DATE NOT NULL,
@@ -200,7 +199,7 @@ CREATE TABLE IF NOT EXISTS isel.homework (
   multiple_deliveries BOOLEAN NOT NULL,
   votes INTEGER DEFAULT 0 NOT NULL,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (homework_id)
 );
 
@@ -218,7 +217,7 @@ CREATE TABLE IF NOT EXISTS isel.user_account (
 CREATE TABLE IF NOT EXISTS isel.reputation (
   reputation_id SERIAL,
   points INTEGER NOT NULL,
-  role VARCHAR NOT NULL, 
+  role VARCHAR NOT NULL,
   user_username varchar(20) REFERENCES isel.user_account ON DELETE CASCADE,
   PRIMARY KEY (reputation_id, user_username)
 );
@@ -228,7 +227,7 @@ CREATE TABLE IF NOT EXISTS isel.action_log (
   user_username VARCHAR(20) REFERENCES isel.user_account ON DELETE CASCADE,
   action isel.action_type NOT NULL,
   entity VARCHAR NOT NULL,
-  log_id INTEGER NOT NULL,
+  log_id INTEGER,
   time_stamp TIMESTAMP NOT NULL,
   PRIMARY KEY(action_id)
 );
@@ -271,7 +270,7 @@ CREATE TABLE IF NOT EXISTS isel.programme_stage (
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (programme_stage_id)
 );
 
@@ -282,7 +281,7 @@ CREATE TABLE IF NOT EXISTS isel.course_stage (
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (course_stage_id)
 );
 
@@ -296,7 +295,7 @@ CREATE TABLE IF NOT EXISTS isel.course_programme_stage (
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (course_programme_stage_id)
 );
 
@@ -308,19 +307,19 @@ CREATE TABLE IF NOT EXISTS isel.class_stage (
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (class_stage_id, term_id)
 );
 
 CREATE TABLE IF NOT EXISTS isel.course_class_stage (
-  course_class_stage_id SERIAL,	
+  course_class_stage_id SERIAL,
   course_id INTEGER REFERENCES isel.course ON DELETE CASCADE NOT NULL,
   class_id INTEGER NOT NULL,
   term_id INTEGER NOT NULL,
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   FOREIGN KEY (class_id, term_id) REFERENCES isel.class(class_id, term_id) ON DELETE CASCADE,
   PRIMARY KEY (course_class_stage_id)
 );
@@ -345,7 +344,7 @@ CREATE TABLE IF NOT EXISTS isel.class_misc_unit_stage (
 CREATE TABLE IF NOT EXISTS isel.work_assignment_stage (
   work_assignment_stage_id INTEGER REFERENCES isel.course_misc_unit_stage ON DELETE CASCADE,
   sheet_id UUID,
-  phase VARCHAR(5) NOT NULL,
+  phase VARCHAR(20) NOT NULL,
   supplement_id UUID,
   due_date date NOT NULL,
   individual BOOLEAN NOT NULL,
@@ -355,7 +354,7 @@ CREATE TABLE IF NOT EXISTS isel.work_assignment_stage (
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (work_assignment_stage_id)
 );
 
@@ -364,12 +363,12 @@ CREATE TABLE IF NOT EXISTS isel.exam_stage (
   sheet_id UUID,
   due_date date NOT NULL,
   exam_type isel.exam_type NOT NULL,
-  phase VARCHAR(30) NOT NULL,
+  phase VARCHAR(20) NOT NULL,
   location VARCHAR(30) NOT NULL,
   created_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (exam_stage_id)
 );
 
@@ -382,7 +381,7 @@ CREATE TABLE IF NOT EXISTS isel.lecture_stage (
   time_stamp timestamp NOT NULL,
   votes INTEGER DEFAULT 0,
   location VARCHAR(30) NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (lecture_stage_id)
 );
 
@@ -396,7 +395,7 @@ CREATE TABLE IF NOT EXISTS isel.homework_stage (
   time_stamp timestamp NOT NULL,
   votes INTEGER DEFAULT 0,
   created_by VARCHAR(20) NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (homework_stage_id)
 );
 
@@ -414,12 +413,12 @@ CREATE TABLE IF NOT EXISTS isel.organization_report (
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (organization_report_id)
 );
 
 CREATE TABLE IF NOT EXISTS isel.programme_report (
-  programme_report_id SERIAL, 
+  programme_report_id SERIAL,
   programme_id INTEGER REFERENCES isel.programme ON DELETE CASCADE,
   programme_full_name varchar(100),
   programme_short_name varchar(10),
@@ -429,12 +428,12 @@ CREATE TABLE IF NOT EXISTS isel.programme_report (
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (programme_report_id)
 );
 
 CREATE TABLE IF NOT EXISTS isel.course_programme_report (
-  course_programme_report_id SERIAL, 
+  course_programme_report_id SERIAL,
   course_id INTEGER NOT NULL,
   programme_id INTEGER NOT NULL,
   course_lectured_term varchar(50),
@@ -444,20 +443,20 @@ CREATE TABLE IF NOT EXISTS isel.course_programme_report (
   time_stamp timestamp NOT NULL,
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   FOREIGN KEY (course_id, programme_id) REFERENCES isel.course_programme(course_id, programme_id) ON DELETE CASCADE,
   PRIMARY KEY (course_programme_report_id)
 );
 
 CREATE TABLE IF NOT EXISTS isel.course_report (
-  course_report_id SERIAL, 
+  course_report_id SERIAL,
   course_id INTEGER REFERENCES isel.course ON DELETE CASCADE,
   course_full_name varchar(100),
   course_short_name varchar(10),
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (course_report_id)
 );
 
@@ -470,7 +469,7 @@ CREATE TABLE IF NOT EXISTS isel.class_report (
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   FOREIGN KEY (class_id, term_id) REFERENCES isel.class(class_id, term_id) ON DELETE CASCADE,
   PRIMARY KEY (class_report_id)
 );
@@ -485,7 +484,7 @@ CREATE TABLE IF NOT EXISTS isel.course_class_report (
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (course_class_report_id)
 );
 
@@ -493,7 +492,7 @@ CREATE TABLE IF NOT EXISTS isel.work_assignment_report (
   work_assignment_report_id SERIAL,
   work_assignment_id INTEGER REFERENCES isel.course_misc_unit ON DELETE CASCADE,
   sheet_id UUID,
-  phase VARCHAR(5) NOT NULL,
+  phase VARCHAR(20) NOT NULL,
   supplement_id UUID,
   due_date date,
   individual BOOLEAN,
@@ -503,7 +502,7 @@ CREATE TABLE IF NOT EXISTS isel.work_assignment_report (
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (work_assignment_report_id)
 );
 
@@ -513,12 +512,12 @@ CREATE TABLE IF NOT EXISTS isel.exam_report (
   sheet_id UUID,
   due_date date,
   exam_type isel.exam_type,
-  phase VARCHAR(30),
+  phase VARCHAR(20),
   location varchar(30),
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (exam_report_id)
 );
 
@@ -532,7 +531,7 @@ CREATE TABLE IF NOT EXISTS isel.lecture_report (
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (lecture_report_id)
 );
 
@@ -547,7 +546,7 @@ CREATE TABLE IF NOT EXISTS isel.homework_report (
   reported_by VARCHAR(20) NOT NULL,
   votes INTEGER DEFAULT 0,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (homework_report_id)
 );
 
@@ -557,7 +556,7 @@ CREATE TABLE IF NOT EXISTS isel.user_report (
   reason VARCHAR(200) NOT NULL,
   reported_by VARCHAR(20) NOT NULL,
   time_stamp timestamp NOT NULL,
-  log_id SERIAL UNIQUE NOT NULL,
+  log_id SERIAL,
   PRIMARY KEY (report_id)
 );
 
@@ -628,7 +627,7 @@ CREATE TABLE IF NOT EXISTS isel.work_assignment_version (
   work_assignment_id INTEGER,
   work_assignment_version INTEGER,
   sheet_id UUID,
-  phase VARCHAR(5) NOT NULL,
+  phase VARCHAR(20) NOT NULL,
   supplement_id UUID,
   due_date date NOT NULL,
   individual BOOLEAN NOT NULL,
@@ -646,7 +645,7 @@ CREATE TABLE IF NOT EXISTS isel.exam_version (
   sheet_id UUID,
   due_date date NOT NULL,
   exam_type isel.exam_type NOT NULL,
-  phase VARCHAR(30) NOT NULL,
+  phase VARCHAR(20) NOT NULL,
   location varchar(30) NOT NULL,
   created_by VARCHAR(20) NOT NULL,
   time_stamp timestamp NOT NULL,
