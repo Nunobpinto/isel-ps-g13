@@ -221,11 +221,10 @@ class UserDAOImpl : UserDAO {
 
         @SqlUpdate("INSERT INTO :schema.$USER_COURSE_CLASS_TABLE (" +
                 "$USER_USERNAME, " +
-                "$COURSE_CLASS_ID)"+
+                "$USER_COURSE_CLASS_COURSE_ID)"+
                 " VALUES ( " +
                 ":userCourseClass.username," +
-                ":userCourseClass.courseId," +
-                ":userCourseClass.courseClassId)")
+                ":userCourseClass.courseId)")
         @GetGeneratedKeys
         override fun addCourseToUser(userCourseClass: UserCourseClass): UserCourseClass
 

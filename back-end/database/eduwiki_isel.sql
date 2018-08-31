@@ -247,7 +247,7 @@ CREATE TABLE IF NOT EXISTS isel.reputation_log (
 CREATE TABLE IF NOT EXISTS isel.user_course_class (
   user_username VARCHAR(20) REFERENCES isel.user_account ON DELETE CASCADE,
   course_id INTEGER REFERENCES isel.course ON DELETE CASCADE,
-  course_class_id INTEGER REFERENCES isel.course_class ON DELETE SET NULL,
+  course_class_id INTEGER REFERENCES isel.course_class ON DELETE SET NULL DEFAULT NULL,
   PRIMARY KEY (user_username, course_id)
 );
 
