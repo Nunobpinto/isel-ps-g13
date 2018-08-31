@@ -19,7 +19,7 @@ import java.time.LocalDate
         (Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = ["classpath:dropDB.sql"]))
 )
 @RunWith(SpringRunner::class)
-@SpringBootTest(classes = [(EduWikiApiApplication::class), (H2Config::class)])
+@SpringBootTest(classes = [(EduWikiApiApplication::class)])
 class WorkAssignmentTests {
 
     @Autowired

@@ -369,7 +369,7 @@ insert into isel.action_log (user_username, action, entity, log_id, time_stamp)
 insert into isel.action_log (user_username, action, entity, log_id, time_stamp)
   values ('bruno','VOTE_UP','course',1,current_timestamp);
 
--- Reputation Log Insert
+-- Reputation Log Insert 
 
 insert into isel.reputation_log (reputation_log_action, reputation_log_given_by, reputation_log_points, reputation_id, user_username)
   values (2,'bruno',5,1,'ze');

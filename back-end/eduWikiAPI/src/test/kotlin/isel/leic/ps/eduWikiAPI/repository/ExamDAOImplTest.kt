@@ -2,7 +2,6 @@ package isel.leic.ps.eduWikiAPI.repository
 
 import isel.leic.ps.eduWikiAPI.EduWikiApiApplication
 import isel.leic.ps.eduWikiAPI.configuration.persistence.TenantContext
-import isel.leic.ps.eduWikiAPI.domain.enums.CourseMiscUnitType
 import isel.leic.ps.eduWikiAPI.domain.enums.ExamType
 import isel.leic.ps.eduWikiAPI.domain.model.Exam
 import isel.leic.ps.eduWikiAPI.domain.model.report.ExamReport
@@ -47,17 +46,17 @@ class ExamDAOImplTest {
 
     @Test
     fun getSpecificExamFromSpecificTermOfCourse() {
-        val exam = examDAO.getSpecificExamFromSpecificTermOfCourse(1, 1, 4).get()
+        val exam = examDAO.getSpecificExamFromSpecificTermOfCourse(1, 1, 5).get()
         assertEquals(1, exam.courseId)
-        assertEquals("ze", exam.createdBy)
-        assertEquals(LocalDate.parse("2018-08-31"), exam.dueDate)
-        assertEquals(4, exam.examId)
-        assertEquals("A.2.14", exam.location)
+        assertEquals("jg", exam.createdBy)
+        assertEquals(LocalDate.parse("2012-07-14"), exam.dueDate)
+        assertEquals(5, exam.examId)
+        assertEquals("A.2.11", exam.location)
         assertEquals(1, exam.logId)
-        assertEquals("1ª", exam.phase)
+        assertEquals("2ª", exam.phase)
         assertEquals(1, exam.termId)
-        assertEquals("EXAM", exam.type.name)
-        assertEquals(1, exam.version)
+        assertEquals("TEST", exam.type.name)
+        assertEquals(2, exam.version)
         assertEquals(0, exam.votes)
     }
 
@@ -82,18 +81,16 @@ class ExamDAOImplTest {
         assertEquals(5, exam.logId)
         assertEquals(0, exam.votes)
         assertEquals(1, exam.version)
-        assertEquals(8, exam.examId)
+        assertEquals(9, exam.examId)
     }
 
     @Test
     fun updateExam() {
-        val exam = examDAO.getSpecificExamFromSpecificTermOfCourse(1, 1, 4).get()
-        assertEquals(1, exam.version)
+        val exam = examDAO.getSpecificExamFromSpecificTermOfCourse(1, 1, 5).get()
+        assertEquals(2, exam.version)
         val updatedExam = examDAO.updateExam(
-                examId = 4,
+                examId = 5,
                 exam = Exam(
-                        courseId = exam.courseId,
-                        termId = exam.termId,
                         examId = exam.examId,
                         createdBy = "mike",
                         dueDate = LocalDate.parse("2016-07-22"),
@@ -104,7 +101,7 @@ class ExamDAOImplTest {
                         version = exam.version.inc()
                 )
         )
-        assertEquals(2, updatedExam.version)
+        assertEquals(3, updatedExam.version)
         assertEquals("mike", updatedExam.createdBy)
         assertEquals(LocalDate.parse("2016-07-22"), updatedExam.dueDate)
         assertEquals("TEST", updatedExam.type.name)
@@ -112,22 +109,22 @@ class ExamDAOImplTest {
         assertEquals("E.1.10", updatedExam.location)
         assertEquals(1, updatedExam.logId)
         assertEquals(0, updatedExam.votes)
-        assertEquals(4, updatedExam.examId)
+        assertEquals(5, updatedExam.examId)
     }
 
     @Test
     fun updateVotesOnExam() {
-        val oldExam = examDAO.getSpecificExamFromSpecificTermOfCourse(1, 1, 4).get()
+        val oldExam = examDAO.getSpecificExamFromSpecificTermOfCourse(1, 1, 5).get()
         assertEquals(0, oldExam.votes)
-        val rowsAffected = examDAO.updateVotesOnExam(4, 64)
+        val rowsAffected = examDAO.updateVotesOnExam(5, 64)
         assertEquals(1, rowsAffected)
-        val updatedExam = examDAO.getSpecificExamFromSpecificTermOfCourse(1, 1, 4).get()
+        val updatedExam = examDAO.getSpecificExamFromSpecificTermOfCourse(1, 1, 5).get()
         assertEquals(64, updatedExam.votes)
     }
 
     @Test
     fun deleteSpecificExamOfCourseInTerm() {
-        val rowsAffected = examDAO.deleteSpecificExamOfCourseInTerm(1, 1, 5)
+        val rowsAffected = examDAO.deleteSpecificExamOfCourseInTerm(1, 1, 6)
         assertEquals(1, rowsAffected)
     }
 
@@ -169,7 +166,7 @@ class ExamDAOImplTest {
                 )
         )
         assertEquals("TEST", stagingExam.type.name)
-        assertEquals(3, stagingExam.stageId)
+        assertEquals(5, stagingExam.stageId)
         assertEquals("Global", stagingExam.phase)
         assertEquals(3, stagingExam.logId)
         assertEquals("G.0.24", stagingExam.location)
@@ -196,28 +193,28 @@ class ExamDAOImplTest {
 
     @Test
     fun getAllVersionsOfSpecificExam() {
-        val versions = examDAO.getAllVersionsOfSpecificExam(1, 1, 4)
+        val versions = examDAO.getAllVersionsOfSpecificExam(1, 1, 5)
         assertEquals(2, versions.size)
     }
 
     @Test
     fun getVersionOfSpecificExam() {
-        val version = examDAO.getVersionOfSpecificExam(1, 1, 4, 2).get()
-        assertEquals("jg", version.createdBy)
-        assertEquals(LocalDate.parse("2012-07-14"), version.dueDate)
-        assertEquals(4, version.examId)
-        assertEquals("A.2.11", version.location)
-        assertEquals("2ª", version.phase)
-        assertEquals("TEST", version.type.name)
-        assertEquals(2, version.version)
+        val examVersion = examDAO.getVersionOfSpecificExam(1, 1, 5, 2).get()
+        assertEquals("jg", examVersion.createdBy)
+        assertEquals(LocalDate.parse("2012-07-14"), examVersion.dueDate)
+        assertEquals(5, examVersion.examId)
+        assertEquals("A.2.11", examVersion.location)
+        assertEquals("2ª", examVersion.phase)
+        assertEquals("TEST", examVersion.type.name)
+        assertEquals(2, examVersion.version)
     }
 
     @Test
     fun createExamVersion() {
-        val version = examDAO.createExamVersion(
+        val examVersion = examDAO.createExamVersion(
                 ExamVersion(
                         version = 3,
-                        examId = 4,
+                        examId = 5,
                         dueDate = LocalDate.parse("2012-08-17"),
                         type = ExamType.EXAM,
                         phase = "1ª",
@@ -225,26 +222,26 @@ class ExamDAOImplTest {
                         createdBy = "maria"
                 )
         )
-        assertEquals("maria", version.createdBy)
-        assertEquals(LocalDate.parse("2012-08-17"), version.dueDate)
-        assertEquals(4, version.examId)
-        assertEquals("C.1.21", version.location)
-        assertEquals("1ª", version.phase)
-        assertEquals("EXAM", version.type.name)
-        assertEquals(3, version.version)
+        assertEquals("maria", examVersion.createdBy)
+        assertEquals(LocalDate.parse("2012-08-17"), examVersion.dueDate)
+        assertEquals(5, examVersion.examId)
+        assertEquals("C.1.21", examVersion.location)
+        assertEquals("1ª", examVersion.phase)
+        assertEquals("EXAM", examVersion.type.name)
+        assertEquals(3, examVersion.version)
     }
 
     @Test
     fun getAllReportsOnExamOnSpecificTermOfCourse() {
-        val reports = examDAO.getAllReportsOnExamOnSpecificTermOfCourse(1, 1, 4)
+        val reports = examDAO.getAllReportsOnExamOnSpecificTermOfCourse(1, 1, 5)
         assertEquals(2, reports.size)
     }
 
     @Test
     fun getSpecificReportOnExamOnSpecificTermOfCourse() {
-        val report = examDAO.getSpecificReportOnExamOnSpecificTermOfCourse(1, 1, 4, 2).get()
+        val report = examDAO.getSpecificReportOnExamOnSpecificTermOfCourse(1, 1, 5, 2).get()
         assertEquals(LocalDate.parse("2015-07-09"), report.dueDate)
-        assertEquals(4, report.examId)
+        assertEquals(5, report.examId)
         assertEquals("E.2.20", report.location)
         assertEquals(2, report.logId)
         assertEquals("1ª", report.phase)
@@ -260,7 +257,7 @@ class ExamDAOImplTest {
     fun reportExam() {
         val report = examDAO.reportExam(
                 ExamReport(
-                        examId = 4,
+                        examId = 5,
                         courseId = 1,
                         termId = 1,
                         dueDate = LocalDate.parse("2015-07-10"),
@@ -272,7 +269,7 @@ class ExamDAOImplTest {
                 )
         )
         assertEquals(LocalDate.parse("2015-07-10"), report.dueDate)
-        assertEquals(4, report.examId)
+        assertEquals(5, report.examId)
         assertEquals("E.2.20", report.location)
         assertEquals(3, report.logId)
         assertEquals("1", report.phase)
@@ -284,17 +281,17 @@ class ExamDAOImplTest {
 
     @Test
     fun updateVotesOnReportedExam() {
-        val oldReportedExam = examDAO.getSpecificReportOnExamOnSpecificTermOfCourse(1, 1, 4, 1).get()
+        val oldReportedExam = examDAO.getSpecificReportOnExamOnSpecificTermOfCourse(1, 1, 5, 1).get()
         assertEquals(14, oldReportedExam.votes)
         val rowsAffected = examDAO.updateVotesOnReportedExam(1, 10)
         assertEquals(1, rowsAffected)
-        val updatedExam = examDAO.getSpecificReportOnExamOnSpecificTermOfCourse(1, 1, 4, 1).get()
+        val updatedExam = examDAO.getSpecificReportOnExamOnSpecificTermOfCourse(1, 1, 5, 1).get()
         assertEquals(10, updatedExam.votes)
     }
 
     @Test
     fun deleteReportOnExam() {
-        val rowsAffected = examDAO.deleteReportOnExam(1, 1, 4, 1)
+        val rowsAffected = examDAO.deleteReportOnExam(1, 1, 5, 1)
         assertEquals(1, rowsAffected)
     }
 
@@ -302,15 +299,15 @@ class ExamDAOImplTest {
     fun getExamByLogId() {
         val exam = examDAO.getExamByLogId(1).get()
         assertEquals(1, exam.courseId)
-        assertEquals("ze", exam.createdBy)
-        assertEquals(LocalDate.parse("2018-08-31"), exam.dueDate)
-        assertEquals(4, exam.examId)
-        assertEquals("A.2.14", exam.location)
+        assertEquals("jg", exam.createdBy)
+        assertEquals(LocalDate.parse("2012-07-14"), exam.dueDate)
+        assertEquals(5, exam.examId)
+        assertEquals("A.2.11", exam.location)
         assertEquals(1, exam.logId)
-        assertEquals("1ª", exam.phase)
+        assertEquals("2ª", exam.phase)
         assertEquals(1, exam.termId)
-        assertEquals("EXAM", exam.type.name)
-        assertEquals(1, exam.version)
+        assertEquals("TEST", exam.type.name)
+        assertEquals(2, exam.version)
         assertEquals(0, exam.votes)
     }
 
@@ -334,7 +331,7 @@ class ExamDAOImplTest {
     fun getExamReportByLogId() {
         val report = examDAO.getExamReportByLogId(1).get()
         assertEquals(LocalDate.parse("2015-07-11"), report.dueDate)
-        assertEquals(4, report.examId)
+        assertEquals(5, report.examId)
         assertEquals("E.2.20", report.location)
         assertEquals(1, report.logId)
         assertEquals("1ª", report.phase)

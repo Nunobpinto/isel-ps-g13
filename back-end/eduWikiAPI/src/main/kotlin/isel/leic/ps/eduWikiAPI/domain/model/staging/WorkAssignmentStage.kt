@@ -25,9 +25,9 @@ data class WorkAssignmentStage (
         @ColumnName(WORK_ASSIGNMENT_STAGE_ID)
         val stageId: Int = -1,
         @ColumnName(COURSE_MISC_UNIT_STAGE_COURSE_ID)
-        val courseId: Int = -1,
+        val courseId: Int = 0,
         @ColumnName(COURSE_MISC_UNIT_STAGE_TERM_ID)
-        val termId: Int = -1,
+        val termId: Int = 0,
         @ColumnName(WORK_ASSIGNMENT_STAGE_LOG_ID)
         val logId: Int = 0,
         @ColumnName(WORK_ASSIGNMENT_STAGE_PHASE)

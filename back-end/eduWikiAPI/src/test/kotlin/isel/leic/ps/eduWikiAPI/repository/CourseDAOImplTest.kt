@@ -56,10 +56,10 @@ class CourseDAOImplTest {
         val course = courseDAO.getSpecificCourse(1).get()
         assertEquals(1, course.courseId)
         assertEquals("PI", course.shortName)
-        assertEquals("Programação na Internet", course.fullName)
-        assertEquals(1, course.version)
+        assertEquals("Programacao na Internet", course.fullName)
+        assertEquals(2, course.version)
         assertEquals(0, course.votes)
-        assertEquals("ze", course.createdBy)
+        assertEquals("jg", course.createdBy)
     }
 
     @Test
@@ -102,7 +102,7 @@ class CourseDAOImplTest {
         val updatedCourse = courseDAO.updateCourse(
                 Course(
                         courseId = oldCourse.courseId,
-                        version = oldCourse.version + 1,
+                        version = oldCourse.version.inc(),
                         logId = oldCourse.logId,
                         votes = oldCourse.votes,
                         createdBy = oldCourse.createdBy,
@@ -114,10 +114,10 @@ class CourseDAOImplTest {
         assertEquals("Matematica", updatedCourse.fullName)
         assertEquals("M1", updatedCourse.shortName)
         assertEquals(0, updatedCourse.votes)
-        assertEquals(2, updatedCourse.version)
+        assertEquals(3, updatedCourse.version)
         assertEquals(1, updatedCourse.logId)
         assertEquals(1, updatedCourse.courseId)
-        assertEquals("ze", updatedCourse.createdBy)
+        assertEquals("jg", updatedCourse.createdBy)
     }
 
     @Test
@@ -133,7 +133,7 @@ class CourseDAOImplTest {
         assertEquals("Alga", course.shortName)
         assertEquals(0, course.votes)
         assertEquals(1, course.version)
-        assertEquals(1, course.logId)
+        assertEquals(4, course.logId)
         assertEquals(4, course.courseId)
         assertEquals("jg", course.createdBy)
     }
@@ -323,7 +323,7 @@ class CourseDAOImplTest {
         assertEquals(1, courseProgramme.logId)
         assertEquals(false, courseProgramme.optional)
         assertEquals(1, courseProgramme.programmeId)
-        assertEquals(1, courseProgramme.version)
+        assertEquals(2, courseProgramme.version)
         assertEquals(0, courseProgramme.votes)
     }
 
@@ -336,7 +336,7 @@ class CourseDAOImplTest {
                 CourseProgramme(
                         courseId = courseProgramme.courseId,
                         programmeId = courseProgramme.programmeId,
-                        version = courseProgramme.version + 1,
+                        version = courseProgramme.version.inc(),
                         lecturedTerm = courseProgramme.lecturedTerm,
                         optional = !courseProgramme.optional,
                         credits = courseProgramme.credits,
@@ -350,7 +350,7 @@ class CourseDAOImplTest {
         assertEquals(1, updatedCourseProgramme.logId)
         assertEquals(true, updatedCourseProgramme.optional)
         assertEquals(1, updatedCourseProgramme.programmeId)
-        assertEquals(2, updatedCourseProgramme.version)
+        assertEquals(3, updatedCourseProgramme.version)
         assertEquals(0, updatedCourseProgramme.votes)
     }
 
@@ -465,8 +465,8 @@ class CourseDAOImplTest {
         assertEquals(1, version.courseId)
         assertEquals("ze", version.createdBy)
         assertEquals(6, version.credits)
-        assertEquals("sexto", version.lecturedTerm)
-        assertEquals(true, version.optional)
+        assertEquals("quinto", version.lecturedTerm)
+        assertEquals(false, version.optional)
         assertEquals(1, version.programmeId)
         assertEquals(2, version.version)
     }
@@ -562,7 +562,7 @@ class CourseDAOImplTest {
     fun createCourseMiscUnit() {
         val courseMiscUnit = courseDAO.createCourseMiscUnit(1, 1,  CourseMiscUnitType.EXAM_TEST)
         assertEquals(1, courseMiscUnit.courseId)
-        assertEquals(7, courseMiscUnit.courseMiscUnitId)
+        assertEquals(9, courseMiscUnit.courseMiscUnitId)
         assertEquals("EXAM_TEST", courseMiscUnit.miscType.name)
         assertEquals(1, courseMiscUnit.termId)
     }
@@ -576,7 +576,7 @@ class CourseDAOImplTest {
     @Test
     fun deleteAllCourseMiscUnitsFromTypeOfCourseInTerm() {
         val affectedRows = courseDAO.deleteAllCourseMiscUnitsFromTypeOfCourseInTerm(1, 1, CourseMiscUnitType.EXAM_TEST)
-        assertEquals(1, affectedRows)
+        assertEquals(2, affectedRows)
     }
 
     @Test
@@ -585,7 +585,7 @@ class CourseDAOImplTest {
         assertEquals(1, stagingCourseMiscUnit.courseId)
         assertEquals(1, stagingCourseMiscUnit.termId)
         assertEquals("WORK_ASSIGNMENT", stagingCourseMiscUnit.miscType.name)
-        assertEquals(1, stagingCourseMiscUnit.stageId)
+        assertEquals(5, stagingCourseMiscUnit.stageId)
     }
 
     @Test
@@ -636,7 +636,7 @@ class CourseDAOImplTest {
         assertEquals(1, courseProgramme.logId)
         assertEquals(1, courseProgramme.courseId)
         assertEquals(6, courseProgramme.credits)
-        assertEquals(1, courseProgramme.version)
+        assertEquals(2, courseProgramme.version)
         assertEquals("quinto", courseProgramme.lecturedTerm)
         assertEquals(1, courseProgramme.programmeId)
         assertEquals(0, courseProgramme.votes)
