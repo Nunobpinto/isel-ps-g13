@@ -13,7 +13,6 @@ export default class extends React.Component {
       credits: undefined,
       optional: undefined,
       to_delete: undefined,
-      programme_id: undefined,
       programmes: [],
       reported: false
     }
@@ -46,13 +45,6 @@ export default class extends React.Component {
         <Form>
         Lecture term: <br />
           <Input name='course_lectured_term' onChange={this.handleChange} />
-          <br />
-        Choose other Programme for this course :<br />
-          <RadioGroup name='programme_id' onChange={this.handleChange}>
-            {this.state.programmes.map(prog => (
-              <Radio id={prog.programmeId} value={prog.programmeId}>{prog.shortName}</Radio>
-            ))}
-          </RadioGroup>
           <br />
         Optional: <br />
           <RadioGroup name='optional' onChange={this.handleChange}>
@@ -101,23 +93,5 @@ export default class extends React.Component {
           this.setState({reported: false})
         })
     }
-  }
-  componentDidMount () {
-    const options = {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth'),
-        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
-      }
-    }
-    const uri = 'http://localhost:8080/programmes'
-    fetcher(uri, options)
-      .then(json => {
-        let id = Number(this.props.programmeId)
-        let programmes = json.programmeList
-        programmes = programmes.filter(prog => prog.programmeId !== id)
-        this.setState({programmes: programmes})
-      })
-      .catch(_ => message.error('Error fetching programmes '))
   }
 }

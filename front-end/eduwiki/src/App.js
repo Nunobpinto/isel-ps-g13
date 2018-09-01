@@ -15,6 +15,7 @@ import Class from './components/classes/Class'
 import Homework from './components/homeworks/Homework'
 import Lecture from './components/lectures/Lecture'
 import Exam from './components/exams/Exam'
+import ExamReports from './components/exams/ExamReports'
 import WorkAssignment from './components/workAssignments/WorkAssignment'
 import Home from './components/home/Home'
 import Logout from './components/auth/Logout'
@@ -27,6 +28,8 @@ import CourseProgrammeVersion from './components/courseProgrammes/CourseProgramm
 import CourseProgrammeReports from './components/courseProgrammes/CourseProgrammeReports'
 import CourseProgrammePage from './components/courseProgrammes/CourseProgrammePage'
 import CourseReports from './components/courses/CourseReports'
+import AllExamsPage from './components/exams/AllExamsPage'
+import ExamVersion from './components/exams/ExamVersion'
 
 export default () => (
   <div>
@@ -43,8 +46,12 @@ export default () => (
         <ProtectedRoute exact path='/courses/:id' component={Course} />
         <ProtectedRoute exact path='/courses/:id/reports' component={CourseReports} />
         <ProtectedRoute exact path='/courses/:id/versions/:version' component={CourseVersion} />
+        <ProtectedRoute exact path='/courses/:courseId/terms/:termId/work-assignments/' component={WorkAssignment} />
         <ProtectedRoute exact path='/courses/:courseId/terms/:termId/work-assignments/:workAssignmentId' component={WorkAssignment} />
+        <ProtectedRoute exact path='/courses/:courseId/terms/:termId/exams/' component={AllExamsPage} />
         <ProtectedRoute exact path='/courses/:courseId/terms/:termId/exams/:examId' component={Exam} />
+        <ProtectedRoute exact path='/courses/:courseId/terms/:termId/exams/:examId/reports' component={ExamReports} />
+        <ProtectedRoute exact path='/courses/:courseId/terms/:termId/exams/:examId/versions/:version' component={ExamVersion} />
         <ProtectedRoute exact path='/classes' component={Classes} />
         <ProtectedRoute exact path='/classes/:id' component={Class} />
         <ProtectedRoute exact path='/classes/:classId/courses/:courseId' component={CourseClass} />

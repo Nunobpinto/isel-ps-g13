@@ -4,13 +4,16 @@ import isel.leic.ps.eduWikiAPI.domain.enums.ExamType
 import isel.leic.ps.eduWikiAPI.domain.inputModel.ExamInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ExamReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.ActionLog
+import isel.leic.ps.eduWikiAPI.domain.model.Course
 import isel.leic.ps.eduWikiAPI.domain.model.Exam
+import isel.leic.ps.eduWikiAPI.domain.model.Term
 import isel.leic.ps.eduWikiAPI.domain.model.report.ExamReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ExamStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.ExamVersion
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.ExamOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.ExamCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.ExamReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.ExamStageCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.ExamVersionCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserActionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.ExamReportOutputModel
@@ -25,7 +28,7 @@ fun toExam(input: ExamInputModel, sheet: MultipartFile?, createdBy: String) = Ex
         type = ExamType.valueOf(input.type.toUpperCase()),
         phase = input.phase,
         location = input.location,
-        sheetId = if(sheet == null) null else UUID.randomUUID()
+        sheetId = if (sheet == null) null else UUID.randomUUID()
 )
 
 fun toExamVersion(exam: Exam) = ExamVersion(
@@ -56,7 +59,7 @@ fun toStageExam(inputExam: ExamInputModel, sheet: MultipartFile?, createdBy: Str
         type = ExamType.valueOf(inputExam.type.toUpperCase()),
         phase = inputExam.phase,
         location = inputExam.location,
-        sheetId = if(sheet == null) null else UUID.randomUUID()
+        sheetId = if (sheet == null) null else UUID.randomUUID()
 )
 
 fun stagedToExam(stage: ExamStage) = Exam(
@@ -68,7 +71,7 @@ fun stagedToExam(stage: ExamStage) = Exam(
         location = stage.location
 )
 
-fun toExamOutputModel(exam: Exam) = ExamOutputModel(
+fun toExamOutputModel(exam: Exam, course: Course, term: Term) = ExamOutputModel(
         examId = exam.examId,
         version = exam.version,
         votes = exam.votes,
@@ -78,7 +81,9 @@ fun toExamOutputModel(exam: Exam) = ExamOutputModel(
         type = exam.type,
         phase = exam.phase,
         sheetId = exam.sheetId,
-        timestamp = exam.timestamp
+        timestamp = exam.timestamp,
+        courseShortName = course.shortName,
+        termShortName = term.shortName
 )
 
 fun toExamStageOutputModel(examStage: ExamStage) = ExamStageOutputModel(
@@ -93,7 +98,7 @@ fun toExamStageOutputModel(examStage: ExamStage) = ExamStageOutputModel(
         timestamp = examStage.timestamp
 )
 
-fun toExamReportOutputModel(examReport: ExamReport) = ExamReportOutputModel(
+fun toExamReportOutputModel(examReport: ExamReport, course: Course, term: Term) = ExamReportOutputModel(
         examId = examReport.examId,
         reportedBy = examReport.reportedBy,
         votes = examReport.votes,
@@ -102,10 +107,13 @@ fun toExamReportOutputModel(examReport: ExamReport) = ExamReportOutputModel(
         type = examReport.type,
         phase = examReport.phase,
         sheetId = examReport.sheetId,
-        timestamp = examReport.timestamp
+        timestamp = examReport.timestamp,
+        courseShortName = course.shortName,
+        termShortName = term.shortName,
+        reportId = examReport.reportId
 )
 
-fun toExamVersionOutputModel(examVersion: ExamVersion) = ExamVersionOutputModel(
+fun toExamVersionOutputModel(examVersion: ExamVersion, course: Course, term: Term) = ExamVersionOutputModel(
         examId = examVersion.examId,
         version = examVersion.version,
         createdBy = examVersion.createdBy,
@@ -114,7 +122,9 @@ fun toExamVersionOutputModel(examVersion: ExamVersion) = ExamVersionOutputModel(
         type = examVersion.type,
         phase = examVersion.phase,
         sheetId = examVersion.sheetId,
-        timestamp = examVersion.timestamp
+        timestamp = examVersion.timestamp,
+        courseShortName = course.shortName,
+        termShortName = term.shortName
 )
 
 fun toExamCollectionOutputModel(examList: List<ExamOutputModel>) = ExamCollectionOutputModel(
@@ -127,6 +137,10 @@ fun toExamReportCollectionOutputModel(examReportList: List<ExamReportOutputModel
 
 fun toExamVersionCollectionOutputModel(examVersionList: List<ExamVersionOutputModel>) = ExamVersionCollectionOutputModel(
         examVersionList = examVersionList
+)
+
+fun toExamStageCollectionOutputModel(examStageList: List<ExamStageOutputModel>) = ExamStageCollectionOutputModel(
+        examStageList = examStageList
 )
 
 fun Exam.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(

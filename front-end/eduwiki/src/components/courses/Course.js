@@ -3,13 +3,10 @@ import fetcher from '../../fetcher'
 import ReportCourse from './ReportCourse'
 import MyLayout from '../layout/Layout'
 import CourseVersions from './CourseVersions'
-import Term from '../term/Term'
-import {Button, Tooltip, Menu, Layout, Popover, message} from 'antd'
+import TermMenu from '../term/TermMenu'
+import {Button, Tooltip, Popover, message} from 'antd'
 import Cookies from 'universal-cookie'
 const cookies = new Cookies()
-
-const { Content, Sider } = Layout
-const { SubMenu } = Menu
 
 export default (props) => (
   <MyLayout>
@@ -46,13 +43,8 @@ class Course extends React.Component {
     }
     this.voteUp = this.voteUp.bind(this)
     this.voteDown = this.voteDown.bind(this)
-    this.showTerm = this.showTerm.bind(this)
     this.followCourse = this.followCourse.bind(this)
     this.unFollowCourse = this.unFollowCourse.bind(this)
-  }
-
-  showTerm (term) {
-    this.setState({term: term})
   }
 
   render () {
@@ -100,38 +92,11 @@ class Course extends React.Component {
                   </Tooltip>
                 }
               </p>
-              {this.state.termError
-                ? <p>this.state.termError </p>
-                : <Layout style={{ padding: '24px 0', background: '#fff' }}>
-                  <Sider width={200} style={{ background: '#fff' }}>
-                    <Menu
-                      mode='inline'
-                      style={{ height: '100%' }}
-                    >
-                      {this.state.terms.map(item =>
-                        <Menu.Item
-                          key={item.termId}
-                          onClick={() => this.showTerm(item)}
-                        >
-                          {item.shortName}
-                        </Menu.Item>
-
-                      )}
-                    </Menu>
-                  </Sider>
-                  <Content style={{ padding: '0 24px', minHeight: 280 }}>
-                    {this.state.term
-                      ? <Term
-                        term={this.state.term}
-                        courseId={this.props.match.params.id}
-                        courseBeingFollowed={this.state.userFollowing}
-                      />
-                      : <h1>Please choose one of the available Terms</h1>
-                    }
-                  </Content>
-                </Layout>
-              }
-
+              <TermMenu
+                courseId={this.props.courseId}
+                courseBeingFollowed={this.state.userFollowing}
+                userRole={this.props.user.reputation.role}
+              />
             </div>
           </div>
         }
@@ -219,37 +184,31 @@ class Course extends React.Component {
     }
     fetcher(uri, header)
       .then(course => {
-        const termsUri = `http://localhost:8080/courses/${course.courseId}/terms`
-        fetcher(termsUri, header)
-          .then(terms => {
-            const userCoursesUri = 'http://localhost:8080/user/courses'
-            fetcher(userCoursesUri, header)
-              .then(userCourses => this.setState({
-                full_name: course.fullName,
-                short_name: course.shortName,
-                createdBy: course.createdBy,
-                timestamp: course.timestamp,
-                version: course.version,
-                id: course.courseId,
-                votes: course.votes,
-                terms: terms.termList,
-                userFollowing: (userCourses.courseList.find(crs => crs.courseId === course.courseId))
-              }))
-              .catch(_ => this.setState({
-                full_name: course.fullName,
-                short_name: course.shortName,
-                createdBy: course.createdBy,
-                timestamp: course.timestamp,
-                version: course.version,
-                id: course.courseId,
-                votes: course.votes,
-                terms: terms.termList
-              }))
-          })
-          .catch(error => {
-            message.error('Error fetching terms')
-            this.setState({termError: error})
-          })
+        const userCoursesUri = 'http://localhost:8080/user/courses'
+        fetcher(userCoursesUri, header)
+          .then(userCourses => this.setState({
+            full_name: course.fullName,
+            short_name: course.shortName,
+            createdBy: course.createdBy,
+            timestamp: course.timestamp,
+            version: course.version,
+            id: course.courseId,
+            votes: course.votes,
+            userFollowing: (userCourses.courseList.find(crs => crs.courseId === course.courseId))
+          }))
+          .catch(_ => this.setState({
+            full_name: course.fullName,
+            short_name: course.shortName,
+            createdBy: course.createdBy,
+            timestamp: course.timestamp,
+            version: course.version,
+            id: course.courseId,
+            votes: course.votes
+          }))
+      })
+      .catch(error => {
+        message.error('Error fetching terms')
+        this.setState({termError: error})
       })
       .catch(error => {
         message.error('Error fetching course')

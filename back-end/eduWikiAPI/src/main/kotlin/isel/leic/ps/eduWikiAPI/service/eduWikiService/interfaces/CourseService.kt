@@ -16,6 +16,7 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.CourseRepo
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.ExamReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.WorkAssignmentReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.CourseStageCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.ExamStageCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.CourseVersionCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.ExamVersionCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.WorkAssignmentVersionCollectionOutputModel
@@ -92,7 +93,7 @@ interface CourseService {
 
     fun getCourseSpecificStageEntry(stageId: Int): CourseStageOutputModel
 
-    fun getStageEntriesFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int): List<ExamStageOutputModel>
+    fun getStageEntriesFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int): ExamStageCollectionOutputModel
 
     fun getStageEntryFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): ExamStageOutputModel
 

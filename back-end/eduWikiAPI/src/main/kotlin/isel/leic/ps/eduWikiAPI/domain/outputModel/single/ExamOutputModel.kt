@@ -16,5 +16,7 @@ data class ExamOutputModel (
         val type: ExamType,
         val phase: String = "",
         val location: String = "",
-        val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
+        val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now()),
+        val courseShortName: String = "",
+        val termShortName: String = ""
 )

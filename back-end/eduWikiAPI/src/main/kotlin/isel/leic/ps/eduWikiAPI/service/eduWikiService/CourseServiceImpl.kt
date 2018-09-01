@@ -19,6 +19,7 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.CourseRepo
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.ExamReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.WorkAssignmentReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.CourseStageCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.ExamStageCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.CourseVersionCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.ExamVersionCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.WorkAssignmentVersionCollectionOutputModel
@@ -102,9 +103,9 @@ class CourseServiceImpl : CourseService {
     override fun getSpecificClassOfSpecificCourseInTerm(courseId: Int, termId: Int, classId: Int): ClassOutputModel =
             toClassOutputModel(
                     courseDAO.getSpecificClassOfSpecificCourseInTerm(courseId, termId, classId)
-                            .orElseThrow { NotFoundException("No class found", "Try again with other class id") } ,
+                            .orElseThrow { NotFoundException("No class found", "Try again with other class id") },
                     termDAO.getTerm(termId).orElseThrow { NotFoundException("No term found", "Try again with other term id") }
-    )
+            )
 
     override fun createCourse(inputCourse: CourseInputModel, principal: Principal): CourseOutputModel {
         val course = courseDAO.createCourse(toCourse(inputCourse, principal.name))
@@ -385,14 +386,25 @@ class CourseServiceImpl : CourseService {
     // ----------------------------
 
     override fun getAllExamsFromSpecificTermOfCourse(courseId: Int, termId: Int): ExamCollectionOutputModel {
-        val exams = examDAO.getAllExamsFromSpecificTermOfCourse(courseId, termId).map { toExamOutputModel(it) }
+        val exams = examDAO.getAllExamsFromSpecificTermOfCourse(courseId, termId).map {
+            val course = courseDAO.getSpecificCourse(courseId)
+                    .orElseThrow { NotFoundException("No course found", "Try with other id") }
+            val term = termDAO.getTerm(termId)
+                    .orElseThrow { NotFoundException("No term found", "Try with other id") }
+            toExamOutputModel(it, course, term)
+        }
         return toExamCollectionOutputModel(exams)
     }
 
     override fun getSpecificExamFromSpecificTermOfCourse(courseId: Int, termId: Int, examId: Int): ExamOutputModel {
+        val course = courseDAO.getSpecificCourse(courseId)
+                .orElseThrow { NotFoundException("No course found", "Try with other id") }
+        val term = termDAO.getTerm(termId)
+                .orElseThrow { NotFoundException("No term found", "Try with other id") }
         return toExamOutputModel(
                 examDAO.getSpecificExamFromSpecificTermOfCourse(courseId, termId, examId)
-                        .orElseThrow { NotFoundException("No exam found", "Try again with other exam id") }
+                        .orElseThrow { NotFoundException("No exam found", "Try again with other exam id") },
+                course, term
         )
     }
 
@@ -403,11 +415,15 @@ class CourseServiceImpl : CourseService {
             inputExam: ExamInputModel,
             principal: Principal
     ): ExamOutputModel {
+        val course = courseDAO.getSpecificCourse(courseId)
+                .orElseThrow { NotFoundException("No course found", "Try with other id") }
+        val term = termDAO.getTerm(termId)
+                .orElseThrow { NotFoundException("No term found", "Try with other id") }
         val exam = toExam(inputExam, sheet, principal.name)
         val createdExam = examDAO.createExamOnCourseInTerm(courseId, termId, exam)
         examDAO.createExamVersion(toExamVersion(createdExam))
 
-        if(sheet != null && createdExam.sheetId != null)
+        if (sheet != null && createdExam.sheetId != null)
             storageService.storeResource(createdExam.sheetId, sheet)
 
         publisher.publishEvent(ResourceCreatedEvent(
@@ -415,7 +431,7 @@ class CourseServiceImpl : CourseService {
                 EXAM_TABLE,
                 createdExam.logId
         ))
-        return toExamOutputModel(createdExam)
+        return toExamOutputModel(createdExam, course, term)
     }
 
     override fun voteOnExam(termId: Int, courseId: Int, examId: Int, inputVote: VoteInputModel, principal: Principal): Int {
@@ -440,7 +456,7 @@ class CourseServiceImpl : CourseService {
         val exam = examDAO.getSpecificExamFromSpecificTermOfCourse(courseId, termId, examId)
                 .orElseThrow { NotFoundException("No exam found", "Try again with other exam id") }
 
-        if(exam.sheetId != null) storageService.deleteSpecificResource(exam.sheetId)
+        if (exam.sheetId != null) storageService.deleteSpecificResource(exam.sheetId)
         val success = examDAO.deleteSpecificExamOfCourseInTerm(termId, courseId, examId)
 
         publisher.publishEvent(ResourceDeletedEvent(
@@ -455,8 +471,8 @@ class CourseServiceImpl : CourseService {
     // Exam Stage Methods
     // ----------------------------
 
-    override fun getStageEntriesFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int): List<ExamStageOutputModel> {
-        return examDAO.getStageEntriesFromExamOnSpecificTermOfCourse(courseId, termId).map { toExamStageOutputModel(it) }
+    override fun getStageEntriesFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int): ExamStageCollectionOutputModel {
+        return toExamStageCollectionOutputModel(examDAO.getStageEntriesFromExamOnSpecificTermOfCourse(courseId, termId).map { toExamStageOutputModel(it) })
     }
 
     override fun getStageEntryFromExamOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): ExamStageOutputModel {
@@ -475,7 +491,7 @@ class CourseServiceImpl : CourseService {
     ): ExamStageOutputModel {
         val stagingExam = examDAO.createStagingExamOnCourseInTerm(courseId, termId, toStageExam(examInputModel, sheet, principal.name))
 
-        if(sheet != null && stagingExam.sheetId != null)
+        if (sheet != null && stagingExam.sheetId != null)
             storageService.storeResource(stagingExam.sheetId, sheet)
 
         publisher.publishEvent(ResourceCreatedEvent(
@@ -487,6 +503,10 @@ class CourseServiceImpl : CourseService {
     }
 
     override fun createExamFromStaged(courseId: Int, termId: Int, stageId: Int, principal: Principal): ExamOutputModel {
+        val course = courseDAO.getSpecificCourse(courseId)
+                .orElseThrow { NotFoundException("No course found", "Try with other id") }
+        val term = termDAO.getTerm(termId)
+                .orElseThrow { NotFoundException("No term found", "Try with other id") }
         val examStage = examDAO.getStageEntryFromExamOnSpecificTermOfCourse(courseId, termId, stageId)
                 .orElseThrow { NotFoundException("No exam staged found", "Try again with other staged id") }
         resolveApproval(principal.name, examStage.createdBy)
@@ -505,7 +525,7 @@ class CourseServiceImpl : CourseService {
                 EXAM_TABLE,
                 exam.logId
         ))
-        return toExamOutputModel(exam)
+        return toExamOutputModel(exam, course, term)
     }
 
     override fun voteOnStagedExam(termId: Int, courseId: Int, stageId: Int, vote: VoteInputModel, principal: Principal): Int {
@@ -529,7 +549,7 @@ class CourseServiceImpl : CourseService {
         val stagedExam = examDAO.getStageEntryFromExamOnSpecificTermOfCourse(courseId, termId, stageId)
                 .orElseThrow { NotFoundException("No exam staged found", "Try again with other staged id") }
 
-        if(stagedExam.sheetId != null) storageService.deleteSpecificResource(stagedExam.sheetId)
+        if (stagedExam.sheetId != null) storageService.deleteSpecificResource(stagedExam.sheetId)
 
         val success = examDAO.deleteSpecificStagedExamOfCourseInTerm(courseId, termId, stageId)
 
@@ -548,18 +568,33 @@ class CourseServiceImpl : CourseService {
     // ----------------------------
 
     override fun getAllReportsOnExamOnSpecificTermOfCourse(termId: Int, courseId: Int, examId: Int): ExamReportCollectionOutputModel {
-        val reports = examDAO.getAllReportsOnExamOnSpecificTermOfCourse(courseId, termId, examId).map { toExamReportOutputModel(it) }
+        val reports = examDAO.getAllReportsOnExamOnSpecificTermOfCourse(courseId, termId, examId).map {
+            val course = courseDAO.getSpecificCourse(courseId)
+                    .orElseThrow { NotFoundException("No course found", "Try with other id") }
+            val term = termDAO.getTerm(termId)
+                    .orElseThrow { NotFoundException("No term found", "Try with other id") }
+            toExamReportOutputModel(it, course, term)
+        }
         return toExamReportCollectionOutputModel(reports)
     }
 
     override fun getSpecificReportOnExamOnSpecificTermOfCourse(termId: Int, courseId: Int, examId: Int, reportId: Int): ExamReportOutputModel {
+        val course = courseDAO.getSpecificCourse(courseId)
+                .orElseThrow { NotFoundException("No course found", "Try with other id") }
+        val term = termDAO.getTerm(termId)
+                .orElseThrow { NotFoundException("No term found", "Try with other id") }
         return toExamReportOutputModel(
                 examDAO.getSpecificReportOnExamOnSpecificTermOfCourse(courseId, termId, examId, reportId)
-                        .orElseThrow { NotFoundException("No report found", "Try again with other report id") }
+                        .orElseThrow { NotFoundException("No report found", "Try again with other report id") },
+                course, term
         )
     }
 
     override fun addReportToExamOnCourseInTerm(termId: Int, courseId: Int, examId: Int, inputExamReport: ExamReportInputModel, principal: Principal): ExamReportOutputModel {
+        val course = courseDAO.getSpecificCourse(courseId)
+                .orElseThrow { NotFoundException("No course found", "Try with other id") }
+        val term = termDAO.getTerm(termId)
+                .orElseThrow { NotFoundException("No term found", "Try with other id") }
         examDAO.getSpecificExamFromSpecificTermOfCourse(courseId, termId, examId)
                 .orElseThrow { NotFoundException("No exam found", "Try again") }
 
@@ -570,7 +605,7 @@ class CourseServiceImpl : CourseService {
                 EXAM_REPORT_TABLE,
                 reportExam.logId
         ))
-        return toExamReportOutputModel(reportExam)
+        return toExamReportOutputModel(reportExam, course, term)
     }
 
     override fun voteOnReportedExamOnCourseInTerm(termId: Int, courseId: Int, examId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int {
@@ -592,6 +627,10 @@ class CourseServiceImpl : CourseService {
     }
 
     override fun updateReportedExam(examId: Int, reportId: Int, courseId: Int, termId: Int, principal: Principal): ExamOutputModel {
+        val course = courseDAO.getSpecificCourse(courseId)
+                .orElseThrow { NotFoundException("No course found", "Try with other id") }
+        val term = termDAO.getTerm(termId)
+                .orElseThrow { NotFoundException("No term found", "Try with other id") }
         val exam = examDAO.getSpecificExamFromSpecificTermOfCourse(courseId, termId, examId)
                 .orElseThrow { NotFoundException("No exam found", "Try again with other ids") }
         val report = examDAO.getSpecificReportOnExamOnSpecificTermOfCourse(courseId, termId, examId, reportId)
@@ -622,7 +661,7 @@ class CourseServiceImpl : CourseService {
                 EXAM_TABLE,
                 updatedExam.logId
         ))
-        return toExamOutputModel(updatedExam)
+        return toExamOutputModel(updatedExam, course, term)
     }
 
 
@@ -647,14 +686,25 @@ class CourseServiceImpl : CourseService {
     // ----------------------------
 
     override fun getAllVersionsOfSpecificExam(termId: Int, courseId: Int, examId: Int): ExamVersionCollectionOutputModel {
-        val examVersions = examDAO.getAllVersionsOfSpecificExam(termId, courseId, examId).map { toExamVersionOutputModel(it) }
+        val course = courseDAO.getSpecificCourse(courseId)
+                .orElseThrow { NotFoundException("No course found", "Try with other id") }
+        val term = termDAO.getTerm(termId)
+                .orElseThrow { NotFoundException("No term found", "Try with other id") }
+        val examVersions = examDAO.getAllVersionsOfSpecificExam(termId, courseId, examId).map {
+            toExamVersionOutputModel(it, course, term)
+        }
         return toExamVersionCollectionOutputModel(examVersions)
     }
 
     override fun getVersionOfSpecificExam(termId: Int, courseId: Int, examId: Int, versionId: Int): ExamVersionOutputModel {
+        val course = courseDAO.getSpecificCourse(courseId)
+                .orElseThrow { NotFoundException("No course found", "Try with other id") }
+        val term = termDAO.getTerm(termId)
+                .orElseThrow { NotFoundException("No term found", "Try with other id") }
         return toExamVersionOutputModel(
                 examDAO.getVersionOfSpecificExam(termId, courseId, examId, versionId)
-                        .orElseThrow { NotFoundException("No version found", "Try again with other version number") }
+                        .orElseThrow { NotFoundException("No version found", "Try again with other version number") },
+                course, term
         )
     }
 
@@ -687,9 +737,9 @@ class CourseServiceImpl : CourseService {
         val createdWorkAssignment = workAssignmentDAO.createWorkAssignmentOnCourseInTerm(courseId, termId, toWorkAssignment(inputWorkAssignment, sheet, supplement, principal.name))
 
         workAssignmentDAO.createWorkAssignmentVersion(toWorkAssignmentVersion(createdWorkAssignment))
-        if(sheet != null && createdWorkAssignment.sheetId != null )
+        if (sheet != null && createdWorkAssignment.sheetId != null)
             storageService.storeResource(createdWorkAssignment.sheetId, sheet)
-        if(supplement != null && createdWorkAssignment.supplementId != null)
+        if (supplement != null && createdWorkAssignment.supplementId != null)
             storageService.storeResource(createdWorkAssignment.supplementId, supplement)
 
         publisher.publishEvent(ResourceCreatedEvent(
@@ -722,8 +772,8 @@ class CourseServiceImpl : CourseService {
         val workAssignment = workAssignmentDAO.getSpecificWorkAssignmentOfCourseInTerm(workAssignmentId, courseId, termId)
                 .orElseThrow { NotFoundException("No Work Assignment found", "Try again with other work assignment id") }
 
-        if(workAssignment.sheetId != null) storageService.deleteSpecificResource(workAssignment.sheetId)
-        if(workAssignment.supplementId != null) storageService.deleteSpecificResource(workAssignment.supplementId)
+        if (workAssignment.sheetId != null) storageService.deleteSpecificResource(workAssignment.sheetId)
+        if (workAssignment.supplementId != null) storageService.deleteSpecificResource(workAssignment.supplementId)
 
         val success = workAssignmentDAO.deleteSpecificWorkAssignment(courseId, termId, workAssignmentId)
 
@@ -760,9 +810,9 @@ class CourseServiceImpl : CourseService {
     ): WorkAssignmentStageOutputModel {
         val stagingWorkAssignment = workAssignmentDAO.createStagingWorkAssingment(courseId, termId, toStageWorkAssignment(inputWorkAssignment, sheet, supplement, principal.name))
 
-        if(sheet != null && stagingWorkAssignment.sheetId != null)
+        if (sheet != null && stagingWorkAssignment.sheetId != null)
             storageService.storeResource(stagingWorkAssignment.sheetId, sheet)
-        if(supplement != null && stagingWorkAssignment.supplementId != null)
+        if (supplement != null && stagingWorkAssignment.supplementId != null)
             storageService.storeResource(stagingWorkAssignment.supplementId, supplement)
 
         publisher.publishEvent(ResourceCreatedEvent(
@@ -817,8 +867,8 @@ class CourseServiceImpl : CourseService {
         val stagedWorkAssignment = workAssignmentDAO.getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId, termId, stageId)
                 .orElseThrow { NotFoundException("No Work Assignment Staged found", "Try again with other stage id") }
 
-        if(stagedWorkAssignment.sheetId != null) storageService.deleteSpecificResource(stagedWorkAssignment.sheetId)
-        if(stagedWorkAssignment.supplementId != null) storageService.deleteSpecificResource(stagedWorkAssignment.supplementId)
+        if (stagedWorkAssignment.sheetId != null) storageService.deleteSpecificResource(stagedWorkAssignment.sheetId)
+        if (stagedWorkAssignment.supplementId != null) storageService.deleteSpecificResource(stagedWorkAssignment.supplementId)
 
         val success = workAssignmentDAO.deleteSpecificStagedWorkAssignmentOfCourseInTerm(courseId, termId, stageId)
 
