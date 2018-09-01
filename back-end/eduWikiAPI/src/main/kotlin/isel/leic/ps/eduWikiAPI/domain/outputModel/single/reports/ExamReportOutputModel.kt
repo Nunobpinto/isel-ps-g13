@@ -17,5 +17,7 @@ data class ExamReportOutputModel (
         val reportedBy: String = "",
         val votes: Int = 0,
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now()),
-        val sheetId: UUID?
+        val sheetId: UUID?,
+        val courseShortName: String,
+        val termShortName: String
 )

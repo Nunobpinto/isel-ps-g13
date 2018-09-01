@@ -16,5 +16,7 @@ data class ExamVersionOutputModel (
         val location: String = "",
         val createdBy: String = "",
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now()),
-        val sheetId: UUID?
+        val sheetId: UUID?,
+        val courseShortName: String,
+        val termShortName: String
 )

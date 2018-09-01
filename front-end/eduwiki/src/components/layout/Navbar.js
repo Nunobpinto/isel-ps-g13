@@ -1,6 +1,6 @@
 import React from 'react'
 import TransparentButton from '../comms/TransparentButton'
-import { Avatar, message, Row, Col } from 'antd'
+import { Row, Col } from 'antd'
 
 export default class extends React.Component {
   constructor (props) {

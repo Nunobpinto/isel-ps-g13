@@ -1,6 +1,5 @@
 import React from 'react'
 import { Form, Input, Button, DatePicker, Select } from 'antd'
-import ExamUploader from './ExamUploader'
 import moment from 'moment'
 
 const FormItem = Form.Item
@@ -17,12 +16,17 @@ class SubmitExam extends React.Component {
       data: undefined
     }
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleChange = this.handleChange.bind(this)
+  }
+  handleChange (e) {
+    this.setState({file: e.target.files[0]})
   }
   handleSubmit (e) {
     e.preventDefault()
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         values.dueDate = values.dueDate.format('YYYY-MM-DD')
+        values.file = this.state.file
         this.setState({
           uploadFlag: true,
           data: values
@@ -37,7 +41,7 @@ class SubmitExam extends React.Component {
       <div>
         <Form onSubmit={this.handleSubmit}>
           <FormItem
-            label='Completion Date'
+            label='Due Date'
           >
             {getFieldDecorator('dueDate', {
               rules: [{
@@ -91,19 +95,23 @@ class SubmitExam extends React.Component {
               <Input />
             )}
           </FormItem>
+          <FormItem
+            label='File'
+          >
+            <input id='file' type='file' name='sheet' onChange={this.handleChange} />
+          </FormItem>
           <FormItem>
             <Button type='primary' htmlType='submit'>Create Exam</Button>
           </FormItem>
         </Form>
-        {this.state.uploadFlag &&
-        <ExamUploader
-          data={this.state.data}
-          courseId={this.props.courseId}
-          termId={this.props.termId}
-        />
-        }
       </div>
     )
+  }
+  componentDidUpdate () {
+    if (this.state.uploadFlag) {
+      this.props.action(this.state.data)
+      this.setState({uploadFlag: false})
+    }
   }
 }
 

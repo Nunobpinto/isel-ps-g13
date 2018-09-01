@@ -10,11 +10,11 @@ const cookies = new Cookies()
 
 export default (props) => (
   <Layout>
-    <Course />
+    <Courses />
   </Layout>
 )
 
-class Course extends React.Component {
+class Courses extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
@@ -122,7 +122,7 @@ class Course extends React.Component {
             : <Button icon='plus' id='create_btn' type='primary' onClick={() => this.setState({stagedCourseView: true})}>Create Course</Button>
           }
         </div>
-        <div class='right-div'>
+        <div className='right-div'>
           {this.state.createCourseView &&
           <CreateCourse action={this.createDefinitiveCourse} />
           }

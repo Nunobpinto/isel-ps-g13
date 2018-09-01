@@ -33,7 +33,7 @@ class Profile extends React.Component {
     return (
       <div >
         <div className='left_side'>
-          <img src='defaultUser.png' />
+          <img alt={'User Avatar'} src='defaultUser.png' />
           <p>
             <h1><strong>Username</strong> : {this.state.user.username}</h1>
             <h1><strong>Name</strong> : {this.state.user.givenName} {this.state.user.familyName}</h1>
