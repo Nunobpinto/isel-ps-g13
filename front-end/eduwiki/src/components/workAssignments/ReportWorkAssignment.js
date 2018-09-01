@@ -32,9 +32,11 @@ export default class extends React.Component {
     }
     const data = {
       due_date: date,
-      exam_type: this.state.type,
-      phase: this.state.phase,
-      location: this.state.location
+      individual: this.state.type,
+      late_delivery: this.state.lateDelivery,
+      multiple_deliveries: this.state.multipleDeliveries,
+      requires_report: this.state.requiresReport,
+      phase: this.state.phase
     }
     this.setState({
       data: data,
@@ -50,13 +52,28 @@ export default class extends React.Component {
         Phase: <br />
           <Input name='phase' onChange={this.handleChange} />
           <br />
-        Location: <br />
-          <Input name='location' onChange={this.handleChange} />
+          Individual Work Assignment: <br />
+          <Radio.Group name='individual' onChange={this.handleChange}>
+            <Radio value='true'>Yes</Radio>
+            <Radio value='false'>No</Radio>
+          </Radio.Group>
           <br />
-        Type: <br />
-          <Radio.Group name='type' onChange={this.handleChange}>
-            <Radio value='TEST'>Test</Radio>
-            <Radio value='EXAM'>Exam</Radio>
+          Late Delivery: <br />
+          <Radio.Group name='lateDelivery' onChange={this.handleChange}>
+            <Radio value='true'>Yes</Radio>
+            <Radio value='false'>No</Radio>
+          </Radio.Group>
+          <br />
+          Multiple Deliveries: <br />
+          <Radio.Group name='multipleDeliveries' onChange={this.handleChange}>
+            <Radio value='true'>Yes</Radio>
+            <Radio value='false'>No</Radio>
+          </Radio.Group>
+          <br />
+          Requires Report: <br />
+          <Radio.Group name='requiresReport' onChange={this.handleChange}>
+            <Radio value='true'>Yes</Radio>
+            <Radio value='false'>No</Radio>
           </Radio.Group>
           <br />
         Due Date: <br />
@@ -91,7 +108,7 @@ export default class extends React.Component {
         },
         body: JSON.stringify(data)
       }
-      const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/${this.props.examId}/reports`
+      const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}/reports`
       fetcher(url, options)
         .then(_ => {
           message.success('Reported!!')

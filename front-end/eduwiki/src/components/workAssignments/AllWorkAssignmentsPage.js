@@ -5,20 +5,20 @@ import IconText from '../comms/IconText'
 import Layout from '../layout/Layout'
 import { Button, message, List, Card } from 'antd'
 import Cookies from 'universal-cookie'
-import SubmitExam from './SubmitExam'
+import SubmitWorkAssignment from './SubmitWorkAssignment'
 const cookies = new Cookies()
 
 export default (props) => (
   <Layout>
-    <AllExams courseId={props.match.params.courseId} termId={props.match.params.termId} />
+    <AllWorkAssignments courseId={props.match.params.courseId} termId={props.match.params.termId} />
   </Layout>
 )
 
-class AllExams extends React.Component {
+class AllWorkAssignments extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      exams: [],
+      works: [],
       error: undefined,
       voteUpStaged: false,
       voteDownStaged: false,
@@ -29,16 +29,16 @@ class AllExams extends React.Component {
     }
     this.voteUpStaged = this.voteUpStaged.bind(this)
     this.voteDownStaged = this.voteDownStaged.bind(this)
-    this.createStagedExam = this.createStagedExam.bind(this)
-    this.createDefinitiveExam = this.createDefinitiveExam.bind(this)
-    this.createExam = this.createExam.bind(this)
+    this.createStagedWorkAssignment = this.createStagedWorkAssignment.bind(this)
+    this.createDefinitiveWorkAssignment = this.createDefinitiveWorkAssignment.bind(this)
+    this.createWorkAssignment = this.createWorkAssignment.bind(this)
     this.showResource = this.showResource.bind(this)
     this.approveStaged = this.approveStaged.bind(this)
     this.deleteStaged = this.deleteStaged.bind(this)
   }
 
   approveStaged () {
-    const stagedUri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage/${this.state.stagedId}`
+    const stagedUri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/stage/${this.state.stagedId}`
     const options = {
       method: 'POST',
       headers: {
@@ -48,14 +48,14 @@ class AllExams extends React.Component {
       }
     }
     fetcher(stagedUri, options)
-      .then(exam => {
+      .then(work => {
         message.success('Successfully approved staged programme')
         this.setState(prevState => {
           const newArray = prevState.staged.filter(st => st.stagedId !== prevState.stagedId)
-          prevState.exams.push(exam)
+          prevState.works.push(work)
           return ({
             staged: newArray,
-            exams: prevState.exams,
+            works: prevState.works,
             approved: false
           })
         })
@@ -70,7 +70,7 @@ class AllExams extends React.Component {
       })
   }
   deleteStaged () {
-    const stagedUri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage/${this.state.stagedId}`
+    const stagedUri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/stage/${this.state.stagedId}`
     const options = {
       method: 'DELETE',
       headers: {
@@ -105,7 +105,7 @@ class AllExams extends React.Component {
       vote: 'Up'
     }
     const stageID = this.state.stageID
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage/${stageID}/vote`
+    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/stage/${stageID}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -142,7 +142,7 @@ class AllExams extends React.Component {
       vote: 'Up'
     }
     const stageID = this.state.stageID
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage/${stageID}/vote`
+    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/stage/${stageID}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -177,7 +177,7 @@ class AllExams extends React.Component {
   render () {
     return (
       <div>
-        <h1>All Exams in {this.state.term} / {this.state.course}</h1>
+        <h1>All Work Assignments in {this.state.term} / {this.state.course}</h1>
         <div >
           <div className='left-div'>
             <List
@@ -185,11 +185,11 @@ class AllExams extends React.Component {
               size='large'
               bordered
               loading={this.state.loading}
-              dataSource={this.state.exams}
+              dataSource={this.state.works}
               renderItem={item => (
                 <List.Item>
                   <List.Item.Meta
-                    title={<Link to={{ pathname: `/courses/${this.props.courseId}/terms/${this.props.termId}/exams/${item.examId}` }}>{item.type} - {item.phase} - {item.dueDate}</Link>}
+                    title={<Link to={{ pathname: `/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${item.workAssignmentId}` }}>{item.phase} - {item.dueDate}</Link>}
                     description={`Created by ${item.createdBy}`}
                   />
                 </List.Item>
@@ -198,17 +198,23 @@ class AllExams extends React.Component {
           </div>
           <div className='right-div'>
             <div id='stagedCourses'>
-              <h1>All staged Exams</h1>
+              <h1>All staged Work Assignments</h1>
               <List id='staged-list'
                 grid={{ gutter: 50, column: 1 }}
                 dataSource={this.state.staged}
                 loading={this.state.loading}
-                footer={<Button type='primary' onClick={() => this.setState({createExamFlag: true})}>Create Exam</Button>}
+                footer={<Button type='primary' onClick={() => this.setState({createWorkFlag: true})}>Create Work Assignment</Button>}
                 renderItem={item => (
                   <List.Item>
-                    <Card title={`${item.type} - ${item.phase} - ${item.dueDate}`}>
-                      {item.sheetId && <Button onClick={() => this.showResource(item.sheetId)}>See resource</Button>}
+                    <Card title={`${item.phase} - ${item.dueDate}`}>
+                      <p>Individual : {item.individual ? 'Yes' : 'No'}</p>
+                      <p>Late Delivery : {item.lateDelivery ? 'Yes' : 'No'}</p>
+                      <p>Multiple Deliveries : {item.multipleDeliveries ? 'Yes' : 'No'}</p>
+                      <p>Requires Report : {item.requiresReport ? 'Yes' : 'No'}</p>
+                      {item.sheetId && <Button onClick={() => this.showResource(item.sheetId)}>See sheet</Button>}
+                      {item.supplementId && <Button onClick={() => this.showResource(item.supplementId)}>See supplement</Button>}
                       <p>Created By : {item.createdBy}</p>
+                      <p>Added at {item.timestamp}</p>
                       <IconText
                         type='like-o'
                         id='like_btn'
@@ -257,7 +263,7 @@ class AllExams extends React.Component {
                   </List.Item>
                 )}
               />
-              {this.state.createExamFlag && <SubmitExam action={(data) => this.setState({
+              {this.state.createWorkFlag && <SubmitWorkAssignment action={(data) => this.setState({
                 data: data,
                 actionFlag: true
               })} />}
@@ -268,22 +274,25 @@ class AllExams extends React.Component {
     )
   }
 
-  createExam (exam) {
+  createWorkAssignment (work) {
     if (this.props.user.reputation.role === 'ROLE_ADMIN') {
-      this.createDefinitiveExam(exam)
+      this.createDefinitiveWorkAssignment(work)
     } else {
-      this.createStagedExam(exam)
+      this.createStagedWorkAssignment(work)
     }
   }
 
-  createDefinitiveExam (exam) {
-    const uri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams`
+  createDefinitiveWorkAssignment (work) {
+    const uri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments`
     let data = new FormData()
-    data.append('sheet', exam.file)
-    data.append('phase', exam.phase)
-    data.append('dueDate', exam.dueDate)
-    data.append('type', exam.type)
-    data.append('location', exam.location)
+    data.append('sheet', work.sheet)
+    data.append('supplement', work.supplement)
+    data.append('phase', work.phase)
+    data.append('dueDate', work.dueDate)
+    data.append('individual', work.individual)
+    data.append('lateDelivery', work.lateDelivery)
+    data.append('multipleDeliveries', work.multipleDeliveries)
+    data.append('requiresReport', work.requiresReport)
     const options = {
       method: 'POST',
       headers: {
@@ -294,11 +303,11 @@ class AllExams extends React.Component {
       body: data
     }
     fetcher(uri, options)
-      .then(exam => {
+      .then(work => {
         message.success('Saved the Work Assignment you requested')
         this.setState(prevstate => {
-          prevstate.exams.push(exam)
-          return ({actionFlag: false, exams: prevstate.exams})
+          prevstate.works.push(work)
+          return ({actionFlag: false, works: prevstate.works})
         }
         )
       })
@@ -308,14 +317,17 @@ class AllExams extends React.Component {
       })
   }
 
-  createStagedExam (exam) {
-    const uri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage`
+  createStagedWorkAssignment (work) {
+    const uri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/stage`
     let data = new FormData()
-    data.append('sheet', exam.file)
-    data.append('phase', exam.phase)
-    data.append('dueDate', exam.dueDate)
-    data.append('type', exam.type)
-    data.append('location', exam.location)
+    data.append('sheet', work.sheet)
+    data.append('supplement', work.supplement)
+    data.append('phase', work.phase)
+    data.append('dueDate', work.dueDate)
+    data.append('individual', work.individual)
+    data.append('lateDelivery', work.lateDelivery)
+    data.append('multipleDeliveries', work.multipleDeliveries)
+    data.append('requiresReport', work.requiresReport)
     const options = {
       method: 'POST',
       headers: {
@@ -326,16 +338,16 @@ class AllExams extends React.Component {
       body: data
     }
     fetcher(uri, options)
-      .then(exam => {
-        message.success('Saved the Exam you requested')
+      .then(work => {
+        message.success('Saved the Work Assignment you requested')
         this.setState(prevstate => {
-          prevstate.staged.push(exam)
+          prevstate.staged.push(work)
           return ({actionFlag: false, staged: prevstate.staged})
         }
         )
       })
       .catch(_ => {
-        message.error('Error while saving the Exam you requested')
+        message.error('Error while saving the Work Assignment you requested')
         this.setState({actionFlag: false})
       })
   }
@@ -346,7 +358,7 @@ class AllExams extends React.Component {
   }
 
   componentDidMount () {
-    const uri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams`
+    const uri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments`
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -359,20 +371,20 @@ class AllExams extends React.Component {
         fetcher(`http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}`, header)
           .then(term => {
             fetcher(uri, header)
-              .then(exams => {
-                const stagedUri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage`
+              .then(works => {
+                const stagedUri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/stage`
                 fetcher(stagedUri, header)
-                  .then(stagedExams => this.setState({
-                    exams: exams.examList,
-                    staged: stagedExams.examStageList,
+                  .then(stagedWorks => this.setState({
+                    works: works.workAssignmentList,
+                    staged: stagedWorks.workAssignmentStageList,
                     course: course.shortName,
                     term: term.shortName,
                     loading: false
                   }))
                   .catch(stagedError => {
-                    message.error('Error fetching staged exams')
+                    message.error('Error fetching staged work assignments')
                     this.setState({
-                      exams: exams.examList,
+                      works: works.workAssignmentList,
                       stagedError: stagedError,
                       course: course.shortName,
                       term: term.shortName,
@@ -381,7 +393,7 @@ class AllExams extends React.Component {
                   })
               })
               .catch(error => {
-                message.error('Error fetching exams')
+                message.error('Error fetching work assignments')
                 this.setState({error: error})
               })
           })
@@ -391,7 +403,7 @@ class AllExams extends React.Component {
   }
   componentDidUpdate () {
     if (this.state.actionFlag) {
-      this.createExam(this.state.data)
+      this.createWorkAssignment(this.state.data)
     } else if (this.state.approved) {
       this.approveStaged()
     } else if (this.state.rejected) {

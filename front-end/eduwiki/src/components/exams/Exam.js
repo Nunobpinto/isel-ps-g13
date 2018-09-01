@@ -59,7 +59,7 @@ export default class extends React.Component {
             courseId={this.props.match.params.courseId}
             termId={this.props.match.params.termId}
             examId={this.props.match.params.examId} />} trigger='click'>
-            <Tooltip placement='bottom' title='Report this Programme'>
+            <Tooltip placement='bottom' title='Report this Exam'>
               <Button id='report_btn' shape='circle' icon='warning' />
             </Tooltip>
           </Popover>

@@ -20,6 +20,7 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.ExamReport
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.WorkAssignmentReportCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.CourseStageCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.ExamStageCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.WorkAssignmentStageCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.CourseVersionCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.ExamVersionCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.WorkAssignmentVersionCollectionOutputModel
@@ -386,11 +387,11 @@ class CourseServiceImpl : CourseService {
     // ----------------------------
 
     override fun getAllExamsFromSpecificTermOfCourse(courseId: Int, termId: Int): ExamCollectionOutputModel {
+        val course = courseDAO.getSpecificCourse(courseId)
+                .orElseThrow { NotFoundException("No course found", "Try with other id") }
+        val term = termDAO.getTerm(termId)
+                .orElseThrow { NotFoundException("No term found", "Try with other id") }
         val exams = examDAO.getAllExamsFromSpecificTermOfCourse(courseId, termId).map {
-            val course = courseDAO.getSpecificCourse(courseId)
-                    .orElseThrow { NotFoundException("No course found", "Try with other id") }
-            val term = termDAO.getTerm(termId)
-                    .orElseThrow { NotFoundException("No term found", "Try with other id") }
             toExamOutputModel(it, course, term)
         }
         return toExamCollectionOutputModel(exams)
@@ -715,14 +716,27 @@ class CourseServiceImpl : CourseService {
     // ----------------------------
 
     override fun getAllWorkAssignmentsFromSpecificTermOfCourse(courseId: Int, termId: Int): WorkAssignmentCollectionOutputModel {
-        val workAssignments = workAssignmentDAO.getAllWorkAssignmentsFromSpecificTermOfCourse(courseId, termId).map { toWorkAssignmentOutputModel(it) }
+        val course = courseDAO.getSpecificCourse(courseId)
+                .orElseThrow { NotFoundException("No course found", "Try with other id") }
+        val term = termDAO.getTerm(termId)
+                .orElseThrow { NotFoundException("No term found", "Try with other id") }
+        val workAssignments = workAssignmentDAO.getAllWorkAssignmentsFromSpecificTermOfCourse(courseId, termId).map { toWorkAssignmentOutputModel(it, course, term) }
         return toWorkAssignmentCollectionOutputModel(workAssignments)
     }
 
     override fun getSpecificWorkAssignmentFromSpecificTermOfCourse(workAssignmentId: Int, courseId: Int, termId: Int): WorkAssignmentOutputModel {
+        val course = courseDAO.getSpecificCourse(courseId)
+                .orElseThrow { NotFoundException("No course found", "Try with other id") }
+        val term = termDAO.getTerm(termId)
+                .orElseThrow { NotFoundException("No term found", "Try with other id") }
         return toWorkAssignmentOutputModel(
-                workAssignmentDAO.getSpecificWorkAssignmentOfCourseInTerm(workAssignmentId, courseId, termId)
-                        .orElseThrow { NotFoundException("No Work Assignment found", "Try again with other work assignment id") }
+                workAssignmentDAO.getSpecificWorkAssignmentOfCourseInTerm(
+                        courseId,
+                        termId,
+                        workAssignmentId)
+                        .orElseThrow { NotFoundException("No Work Assignment found", "Try again with other work assignment id") },
+                course,
+                term
         )
     }
 
@@ -734,6 +748,10 @@ class CourseServiceImpl : CourseService {
             principal: Principal,
             supplement: MultipartFile?
     ): WorkAssignmentOutputModel {
+        val course = courseDAO.getSpecificCourse(courseId)
+                .orElseThrow { NotFoundException("No course found", "Try with other id") }
+        val term = termDAO.getTerm(termId)
+                .orElseThrow { NotFoundException("No term found", "Try with other id") }
         val createdWorkAssignment = workAssignmentDAO.createWorkAssignmentOnCourseInTerm(courseId, termId, toWorkAssignment(inputWorkAssignment, sheet, supplement, principal.name))
 
         workAssignmentDAO.createWorkAssignmentVersion(toWorkAssignmentVersion(createdWorkAssignment))
@@ -747,7 +765,7 @@ class CourseServiceImpl : CourseService {
                 WORK_ASSIGNMENT_TABLE,
                 createdWorkAssignment.logId
         ))
-        return toWorkAssignmentOutputModel(createdWorkAssignment)
+        return toWorkAssignmentOutputModel(createdWorkAssignment, course, term)
     }
 
     override fun voteOnWorkAssignment(termId: Int, courseId: Int, workAssignmentId: Int, vote: VoteInputModel, principal: Principal): Int {
@@ -789,8 +807,8 @@ class CourseServiceImpl : CourseService {
     // Work Assignment Stage Methods
     // ----------------------------
 
-    override fun getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int): List<WorkAssignmentStageOutputModel> {
-        return workAssignmentDAO.getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(courseId, termId).map { toWorkAssignmentStageOutputModel(it) }
+    override fun getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int): WorkAssignmentStageCollectionOutputModel {
+        return toWorkAssignmentStageCollectionOutputModel(workAssignmentDAO.getStageEntriesFromWorkAssignmentOnSpecificTermOfCourse(courseId, termId).map { toWorkAssignmentStageOutputModel(it) })
     }
 
     override fun getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, stageId: Int): WorkAssignmentStageOutputModel {
@@ -824,6 +842,10 @@ class CourseServiceImpl : CourseService {
     }
 
     override fun createWorkAssignmentFromStaged(courseId: Int, termId: Int, stageId: Int, principal: Principal): WorkAssignmentOutputModel {
+        val course = courseDAO.getSpecificCourse(courseId)
+                .orElseThrow { NotFoundException("No course found", "Try with other id") }
+        val term = termDAO.getTerm(termId)
+                .orElseThrow { NotFoundException("No term found", "Try with other id") }
         val workAssignmentStage = workAssignmentDAO.getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(courseId, termId, stageId)
                 .orElseThrow { NotFoundException("No Work Assignment Staged found", "Try again with other stage id") }
         resolveApproval(principal.name, workAssignmentStage.createdBy)
@@ -842,7 +864,7 @@ class CourseServiceImpl : CourseService {
                 WORK_ASSIGNMENT_TABLE,
                 workAssignment.logId
         ))
-        return toWorkAssignmentOutputModel(workAssignment)
+        return toWorkAssignmentOutputModel(workAssignment, course, term)
     }
 
     override fun voteOnStagedWorkAssignment(termId: Int, courseId: Int, stageId: Int, vote: VoteInputModel, principal: Principal): Int {
@@ -887,14 +909,24 @@ class CourseServiceImpl : CourseService {
     // ----------------------------
 
     override fun getAllReportsOnWorkAssignmentOnSpecificTermOfCourse(courseId: Int, termId: Int, workAssignmentId: Int): WorkAssignmentReportCollectionOutputModel {
-        val reports = workAssignmentDAO.getAllReportsOnWorkUnitOnSpecificTermOfCourse(courseId, termId, workAssignmentId).map { toWorkAssignmentReportOutputModel(it) }
+        val course = courseDAO.getSpecificCourse(courseId)
+                .orElseThrow { NotFoundException("No course found", "Try with other id") }
+        val term = termDAO.getTerm(termId)
+                .orElseThrow { NotFoundException("No term found", "Try with other id") }
+        val reports = workAssignmentDAO.getAllReportsOnWorkUnitOnSpecificTermOfCourse(courseId, termId, workAssignmentId).map { toWorkAssignmentReportOutputModel(it, course, term) }
         return toWorkAssignmentReportCollectionOutputModel(reports)
     }
 
     override fun getSpecificReportFromWorkAssignmentOnSpecificTermOfCourse(termId: Int, courseId: Int, workAssignmentId: Int, reportId: Int): WorkAssignmentReportOutputModel {
+        val course = courseDAO.getSpecificCourse(courseId)
+                .orElseThrow { NotFoundException("No course found", "Try with other id") }
+        val term = termDAO.getTerm(termId)
+                .orElseThrow { NotFoundException("No term found", "Try with other id") }
         return toWorkAssignmentReportOutputModel(
                 workAssignmentDAO.getSpecificReportOfWorkAssignment(termId, courseId, workAssignmentId, reportId)
-                        .orElseThrow { NotFoundException("No report found", "Try again with other report id") }
+                        .orElseThrow { NotFoundException("No report found", "Try again with other report id") },
+                course,
+                term
         )
     }
 
@@ -905,6 +937,10 @@ class CourseServiceImpl : CourseService {
             inputWorkAssignmentReport: WorkAssignmentReportInputModel,
             principal: Principal
     ): WorkAssignmentReportOutputModel {
+        val course = courseDAO.getSpecificCourse(courseId)
+                .orElseThrow { NotFoundException("No course found", "Try with other id") }
+        val term = termDAO.getTerm(termId)
+                .orElseThrow { NotFoundException("No term found", "Try with other id") }
         val workAssignmentReport = workAssignmentDAO.addReportToWorkAssignmentOnCourseInTerm(workAssignmentId, toWorkAssignmentReport(workAssignmentId, inputWorkAssignmentReport, principal.name))
 
         publisher.publishEvent(ResourceCreatedEvent(
@@ -912,7 +948,7 @@ class CourseServiceImpl : CourseService {
                 WORK_ASSIGNMENT_REPORT_TABLE,
                 workAssignmentReport.logId
         ))
-        return toWorkAssignmentReportOutputModel(workAssignmentReport)
+        return toWorkAssignmentReportOutputModel(workAssignmentReport, course, term)
     }
 
     override fun voteOnReportedWorkAssignmentOnCourseInTerm(termId: Int, courseId: Int, workAssignmentId: Int, reportId: Int, inputVote: VoteInputModel, principal: Principal): Int {
@@ -940,6 +976,10 @@ class CourseServiceImpl : CourseService {
             termId: Int,
             principal: Principal
     ): WorkAssignmentOutputModel {
+        val course = courseDAO.getSpecificCourse(courseId)
+                .orElseThrow { NotFoundException("No course found", "Try with other id") }
+        val term = termDAO.getTerm(termId)
+                .orElseThrow { NotFoundException("No term found", "Try with other id") }
         val workAssignment = workAssignmentDAO.getSpecificWorkAssignmentOfCourseInTerm(courseId, termId, workAssignmentId)
                 .orElseThrow { NotFoundException("No report found", "Try again with other report id") }
         val report = workAssignmentDAO.getSpecificReportOfWorkAssignment(termId, courseId, workAssignmentId, reportId)
@@ -972,7 +1012,7 @@ class CourseServiceImpl : CourseService {
                 WORK_ASSIGNMENT_TABLE,
                 updatedWorkAssignment.logId
         ))
-        return toWorkAssignmentOutputModel(updatedWorkAssignment)
+        return toWorkAssignmentOutputModel(updatedWorkAssignment, course, term)
     }
 
     override fun deleteReportOnWorkAssignment(termId: Int, courseId: Int, workAssignmentId: Int, reportId: Int, principal: Principal): Int {
@@ -995,11 +1035,19 @@ class CourseServiceImpl : CourseService {
     // ----------------------------
 
     override fun getAllVersionsOfSpecificWorkAssignment(termId: Int, courseId: Int, workAssignmentId: Int): WorkAssignmentVersionCollectionOutputModel {
+        val course = courseDAO.getSpecificCourse(courseId)
+                .orElseThrow { NotFoundException("No course found", "Try with other id") }
+        val term = termDAO.getTerm(termId)
+                .orElseThrow { NotFoundException("No term found", "Try with other id") }
         val workAssignmentVersions = workAssignmentDAO.getAllVersionsOfSpecificWorkAssignment(termId, courseId, workAssignmentId).map { toWorkAssignmentVersionOutputModel(it) }
         return toWorkAssignmentVersionCollectionOutputModel(workAssignmentVersions)
     }
 
     override fun getVersionOfSpecificWorkAssignment(termId: Int, courseId: Int, workAssignmentId: Int, versionId: Int): WorkAssignmentVersionOutputModel {
+        val course = courseDAO.getSpecificCourse(courseId)
+                .orElseThrow { NotFoundException("No course found", "Try with other id") }
+        val term = termDAO.getTerm(termId)
+                .orElseThrow { NotFoundException("No term found", "Try with other id") }
         return toWorkAssignmentVersionOutputModel(
                 workAssignmentDAO.getVersionOfSpecificWorkAssignment(termId, courseId, workAssignmentId, versionId)
                         .orElseThrow { NotFoundException("No version found", "Try again with other version number") }

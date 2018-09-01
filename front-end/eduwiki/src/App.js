@@ -30,6 +30,9 @@ import CourseProgrammePage from './components/courseProgrammes/CourseProgrammePa
 import CourseReports from './components/courses/CourseReports'
 import AllExamsPage from './components/exams/AllExamsPage'
 import ExamVersion from './components/exams/ExamVersion'
+import AllWorkAssignmentsPage from './components/workAssignments/AllWorkAssignmentsPage'
+import WorkAssignmentReports from './components/workAssignments/WorkAssignmentReports'
+import WorkAssignmentVersion from './components/workAssignments/WorkAssignmentVersion'
 
 export default () => (
   <div>
@@ -46,8 +49,10 @@ export default () => (
         <ProtectedRoute exact path='/courses/:id' component={Course} />
         <ProtectedRoute exact path='/courses/:id/reports' component={CourseReports} />
         <ProtectedRoute exact path='/courses/:id/versions/:version' component={CourseVersion} />
-        <ProtectedRoute exact path='/courses/:courseId/terms/:termId/work-assignments/' component={WorkAssignment} />
+        <ProtectedRoute exact path='/courses/:courseId/terms/:termId/work-assignments/' component={AllWorkAssignmentsPage} />
         <ProtectedRoute exact path='/courses/:courseId/terms/:termId/work-assignments/:workAssignmentId' component={WorkAssignment} />
+        <ProtectedRoute exact path='/courses/:courseId/terms/:termId/work-assignments/:workAssignmentId/reports' component={WorkAssignmentReports} />
+        <ProtectedRoute exact path='/courses/:courseId/terms/:termId/work-assignments/:workAssignmentId/versions/:version' component={WorkAssignmentVersion} />
         <ProtectedRoute exact path='/courses/:courseId/terms/:termId/exams/' component={AllExamsPage} />
         <ProtectedRoute exact path='/courses/:courseId/terms/:termId/exams/:examId' component={Exam} />
         <ProtectedRoute exact path='/courses/:courseId/terms/:termId/exams/:examId/reports' component={ExamReports} />

@@ -492,7 +492,7 @@ CREATE TABLE IF NOT EXISTS isel.work_assignment_report (
   work_assignment_report_id SERIAL,
   work_assignment_id INTEGER REFERENCES isel.course_misc_unit ON DELETE CASCADE,
   sheet_id UUID,
-  phase VARCHAR(20) NOT NULL,
+  phase VARCHAR(20),
   supplement_id UUID,
   due_date date,
   individual BOOLEAN,

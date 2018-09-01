@@ -1,6 +1,5 @@
 import React from 'react'
-import { Form, Input, Button, DatePicker, Select, Radio } from 'antd'
-import WorkAssignmentUploader from './WorkAssignmentUploader'
+import { Form, Input, Button, DatePicker, Radio } from 'antd'
 import moment from 'moment'
 
 const FormItem = Form.Item
@@ -16,15 +15,27 @@ class SubmitWorkAssignment extends React.Component {
       multipleDeliveries: false,
       uploadFlag: '',
       requiresReport: false,
-      data: undefined
+      data: undefined,
+      sheet: undefined,
+      supplement: undefined
     }
+    this.handleFileChange = this.handleFileChange.bind(this)
+    this.handleSupChange = this.handleSupChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+  }
+  handleFileChange (e) {
+    this.setState({sheet: e.target.files[0]})
+  }
+  handleSupChange (e) {
+    this.setState({supplement: e.target.files[0]})
   }
   handleSubmit (e) {
     e.preventDefault()
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         values.dueDate = values.dueDate.format('YYYY-MM-DD')
+        values.sheet = this.state.sheet
+        values.supplement = this.state.supplement
         this.setState({
           uploadFlag: true,
           data: values
@@ -119,19 +130,28 @@ class SubmitWorkAssignment extends React.Component {
               <Input />
             )}
           </FormItem>
+          <FormItem
+            label='Sheet'
+          >
+            <input id='file' type='file' name='sheet' onChange={this.handleFileChange} />
+          </FormItem>
+          <FormItem
+            label='Sheet'
+          >
+            <input id='supplement' type='file' name='supplement' onChange={this.handleSupChange} />
+          </FormItem>
           <FormItem>
             <Button type='primary' htmlType='submit'>Create WorkAssignment</Button>
           </FormItem>
         </Form>
-        {this.state.uploadFlag &&
-        <WorkAssignmentUploader
-          data={this.state.data}
-          courseId={this.props.courseId}
-          termId={this.props.termId}
-        />
-        }
       </div>
     )
+  }
+  componentDidUpdate () {
+    if (this.state.uploadFlag) {
+      this.props.action(this.state.data)
+      this.setState({uploadFlag: false})
+    }
   }
 }
 

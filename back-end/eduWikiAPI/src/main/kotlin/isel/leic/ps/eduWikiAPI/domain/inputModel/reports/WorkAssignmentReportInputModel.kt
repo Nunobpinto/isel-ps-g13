@@ -15,7 +15,7 @@ class WorkAssignmentReportInputModel (
         val individual: Boolean? = null,
         @JsonProperty("late_delivery")
         val lateDelivery: Boolean? = null,
-        @JsonProperty("multipleDeliveries")
+        @JsonProperty("multiple_deliveries")
         val multipleDeliveries: Boolean? = null,
         @JsonProperty("requires_report")
         val requiresReport: Boolean? = null

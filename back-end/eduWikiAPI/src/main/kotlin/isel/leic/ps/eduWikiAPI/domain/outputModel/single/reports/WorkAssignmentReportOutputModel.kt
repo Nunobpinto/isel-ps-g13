@@ -18,5 +18,7 @@ data class WorkAssignmentReportOutputModel (
         val requiresReport: Boolean? = null,
         val reportedBy: String = "",
         val votes: Int = 0,
-        val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
+        val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now()),
+        val courseShortName: String = "",
+        val termShortName: String = ""
 )

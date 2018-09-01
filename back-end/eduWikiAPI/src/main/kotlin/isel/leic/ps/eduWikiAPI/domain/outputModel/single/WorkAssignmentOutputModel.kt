@@ -18,5 +18,7 @@ class WorkAssignmentOutputModel(
         val lateDelivery: Boolean = false,
         val multipleDeliveries: Boolean = false,
         val requiresReport: Boolean = false,
-        val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
+        val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now()),
+        val courseShortName: String = "",
+        val termShortName: String = ""
 )

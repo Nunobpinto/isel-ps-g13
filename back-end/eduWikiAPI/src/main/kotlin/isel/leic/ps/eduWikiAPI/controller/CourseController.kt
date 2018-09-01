@@ -203,7 +203,7 @@ class CourseController {
                 location = location,
                 dueDate = LocalDate.parse(dueDate)
         )
-        return courseService.createExamOnCourseInTerm(termId, courseId, sheet, examInputModel, principal)
+        return courseService.createExamOnCourseInTerm(courseId, termId, sheet, examInputModel, principal)
     }
 
     @PostMapping("/{courseId}/terms/{termId}/exams/{examId}/vote")

@@ -6,7 +6,7 @@ import Cookies from 'universal-cookie'
 import Layout from '../layout/Layout'
 const cookies = new Cookies()
 
-class ExamReports extends React.Component {
+class WorkAssignmentReports extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
@@ -26,8 +26,8 @@ class ExamReports extends React.Component {
         itemLayout='vertical'
         bordered
         loading={this.state.loading}
-        header={<div><h1>Exam Reports on {this.state.course}/{this.state.term}</h1></div>}
-        footer={<div><a href={`/courses/${this.props.courseId}/terms/${this.props.termId}/exams/${this.props.examId}`}><Button>See Exam Page</Button></a></div>}
+        header={<div><h1>Work Assignment Reports on {this.state.course}/{this.state.term}</h1></div>}
+        footer={<div><a href={`/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}`}><Button>See Assignment Page</Button></a></div>}
         dataSource={this.state.reports}
         renderItem={item => (
           <List.Item
@@ -58,11 +58,15 @@ class ExamReports extends React.Component {
             />
             {item.dueDate && `DueDate: ${item.dueDate}`}
             <br />
-            {item.type && `Type: ${item.type}`}
-            <br />
             {item.phase && `Phase: ${item.phase}`}
             <br />
-            {item.location && `Location: ${item.location}`}
+            {item.individual !== null && `Individual: ${item.individual ? 'Yes' : 'No'}`}
+            <br />
+            {item.lateDelivery !== null && `Late Delivery: ${item.lateDelivery ? 'Yes' : 'No'}`}
+            <br />
+            {item.multipleDeliveries !== null && `Multiple Deliveries: ${item.multipleDeliveries ? 'Yes' : 'No'}`}
+            <br />
+            {item.requiresReport !== null && `Requires Report: ${item.requiresReport ? 'Yes' : 'No'}`}
             <br />
             Created at {item.timestamp}
             <br />
@@ -97,7 +101,7 @@ class ExamReports extends React.Component {
     )
   }
   componentDidMount () {
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/${this.props.examId}/reports`
+    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}/reports`
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -111,12 +115,12 @@ class ExamReports extends React.Component {
           .then(term =>
             fetcher(url, options)
               .then(list => {
-                let reports = list.examReportList
+                let reports = list.workAssignmentReportList
                 reports = reports.filter(report => report.reportedBy !== this.props.user.username)
                 this.setState({ reports: reports, loading: false, course: course.shortName, term: term.shortName })
               })
               .catch(_ => {
-                message.error('Error obtaining reports of exam')
+                message.error('Error obtaining reports of work Assignment')
                 this.setState({loading: false})
               })
           )
@@ -136,7 +140,7 @@ class ExamReports extends React.Component {
       vote: 'Up'
     }
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/${this.props.examId}/reports/${reportId}/vote`
+    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}/reports/${reportId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -169,7 +173,7 @@ class ExamReports extends React.Component {
       vote: 'Down'
     }
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/${this.props.examId}/reports/${reportId}/vote`
+    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}/reports/${reportId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -198,7 +202,7 @@ class ExamReports extends React.Component {
   }
   approve () {
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/${this.props.examId}/reports/${reportId}`
+    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}/reports/${reportId}`
     const body = {
       method: 'POST',
       headers: {
@@ -232,7 +236,7 @@ class ExamReports extends React.Component {
 
   reject () {
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/${this.props.examId}/reports/${reportId}`
+    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}/reports/${reportId}`
     const body = {
       method: 'DELETE',
       headers: {
@@ -278,10 +282,10 @@ class ExamReports extends React.Component {
 
 export default (props) => (
   <Layout>
-    <ExamReports
+    <WorkAssignmentReports
       courseId={props.match.params.courseId}
       termId={props.match.params.termId}
-      examId={props.match.params.examId}
+      workAssignmentId={props.match.params.workAssignmentId}
     />
   </Layout>
 )

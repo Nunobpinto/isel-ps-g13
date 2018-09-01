@@ -3,6 +3,8 @@ package isel.leic.ps.eduWikiAPI.domain.mappers
 import isel.leic.ps.eduWikiAPI.domain.inputModel.WorkAssignmentInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.WorkAssignmentReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.ActionLog
+import isel.leic.ps.eduWikiAPI.domain.model.Course
+import isel.leic.ps.eduWikiAPI.domain.model.Term
 import isel.leic.ps.eduWikiAPI.domain.model.WorkAssignment
 import isel.leic.ps.eduWikiAPI.domain.model.report.WorkAssignmentReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
@@ -10,6 +12,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.version.WorkAssignmentVersion
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.WorkAssignmentOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.WorkAssignmentCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.reports.WorkAssignmentReportCollectionOutputModel
+import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.staging.WorkAssignmentStageCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.version.WorkAssignmentVersionCollectionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserActionOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.WorkAssignmentReportOutputModel
@@ -82,7 +85,7 @@ fun stagedToWorkAssignment(stage: WorkAssignmentStage) = WorkAssignment(
         requiresReport = stage.requiresReport
 )
 
-fun toWorkAssignmentOutputModel(workAssignment: WorkAssignment) = WorkAssignmentOutputModel(
+fun toWorkAssignmentOutputModel(workAssignment: WorkAssignment, course: Course, term: Term) = WorkAssignmentOutputModel(
         workAssignmentId = workAssignment.workAssignmentId,
         version = workAssignment.version,
         votes = workAssignment.votes,
@@ -95,7 +98,9 @@ fun toWorkAssignmentOutputModel(workAssignment: WorkAssignment) = WorkAssignment
         lateDelivery = workAssignment.lateDelivery,
         multipleDeliveries = workAssignment.multipleDeliveries,
         requiresReport = workAssignment.requiresReport,
-        timestamp = workAssignment.timestamp
+        timestamp = workAssignment.timestamp,
+        courseShortName = course.shortName,
+        termShortName = term.shortName
 )
 
 fun toWorkAssignmentStageOutputModel(workAssignmentStage: WorkAssignmentStage) = WorkAssignmentStageOutputModel(
@@ -113,7 +118,7 @@ fun toWorkAssignmentStageOutputModel(workAssignmentStage: WorkAssignmentStage) =
         timestamp = workAssignmentStage.timestamp
 )
 
-fun toWorkAssignmentReportOutputModel(workAssignmentReport: WorkAssignmentReport) = WorkAssignmentReportOutputModel(
+fun toWorkAssignmentReportOutputModel(workAssignmentReport: WorkAssignmentReport, course: Course, term: Term) = WorkAssignmentReportOutputModel(
         workAssignmentId = workAssignmentReport.workAssignmentId,
         reportId = workAssignmentReport.reportId,
         votes = workAssignmentReport.votes,
@@ -126,7 +131,9 @@ fun toWorkAssignmentReportOutputModel(workAssignmentReport: WorkAssignmentReport
         lateDelivery = workAssignmentReport.lateDelivery,
         multipleDeliveries = workAssignmentReport.multipleDeliveries,
         requiresReport = workAssignmentReport.requiresReport,
-        timestamp = workAssignmentReport.timestamp
+        timestamp = workAssignmentReport.timestamp,
+        courseShortName = course.shortName,
+        termShortName = term.shortName
 )
 
 fun toWorkAssignmentVersionOutputModel(workAssignmentVersion: WorkAssignmentVersion) = WorkAssignmentVersionOutputModel(
@@ -154,6 +161,10 @@ fun toWorkAssignmentReportCollectionOutputModel(workAssignmentReportList: List<W
 
 fun toWorkAssignmentVersionCollectionOutputModel(workAssignmentVersionList: List<WorkAssignmentVersionOutputModel>) = WorkAssignmentVersionCollectionOutputModel(
         workAssignmentVersionList = workAssignmentVersionList
+)
+
+fun toWorkAssignmentStageCollectionOutputModel(workAssignmentStageList: List<WorkAssignmentStageOutputModel>) = WorkAssignmentStageCollectionOutputModel(
+        workAssignmentStageList = workAssignmentStageList
 )
 
 fun WorkAssignment.toUserActionOutputModel(actionLog: ActionLog) = UserActionOutputModel(
