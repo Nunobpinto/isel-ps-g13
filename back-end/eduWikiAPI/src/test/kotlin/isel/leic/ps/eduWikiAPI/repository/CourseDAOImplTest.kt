@@ -31,8 +31,8 @@ import java.time.LocalDateTime
 @RunWith(SpringJUnit4ClassRunner::class)
 @SpringBootTest(classes = [EduWikiApiApplication::class])
 @SqlGroup(
-        (Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = ["classpath:createDB.sql", "classpath:inserts.sql"])),
-        (Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = ["classpath:dropDB.sql"]))
+        (Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = ["classpath:createMainTablesDb.sql", "classpath:insertMainTables.sql"])),
+        (Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = ["classpath:dropMainTablesDb.sql"]))
 )
 @Transactional
 class CourseDAOImplTest {

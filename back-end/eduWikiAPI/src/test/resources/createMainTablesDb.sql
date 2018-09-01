@@ -676,3 +676,4 @@ CREATE TABLE IF NOT EXISTS isel.homework_version (
   multiple_deliveries BOOLEAN NOT NULL,
   PRIMARY KEY (homework_id, homework_version)
 );
+

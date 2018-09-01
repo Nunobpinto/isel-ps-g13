@@ -1,3 +1,5 @@
+-- ISEL SCHEMA DROPS --
+
 --------------------------
 -- Drop Report Tables
 --------------------------
@@ -133,3 +135,6 @@ DROP TYPE IF EXISTS isel.class_misc_unit_type;
 DROP TYPE IF EXISTS isel.exam_type;
 
 DROP TYPE IF EXISTS isel.weekday;
+
+DROP SCHEMA isel;
+

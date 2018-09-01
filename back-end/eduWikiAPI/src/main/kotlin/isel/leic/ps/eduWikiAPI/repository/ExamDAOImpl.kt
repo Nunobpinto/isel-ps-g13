@@ -97,8 +97,11 @@ class ExamDAOImpl : ExamDAO {
     override fun getSpecificExamFromSpecificTermOfCourse(courseId: Int, termId: Int, examId: Int): Optional<Exam> =
             jdbi.open().attach(ExamDAOJdbi::class.java).getSpecificExamFromSpecificTermOfCourse(courseId, termId, examId)
 
-    override fun createExamOnCourseInTerm(courseId: Int, termId: Int, exam: Exam): Exam =
-            jdbi.open().attach(ExamDAOJdbi::class.java).createExamOnCourseInTerm(courseId, termId, exam)
+    override fun createExamOnCourseInTerm(courseId: Int, termId: Int, exam: Exam): Exam {
+        val open = jdbi.open()
+        return open.attach(ExamDAOJdbi::class.java).createExamOnCourseInTerm(courseId, termId, exam)
+
+    }
 
     override fun updateExam(examId: Int, exam: Exam): Exam =
             jdbi.open().attach(ExamDAOJdbi::class.java).updateExam(examId, exam)
