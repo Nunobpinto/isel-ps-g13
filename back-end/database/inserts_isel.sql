@@ -119,7 +119,10 @@ insert into isel.class (created_by, class_name, term_id, programme_id, time_stam
   values ('ze','LI51D',1, 1, current_timestamp);
 
 insert into isel.class_version (class_id, class_version, created_by, class_name, term_id, programme_id, time_stamp)
-  values (1, 1, 'ze','LI51D',1, 1, current_timestamp);
+  values (1, 1, 'cris','LI51D',1, 2, current_timestamp);
+
+insert into isel.class_version (class_id, class_version, created_by, class_name, term_id, programme_id, time_stamp)
+  values (1, 2, 'ze','LI51D',1, 1, current_timestamp);
 
 insert into isel.class (created_by, class_name, term_id, programme_id, time_stamp)
   values ('ze','LI41D',2,1,current_timestamp);
@@ -132,6 +135,19 @@ insert into isel.class (created_by, class_name, term_id, programme_id, time_stam
 
 insert into isel.class_version (class_id, class_version, created_by, class_name, term_id, programme_id, time_stamp)
   values (3, 1, 'ze','LEIM41D',2,2,current_timestamp);
+
+insert into isel.class_stage (term_id, programme_id, class_name, created_by, time_stamp)
+  values (1, 1, 'LI41D', 'joana', current_timestamp);
+
+insert into isel.class_stage (term_id, programme_id, class_name, created_by, time_stamp)
+  values (2, 2, 'LM42D', 'filipe', current_timestamp);
+
+insert into isel.class_report (class_id, term_id, programme_id, class_name, reported_by, time_stamp)
+  values (1, 1, 1,'LI53N', 'john', current_timestamp);
+
+insert into isel.class_report (class_id, term_id, programme_id, class_name, reported_by, time_stamp)
+  values (1, 1, 1, 'LI54D', 'richard', current_timestamp);
+
 
 -- Course-Term Insert
 
@@ -276,8 +292,20 @@ insert into isel.exam_report (exam_id, sheet_id, due_date, exam_type, phase, loc
 insert into isel.course_class (course_id, class_id, term_id, created_by, votes, time_stamp)
 	values (1,1,1, 'rui', 0, current_timestamp);
 
+insert into isel.course_class_report (course_class_id, course_id, class_id, term_id, to_delete, reported_by, votes, time_stamp)
+	values (1,1,1, 1, true, 'alice', 19, current_timestamp);
+
+insert into isel.course_class_report (course_class_id, course_id, class_id, term_id, to_delete, reported_by, votes, time_stamp)
+	values (1,1,1,1, false, 'pedro', -12, current_timestamp);
+
 insert into isel.course_class (course_id, class_id, term_id, created_by, votes, time_stamp)
     values (2,2,2, 'igor', 1, current_timestamp);
+
+insert into isel.course_class_stage (course_id, class_id, term_id, created_by, votes, time_stamp)
+    values (2,2,2, 'xico', 88, current_timestamp);
+
+insert into isel.course_class_stage (course_id, class_id, term_id, created_by, votes, time_stamp)
+    values (2,2,2, 'manuel', 3, current_timestamp);
 
 insert into isel.course_class (course_id, class_id, term_id, created_by, votes, time_stamp)
     values (3,2,2,'andre', 2, current_timestamp);
@@ -294,22 +322,31 @@ insert into isel.lecture_version (lecture_id, lecture_version, created_by, weekd
     values (1, 1, 'bruno', 'MONDAY', current_time, '02:00:00', 'E.1.07', current_timestamp);
 
 insert into isel.class_misc_unit (misc_type, course_class_id)
+  values ('LECTURE', 1);
+
+insert into isel.lecture (lecture_id, created_by, weekday, begins, duration, location, time_stamp)
+    values (2, 'pedro', 'WEDNESDAY', current_time, '01:30:00', 'F.1.07', current_timestamp);
+
+insert into isel.lecture_version (lecture_id, lecture_version, created_by, weekday, begins, duration, location, time_stamp)
+    values (2, 1, 'pedro', 'WEDNESDAY', current_time, '01:30:00', 'F.1.07', current_timestamp);
+
+insert into isel.class_misc_unit (misc_type, course_class_id)
     values ('LECTURE', 2);
 
 insert into isel.lecture (lecture_id, created_by, weekday, begins, duration, location, time_stamp)
-    values (2, 'bruno', 'TUESDAY', current_time, '02:00:00', 'G.1.07', current_timestamp);
+    values (3, 'bruno', 'TUESDAY', current_time, '02:00:00', 'G.1.07', current_timestamp);
 
 insert into isel.lecture_version (lecture_id, lecture_version, created_by, weekday, begins, duration, location, time_stamp)
-    values (2, 1, 'bruno', 'TUESDAY', current_time, '02:00:00', 'G.1.07', current_timestamp);
+    values (3, 1, 'bruno', 'TUESDAY', current_time, '02:00:00', 'G.1.07', current_timestamp);
 
 insert into isel.class_misc_unit (misc_type, course_class_id)
     values ('LECTURE', 3);
 
 insert into isel.lecture (lecture_id, created_by, weekday, begins, duration, location, time_stamp)
-    values (3, 'bruno', 'FRIDAY', current_time, '02:00:00', 'G.0.14', current_timestamp);
+    values (4, 'bruno', 'FRIDAY', current_time, '02:00:00', 'G.0.14', current_timestamp);
 
 insert into isel.lecture_version (lecture_id, lecture_version, created_by, weekday, begins, duration, location, time_stamp)
-    values (3, 1, 'bruno', 'FRIDAY', current_time, '02:00:00', 'G.0.14', current_timestamp);
+    values (4, 1, 'bruno', 'FRIDAY', current_time, '02:00:00', 'G.0.14', current_timestamp);
 
 -- Homework Insert
 
@@ -317,28 +354,40 @@ insert into isel.class_misc_unit (misc_type, course_class_id)
     values ('HOMEWORK', 1);
 
 insert into isel.homework (homework_id, created_by, homework_name, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (4,'bruno', 'TPC01',gen_random_uuid(), current_date, true, true, current_timestamp);
+    values (5,'bruno', 'TPC01',gen_random_uuid(), current_date, true, true, current_timestamp);
 
 insert into isel.homework_version (homework_id, homework_version, homework_name, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (4, 1, 'TPC01', 'bruno',gen_random_uuid(), current_date, true, true, current_timestamp);
+    values (5, 1, 'TPC01', 'bruno',gen_random_uuid(), current_date, true, true, current_timestamp);
 
 insert into isel.class_misc_unit (misc_type, course_class_id)
     values ('HOMEWORK', 2);
 
 insert into isel.homework (homework_id, created_by, homework_name, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (5, 'ze', 'TPC02', gen_random_uuid(),current_date, false , true , current_timestamp);
+    values (6, 'ze', 'TPC02', gen_random_uuid(),current_date, false , true , current_timestamp);
 
 insert into isel.homework_version (homework_id, homework_version, homework_name, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (5, 1, 'TPC02', 'ze', gen_random_uuid(),current_date, false , true , current_timestamp);
+    values (6, 1, 'TPC02', 'ze', gen_random_uuid(),current_date, false , true , current_timestamp);
 
 insert into isel.class_misc_unit (misc_type, course_class_id)
     values ('HOMEWORK', 1);
 
 insert into isel.homework(homework_id, created_by, homework_name, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (6, 'ze', 'TPC03', gen_random_uuid(), current_date, true , true , current_timestamp);
+    values (7, 'ze', 'TPC03', gen_random_uuid(), current_date, true , true , current_timestamp);
 
 insert into isel.homework_version (homework_id, homework_version, homework_name, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (6, 1, 'TPC03', 'ze', gen_random_uuid(), current_date, true , true , current_timestamp);
+    values (7, 1, 'TPC03', 'ze', gen_random_uuid(), current_date, true , true , current_timestamp);
+
+insert into isel.class_misc_unit_stage (misc_type, course_class_id)
+    values ('HOMEWORK', 3);
+
+insert into isel.class_misc_unit_stage (misc_type, course_class_id)
+    values ('HOMEWORK', 3);
+
+insert into isel.homework_stage(homework_stage_id, created_by, homework_name, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
+    values (1, 'francisco', 'TPC14', gen_random_uuid(), '2014-03-24', true , true , current_timestamp);
+
+insert into isel.homework_stage(homework_stage_id, created_by, homework_name, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
+    values (2, 'wayne', 'TPC07', gen_random_uuid(), '2014-01-08', false , true , current_timestamp);
 
 -- Student Insert
 
@@ -369,7 +418,7 @@ insert into isel.action_log (user_username, action, entity, log_id, time_stamp)
 insert into isel.action_log (user_username, action, entity, log_id, time_stamp)
   values ('bruno','VOTE_UP','course',1,current_timestamp);
 
--- Reputation Log Insert 
+-- Reputation Log Insert
 
 insert into isel.reputation_log (reputation_log_action, reputation_log_given_by, reputation_log_points, reputation_id, user_username)
   values (2,'bruno',5,1,'ze');
@@ -378,6 +427,8 @@ insert into isel.reputation_log (reputation_log_action, reputation_log_given_by,
 
 insert into isel.user_course_class (user_username, course_id, course_class_id)
   values ('ze', 3, 3);
+
+
 
 insert into isel.user_course_class (user_username, course_id, course_class_id)
   values ('ze', 2, 3);

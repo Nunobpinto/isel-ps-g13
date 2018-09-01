@@ -85,7 +85,7 @@ class ClassDAOImpl : ClassDAO {
         const val COURSE_CLASS_REPORT_REPORTED_BY = "reported_by"
         // COURSE CLASS STAGE FIELDS
         const val COURSE_CLASS_STAGE_ID = "course_class_stage_id"
-        const val COURSE_CLASS_STAGE_CLASS_ID = "course_class_id"
+        const val COURSE_CLASS_STAGE_CLASS_ID = "class_id"
         const val COURSE_CLASS_STAGE_COURSE_ID = "course_id"
         const val COURSE_CLASS_STAGE_CREATED_BY = "created_by"
         const val COURSE_CLASS_STAGE_TERM_ID = "term_id"
@@ -257,7 +257,6 @@ class ClassDAOImpl : ClassDAO {
 
         @SqlUpdate(
                 "INSERT INTO :schema.$CLASS_TABLE ( " +
-                        "$CLASS_ID, " +
                         "$CLASS_VERSION, " +
                         "$CLASS_CREATED_BY, " +
                         "$CLASS_NAME, " +
@@ -266,7 +265,7 @@ class ClassDAOImpl : ClassDAO {
                         "$CLASS_TIMESTAMP, " +
                         "$CLASS_PROGRAMME_ID " +
                         ") " +
-                        "VALUES(:klass.classId, :klass.version, :klass.createdBy, " +
+                        "VALUES(:klass.version, :klass.createdBy, " +
                         ":klass.className, :klass.termId, :klass.votes, :klass.timestamp, :klass.programmeId)"
         )
         @GetGeneratedKeys
@@ -285,8 +284,8 @@ class ClassDAOImpl : ClassDAO {
                         "$CLASS_TERM_ID = :updatedClass.termId, " +
                         "$CLASS_VOTES = :updatedClass.votes, " +
                         "$CLASS_TIMESTAMP = :updatedClass.timestamp, " +
-                        "$CLASS_PROGRAMME_ID = :updatedClass.programmeId" +
-                        "WHERE $CLASS_ID = :classId"
+                        "$CLASS_PROGRAMME_ID = :updatedClass.programmeId " +
+                        "WHERE $CLASS_ID = :updatedClass.classId"
         )
         @GetGeneratedKeys
         override fun updateClass(updatedClass: Class): Class
@@ -325,7 +324,7 @@ class ClassDAOImpl : ClassDAO {
                         "$CLASS_STAGE_PROGRAMME_ID " +
                         ") " +
                         "VALUES(:classStage.termId, :classStage.className, :classStage.createdBy, " +
-                        ":classStage.votes, :classStage.timestamp)"
+                        ":classStage.votes, :classStage.timestamp, :classStage.programmeId)"
         )
         @GetGeneratedKeys
         override fun createStagedClass(classStage: ClassStage): ClassStage
@@ -355,7 +354,6 @@ class ClassDAOImpl : ClassDAO {
 
         @SqlUpdate(
                 "INSERT INTO :schema.$CLASS_REPORT_TABLE ( " +
-                        "$CLASS_REPORT_ID, " +
                         "$CLASS_ID, " +
                         "$CLASS_TERM_ID, " +
                         "$CLASS_NAME, " +
@@ -364,7 +362,7 @@ class ClassDAOImpl : ClassDAO {
                         "$CLASS_TIMESTAMP, " +
                         "$CLASS_PROGRAMME_ID " +
                         ") " +
-                        "VALUES(:report.reportId, :classId, :report.termId, :report.className, " +
+                        "VALUES(:classId, :report.termId, :report.className, " +
                         ":report.reportedBy, :report.votes, :report.timestamp, :report.programmeId)"
         )
         @GetGeneratedKeys
@@ -444,7 +442,7 @@ class ClassDAOImpl : ClassDAO {
         @SqlUpdate(
                 "UPDATE :schema.$COURSE_CLASS_REPORT_TABLE SET $COURSE_CLASS_VOTES = :votes " +
                         "WHERE $COURSE_CLASS_CLASS_ID = :classId " +
-                        "AND $COURSE_CLASS_COURSE_ID = :courseId" +
+                        "AND $COURSE_CLASS_COURSE_ID = :courseId " +
                         "AND $COURSE_CLASS_REPORT_ID = :reportId"
         )
         override fun updateReportedCourseClassVotes(classId: Int, courseId: Int, reportId: Int, votes: Int): Int
@@ -472,7 +470,7 @@ class ClassDAOImpl : ClassDAO {
 
         @SqlUpdate(
                 "UPDATE :schema.$COURSE_CLASS_STAGE_TABLE SET $COURSE_CLASS_VOTES = :votes " +
-                        "WHERE $COURSE_CLASS_STAGE_ID = :stageId" +
+                        "WHERE $COURSE_CLASS_STAGE_ID = :stageId " +
                         "AND $COURSE_CLASS_CLASS_ID = :classId"
         )
         override fun updateStagedCourseClassVotes(classId: Int, stageId: Int, votes: Int): Int
@@ -501,7 +499,7 @@ class ClassDAOImpl : ClassDAO {
 
         @SqlUpdate(
                 "INSERT INTO :schema.$COURSE_CLASS_REPORT_TABLE ( " +
-                        "$COURSE_CLASS_REPORT_ID, " +
+                        "$COURSE_CLASS_ID, " +
                         "$COURSE_CLASS_REPORT_COURSE_ID, " +
                         "$COURSE_CLASS_REPORT_CLASS_ID, " +
                         "$COURSE_CLASS_REPORT_TERM_ID, " +
@@ -512,7 +510,7 @@ class ClassDAOImpl : ClassDAO {
                         ") " +
                         "VALUES(:courseClassReport.courseClassId, :courseClassReport.courseId, :courseClassReport.classId, " +
                         ":courseClassReport.termId, :courseClassReport.reportedBy, :courseClassReport.votes, :courseClassReport.timestamp," +
-                        ":courseClassReport.deleltePermanently)"
+                        ":courseClassReport.deletePermanently)"
         )
         @GetGeneratedKeys
         override fun reportCourseInClass(courseClassReport: CourseClassReport): CourseClassReport

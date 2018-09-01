@@ -95,6 +95,6 @@ fun CourseClassStage.toUserActionOutputModel(actionLog: ActionLog) = UserActionO
         action_type = actionLog.actionType.name,
         action_user = actionLog.user,
         entity_type = actionLog.entity,
-        entity_link = "classes/$classId/courses/stage/$stageId",
+        entity_link = "classes/${classId}/courses/stage/$stageId",
         timestamp = actionLog.timestamp
 )
