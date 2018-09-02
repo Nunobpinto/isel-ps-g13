@@ -10,6 +10,8 @@ data class ClassStageOutputModel(
         val createdBy: String = "",
         val className: String = "",
         val lecturedTerm: String = "",
+        val programmeId: Int = 0,
+        val programmeShortName: String,
         val termId: Int = 0,
         val votes: Int = 0,
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())

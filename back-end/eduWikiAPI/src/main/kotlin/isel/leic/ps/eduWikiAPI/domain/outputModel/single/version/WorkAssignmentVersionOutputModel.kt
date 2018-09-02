@@ -17,5 +17,7 @@ data class WorkAssignmentVersionOutputModel (
         val multipleDeliveries: Boolean = false,
         val requiresReport: Boolean = false,
         val createdBy: String = "",
-        val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
+        val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now()),
+        val courseShortName: String = "",
+        val termShortName: String = ""
 )

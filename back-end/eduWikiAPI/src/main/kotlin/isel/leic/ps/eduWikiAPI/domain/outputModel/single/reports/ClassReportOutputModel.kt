@@ -10,5 +10,8 @@ data class ClassReportOutputModel(
         val termId: Int = 0,
         val reportedBy: String = "",
         val votes: Int = 0,
+        val lecturedTerm: String = "",
+        val programmeId: Int? = 0,
+        val programmeShortName: String?,
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 )

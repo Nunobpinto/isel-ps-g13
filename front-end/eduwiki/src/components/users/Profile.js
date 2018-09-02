@@ -7,6 +7,7 @@ import UserReputation from './UserReputation'
 import {Layout, Menu, message} from 'antd'
 import Cookies from 'universal-cookie'
 import CoursesStage from '../courses/CoursesStage'
+import ClassesStage from '../classes/ClassesStage'
 const cookies = new Cookies()
 const {Content} = Layout
 
@@ -26,7 +27,8 @@ class Profile extends React.Component {
         email: ''
       },
       showProgrammeStage: true,
-      showCourseStage: false
+      showCourseStage: false,
+      showClassesStage: false
     }
   }
   render () {
@@ -59,7 +61,8 @@ class Profile extends React.Component {
                       key={1}
                       onClick={() => this.setState({
                         showProgrammeStage: true,
-                        showCourseStage: false
+                        showCourseStage: false,
+                        showClassesStage: false
                       })}
                     >
                     Programmes
@@ -67,11 +70,22 @@ class Profile extends React.Component {
                     <Menu.Item
                       key={2}
                       onClick={() => this.setState({
+                        showClassesStage: false,
                         showProgrammeStage: false,
                         showCourseStage: true
                       })}
                     >
                     Courses
+                    </Menu.Item>
+                    <Menu.Item
+                      key={3}
+                      onClick={() => this.setState({
+                        showCourseStage: false,
+                        showProgrammeStage: false,
+                        showClassesStage: true
+                      })}
+                    >
+                    Classes
                     </Menu.Item>
                   </Menu>
                   <Content style={{ padding: '0 24px', minHeight: 280 }}>
@@ -80,6 +94,9 @@ class Profile extends React.Component {
                     }
                     {this.state.showCourseStage &&
                       <CoursesStage username={this.props.user.username} />
+                    }
+                    {this.state.showClassesStage &&
+                      <ClassesStage username={this.props.user.username} />
                     }
                   </Content>
                 </Layout>

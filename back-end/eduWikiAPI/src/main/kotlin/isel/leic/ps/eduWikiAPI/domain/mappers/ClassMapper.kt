@@ -4,6 +4,7 @@ import isel.leic.ps.eduWikiAPI.domain.inputModel.ClassInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.ClassReportInputModel
 import isel.leic.ps.eduWikiAPI.domain.model.ActionLog
 import isel.leic.ps.eduWikiAPI.domain.model.Class
+import isel.leic.ps.eduWikiAPI.domain.model.Programme
 import isel.leic.ps.eduWikiAPI.domain.model.Term
 import isel.leic.ps.eduWikiAPI.domain.model.report.ClassReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.ClassStage
@@ -61,7 +62,7 @@ fun toClassVersion(klass: Class) = ClassVersion(
         programmeId = klass.programmeId
 )
 
-fun toClassOutputModel(klass: Class, term: Term) = ClassOutputModel(
+fun toClassOutputModel(klass: Class, term: Term, programme: Programme) = ClassOutputModel(
         classId = klass.classId,
         version = klass.version,
         votes = klass.votes,
@@ -69,37 +70,46 @@ fun toClassOutputModel(klass: Class, term: Term) = ClassOutputModel(
         className = klass.className,
         termId = klass.termId,
         lecturedTerm = term.shortName,
-        timestamp = klass.timestamp
+        timestamp = klass.timestamp,
+        programmeId = programme.programmeId,
+        programmeShortName = programme.shortName
 )
 
-fun toClassStagedOutputModel(classStage: ClassStage, term: Term) = ClassStageOutputModel(
+fun toClassStagedOutputModel(classStage: ClassStage, term: Term, programme: Programme) = ClassStageOutputModel(
         stagedId = classStage.stageId,
         votes = classStage.votes,
         createdBy = classStage.createdBy,
         className = classStage.className,
         termId = classStage.termId,
         lecturedTerm = term.shortName,
-        timestamp = classStage.timestamp
+        timestamp = classStage.timestamp,
+        programmeId = programme.programmeId,
+        programmeShortName = programme.shortName
 )
 
-fun toClassReportOutputModel(classReport: ClassReport) = ClassReportOutputModel(
+fun toClassReportOutputModel(classReport: ClassReport, term: Term, programme: Programme?) = ClassReportOutputModel(
         reportId = classReport.reportId,
         classId = classReport.classId,
         className = classReport.className,
         termId = classReport.termId,
         reportedBy = classReport.reportedBy,
         votes = classReport.votes,
-        timestamp = classReport.timestamp
+        timestamp = classReport.timestamp,
+        lecturedTerm = term.shortName,
+        programmeShortName = programme?.shortName,
+        programmeId = programme?.programmeId
 )
 
-fun toClassVersionOutputModel(classVersion: ClassVersion, term: Term) = ClassVersionOutputModel(
+fun toClassVersionOutputModel(classVersion: ClassVersion, term: Term, programme: Programme) = ClassVersionOutputModel(
         classId = classVersion.classId,
         version = classVersion.version,
         createdBy = classVersion.createdBy,
         className = classVersion.className,
         termId = classVersion.termId,
         lecturedTerm = term.shortName,
-        timestamp = classVersion.timestamp
+        timestamp = classVersion.timestamp,
+        programmeShortName = programme.shortName,
+        programmeId = programme.programmeId
 )
 
 fun toClassCollectionOutputModel(classList: List<ClassOutputModel>) = ClassCollectionOutputModel(
