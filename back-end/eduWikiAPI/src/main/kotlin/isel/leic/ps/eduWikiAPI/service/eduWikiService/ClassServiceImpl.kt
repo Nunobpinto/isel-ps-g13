@@ -212,7 +212,9 @@ class ClassServiceImpl : ClassService {
     }
 
     override fun createClassReport(classId: Int, report: ClassReportInputModel, principal: Principal): ClassReportOutputModel {
-        val classReport = classDAO.reportClass(classId, toClassReport(classId, report, principal.name))
+        val klass = classDAO.getSpecificClass(classId)
+                .orElseThrow { NotFoundException("No class found", "try other Id") }
+        val classReport = classDAO.reportClass(classId, toClassReport(klass, report, principal.name))
         publisher.publishEvent(ResourceCreatedEvent(
                 principal.name,
                 CLASS_REPORT_TABLE,

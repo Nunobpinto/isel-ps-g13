@@ -6,14 +6,15 @@ import Cookies from 'universal-cookie'
 import Layout from '../layout/Layout'
 const cookies = new Cookies()
 
-class CourseProgrammeReports extends React.Component {
+class ClassReports extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
       reports: [{}],
       loading: true,
-      programmeName: '',
-      courseShortName: ''
+      programme: '',
+      term: '',
+      klass: ''
     }
     this.voteUp = this.voteUp.bind(this)
     this.voteDown = this.voteDown.bind(this)
@@ -26,7 +27,7 @@ class CourseProgrammeReports extends React.Component {
         itemLayout='vertical'
         bordered
         loading={this.state.loading}
-        header={<div><h1>Course {this.state.courseShortName} on {this.state.programmeName} reports</h1></div>}
+        header={<div><h1>Class {this.state.programme}/{this.state.term}/{this.state.klass} reports</h1></div>}
         dataSource={this.state.reports}
         renderItem={item => (
           <List.Item
@@ -55,13 +56,9 @@ class CourseProgrammeReports extends React.Component {
               title={`Reported by ${item.reportedBy}`}
               description={`Votes: ${item.votes}`}
             />
-            {item.lecturedTerm && `Lectured Term: ${item.lecturedTerm}`}
+            {item.className && `ClassName: ${item.className}`}
             <br />
-            {item.optional !== undefined && `Optional: ${item.optional}` }
-            <br />
-            {item.credits && `Credits: ${item.credits}`}
-            <br />
-            {item.deleteFlag && 'To Delete'}
+            {item.programmeShortName !== undefined && `Programme: ${item.programmeShortName}` }
             <br />
             <p>Created on {item.timestamp}</p>
             {
@@ -95,9 +92,8 @@ class CourseProgrammeReports extends React.Component {
     )
   }
   componentDidMount () {
-    const programmeId = this.props.programmeId
-    const courseId = this.props.courseId
-    const url = 'http://localhost:8080/programmes/' + programmeId + '/courses/' + courseId + '/reports'
+    const classId = this.props.classId
+    const url = 'http://localhost:8080/classes/' + classId + '/reports'
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -105,16 +101,22 @@ class CourseProgrammeReports extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetcher('http://localhost:8080/programmes/' + programmeId + '/courses/' + courseId, options)
-      .then(courseProgramme => {
+    fetcher('http://localhost:8080/classes/' + classId, options)
+      .then(klass => {
         fetcher(url, options)
           .then(list => {
-            let reports = list.courseProgrammeReportList
+            let reports = list.classReportList
             reports = reports.filter(report => report.reportedBy !== this.props.user.username)
-            this.setState({ reports: reports, loading: false, programmeName: courseProgramme.programmeShortName, courseShortName: courseProgramme.shortName })
+            this.setState({
+              reports: reports,
+              loading: false,
+              programme: klass.programmeShortName,
+              term: klass.lecturedTerm,
+              klass: klass.className
+            })
           })
           .catch(_ => {
-            message.error('Error obtaining reports of course programme')
+            message.error('Error obtaining reports of class')
             this.setState({loading: false})
           })
       })
@@ -125,9 +127,8 @@ class CourseProgrammeReports extends React.Component {
       vote: 'Up'
     }
     const reportId = this.state.reportId
-    const progID = this.props.programmeId
-    const courseId = this.props.courseId
-    const url = `http://localhost:8080/programmes/${progID}/courses/${courseId}/reports/${reportId}/vote`
+    const classId = this.props.classId
+    const url = `http://localhost:8080/classes/${classId}/reports/${reportId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -164,9 +165,8 @@ class CourseProgrammeReports extends React.Component {
       vote: 'Down'
     }
     const reportId = this.state.reportId
-    const progID = this.props.programmeId
-    const courseId = this.props.courseId
-    const url = `http://localhost:8080/programmes/${progID}/courses/${courseId}/reports/${reportId}/vote`
+    const classId = this.props.classId
+    const url = `http://localhost:8080/classes/${classId}/reports/${reportId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -199,8 +199,8 @@ class CourseProgrammeReports extends React.Component {
   }
   approve () {
     const reportId = this.state.reportId
-    const courseId = this.props.courseId
-    const url = `http://localhost:8080/programmes/${this.props.programmeId}/courses/${courseId}/reports/${reportId}`
+    const classId = this.props.classId
+    const url = `http://localhost:8080/classes/${classId}/reports/${reportId}`
     const body = {
       method: 'POST',
       headers: {
@@ -234,8 +234,8 @@ class CourseProgrammeReports extends React.Component {
 
   reject () {
     const reportId = this.state.reportId
-    const courseId = this.props.courseId
-    const url = `http://localhost:8080/programmes/${this.props.programmeId}/courses/${courseId}/reports/${reportId}`
+    const classId = this.props.classId
+    const url = `http://localhost:8080/classes/${classId}/reports/${reportId}`
     const body = {
       method: 'DELETE',
       headers: {
@@ -281,6 +281,6 @@ class CourseProgrammeReports extends React.Component {
 
 export default (props) => (
   <Layout>
-    <CourseProgrammeReports programmeId={props.match.params.programmeId} courseId={props.match.params.courseId} />
+    <ClassReports classId={props.match.params.classId} />
   </Layout>
 )

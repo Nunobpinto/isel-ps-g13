@@ -36,9 +36,9 @@ fun toClassStage(input: ClassInputModel, createdBy: String): ClassStage = ClassS
         programmeId = input.programmeId
 )
 
-fun toClassReport(classId: Int, report: ClassReportInputModel, reportedBy: String) = ClassReport(
-        classId = classId,
-        termId = report.termId,
+fun toClassReport(klass: Class, report: ClassReportInputModel, reportedBy: String) = ClassReport(
+        classId = klass.classId,
+        termId = klass.termId,
         className = report.className,
         reportedBy = reportedBy,
         timestamp = Timestamp.valueOf(LocalDateTime.now()),
