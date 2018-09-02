@@ -9,8 +9,11 @@ data class CourseClassReportOutputModel(
         val classId: Int? = null,
         val votes: Int = 0,
         val courseId: Int? = null,
-        val termId: Int? = null,
+        val termId: Int = 0,
         val reportedBy: String = "",
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now()),
-        val deletePermanently: Boolean = false
+        val deletePermanently: Boolean = false,
+        val courseShortName: String? = null,
+        val termShortName: String = "",
+        val className: String? = null
 )

@@ -1,6 +1,5 @@
 import React from 'react'
 import fetcher from '../../fetcher'
-import Cookies from 'universal-cookie'
 import { Form, Input, Button, Select } from 'antd'
 
 const FormItem = Form.Item

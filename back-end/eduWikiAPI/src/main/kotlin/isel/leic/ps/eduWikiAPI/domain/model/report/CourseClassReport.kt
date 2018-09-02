@@ -24,7 +24,7 @@ data class CourseClassReport(
         @ColumnName(COURSE_CLASS_REPORT_COURSE_ID)
         val courseId: Int? = null,
         @ColumnName(COURSE_CLASS_REPORT_TERM_ID)
-        val termId: Int? = null,
+        val termId: Int = 0,
         @ColumnName(COURSE_CLASS_REPORT_DELETE_FLAG)
         val deletePermanently: Boolean = false,
         @ColumnName(COURSE_CLASS_REPORT_LOG_ID)

@@ -107,6 +107,18 @@ class ClassServiceImpl : ClassService {
         if (programmeId != null) return getProgramme(programmeId)
         return null
     }
+
+    fun getClass(classId: Int): Class = classDAO.getSpecificClass(classId)
+            .orElseThrow { UnknownDataException("Can't find classs with id $classId", "Try Again Later") }
+
+    fun getCourseNameFromReport(courseId: Int?): String? {
+        if(courseId != null) return getCourse(courseId).shortName
+        return null
+    }
+    fun getClassNameFromReport(classId: Int?): String? {
+        if(classId != null) return getClass(classId).className
+        return null
+    }
     // ---------- Class ----------
 
     // ----------------------------
@@ -462,16 +474,28 @@ class ClassServiceImpl : ClassService {
     }
 
     override fun getAllReportsOfCourseInClass(classId: Int, courseId: Int): CourseClassReportCollectionOutputModel {
-        val courseClass = classDAO.getCourseClass(classId, courseId).get()
+        val courseClass = classDAO.getCourseClass(classId, courseId)
+                .orElseThrow { NotFoundException("No course class found", "Try with other id") }
         val reports = classDAO.getAllReportsOfCourseInClass(
                 courseClass.courseClassId
-        ).map { toCourseClassReportOutputModel(it) }
+        ).map { toCourseClassReportOutputModel(
+                it,
+                getCourseNameFromReport(it.courseId),
+                getTerm(it.termId).shortName,
+                getClassNameFromReport(it.classId)
+                )
+        }
         return toCourseClassReportCollectionOutputModel(reports)
     }
 
     override fun getSpecificReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int): CourseClassReportOutputModel {
-        return toCourseClassReportOutputModel(classDAO.getSpecificReportOfCourseInClass(reportId, classId, courseId)
+        val report = classDAO.getSpecificReportOfCourseInClass(reportId, classId, courseId)
                 .orElseThrow { NotFoundException("No report found", "Try with other report ID") }
+        return toCourseClassReportOutputModel(
+                report,
+                getCourseNameFromReport(report.courseId),
+                getTerm(report.termId).shortName,
+                getClassNameFromReport(report.classId)
         )
     }
 
@@ -484,7 +508,12 @@ class ClassServiceImpl : ClassService {
                 COURSE_CLASS_REPORT_TABLE,
                 report.logId
         ))
-        return toCourseClassReportOutputModel(report)
+        return toCourseClassReportOutputModel(
+                report,
+                getCourseNameFromReport(report.courseId),
+                getTerm(report.termId).shortName,
+                getClassNameFromReport(report.classId)
+        )
     }
 
     override fun updateCourseInClassFromReport(classId: Int, courseId: Int, reportId: Int, principal: Principal): CourseClassOutputModel {
@@ -510,7 +539,7 @@ class ClassServiceImpl : ClassService {
                             createdBy = courseClassReport.reportedBy,
                             courseId = courseClassReport.courseId ?: courseClass.courseId,
                             classId = courseClassReport.classId ?: courseClass.courseId,
-                            termId = courseClassReport.termId ?: courseClass.termId,
+                            termId = courseClassReport.termId,
                             votes = courseClass.votes
                     )),
                     term
@@ -563,13 +592,27 @@ class ClassServiceImpl : ClassService {
     }
 
     override fun getStageEntriesOfCoursesInClass(classId: Int): CourseClassStageCollectionOutputModel {
-        val stageEntries = classDAO.getStageEntriesOfCoursesInClass(classId).map { toCourseClassStageOutputModel(it) }
+        val stageEntries = classDAO.getStageEntriesOfCoursesInClass(classId).map {
+            val test = it
+            val id = test.classId
+            toCourseClassStageOutputModel(
+                    it,
+                    getCourse(it.courseId),
+                    getTerm(it.termId),
+                    getClass(it.classId)
+            ) }
         return toCourseClassStageCollectionOutputModel(stageEntries)
     }
 
     override fun getSpecificStagedCourseInClass(classId: Int, stageId: Int): CourseClassStageOutputModel {
-        return toCourseClassStageOutputModel(classDAO.getSpecificStagedCourseInClass(classId, stageId)
-                .orElseThrow { NotFoundException("No staged course class", "Try other staged id") })
+        val staged = classDAO.getSpecificStagedCourseInClass(classId, stageId)
+                .orElseThrow { NotFoundException("No staged course class", "Try other staged id") }
+        return toCourseClassStageOutputModel(
+                staged,
+                getCourse(staged.courseId),
+                getTerm(staged.termId),
+                getClass(staged.classId)
+        )
     }
 
     override fun createStagingCourseInClass(classId: Int, courseId: Int, principal: Principal): CourseClassStageOutputModel {
@@ -587,7 +630,12 @@ class ClassServiceImpl : ClassService {
                 COURSE_CLASS_STAGE_TABLE,
                 courseClassStage.logId
         ))
-        return toCourseClassStageOutputModel(courseClassStage)
+        return toCourseClassStageOutputModel(
+                courseClassStage,
+                getCourse(courseId),
+                getTerm(termId),
+                getClass(classId)
+        )
     }
 
     override fun addCourseInClassFromStaged(classId: Int, stageId: Int, principal: Principal): CourseClassOutputModel {

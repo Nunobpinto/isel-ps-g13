@@ -10,7 +10,7 @@ class CourseClassReportInputModel (
         @JsonProperty("class_id")
         val classId: Int? = null,
         @JsonProperty("term_id")
-        val termId: Int? = null,
+        val termId: Int = 0,
         @JsonProperty("delete_permanently")
         val deletePermanently: Boolean = false
 )

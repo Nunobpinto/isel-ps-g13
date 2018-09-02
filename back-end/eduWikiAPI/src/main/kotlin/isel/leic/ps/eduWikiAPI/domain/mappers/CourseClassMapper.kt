@@ -42,7 +42,7 @@ fun toCourseClassOutputModel(course: Course, klass: Class, courseClass: CourseCl
         courseClassId = courseClass.courseClassId
 )
 
-fun toCourseClassReportOutputModel(courseClassReport: CourseClassReport) = CourseClassReportOutputModel(
+fun toCourseClassReportOutputModel(courseClassReport: CourseClassReport, courseShortName: String?, termShortName: String, className: String?) = CourseClassReportOutputModel(
         reportId = courseClassReport.reportId,
         courseClassId = courseClassReport.courseClassId,
         classId = courseClassReport.classId,
@@ -51,16 +51,22 @@ fun toCourseClassReportOutputModel(courseClassReport: CourseClassReport) = Cours
         reportedBy = courseClassReport.reportedBy,
         votes = courseClassReport.votes,
         timestamp = courseClassReport.timestamp,
-        deletePermanently = courseClassReport.deletePermanently
+        deletePermanently = courseClassReport.deletePermanently,
+        courseShortName = courseShortName,
+        termShortName = termShortName,
+        className = className
 )
 
-fun toCourseClassStageOutputModel(courseClassStage: CourseClassStage) = CourseClassStageOutputModel(
+fun toCourseClassStageOutputModel(courseClassStage: CourseClassStage, course: Course, term: Term, klass: Class) = CourseClassStageOutputModel(
         stagedId = courseClassStage.stageId,
         classId = courseClassStage.classId,
         courseId = courseClassStage.courseId,
         timestamp = courseClassStage.timestamp,
         votes = courseClassStage.votes,
-        createdBy = courseClassStage.createdBy
+        createdBy = courseClassStage.createdBy,
+        className = klass.className,
+        termShortName = term.shortName,
+        courseShortName = course.shortName
 )
 
 fun toCourseClassCollectionOutputModel(courseClasseList: List<CourseClassOutputModel>) = CourseClassCollectionOutputModel(
