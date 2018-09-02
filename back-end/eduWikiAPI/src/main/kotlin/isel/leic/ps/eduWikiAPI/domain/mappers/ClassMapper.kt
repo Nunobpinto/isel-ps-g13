@@ -71,6 +71,7 @@ fun toClassOutputModel(klass: Class, term: Term, programme: Programme) = ClassOu
         termId = klass.termId,
         lecturedTerm = term.shortName,
         timestamp = klass.timestamp,
+        programmeId = programme.programmeId,
         programmeShortName = programme.shortName
 )
 
@@ -82,6 +83,7 @@ fun toClassStagedOutputModel(classStage: ClassStage, term: Term, programme: Prog
         termId = classStage.termId,
         lecturedTerm = term.shortName,
         timestamp = classStage.timestamp,
+        programmeId = programme.programmeId,
         programmeShortName = programme.shortName
 )
 
@@ -94,7 +96,8 @@ fun toClassReportOutputModel(classReport: ClassReport, term: Term, programme: Pr
         votes = classReport.votes,
         timestamp = classReport.timestamp,
         lecturedTerm = term.shortName,
-        programmeShortName = programme?.shortName
+        programmeShortName = programme?.shortName,
+        programmeId = programme?.programmeId
 )
 
 fun toClassVersionOutputModel(classVersion: ClassVersion, term: Term, programme: Programme) = ClassVersionOutputModel(
@@ -105,7 +108,8 @@ fun toClassVersionOutputModel(classVersion: ClassVersion, term: Term, programme:
         termId = classVersion.termId,
         lecturedTerm = term.shortName,
         timestamp = classVersion.timestamp,
-        programmeShortName = programme.shortName
+        programmeShortName = programme.shortName,
+        programmeId = programme.programmeId
 )
 
 fun toClassCollectionOutputModel(classList: List<ClassOutputModel>) = ClassCollectionOutputModel(
