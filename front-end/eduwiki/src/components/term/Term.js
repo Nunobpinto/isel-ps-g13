@@ -2,7 +2,7 @@ import React from 'react'
 import {Layout, Menu} from 'antd'
 import Exams from '../exams/Exams'
 import WorkAssignments from '../workAssignments/WorkAssignments'
-import CourseClassesOfTerm from '../classes/CourseClassesOfTerm'
+import CourseClassesOfTerm from '../courseClassesOnTerm/CourseClassesOnTerm'
 const {Content} = Layout
 
 export default class extends React.Component {

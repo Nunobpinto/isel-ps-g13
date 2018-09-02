@@ -141,7 +141,7 @@ class SubmitWorkAssignment extends React.Component {
             <input id='supplement' type='file' name='supplement' onChange={this.handleSupChange} />
           </FormItem>
           <FormItem>
-            <Button type='primary' htmlType='submit'>Create WorkAssignment</Button>
+            <Button type='primary' htmlType='submit'>Create Work Assignment</Button>
           </FormItem>
         </Form>
       </div>

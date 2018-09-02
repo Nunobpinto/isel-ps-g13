@@ -45,6 +45,11 @@ export default () => (
         <ProtectedRoute exact path='/organization/reports' component={OrganizationReports} />
         <ProtectedRoute exact path='/programmes' component={Programmes} />
         <ProtectedRoute exact path='/programmes/:id' component={Programme} />
+        <ProtectedRoute exact path='/programmes/:programmeId/versions/:version' component={ProgrammeVersion} />
+        <ProtectedRoute exact path='/programmes/:programmeId/courses/:courseId' component={CourseProgrammePage} />
+        <ProtectedRoute exact path='/programmes/:programmeId/courses/:courseId/reports' component={CourseProgrammeReports} />
+        <ProtectedRoute exact path='/programmes/:programmeId/courses/:courseId/versions/:version' component={CourseProgrammeVersion} />
+        <ProtectedRoute exact path='/programmes/:programmeId/reports' component={ProgrammeReports} />
         <ProtectedRoute exact path='/courses' component={Courses} />
         <ProtectedRoute exact path='/courses/:id' component={Course} />
         <ProtectedRoute exact path='/courses/:id/reports' component={CourseReports} />
@@ -62,12 +67,6 @@ export default () => (
         <ProtectedRoute exact path='/classes/:classId/courses/:courseId' component={CourseClass} />
         <ProtectedRoute exact path='/classes/:classId/courses/:courseId/lectures/:lectureId' component={Lecture} />
         <ProtectedRoute exact path='/classes/:classId/courses/:courseId/homeworks/:homeworkId' component={Homework} />
-        <ProtectedRoute exact path='/programmes/:programmeId/versions/:version' component={ProgrammeVersion} />
-        <ProtectedRoute exact path='/programmes/:programmeId/courses/:courseId' component={CourseProgrammePage} />
-        <ProtectedRoute exact path='/programmes/:programmeId/courses/:courseId/reports' component={CourseProgrammeReports} />
-        <ProtectedRoute exact path='/programmes/:programmeId/courses/:courseId/versions/:version' component={CourseProgrammeVersion} />
-        <ProtectedRoute exact path='/programmes/:programmeId/reports' component={ProgrammeReports} />
-        <ProtectedRoute exact path='/courses/:courseId/versions/:version' component={CourseVersion} />
         <ProtectedRoute exact path='/logout' component={Logout} />
         <ProtectedRoute exact path='/user' component={Profile} />
         <ProtectedRoute exact path='/users/:username' component={OtherUser} />

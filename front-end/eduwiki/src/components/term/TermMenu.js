@@ -30,9 +30,9 @@ export default class extends React.Component {
       }
     }
     const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.state.termId}/exams`
-    fetcher(url, options)
-      .then(json => this.setState({exams: json.examList}))
-      .catch(_ => message.error('Error fetching exams'))
+    return fetcher(url, options)
+      .then(json => json.examList)
+      .catch(_ => [])
   }
 
   fetchWorks () {
@@ -44,9 +44,9 @@ export default class extends React.Component {
       }
     }
     const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.state.termId}/work-assignments`
-    fetcher(url, options)
-      .then(json => this.setState({works: json.workAssignmentList}))
-      .catch(_ => message.error('Error fetching work assignments'))
+    return fetcher(url, options)
+      .then(json => json.workAssignmentList)
+      .catch(_ => [])
   }
 
   fetchClasses () {
@@ -58,9 +58,9 @@ export default class extends React.Component {
       }
     }
     const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.state.termId}/classes`
-    fetcher(url, options)
-      .then(json => this.setState({classes: json.courseClassList}))
-      .catch(_ => message.error('Error fetching classes'))
+    return fetcher(url, options)
+      .then(json => json.classList)
+      .catch(_ => [])
   }
 
   render () {
@@ -86,7 +86,7 @@ export default class extends React.Component {
           </Menu>
         </Sider>
         <Content style={{ padding: '0 24px', minHeight: 280 }}>
-          {this.state.termId
+          {this.state.canRenderTerm
             ? <Term
               exams={this.state.exams}
               works={this.state.works}
@@ -105,9 +105,19 @@ export default class extends React.Component {
   componentDidUpdate () {
     if (this.state.refreshTerm) {
       this.fetchExams()
-      this.fetchWorks()
-      this.fetchClasses()
-      this.setState({refreshTerm: false})
+        .then(exams =>
+          this.fetchWorks()
+            .then(works =>
+              this.fetchClasses()
+                .then(classes => this.setState({
+                  exams: exams,
+                  works: works,
+                  classes: classes,
+                  canRenderTerm: true,
+                  refreshTerm: false
+                }))
+            )
+        )
     }
   }
   componentDidMount () {
