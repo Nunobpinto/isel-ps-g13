@@ -91,12 +91,6 @@ class OrganizationDAOImpl : OrganizationDAO {
     override fun updateVotesOnOrganizationReport(reportId: Int, votes: Int): Int =
             jdbi.open().attach(OrganizationDAOJdbi::class.java).updateVotesOnOrganizationReport(reportId, votes)
 
-    override fun getVotesOnOrganizationReport(reportId: Int): Int =
-            jdbi.open().attach(OrganizationDAOJdbi::class.java).getVotesOnOrganizationReport(reportId)
-
-    override fun deleteReportOnOrganization(reportId: Int): Int =
-            jdbi.open().attach(OrganizationDAOJdbi::class.java).deleteReportOnOrganization(reportId)
-
     override fun getOrganizationReportByLogId(logId: Int): Optional<OrganizationReport> =
             jdbi.open().attach(OrganizationDAOJdbi::class.java).getOrganizationReportByLogId(logId)
 
@@ -148,9 +142,6 @@ class OrganizationDAOImpl : OrganizationDAO {
         @SqlQuery("SELECT * FROM :schema.$ORGANIZATION_REPORT_TABLE WHERE $ORGANIZATION_REPORT_ID = :reportId")
         override fun getSpecificReportOnOrganization(reportId: Int): Optional<OrganizationReport>
 
-        @SqlQuery("SELECT $ORGANIZATION_REPORT_VOTES FROM :schema.$ORGANIZATION_REPORT_TABLE WHERE $ORGANIZATION_REPORT_ID = :reportId")
-        override fun getVotesOnOrganizationReport(reportId: Int): Int
-
         @SqlUpdate("UPDATE :schema.$ORGANIZATION_REPORT_TABLE SET $ORGANIZATION_REPORT_VOTES = :votes WHERE $ORGANIZATION_REPORT_ID = :reportId")
         override fun updateVotesOnOrganizationReport(reportId: Int, votes: Int): Int
 
@@ -176,11 +167,6 @@ class OrganizationDAOImpl : OrganizationDAO {
         )
         @GetGeneratedKeys
         override fun createOrganizationVersion(version: OrganizationVersion): OrganizationVersion
-
-        @SqlUpdate(
-                "DELETE FROM :schema.$ORGANIZATION_REPORT_TABLE WHERE $ORGANIZATION_REPORT_ID = :reportId"
-        )
-        override fun deleteReportOnOrganization(reportId: Int): Int
 
         @SqlQuery("SELECT * FROM :schema.$ORGANIZATION_REPORT_TABLE WHERE $ORGANIZATION_REPORT_LOG_ID = :logId")
         override fun getOrganizationReportByLogId(logId: Int): Optional<OrganizationReport>

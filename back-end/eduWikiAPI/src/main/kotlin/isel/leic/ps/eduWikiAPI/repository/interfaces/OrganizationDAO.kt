@@ -42,10 +42,6 @@ interface OrganizationDAO {
 
     fun updateVotesOnOrganizationReport(reportId: Int, votes: Int): Int
 
-    fun getVotesOnOrganizationReport(reportId: Int): Int
-
-    fun deleteReportOnOrganization(reportId: Int): Int
-
     fun getOrganizationReportByLogId(logId: Int): Optional<OrganizationReport>
 
 }

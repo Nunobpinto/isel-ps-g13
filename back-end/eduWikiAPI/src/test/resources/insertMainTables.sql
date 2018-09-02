@@ -7,6 +7,9 @@ insert into isel.organization (organization_full_name, organization_short_name, 
 insert into isel.organization_version(organization_version, created_by, organization_full_name, organization_short_name, organization_address, organization_contact, organization_website, time_stamp)
 	values(1, 'ze', 'Instituto Superior de Engenharia de Lisboa', 'ISEL', 'Rua Emídio Navarro', '218 317 000', 'https://www.isel.pt/', current_timestamp);
 
+insert into isel.organization_report (organization_full_name, organization_short_name, organization_address, organization_contact, organization_website, reported_by, time_stamp, votes)
+  VALUES('Instituo Superior de Engenharia de Torres Novas', 'ISETN', null, null, null, 'Nuno', current_timestamp, 2);
+
 -- Programmes Insert
 insert into isel.programme (created_by, programme_full_name, programme_short_name, programme_academic_degree, programme_total_credits, programme_duration, time_stamp)
     values ('ze', 'Licenciatura em Engenharia Informática e Computadores','LEIC','Licenciatura',180,6,current_timestamp);
