@@ -20,6 +20,27 @@ insert into isel.programme (created_by, programme_full_name, programme_short_nam
 insert into isel.programme_version (programme_id, programme_version, created_by, programme_full_name, programme_short_name, programme_academic_degree, programme_total_credits, programme_duration, time_stamp)
     values (2, 1, 'ze', 'Licenciatura em Engenharia Informática e Multimédia','LEIM','Licenciatura',180,6,current_timestamp);
 
+insert into isel.programme (created_by, programme_full_name, programme_short_name, programme_academic_degree, programme_total_credits, programme_duration, time_stamp, programme_version)
+    values ('renato', 'Licenciatura em Engenharia Civil','LEC','Licenciatura',180,6,current_timestamp,2);
+
+insert into isel.programme_version (programme_id, programme_version, created_by, programme_full_name, programme_short_name, programme_academic_degree, programme_total_credits, programme_duration, time_stamp)
+    values (3, 1, 'andre', 'Licenciatura em Matematica','LM','Licenciatura',180,6,current_timestamp);
+
+insert into isel.programme_version (programme_id, programme_version, created_by, programme_full_name, programme_short_name, programme_academic_degree, programme_total_credits, programme_duration, time_stamp)
+    values (3, 2, 'renato', 'Licenciatura em Engenharia Civil','LEC','Licenciatura',180,6,current_timestamp);
+
+insert into isel.programme_stage (created_by, programme_full_name, programme_short_name, programme_academic_degree, programme_total_credits, programme_duration, time_stamp)
+    values ('jorge', 'Licenciatura em Engenharia Eletrotecnica','LEE','Licenciatura',180,6,current_timestamp);
+
+insert into isel.programme_stage (created_by, programme_full_name, programme_short_name, programme_academic_degree, programme_total_credits, programme_duration, time_stamp)
+    values ('ines', 'Licenciatura em Engenharia Fisica','LEF','Licenciatura',180,6,current_timestamp);
+
+insert into isel.programme_report (programme_id, programme_full_name, programme_short_name, programme_academic_degree, programme_total_credits, programme_duration, time_stamp, reported_by)
+    values (1, 'Licenciatura em Engenharia Quimica','LEQ','Licenciatura',180,6,current_timestamp, 'pedro');
+
+insert into isel.programme_report (programme_id, programme_full_name, programme_short_name, programme_academic_degree, programme_total_credits, programme_duration, time_stamp, reported_by)
+    values (1, 'Licenciatura em Engenharia e Gestão Industrial','LEGI','Licenciatura',180,6,current_timestamp, 'rui');
+
 -- Courses Insert
 
 insert into isel.course (created_by, course_full_name, course_short_name, time_stamp, course_version)
@@ -115,8 +136,8 @@ insert into isel.term (term_short_name, term_year, term_type, time_stamp)
 
 -- Classes Insert
 
-insert into isel.class (created_by, class_name, term_id, programme_id, time_stamp)
-  values ('ze','LI51D',1, 1, current_timestamp);
+insert into isel.class (created_by, class_name, term_id, programme_id, time_stamp, class_version)
+  values ('ze','LI51D',1, 1, current_timestamp, 2);
 
 insert into isel.class_version (class_id, class_version, created_by, class_name, term_id, programme_id, time_stamp)
   values (1, 1, 'cris','LI51D',1, 2, current_timestamp);
@@ -353,11 +374,14 @@ insert into isel.lecture_version (lecture_id, lecture_version, created_by, weekd
 insert into isel.class_misc_unit (misc_type, course_class_id)
     values ('HOMEWORK', 1);
 
-insert into isel.homework (homework_id, created_by, homework_name, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (5,'bruno', 'TPC01',gen_random_uuid(), current_date, true, true, current_timestamp);
+insert into isel.homework (homework_id, created_by, homework_name, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp, homework_version)
+    values (5,'bruno', 'TPC01',gen_random_uuid(), current_date, true, true, current_timestamp, 2);
 
 insert into isel.homework_version (homework_id, homework_version, homework_name, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (5, 1, 'TPC01', 'bruno',gen_random_uuid(), current_date, true, true, current_timestamp);
+    values (5, 1, 'TPC03', 'joao',gen_random_uuid(), current_date, false, true, current_timestamp);
+
+insert into isel.homework_version (homework_id, homework_version, homework_name, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
+    values (5, 2, 'TPC01', 'bruno',gen_random_uuid(), current_date, true, true, current_timestamp);
 
 insert into isel.class_misc_unit (misc_type, course_class_id)
     values ('HOMEWORK', 2);
@@ -388,6 +412,12 @@ insert into isel.homework_stage(homework_stage_id, created_by, homework_name, sh
 
 insert into isel.homework_stage(homework_stage_id, created_by, homework_name, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
     values (2, 'wayne', 'TPC07', gen_random_uuid(), '2014-01-08', false , true , current_timestamp);
+
+insert into isel.homework_report(homework_id, reported_by, homework_name, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
+    values (5, 'vitor', 'TPC06', gen_random_uuid(), '2017-09-24', false , true , current_timestamp);
+
+insert into isel.homework_report(homework_id, reported_by, homework_name, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
+    values (5, 'rafael', 'TPC17', gen_random_uuid(), '2010-12-20', true , false , current_timestamp);
 
 -- Student Insert
 

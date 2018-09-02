@@ -99,6 +99,7 @@ class CourseDAOImplTest {
     @Test
     fun updateCourse() {
         val oldCourse = courseDAO.getSpecificCourse(1).get()
+        assertEquals(2, oldCourse.version)
         val updatedCourse = courseDAO.updateCourse(
                 Course(
                         courseId = oldCourse.courseId,
@@ -330,6 +331,7 @@ class CourseDAOImplTest {
     @Test
     fun updateCourseProgramme() {
         val courseProgramme = courseDAO.getSpecificCourseOfProgramme(1, 1).get()
+        assertEquals(2, courseProgramme.version)
         val updatedCourseProgramme = courseDAO.updateCourseProgramme(
                 1,
                 1,
