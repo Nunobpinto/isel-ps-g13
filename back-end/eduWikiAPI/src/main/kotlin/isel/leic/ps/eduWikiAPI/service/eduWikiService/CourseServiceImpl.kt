@@ -68,6 +68,8 @@ class CourseServiceImpl : CourseService {
     @Autowired
     lateinit var courseDAO: CourseDAO
     @Autowired
+    lateinit var programmeDAO: ProgrammeDAO
+    @Autowired
     lateinit var examDAO: ExamDAO
     @Autowired
     lateinit var termDAO: TermDAO
@@ -97,16 +99,25 @@ class CourseServiceImpl : CourseService {
     override fun getClassesOfSpecificCourseInTerm(courseId: Int, termId: Int): ClassCollectionOutputModel {
         val classes =
                 courseDAO.getClassesOfSpecificCourseInTerm(courseId, termId)
-                        .map { toClassOutputModel(it, termDAO.getTerm(termId).orElseThrow { NotFoundException("No term found", "Try again with other term id") }) }
+                        .map { toClassOutputModel(
+                                it,
+                                termDAO.getTerm(termId)
+                                        .orElseThrow { NotFoundException("No term found", "Try again with other term id") },
+                                programmeDAO.getSpecificProgramme(it.programmeId)
+                                        .orElseThrow { NotFoundException("No programme found", "Try again with other term id") }
+                        ) }
         return toClassCollectionOutputModel(classes)
     }
 
-    override fun getSpecificClassOfSpecificCourseInTerm(courseId: Int, termId: Int, classId: Int): ClassOutputModel =
-            toClassOutputModel(
-                    courseDAO.getSpecificClassOfSpecificCourseInTerm(courseId, termId, classId)
-                            .orElseThrow { NotFoundException("No class found", "Try again with other class id") },
-                    termDAO.getTerm(termId).orElseThrow { NotFoundException("No term found", "Try again with other term id") }
-            )
+    override fun getSpecificClassOfSpecificCourseInTerm(courseId: Int, termId: Int, classId: Int): ClassOutputModel {
+        val klass = courseDAO.getSpecificClassOfSpecificCourseInTerm(courseId, termId, classId)
+                .orElseThrow { NotFoundException("No class found", "Try again with other class id") }
+        return toClassOutputModel(
+                klass,
+                termDAO.getTerm(termId).orElseThrow { NotFoundException("No term found", "Try again with other term id") },
+                programmeDAO.getSpecificProgramme(klass.programmeId).orElseThrow { NotFoundException("No programme found", "Try again with other term id") }
+        )
+    }
 
     override fun createCourse(inputCourse: CourseInputModel, principal: Principal): CourseOutputModel {
         val course = courseDAO.createCourse(toCourse(inputCourse, principal.name))
@@ -1039,7 +1050,9 @@ class CourseServiceImpl : CourseService {
                 .orElseThrow { NotFoundException("No course found", "Try with other id") }
         val term = termDAO.getTerm(termId)
                 .orElseThrow { NotFoundException("No term found", "Try with other id") }
-        val workAssignmentVersions = workAssignmentDAO.getAllVersionsOfSpecificWorkAssignment(termId, courseId, workAssignmentId).map { toWorkAssignmentVersionOutputModel(it) }
+        val workAssignmentVersions = workAssignmentDAO.getAllVersionsOfSpecificWorkAssignment(termId, courseId, workAssignmentId).map {
+            toWorkAssignmentVersionOutputModel(it, course, term)
+        }
         return toWorkAssignmentVersionCollectionOutputModel(workAssignmentVersions)
     }
 
@@ -1048,9 +1061,10 @@ class CourseServiceImpl : CourseService {
                 .orElseThrow { NotFoundException("No course found", "Try with other id") }
         val term = termDAO.getTerm(termId)
                 .orElseThrow { NotFoundException("No term found", "Try with other id") }
+        val workAssignment =  workAssignmentDAO.getVersionOfSpecificWorkAssignment(termId, courseId, workAssignmentId, versionId)
+                .orElseThrow { NotFoundException("No version found", "Try again with other version number") }
         return toWorkAssignmentVersionOutputModel(
-                workAssignmentDAO.getVersionOfSpecificWorkAssignment(termId, courseId, workAssignmentId, versionId)
-                        .orElseThrow { NotFoundException("No version found", "Try again with other version number") }
+               workAssignment, course, term
         )
     }
 

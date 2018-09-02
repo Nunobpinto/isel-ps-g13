@@ -29,8 +29,8 @@ fun toWorkAssignment(input: WorkAssignmentInputModel, sheet: MultipartFile?, sup
         lateDelivery = input.lateDelivery,
         multipleDeliveries = input.multipleDeliveries,
         requiresReport = input.requiresReport,
-        sheetId = if(sheet == null) null else UUID.randomUUID(),
-        supplementId = if(supplement == null) null else UUID.randomUUID()
+        sheetId = if (sheet == null) null else UUID.randomUUID(),
+        supplementId = if (supplement == null) null else UUID.randomUUID()
 )
 
 fun toWorkAssignmentVersion(workAssignment: WorkAssignment) = WorkAssignmentVersion(
@@ -68,8 +68,8 @@ fun toStageWorkAssignment(inputWorkAssignment: WorkAssignmentInputModel, sheet: 
         lateDelivery = inputWorkAssignment.lateDelivery,
         multipleDeliveries = inputWorkAssignment.multipleDeliveries,
         requiresReport = inputWorkAssignment.requiresReport,
-        sheetId = if(sheet == null) null else UUID.randomUUID(),
-        supplementId = if(supplement == null) null else UUID.randomUUID(),
+        sheetId = if (sheet == null) null else UUID.randomUUID(),
+        supplementId = if (supplement == null) null else UUID.randomUUID(),
         createdBy = createdBy
 )
 
@@ -136,7 +136,7 @@ fun toWorkAssignmentReportOutputModel(workAssignmentReport: WorkAssignmentReport
         termShortName = term.shortName
 )
 
-fun toWorkAssignmentVersionOutputModel(workAssignmentVersion: WorkAssignmentVersion) = WorkAssignmentVersionOutputModel(
+fun toWorkAssignmentVersionOutputModel(workAssignmentVersion: WorkAssignmentVersion, course: Course, term: Term) = WorkAssignmentVersionOutputModel(
         workAssignmentId = workAssignmentVersion.workAssignmentId,
         version = workAssignmentVersion.version,
         createdBy = workAssignmentVersion.createdBy,
@@ -148,7 +148,9 @@ fun toWorkAssignmentVersionOutputModel(workAssignmentVersion: WorkAssignmentVers
         lateDelivery = workAssignmentVersion.lateDelivery,
         multipleDeliveries = workAssignmentVersion.multipleDeliveries,
         requiresReport = workAssignmentVersion.requiresReport,
-        timestamp = workAssignmentVersion.timestamp
+        timestamp = workAssignmentVersion.timestamp,
+        courseShortName = course.shortName,
+        termShortName = term.shortName
 )
 
 fun toWorkAssignmentCollectionOutputModel(workAssignmentList: List<WorkAssignmentOutputModel>) = WorkAssignmentCollectionOutputModel(

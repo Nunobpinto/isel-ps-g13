@@ -10,5 +10,7 @@ data class ClassVersionOutputModel(
         val className: String = "",
         val createdBy: String = "",
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now()),
-        val lecturedTerm: String
+        val lecturedTerm: String,
+        val programmeId: Int = 0,
+        val programmeShortName: String
 )
