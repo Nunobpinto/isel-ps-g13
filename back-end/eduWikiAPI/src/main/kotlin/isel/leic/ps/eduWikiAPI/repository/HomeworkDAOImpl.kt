@@ -333,7 +333,7 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "$HOMEWORK_VERSION_MULTIPLE_DELIVERIES, " +
                         "$HOMEWORK_VERSION_TIMESTAMP " +
                         ") " +
-                        "VALUES (:homeworkVersion.homeworkId, :homeworkVersion.homeworkName :homeworkVersion.version, :homeworkVersion.createdBy, " +
+                        "VALUES (:homeworkVersion.homeworkId, :homeworkVersion.homeworkName, :homeworkVersion.version, :homeworkVersion.createdBy, " +
                         ":homeworkVersion.sheetId, :homeworkVersion.dueDate, :homeworkVersion.lateDelivery, " +
                         ":homeworkVersion.multipleDeliveries, :homeworkVersion.timestamp)"
         )
@@ -341,10 +341,10 @@ class HomeworkDAOImpl : HomeworkDAO {
         override fun createHomeworkVersion(homeworkVersion: HomeworkVersion): HomeworkVersion
 
         @SqlUpdate(
-                "UPDATE :schema.$HOMEWORK_STAGE_TABLE as H SET H.$HOMEWORK_STAGE_VOTES = :votes " +
-                        "FROM :schema.$CLASS_MISC_UNIT_STAGE_TABLE as C" +
-                        "WHERE H.$HOMEWORK_STAGE_ID = C.$CLASS_MISC_UNIT_STAGE_ID " +
-                        "AND H.$HOMEWORK_STAGE_ID = :stageId"
+                "UPDATE :schema.$HOMEWORK_STAGE_TABLE SET $HOMEWORK_STAGE_VOTES = :votes " +
+                        "FROM :schema.$CLASS_MISC_UNIT_STAGE_TABLE as C " +
+                        "WHERE $HOMEWORK_STAGE_ID = C.$CLASS_MISC_UNIT_STAGE_ID " +
+                        "AND $HOMEWORK_STAGE_ID = :stageId"
         )
         override fun updateVotesOnStagedHomework(stageId: Int, votes: Int): Int
 
@@ -419,13 +419,13 @@ class HomeworkDAOImpl : HomeworkDAO {
         @SqlUpdate(
                 "UPDATE :schema.$HOMEWORK_TABLE SET " +
                         "$HOMEWORK_VERSION = :homework.version, " +
-                        "$HOMEWORK_NAME = :homework.homeworkName" +
+                        "$HOMEWORK_NAME = :homework.homeworkName, " +
                         "$HOMEWORK_CREATED_BY = :homework.createdBy, " +
                         "$HOMEWORK_SHEET_ID = :homework.sheetId, " +
                         "$HOMEWORK_DUE_DATE = :homework.dueDate, " +
                         "$HOMEWORK_LATE_DELIVERY = :homework.lateDelivery, " +
                         "$HOMEWORK_MULTIPLE_DELIVERIES = :homework.multipleDeliveries, " +
-                        "$HOMEWORK_VOTES = :homework.votes " +
+                        "$HOMEWORK_VOTES = :homework.votes, " +
                         "$HOMEWORK_TIMESTAMP = :homework.timestamp " +
                         "WHERE $HOMEWORK_ID = :homework.homeworkId"
         )
@@ -433,17 +433,15 @@ class HomeworkDAOImpl : HomeworkDAO {
         override fun updateHomework(homework: Homework): Homework
 
         @SqlUpdate(
-                "DELETE FROM :schema.$HOMEWORK_REPORT_TABLE " +
-                        "USING $CLASS_MISC_UNIT_TABLE " +
-                        "WHERE $HOMEWORK_REPORT_HOMEWORK_ID = $CLASS_MISC_UNIT_ID " +
-                        "AND $CLASS_MISC_UNIT_COURSE_CLASS_ID = :homeworkId " +
-                        "AND $HOMEWORK_REPORT_HOMEWORK_ID = :reportId"
+                "UPDATE :schema.$HOMEWORK_REPORT_TABLE SET $HOMEWORK_REPORT_VOTES = :votes " +
+                        "WHERE $HOMEWORK_REPORT_HOMEWORK_ID = :homeworkId " +
+                        "AND $HOMEWORK_REPORT_ID = :reportId"
         )
         override fun updateVotesOnReportedHomework(homeworkId: Int, reportId: Int, votes: Int): Int
 
         @SqlUpdate(
                 "DELETE FROM :schema.$HOMEWORK_REPORT_TABLE " +
-                        "USING $CLASS_MISC_UNIT_TABLE " +
+                        "USING :schema.$CLASS_MISC_UNIT_TABLE " +
                         "WHERE $HOMEWORK_REPORT_HOMEWORK_ID = $CLASS_MISC_UNIT_ID " +
                         "AND $CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
                         "AND $HOMEWORK_REPORT_HOMEWORK_ID = :homeworkId " +
@@ -463,9 +461,9 @@ class HomeworkDAOImpl : HomeworkDAO {
                         "H.$HOMEWORK_VERSION_MULTIPLE_DELIVERIES " +
                         "FROM :schema.$HOMEWORK_VERSION_TABLE AS H " +
                         "INNER JOIN :schema.$CLASS_MISC_UNIT_TABLE AS C " +
-                        "ON H.$HOMEWORK_VERSION_ID = C.$CLASS_MISC_UNIT_ID " +
+                        "ON H.$HOMEWORK_VERSION_HOMEWORK_ID = C.$CLASS_MISC_UNIT_ID " +
                         "WHERE C.$CLASS_MISC_UNIT_COURSE_CLASS_ID = :courseClassId " +
-                        "AND H.$HOMEWORK_VERSION_ID = :homeworkId"
+                        "AND H.$HOMEWORK_VERSION_HOMEWORK_ID = :homeworkId"
         )
         override fun getAllVersionsOfHomeworkOfCourseInclass(courseClassId: Int, homeworkId: Int): List<HomeworkVersion>
 

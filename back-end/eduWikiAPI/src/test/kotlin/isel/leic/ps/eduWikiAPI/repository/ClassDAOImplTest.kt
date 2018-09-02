@@ -99,10 +99,12 @@ class ClassDAOImplTest {
 
     @Test
     fun updateClass() {
+        val oldClass = classDAO.getSpecificClass(1).get()
+        assertEquals(1, oldClass.version)
         val classUpdated = classDAO.updateClass(
                 Class(
                         classId = 1,
-                        version = 2,
+                        version = oldClass.version.inc(),
                         createdBy = "edu",
                         className = "LI51N",
                         termId = 1,

@@ -156,7 +156,7 @@ class OrganizationServiceImpl : OrganizationService {
                 website = report.website ?: prevOrganization.website
         ))
         organizationDAO.createOrganizationVersion(toOrganizationVersion(principal.name, updatedOrganization))
-        organizationDAO.deleteReportOnOrganization(reportId)
+        organizationDAO.deleteSpecificReportOnOrganization(reportId)
 
         publisher.publishEvent(ResourceApprovedEvent(
                 principal.name,

@@ -498,11 +498,3 @@ class UserServiceImpl : UserService {
     private fun noActionException(): Nothing = throw UnknownDataException("An error occured while loading the actions", "Try again alter or contact the EduWiki team")
 
 }
-
-private fun ActionLog.toUserActionOutputModel() = UserActionOutputModel (
-        action_type = actionType.name,
-        action_user = user,
-        entity_type = entity,
-        entity_link = "",
-        timestamp = timestamp
-)
