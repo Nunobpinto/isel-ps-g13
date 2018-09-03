@@ -249,12 +249,12 @@ class Class extends React.Component {
       }
     }
     fetcher(url, options)
-      .then(courseProgramme => {
+      .then(courseClass => {
         this.setState(prevState => {
           let courses = prevState.courses
-          courses.push(courseProgramme)
+          courses.push(courseClass)
           let otherCourses = prevState.otherCourses
-          const index = otherCourses.findIndex(course => course.courseId === courseProgramme.courseId)
+          const index = otherCourses.findIndex(course => course.courseId === courseClass.courseId)
           otherCourses.splice(index, 1)
           message.success('Added course to class with success')
           return ({
@@ -297,7 +297,7 @@ class Class extends React.Component {
       })
   }
   fetchOtherCourses () {
-    const uri = 'http://localhost:8080/courses'
+    const uri = `http://localhost:8080/programmes/${this.state.klass.programmeId}/courses`
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -308,7 +308,7 @@ class Class extends React.Component {
     fetcher(uri, header)
       .then(json => this.setState(prevState => {
         let classCourses = prevState.courses
-        let newCourses = json.courseList.filter(crs => !classCourses.some(cr => crs.courseId === cr.courseId))
+        let newCourses = json.courseProgrammeList.filter(crs => !classCourses.some(cr => crs.courseId === cr.courseId))
         return ({
           seeAllCourses: false,
           otherCourses: newCourses

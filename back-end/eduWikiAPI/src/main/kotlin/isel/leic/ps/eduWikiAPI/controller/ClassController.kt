@@ -148,9 +148,8 @@ class ClassController {
     fun addCourseToClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
-            @RequestBody classCourseInputModel: CourseClassInputModel,
             principal: Principal
-    ) = classService.addCourseToClass(classId, courseId, classCourseInputModel, principal)
+    ) = classService.addCourseToClass(classId, courseId, principal)
 
     @PostMapping("/{classId}/courses/{courseId}/vote")
     fun voteOnCourseInClass(

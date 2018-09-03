@@ -439,7 +439,7 @@ class ClassDAOImplTest {
         assertEquals(1, reportCourseClass.courseClassId)
         assertEquals(1, reportCourseClass.courseId)
         assertEquals(1, reportCourseClass.termId)
-        assertEquals(false, reportCourseClass.deletePermanently)
+        assertEquals(true, reportCourseClass.deletePermanently)
         assertEquals(3, reportCourseClass.logId)
         assertEquals(41, reportCourseClass.votes)
     }

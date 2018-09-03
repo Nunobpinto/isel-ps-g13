@@ -81,11 +81,11 @@ class AuthUserController {
     @DeleteMapping("/classes")
     fun deleteAllClassesOfUser(principal: Principal) = userService.deleteAllClassesOfUser(principal)
 
-    @DeleteMapping("/classes/{classId}")
+    @DeleteMapping("/classes/{courseClassId}")
     fun deleteSpecificClassOfUser(
             principal: Principal,
-            @PathVariable classId: Int
-    ) = userService.deleteSpecificClassOfUser(principal, classId)
+            @PathVariable courseClassId: Int
+    ) = userService.deleteSpecificClassOfUser(principal, courseClassId)
 
     @DeleteMapping("/programme")
     fun deleteProgrammeOfUser(principal: Principal) = userService.deleteProgrammeOfUser(principal)

@@ -435,7 +435,7 @@ class ClassDAOImpl : ClassDAO {
                 "SELECT * FROM :schema.$COURSE_CLASS_REPORT_TABLE " +
                         "WHERE $COURSE_CLASS_REPORT_ID = :reportId " +
                         "AND $COURSE_CLASS_REPORT_COURSE_ID = :courseId " +
-                        "AND $COURSE_CLASS_REPORT_CLASS_ID = :reportId"
+                        "AND $COURSE_CLASS_REPORT_CLASS_ID = :classId"
         )
         override fun getSpecificReportOfCourseInClass(reportId: Int, classId: Int, courseId: Int): Optional<CourseClassReport>
 

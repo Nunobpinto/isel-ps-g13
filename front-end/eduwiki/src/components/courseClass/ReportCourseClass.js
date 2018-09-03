@@ -9,11 +9,9 @@ export default class extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      course_lectured_term: undefined,
-      credits: undefined,
-      optional: undefined,
-      to_delete: undefined,
-      programmes: [],
+      course_id: undefined,
+      courses: [],
+      deleteFlag: undefined,
       reported: false
     }
     this.handleChange = this.handleChange.bind(this)
@@ -28,10 +26,10 @@ export default class extends React.Component {
   handleSubmit (ev) {
     ev.preventDefault()
     const data = {
-      course_lectured_term: this.state.course_lectured_term,
-      to_delete: this.state.to_delete,
-      optional: this.state.optional,
-      credits: this.state.credits
+      course_id: this.props.courseId,
+      delete_permanently: this.state.deleteFlag,
+      class_id: this.props.classId,
+      term_id: this.props.termId
     }
     this.setState({
       data: data,
@@ -41,26 +39,23 @@ export default class extends React.Component {
   render () {
     return (
       <div>
-        <h1>Report the fields that you don't agree or choose to report the whole association between this course and this programme</h1>
+        <h1>Choose other Course for this Class or choose to report the whole association between this course and this class</h1>
         <Form>
         Delete Association: <br />
-          <RadioGroup name='to_delete' onChange={this.handleChange}>
+          <RadioGroup name='deleteFlag' onChange={this.handleChange}>
             <Radio value='true'>Yes</Radio>
             <Radio value='false'>No</Radio>
           </RadioGroup>
           <br />
-        Lecture term: <br />
-          <Input name='course_lectured_term' onChange={this.handleChange} />
-          <br />
-        Optional: <br />
-          <RadioGroup name='optional' onChange={this.handleChange}>
-            <Radio value='true'>Yes</Radio>
-            <Radio value='false'>No</Radio>
+          {/*
+          Courses: <br />
+          <RadioGroup name='course_id' onChange={this.handleChange}>
+            {this.state.courses.map(crs => (
+              <Radio value={crs.courseId}>{crs.shortName}</Radio>
+            ))}
           </RadioGroup>
           <br />
-        Credits: <br />
-          <input type='number' name='credits' onChange={this.handleChange} />
-          <br />
+           */}
           <Button type='primary' onClick={this.handleSubmit}>Create</Button>
         </Form>
       </div>
@@ -86,7 +81,7 @@ export default class extends React.Component {
         },
         body: JSON.stringify(data)
       }
-      const url = `http://localhost:8080/programmes/${this.props.programmeId}/courses/${this.props.courseId}/reports`
+      const url = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/reports`
       fetcher(url, options)
         .then(_ => {
           message.success('Reported!!')
@@ -99,5 +94,29 @@ export default class extends React.Component {
           this.setState({reported: false})
         })
     }
+  }
+  componentDidMount () {
+    const classUrl = `http://localhost:8080/classes/${this.props.classId}`
+    const options = {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Authorization': 'Basic ' + cookies.get('auth'),
+        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
+      }
+    }
+    fetcher(classUrl, options)
+      .then(klass => {
+        const url = `http://localhost:8080/programmes/${klass.programmeId}/courses`
+        fetcher(url, options)
+          .then(json => {
+            let courses = json.courseProgrammeList
+            courses = courses.filter(crs => crs.courseId !== Number(this.props.courseId))
+            this.setState({
+              courses: courses
+            })
+          })
+          .catch(_ => message.error('Error loading courses'))
+      })
+      .catch(_ => message.error('Error loading class'))
   }
 }

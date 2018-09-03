@@ -424,7 +424,7 @@ class ClassServiceImpl : ClassService {
         return toCourseClassOutputModel(course, klass, courseClass, getTerm(courseClass.termId))
     }
 
-    override fun addCourseToClass(classId: Int, courseId: Int, courseClassInputModel: CourseClassInputModel, principal: Principal): CourseClassOutputModel {
+    override fun addCourseToClass(classId: Int, courseId: Int, principal: Principal): CourseClassOutputModel {
 
         val klass = classDAO.getSpecificClass(classId)
                 .orElseThrow { NotFoundException("No class found", "Try other id") }
@@ -481,7 +481,7 @@ class ClassServiceImpl : ClassService {
         ).map { toCourseClassReportOutputModel(
                 it,
                 getCourseNameFromReport(it.courseId),
-                getTerm(it.termId).shortName,
+                getTerm(courseClass.termId).shortName,
                 getClassNameFromReport(it.classId)
                 )
         }
@@ -489,12 +489,14 @@ class ClassServiceImpl : ClassService {
     }
 
     override fun getSpecificReportOfCourseInClass(classId: Int, courseId: Int, reportId: Int): CourseClassReportOutputModel {
+        val courseClass = classDAO.getCourseClass(classId, courseId)
+                .orElseThrow { NotFoundException("No course class found", "Try with other id") }
         val report = classDAO.getSpecificReportOfCourseInClass(reportId, classId, courseId)
                 .orElseThrow { NotFoundException("No report found", "Try with other report ID") }
         return toCourseClassReportOutputModel(
                 report,
                 getCourseNameFromReport(report.courseId),
-                getTerm(report.termId).shortName,
+                getTerm(courseClass.termId).shortName,
                 getClassNameFromReport(report.classId)
         )
     }
@@ -511,7 +513,7 @@ class ClassServiceImpl : ClassService {
         return toCourseClassReportOutputModel(
                 report,
                 getCourseNameFromReport(report.courseId),
-                getTerm(report.termId).shortName,
+                getTerm(courseClass.termId).shortName,
                 getClassNameFromReport(report.classId)
         )
     }

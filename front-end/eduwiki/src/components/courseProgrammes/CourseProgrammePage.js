@@ -92,7 +92,7 @@ class CourseProgramme extends React.Component {
         } else {
           message.error('Error while processing your vote')
         }
-        this.setState({ voteStagedCoursesUp: false })
+        this.setState({ voteUp: false })
       })
   }
   voteDown () {

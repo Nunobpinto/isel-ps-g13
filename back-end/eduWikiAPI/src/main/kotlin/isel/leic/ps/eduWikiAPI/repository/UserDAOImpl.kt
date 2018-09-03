@@ -292,12 +292,12 @@ class UserDAOImpl : UserDAO {
 
         @SqlUpdate("UPDATE :schema.$USER_COURSE_CLASS_TABLE" +
                 " SET $COURSE_CLASS_ID = NULL " +
-                "WHERE $USER_USERNAME = :username.username")
+                "WHERE $USER_USERNAME = :username")
         override fun deleteAllClassesOfUser(username: String): Int
 
         @SqlUpdate("UPDATE :schema.$USER_COURSE_CLASS_TABLE" +
                 " SET $COURSE_CLASS_ID = NULL " +
-                "WHERE $USER_USERNAME = :username.username " +
+                "WHERE $USER_USERNAME = :username " +
                 "AND $COURSE_CLASS_ID = :courseClassId"
         )
         override fun deleteSpecificClassOfUser(username: String, courseClassId: Int): Int
