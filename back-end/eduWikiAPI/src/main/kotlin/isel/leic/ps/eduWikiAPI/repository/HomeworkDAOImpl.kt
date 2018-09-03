@@ -315,7 +315,7 @@ class HomeworkDAOImpl : HomeworkDAO {
         @Transaction
         override fun createStagingHomeworkOnCourseInClass(courseClassId: Int, homeworkStage: HomeworkStage): HomeworkStage {
             val classMiscUnitStage = createClassDAO().createStagingClassMiscUnit(courseClassId, ClassMiscUnitType.HOMEWORK)
-            return createStagingHomework(classMiscUnitStage.courseClassId, homeworkStage)
+            return createStagingHomework(classMiscUnitStage.stageId, homeworkStage)
         }
 
         override fun deleteSpecificStagedHomeworkOfCourseInClass(courseClassId: Int, stageId: Int): Int =

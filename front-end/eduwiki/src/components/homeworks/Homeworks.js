@@ -21,13 +21,7 @@ export default class extends React.Component {
           <div style={{ padding: '30px' }}>
             <Row gutter={16}>
               <Col span={8} key={work.homeworkId}>
-                <Card
-                  title={`${work.homeworkName} ${work.votes} Votes`}
-                  actions={[
-                    <Button id='like_btn' shape='circle' icon='like' onClick={() => this.setState({up: true, id: work.examId})} />,
-                    <Button id='dislike_btn' shape='circle' icon='dislike' onClick={() => this.setState({down: true, id: work.examId})} />
-                  ]}
-                >
+                <Card title={`${work.homeworkName} ${work.votes} Votes`}>
                   <p>Late Delivery : {work.lateDelivery ? 'Yes' : 'No'}</p>
                   <p>Multiple Deliveries : {work.multipleDeliveries ? 'Yes' : 'No'}</p>
                   <p>Added in : {work.timestamp}</p>
@@ -38,6 +32,7 @@ export default class extends React.Component {
             </Row>
           </div>
         ))}
+        <a href={`/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks`}><Button>See Staged or Add a new Homework</Button></a>
       </div>
     )
   }

@@ -36,6 +36,7 @@ import AllWorkAssignmentsPage from './components/workAssignments/AllWorkAssignme
 import WorkAssignmentReports from './components/workAssignments/WorkAssignmentReports'
 import WorkAssignmentVersion from './components/workAssignments/WorkAssignmentVersion'
 import CourseClassReports from './components/courseClass/CourseClassReports'
+import AllHomeworksPage from './components/homeworks/AllHomeworksPage'
 
 export default () => (
   <div>
@@ -72,6 +73,7 @@ export default () => (
         <ProtectedRoute exact path='/classes/:classId/courses/:courseId' component={CourseClass} />
         <ProtectedRoute exact path='/classes/:classId/courses/:courseId/reports' component={CourseClassReports} />
         <ProtectedRoute exact path='/classes/:classId/courses/:courseId/lectures/:lectureId' component={Lecture} />
+        <ProtectedRoute exact path='/classes/:classId/courses/:courseId/homeworks' component={AllHomeworksPage} />
         <ProtectedRoute exact path='/classes/:classId/courses/:courseId/homeworks/:homeworkId' component={Homework} />
         <ProtectedRoute exact path='/logout' component={Logout} />
         <ProtectedRoute exact path='/user' component={Profile} />

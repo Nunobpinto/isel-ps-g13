@@ -452,12 +452,14 @@ class ClassController {
             @RequestParam dueDate: String,
             @RequestParam multipleDeliveries: Boolean,
             @RequestParam lateDelivery: Boolean,
+            @RequestParam homeworkName: String,
             principal: Principal
     ): HomeworkOutputModel{
         val homeworkInputModel = HomeworkInputModel(
                 dueDate = LocalDate.parse(dueDate),
                 multipleDeliveries = multipleDeliveries,
-                lateDelivery = lateDelivery
+                lateDelivery = lateDelivery,
+                homeworkName = homeworkName
         )
         return classService.createHomeworkOnCourseInClass(sheet, classId, courseId, homeworkInputModel, principal)
     }
@@ -505,12 +507,14 @@ class ClassController {
             @RequestParam dueDate: String,
             @RequestParam multipleDeliveries: Boolean,
             @RequestParam lateDelivery: Boolean,
+            @RequestParam homeworkName: String,
             principal: Principal
     ): HomeworkStageOutputModel {
         val homeworkInputModel = HomeworkInputModel(
                 dueDate = LocalDate.parse(dueDate),
                 multipleDeliveries = multipleDeliveries,
-                lateDelivery = lateDelivery
+                lateDelivery = lateDelivery,
+                homeworkName = homeworkName
         )
         return classService.createStagingHomeworkOnCourseInClass(sheet, classId, courseId, homeworkInputModel, principal)
     }

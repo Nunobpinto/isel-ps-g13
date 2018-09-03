@@ -1,28 +1,37 @@
 import React from 'react'
-import { Form, Input, Button, DatePicker, Select, Radio } from 'antd'
-import HomeworkUploader from './HomeworkUploader'
+import { Form, Input, Button, DatePicker, Radio, message } from 'antd'
 import moment from 'moment'
+import fetcher from '../../fetcher'
+import Cookies from 'universal-cookie'
+const cookies = new Cookies()
 
 const FormItem = Form.Item
 const RadioGroup = Radio.Group
 
-class SubmitWorkAssignment extends React.Component {
+class SubmitExam extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
       dueDate: undefined,
       lateDelivery: false,
       multipleDeliveries: false,
-      uploadFlag: '',
-      data: undefined
+      uploadFlag: false,
+      file: undefined,
+      data: undefined,
+      homeworkName: undefined
     }
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleChange = this.handleChange.bind(this)
+  }
+  handleChange (e) {
+    this.setState({file: e.target.files[0]})
   }
   handleSubmit (e) {
     e.preventDefault()
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         values.dueDate = values.dueDate.format('YYYY-MM-DD')
+        values.file = this.state.file
         this.setState({
           uploadFlag: true,
           data: values
@@ -36,6 +45,17 @@ class SubmitWorkAssignment extends React.Component {
     return (
       <div>
         <Form onSubmit={this.handleSubmit}>
+          <FormItem
+            label='Name'
+          >
+            {getFieldDecorator('homeworkName', {
+              rules: [{
+                required: true, message: 'Please write a name for the homework'
+              }]
+            })(
+              <Input />
+            )}
+          </FormItem>
           <FormItem
             label='Due Date'
           >
@@ -78,20 +98,24 @@ class SubmitWorkAssignment extends React.Component {
               </RadioGroup>
             )}
           </FormItem>
+          <FormItem
+            label='Homework File'
+          >
+            <input id='file' type='file' name='sheet' onChange={this.handleChange} />
+          </FormItem>
           <FormItem>
-            <Button type='primary' htmlType='submit'>Create WorkAssignment</Button>
+            <Button type='primary' htmlType='submit'>Create Homework</Button>
           </FormItem>
         </Form>
-        {this.state.uploadFlag &&
-        <HomeworkUploader
-          data={this.state.data}
-          courseId={this.props.courseId}
-          classId={this.props.classId}
-        />
-        }
       </div>
     )
   }
+  componentDidUpdate () {
+    if (this.state.uploadFlag) {
+      this.props.action(this.state.data)
+      this.setState({uploadFlag: false})
+    }
+  }
 }
 
-export default Form.create()(SubmitWorkAssignment)
+export default Form.create()(SubmitExam)

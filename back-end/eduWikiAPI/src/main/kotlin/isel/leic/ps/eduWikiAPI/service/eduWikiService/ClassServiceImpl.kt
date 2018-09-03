@@ -1097,11 +1097,14 @@ class ClassServiceImpl : ClassService {
     }
 
     override fun createStagingHomeworkOnCourseInClass(sheet: MultipartFile?, classId: Int, courseId: Int, homeworkInputModel: HomeworkInputModel, principal: Principal): HomeworkStageOutputModel {
+        val courseClassId = classDAO.getCourseClass(classId, courseId)
+                                    .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
+                                    .courseClassId
         val stagingHomework = homeworkDAO.createStagingHomeworkOnCourseInClass(
-                classDAO.getCourseClass(classId, courseId)
-                        .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
-                        .courseClassId,
-                toHomeworkStage(homeworkInputModel, sheet, principal.name)
+                courseClassId,
+                toHomeworkStage(
+                        homeworkInputModel, sheet, principal.name
+                )
         )
 
         if (sheet != null && stagingHomework.sheetId != null)

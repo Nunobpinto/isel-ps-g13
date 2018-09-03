@@ -5,40 +5,41 @@ import IconText from '../comms/IconText'
 import Layout from '../layout/Layout'
 import { Button, message, List, Card } from 'antd'
 import Cookies from 'universal-cookie'
-import SubmitExam from './SubmitExam'
+import SubmitHomework from './SubmitHomework'
 const cookies = new Cookies()
 
 export default (props) => (
   <Layout>
-    <AllExams courseId={props.match.params.courseId} termId={props.match.params.termId} />
+    <AllHomeworks courseId={props.match.params.courseId} classId={props.match.params.classId} />
   </Layout>
 )
 
-class AllExams extends React.Component {
+class AllHomeworks extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      exams: [],
+      homeworks: [],
       error: undefined,
       voteUpStaged: false,
       voteDownStaged: false,
       staged: [],
       course: '',
       term: '',
+      class: '',
       loading: true
     }
     this.voteUpStaged = this.voteUpStaged.bind(this)
     this.voteDownStaged = this.voteDownStaged.bind(this)
-    this.createStagedExam = this.createStagedExam.bind(this)
-    this.createDefinitiveExam = this.createDefinitiveExam.bind(this)
-    this.createExam = this.createExam.bind(this)
+    this.createStagedHomework = this.createStagedHomework.bind(this)
+    this.createDefinitiveHomework = this.createDefinitiveHomework.bind(this)
+    this.createHomework = this.createHomework.bind(this)
     this.showResource = this.showResource.bind(this)
     this.approveStaged = this.approveStaged.bind(this)
     this.deleteStaged = this.deleteStaged.bind(this)
   }
 
   approveStaged () {
-    const stagedUri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage/${this.state.stagedId}`
+    const stagedUri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/stage/${this.state.stagedId}`
     const options = {
       method: 'POST',
       headers: {
@@ -48,14 +49,14 @@ class AllExams extends React.Component {
       }
     }
     fetcher(stagedUri, options)
-      .then(exam => {
-        message.success('Successfully approved staged exam')
+      .then(homework => {
+        message.success('Successfully approved staged homework')
         this.setState(prevState => {
           const newArray = prevState.staged.filter(st => st.stagedId !== prevState.stagedId)
-          prevState.exams.push(exam)
+          prevState.homeworks.push(homework)
           return ({
             staged: newArray,
-            exams: prevState.exams,
+            homeworks: prevState.homeworks,
             approved: false
           })
         })
@@ -70,7 +71,7 @@ class AllExams extends React.Component {
       })
   }
   deleteStaged () {
-    const stagedUri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage/${this.state.stagedId}`
+    const stagedUri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/stage/${this.state.stagedId}`
     const options = {
       method: 'DELETE',
       headers: {
@@ -81,7 +82,7 @@ class AllExams extends React.Component {
     }
     fetcher(stagedUri, options)
       .then(_ => {
-        message.success('Successfully deleted staged exam')
+        message.success('Successfully deleted staged homework')
         this.setState(prevState => {
           const newArray = prevState.staged.filter(st => st.stagedId !== prevState.stagedId)
           return ({
@@ -104,8 +105,7 @@ class AllExams extends React.Component {
     const voteInput = {
       vote: 'Up'
     }
-    const stageID = this.state.stageID
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage/${stageID}/vote`
+    const stagedUri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/stage/${this.state.stagedId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -116,10 +116,10 @@ class AllExams extends React.Component {
       },
       body: JSON.stringify(voteInput)
     }
-    fetcher(url, body)
+    fetcher(stagedUri, body)
       .then(_ => this.setState(prevState => {
         let newArray = [...prevState.staged]
-        const index = newArray.findIndex(exam => exam.stagedId === stageID)
+        const index = newArray.findIndex(hw => hw.stagedId === prevState.stagedId)
         newArray[index].votes = prevState.staged[index].votes + 1
         message.success('Successfully voted up')
         return ({
@@ -141,8 +141,7 @@ class AllExams extends React.Component {
     const voteInput = {
       vote: 'Up'
     }
-    const stageID = this.state.stageID
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage/${stageID}/vote`
+    const stagedUri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/stage/${this.state.stagedId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -153,10 +152,10 @@ class AllExams extends React.Component {
       },
       body: JSON.stringify(voteInput)
     }
-    fetcher(url, body)
+    fetcher(stagedUri, body)
       .then(_ => this.setState(prevState => {
         let newArray = [...prevState.staged]
-        const index = newArray.findIndex(exam => exam.stagedId === stageID)
+        const index = newArray.findIndex(hw => hw.stagedId === prevState.stagedId)
         newArray[index].votes = prevState.staged[index].votes - 1
         message.success('Successfully voted down')
         return ({
@@ -177,7 +176,7 @@ class AllExams extends React.Component {
   render () {
     return (
       <div>
-        <h1>All Exams in {this.state.term} / {this.state.course}</h1>
+        <h1>All Homeworks in {this.state.term}/{this.state.class}/{this.state.course}</h1>
         <div >
           <div className='left-div'>
             <List
@@ -185,11 +184,11 @@ class AllExams extends React.Component {
               size='large'
               bordered
               loading={this.state.loading}
-              dataSource={this.state.exams}
+              dataSource={this.state.homeworks}
               renderItem={item => (
                 <List.Item>
                   <List.Item.Meta
-                    title={<Link to={{ pathname: `/courses/${this.props.courseId}/terms/${this.props.termId}/exams/${item.examId}` }}>{item.type} - {item.phase} - {item.dueDate}</Link>}
+                    title={<Link to={{ pathname: `/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/${item.homeworkId}` }}>{item.homeworkName} - {item.dueDate}</Link>}
                     description={`Created by ${item.createdBy}`}
                   />
                 </List.Item>
@@ -198,24 +197,27 @@ class AllExams extends React.Component {
           </div>
           <div className='right-div'>
             <div id='stagedCourses'>
-              <h1>All staged Exams</h1>
+              <h1>All staged Homeworks</h1>
               <List id='staged-list'
                 grid={{ gutter: 50, column: 1 }}
                 dataSource={this.state.staged}
                 loading={this.state.loading}
-                footer={<Button type='primary' onClick={() => this.setState({createExamFlag: true})}>Create Exam</Button>}
+                footer={<Button type='primary' onClick={() => this.setState({createHomeworkFlag: true})}>Create homework</Button>}
                 renderItem={item => (
                   <List.Item>
-                    <Card title={`${item.type} - ${item.phase} - ${item.dueDate}`}>
+                    <Card title={`${item.homeworkName}  - ${item.dueDate}`}>
+                      <p>Late Delivery : {item.lateDelivery ? 'Yes' : 'No'}</p>
+                      <p>Multiple Deliveries : {item.multipleDeliveries ? 'Yes' : 'No'}</p>
                       {item.sheetId && <Button onClick={() => this.showResource(item.sheetId)}>See resource</Button>}
                       <p>Created By : {item.createdBy}</p>
+                      <p>Added at : {item.timestamp}</p>
                       <IconText
                         type='like-o'
                         id='like_btn'
                         onClick={() =>
                           this.setState({
                             voteUpStaged: true,
-                            stageID: item.stagedId
+                            stagedId: item.stagedId
                           })}
                         text={item.votes}
                       />
@@ -225,7 +227,7 @@ class AllExams extends React.Component {
                         onClick={() =>
                           this.setState({
                             voteDownStaged: true,
-                            stageID: item.stagedId
+                            stagedId: item.stagedId
                           })}
                       />
                       {this.props.user.reputation.role === 'ROLE_ADMIN' &&
@@ -257,7 +259,7 @@ class AllExams extends React.Component {
                   </List.Item>
                 )}
               />
-              {this.state.createExamFlag && <SubmitExam action={(data) => this.setState({
+              {this.state.createHomeworkFlag && <SubmitHomework action={(data) => this.setState({
                 data: data,
                 actionFlag: true
               })} />}
@@ -268,22 +270,22 @@ class AllExams extends React.Component {
     )
   }
 
-  createExam (exam) {
+  createHomework (homework) {
     if (this.props.user.reputation.role === 'ROLE_ADMIN') {
-      this.createDefinitiveExam(exam)
+      this.createDefinitiveHomework(homework)
     } else {
-      this.createStagedExam(exam)
+      this.createStagedHomework(homework)
     }
   }
 
-  createDefinitiveExam (exam) {
-    const uri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams`
+  createDefinitiveHomework (homework) {
+    const uri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks`
     let data = new FormData()
-    data.append('sheet', exam.file)
-    data.append('phase', exam.phase)
-    data.append('dueDate', exam.dueDate)
-    data.append('type', exam.type)
-    data.append('location', exam.location)
+    data.append('sheet', homework.file)
+    data.append('multipleDeliveries', homework.multipleDeliveries)
+    data.append('dueDate', homework.dueDate)
+    data.append('homeworkName', homework.homeworkName)
+    data.append('lateDelivery', homework.lateDelivery)
     const options = {
       method: 'POST',
       headers: {
@@ -294,28 +296,28 @@ class AllExams extends React.Component {
       body: data
     }
     fetcher(uri, options)
-      .then(exam => {
-        message.success('Saved the Exam you requested')
+      .then(homework => {
+        message.success('Saved the Homework you requested')
         this.setState(prevstate => {
-          prevstate.exams.push(exam)
-          return ({actionFlag: false, exams: prevstate.exams})
+          prevstate.homeworks.push(homework)
+          return ({actionFlag: false, homeworks: prevstate.homeworks})
         }
         )
       })
       .catch(_ => {
-        message.error('Error while saving the Exam you requested')
+        message.error('Error while saving the Homework you requested')
         this.setState({actionFlag: false})
       })
   }
 
-  createStagedExam (exam) {
-    const uri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage`
+  createStagedHomework (homework) {
+    const uri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/stage`
     let data = new FormData()
-    data.append('sheet', exam.file)
-    data.append('phase', exam.phase)
-    data.append('dueDate', exam.dueDate)
-    data.append('type', exam.type)
-    data.append('location', exam.location)
+    data.append('sheet', homework.file)
+    data.append('multipleDeliveries', homework.multipleDeliveries)
+    data.append('dueDate', homework.dueDate)
+    data.append('homeworkName', homework.homeworkName)
+    data.append('lateDelivery', homework.lateDelivery)
     const options = {
       method: 'POST',
       headers: {
@@ -326,16 +328,16 @@ class AllExams extends React.Component {
       body: data
     }
     fetcher(uri, options)
-      .then(exam => {
-        message.success('Saved the Exam you requested')
+      .then(homework => {
+        message.success('Saved the Homework you requested')
         this.setState(prevstate => {
-          prevstate.staged.push(exam)
+          prevstate.staged.push(homework)
           return ({actionFlag: false, staged: prevstate.staged})
         }
         )
       })
       .catch(_ => {
-        message.error('Error while saving the Exam you requested')
+        message.error('Error while saving the Homework you requested')
         this.setState({actionFlag: false})
       })
   }
@@ -346,7 +348,7 @@ class AllExams extends React.Component {
   }
 
   componentDidMount () {
-    const uri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams`
+    const uri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks`
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -354,44 +356,42 @@ class AllExams extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetcher('http://localhost:8080/courses/' + this.props.courseId, header)
-      .then(course => {
-        fetcher(`http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}`, header)
-          .then(term => {
-            fetcher(uri, header)
-              .then(exams => {
-                const stagedUri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage`
-                fetcher(stagedUri, header)
-                  .then(stagedExams => this.setState({
-                    exams: exams.examList,
-                    staged: stagedExams.examStageList,
-                    course: course.shortName,
-                    term: term.shortName,
-                    loading: false
-                  }))
-                  .catch(stagedError => {
-                    message.error('Error fetching staged exams')
-                    this.setState({
-                      exams: exams.examList,
-                      stagedError: stagedError,
-                      course: course.shortName,
-                      term: term.shortName,
-                      loading: false
-                    })
-                  })
-              })
-              .catch(error => {
-                message.error('Error fetching exams')
-                this.setState({error: error})
+    fetcher(`http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}`, header)
+      .then(courseClass => {
+        fetcher(uri, header)
+          .then(homeworks => {
+            const stagedUri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/stage`
+            fetcher(stagedUri, header)
+              .then(stagedHomeworks => this.setState({
+                homeworks: homeworks.homeworkList,
+                staged: stagedHomeworks.homeworkStageList,
+                course: courseClass.courseShortName,
+                term: courseClass.lecturedTerm,
+                class: courseClass.className,
+                loading: false
+              }))
+              .catch(stagedError => {
+                message.error('Error fetching staged homeworks')
+                this.setState({
+                  homeworks: homeworks.homeworkList,
+                  stagedError: stagedError,
+                  course: courseClass.courseshortName,
+                  term: courseClass.lecturedTerm,
+                  className: courseClass.className,
+                  loading: false
+                })
               })
           })
-          .catch(_ => message.error('Error getting term'))
+          .catch(error => {
+            message.error('Error fetching homeworks')
+            this.setState({error: error})
+          })
       })
-      .catch(_ => message.error('Error getting course'))
+      .catch(_ => message.error('Error loading the course class'))
   }
   componentDidUpdate () {
     if (this.state.actionFlag) {
-      this.createExam(this.state.data)
+      this.createHomework(this.state.data)
     } else if (this.state.approved) {
       this.approveStaged()
     } else if (this.state.rejected) {
