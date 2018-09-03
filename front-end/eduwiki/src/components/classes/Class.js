@@ -5,9 +5,7 @@ import ReportClass from './ReportClass'
 import ClassVersions from './ClassVersions'
 import Layout from '../layout/Layout'
 import { Button, Row, Col, message, Tooltip, Card, Popover } from 'antd'
-import Cookies from 'universal-cookie'
 import CoursesClassStage from '../courseClass/CoursesClassStage'
-const cookies = new Cookies()
 
 export default (props) => (
   <Layout>
@@ -44,7 +42,7 @@ class Class extends React.Component {
           </h1>
         </div>
         <div className='version_div'>
-          <Popover placement='bottom' content={<ClassVersions auth={cookies.get('auth')} classId={this.props.match.params.classId} version={this.state.klass.version} />} trigger='click'>
+          <Popover placement='bottom' content={<ClassVersions auth={window.localStorage.getItem('auth')} classId={this.props.match.params.classId} version={this.state.klass.version} />} trigger='click'>
             <Button type='primary' id='show_reports_btn' icon='down'>
               Version {this.state.klass.version}
             </Button>
@@ -133,7 +131,7 @@ class Class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
@@ -172,7 +170,7 @@ class Class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
@@ -207,7 +205,7 @@ class Class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
@@ -244,7 +242,7 @@ class Class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
@@ -279,7 +277,7 @@ class Class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
@@ -301,7 +299,7 @@ class Class extends React.Component {
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
@@ -335,7 +333,7 @@ class Class extends React.Component {
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }

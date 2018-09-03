@@ -1,9 +1,7 @@
 import React from 'react'
-import Cookies from 'universal-cookie'
 import {Button, Row, Col, Card, message, Breadcrumb, Icon} from 'antd'
 import fetcher from '../../fetcher'
 import Layout from '../layout/Layout'
-const cookies = new Cookies()
 
 export default class extends React.Component {
   constructor (props) {
@@ -88,7 +86,7 @@ export default class extends React.Component {
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }

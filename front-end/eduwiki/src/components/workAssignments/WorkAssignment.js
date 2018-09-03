@@ -1,11 +1,9 @@
 import React from 'react'
-import Cookies from 'universal-cookie'
 import {Button, Row, Col, Card, message, Breadcrumb, Popover, Tooltip} from 'antd'
 import fetcher from '../../fetcher'
 import Layout from '../layout/Layout'
 import WorkAssignmentVersions from './WorkAssignmentVersions'
 import ReportWorkAssignment from './ReportWorkAssignment'
-const cookies = new Cookies()
 
 export default class extends React.Component {
   constructor (props) {
@@ -35,7 +33,7 @@ export default class extends React.Component {
             placement='bottom'
             content={
               <WorkAssignmentVersions
-                auth={cookies.get('auth')}
+                auth={window.localStorage.getItem('auth')}
                 courseId={this.props.match.params.courseId}
                 termId={this.props.match.params.termId}
                 workAssignmentId={this.props.match.params.workAssignmentId}
@@ -55,14 +53,9 @@ export default class extends React.Component {
           <Tooltip placement='bottom' title={`Vote Down`}>
             <Button id='dislike_btn' shape='circle' icon='dislike' onClick={() => this.setState({voteDown: true})} />
           </Tooltip>
-          <Popover content={<ReportWorkAssignment
-            courseId={this.props.match.params.courseId}
-            termId={this.props.match.params.termId}
-            workAssignmentId={this.props.match.params.workAssignmentId} />} trigger='click'>
-            <Tooltip placement='bottom' title='Report this Work Assignment'>
-              <Button id='report_btn' shape='circle' icon='warning' />
-            </Tooltip>
-          </Popover>
+          <Tooltip placement='bottom' title='Report this Work Assignment'>
+            <Button id='report_btn' shape='circle' icon='warning' onClick={() => this.setState({report: true})}/>
+          </Tooltip>
           <Button type='primary' id='show_reports_btn' onClick={() => this.props.history.push(`/courses/${this.props.match.params.courseId}/terms/${this.props.match.params.termId}/work-assignments/${this.props.match.params.workAssignmentId}/reports`)}>
               Show all Reports On This Work Assignment
           </Button>
@@ -109,6 +102,12 @@ export default class extends React.Component {
             </Col>
             }
           </Row>
+          {this.state.report &&
+            <ReportWorkAssignment
+              courseId={this.props.match.params.courseId}
+              termId={this.props.match.params.termId}
+              workAssignmentId={this.props.match.params.workAssignmentId} />
+          }
         </div>
       </Layout>
     )
@@ -123,7 +122,7 @@ export default class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
@@ -155,7 +154,7 @@ export default class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
@@ -189,7 +188,7 @@ export default class extends React.Component {
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }

@@ -5,8 +5,6 @@ import IconText from '../comms/IconText'
 import Layout from '../layout/Layout'
 import { Button, Input, message, List, Card } from 'antd'
 import CreateClass from './CreateClass'
-import Cookies from 'universal-cookie'
-const cookies = new Cookies()
 
 export default (props) => (
   <Layout>
@@ -49,7 +47,7 @@ class Classes extends React.Component {
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
@@ -162,7 +160,7 @@ class Classes extends React.Component {
                 <Button type='primary' onClick={() => this.setState({createClassForm: true})}>Still want to create?</Button>
                 {this.state.createClassForm &&
                   <CreateClass
-                    auth={cookies.get('auth')}
+                    auth={window.localStorage.getItem('auth')}
                     action={(data) => this.setState({data: data, createClassFlag: true})}
                   />}
               </div>
@@ -208,7 +206,7 @@ class Classes extends React.Component {
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
@@ -237,7 +235,7 @@ class Classes extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
@@ -276,7 +274,7 @@ class Classes extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
@@ -310,7 +308,7 @@ class Classes extends React.Component {
       method: 'POST',
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1',
         'Content-Type': 'application/json'
       },
@@ -343,7 +341,7 @@ class Classes extends React.Component {
       method: 'POST',
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1',
         'Content-Type': 'application/json'
       },

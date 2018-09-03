@@ -1,10 +1,8 @@
 import React from 'react'
 import {message, Button, Steps} from 'antd'
 import RegisterForm from './RegisterForm'
-import Cookies from 'universal-cookie'
 import {Redirect} from 'react-router-dom'
 import fetcher from '../../fetcher'
-const cookies = new Cookies()
 const Step = Steps.Step
 
 export default class Register extends React.Component {
@@ -76,7 +74,7 @@ export default class Register extends React.Component {
   }
 
   render () {
-    if (cookies.get('auth')) {
+    if (window.localStorage.getItem('auth')) {
       return (<Redirect to='/' />)
     }
     const { current } = this.state

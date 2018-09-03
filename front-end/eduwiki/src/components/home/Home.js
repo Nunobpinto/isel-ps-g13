@@ -1,12 +1,10 @@
 import React from 'react'
 import Login from '../auth/Login'
-import Cookies from 'universal-cookie'
 import UserPage from '../users/UserPage'
 import Layout from '../layout/Layout'
-const cookies = new Cookies()
 
 export default (props, context) => {
-  const authCookie = cookies.get('auth')
+  const authCookie = window.localStorage.getItem('auth')
   if (authCookie) {
     return (
       <Layout>

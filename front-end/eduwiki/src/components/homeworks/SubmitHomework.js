@@ -1,9 +1,6 @@
 import React from 'react'
-import { Form, Input, Button, DatePicker, Radio, message } from 'antd'
+import { Form, Input, Button, DatePicker, Radio } from 'antd'
 import moment from 'moment'
-import fetcher from '../../fetcher'
-import Cookies from 'universal-cookie'
-const cookies = new Cookies()
 
 const FormItem = Form.Item
 const RadioGroup = Radio.Group

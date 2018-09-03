@@ -1,8 +1,6 @@
 import React from 'react'
 import fetcher from '../../fetcher'
 import {Input, Form, Button, message} from 'antd'
-import Cookies from 'universal-cookie'
-const cookies = new Cookies()
 
 export default class extends React.Component {
   constructor (props) {
@@ -78,7 +76,7 @@ export default class extends React.Component {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json',
-          'Authorization': 'Basic ' + cookies.get('auth'),
+          'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
           'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
         },
         body: JSON.stringify(data)

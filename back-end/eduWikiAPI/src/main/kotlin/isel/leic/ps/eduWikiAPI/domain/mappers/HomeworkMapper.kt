@@ -1,9 +1,9 @@
 package isel.leic.ps.eduWikiAPI.domain.mappers
 
+import com.sun.xml.internal.bind.v2.schemagen.episode.Klass
 import isel.leic.ps.eduWikiAPI.domain.inputModel.HomeworkInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.HomeworkReportInputModel
-import isel.leic.ps.eduWikiAPI.domain.model.ActionLog
-import isel.leic.ps.eduWikiAPI.domain.model.Homework
+import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.domain.model.report.HomeworkReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.HomeworkStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.HomeworkVersion
@@ -25,7 +25,7 @@ fun toHomework(homeworkInputModel: HomeworkInputModel, createdBy: String, sheet:
         dueDate = homeworkInputModel.dueDate,
         lateDelivery = homeworkInputModel.lateDelivery,
         multipleDeliveries = homeworkInputModel.multipleDeliveries,
-        sheetId = if(sheet == null) null else UUID.randomUUID()
+        sheetId = if (sheet == null) null else UUID.randomUUID()
 )
 
 fun toHomeworkStage(homeworkInputModel: HomeworkInputModel, sheet: MultipartFile?, createdBy: String) = HomeworkStage(
@@ -34,7 +34,7 @@ fun toHomeworkStage(homeworkInputModel: HomeworkInputModel, sheet: MultipartFile
         dueDate = homeworkInputModel.dueDate,
         lateDelivery = homeworkInputModel.lateDelivery,
         multipleDeliveries = homeworkInputModel.multipleDeliveries,
-        sheetId = if(sheet == null) null else UUID.randomUUID()
+        sheetId = if (sheet == null) null else UUID.randomUUID()
 )
 
 fun stagedToHomework(stagedHomework: HomeworkStage) = Homework(
@@ -58,7 +58,7 @@ fun toHomeworkVersion(homework: Homework) = HomeworkVersion(
         timestamp = homework.timestamp
 )
 
-fun toHomeworkReport(homeworkReportInputModel: HomeworkReportInputModel, homeworkId: Int, reportedBy: String) =  HomeworkReport(
+fun toHomeworkReport(homeworkReportInputModel: HomeworkReportInputModel, homeworkId: Int, reportedBy: String) = HomeworkReport(
         homeworkId = homeworkId,
         sheetId = homeworkReportInputModel.sheetId,
         homeworkName = homeworkReportInputModel.homeworkName,
@@ -68,7 +68,7 @@ fun toHomeworkReport(homeworkReportInputModel: HomeworkReportInputModel, homewor
         reportedBy = reportedBy
 )
 
-fun toHomeworkOutputModel(homework: Homework) = HomeworkOutputModel(
+fun toHomeworkOutputModel(homework: Homework, course: Course, klass: Class, term: Term) = HomeworkOutputModel(
         createdBy = homework.createdBy,
         sheetId = homework.sheetId,
         dueDate = homework.dueDate,
@@ -77,10 +77,13 @@ fun toHomeworkOutputModel(homework: Homework) = HomeworkOutputModel(
         multipleDeliveries = homework.multipleDeliveries,
         homeworkId = homework.homeworkId,
         votes = homework.votes,
-        version = homework.version
+        version = homework.version,
+        courseShortName = course.shortName,
+        className = klass.className,
+        lecturedTerm = term.shortName
 )
 
-fun toHomeworkVersionOutputModel(homeworkVersion: HomeworkVersion) = HomeworkVersionOutputModel(
+fun toHomeworkVersionOutputModel(homeworkVersion: HomeworkVersion, course: Course, klass: Class, term: Term) = HomeworkVersionOutputModel(
         createdBy = homeworkVersion.createdBy,
         sheetId = homeworkVersion.sheetId,
         homeworkName = homeworkVersion.homeworkName,
@@ -88,7 +91,10 @@ fun toHomeworkVersionOutputModel(homeworkVersion: HomeworkVersion) = HomeworkVer
         lateDelivery = homeworkVersion.lateDelivery,
         multipleDeliveries = homeworkVersion.multipleDeliveries,
         homeworkId = homeworkVersion.homeworkId,
-        version = homeworkVersion.version
+        version = homeworkVersion.version,
+        courseShortName = course.shortName,
+        className = klass.className,
+        lecturedTerm = term.shortName
 )
 
 fun toHomeworkStagedOutputModel(homeworkStage: HomeworkStage) = HomeworkStageOutputModel(
@@ -102,7 +108,7 @@ fun toHomeworkStagedOutputModel(homeworkStage: HomeworkStage) = HomeworkStageOut
         stagedId = homeworkStage.stageId
 )
 
-fun toHomeworkReportOutputModel(homeworkReport: HomeworkReport) = HomeworkReportOutputModel(
+fun toHomeworkReportOutputModel(homeworkReport: HomeworkReport, course: Course, klass: Class, term: Term) = HomeworkReportOutputModel(
         sheetId = homeworkReport.sheetId,
         dueDate = homeworkReport.dueDate,
         lateDelivery = homeworkReport.lateDelivery,
@@ -111,7 +117,10 @@ fun toHomeworkReportOutputModel(homeworkReport: HomeworkReport) = HomeworkReport
         homeworkId = homeworkReport.homeworkId,
         votes = homeworkReport.votes,
         reportId = homeworkReport.reportId,
-        reportedBy = homeworkReport.reportedBy
+        reportedBy = homeworkReport.reportedBy,
+        courseShortName = course.shortName,
+        className = klass.className,
+        lecturedTerm = term.shortName
 )
 
 fun toHomeworkCollectionOutputModel(homeworkList: List<HomeworkOutputModel>) = HomeworkCollectionOutputModel(
@@ -125,6 +134,7 @@ fun toHomeworkStageCollectionOutputModel(homeworkStageList: List<HomeworkStageOu
 fun toHomeworkReportCollectionOutputModel(homeworkReportList: List<HomeworkReportOutputModel>) = HomeworkReportCollectionOutputModel(
         homeworkReportList = homeworkReportList
 )
+
 fun toHomeworkVersionCollectionOutputModel(homeworkVersionList: List<HomeworkVersionOutputModel>) = HomeworkVersionCollectionOutputModel(
         homeworkVersionList = homeworkVersionList
 )

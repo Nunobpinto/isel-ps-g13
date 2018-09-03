@@ -4,14 +4,12 @@ import {
   Redirect,
   withRouter
 } from 'react-router-dom'
-import Cookies from 'universal-cookie'
-const cookies = new Cookies()
 
 const privateRoute = ({ path, component: Component, ...props }) => (
   <Route
     {...props}
     render={compProps => {
-      let cookie = cookies.get('auth')
+      let cookie = window.localStorage.getItem('auth')
       if (cookie) {
         return (<Component {...compProps} />)
       }

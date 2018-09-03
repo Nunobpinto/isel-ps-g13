@@ -1,12 +1,9 @@
-
 import React from 'react'
 import fetcher from '../../fetcher'
 import MyLayout from '../layout/Layout'
 import ReportUser from './ReportUser'
 import {message, Layout} from 'antd'
 import {Redirect} from 'react-router-dom'
-import Cookies from 'universal-cookie'
-const cookies = new Cookies()
 
 const { Content, Sider } = Layout
 
@@ -42,7 +39,7 @@ class OtherUserDetail extends React.Component {
     )
   }
   componentDidMount () {
-    const auth = cookies.get('auth')
+    const auth = window.localStorage.getItem('auth')
     const username = this.props.match.params.username
     const options = {
       headers: {

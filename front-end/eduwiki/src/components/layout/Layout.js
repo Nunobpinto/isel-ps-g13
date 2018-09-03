@@ -2,8 +2,6 @@ import React from 'react'
 import { Layout, message } from 'antd'
 import Navbar from './Navbar'
 import fetcher from '../../fetcher'
-import Cookies from 'universal-cookie'
-const cookies = new Cookies()
 const { Header, Content, Footer } = Layout
 
 export default class extends React.Component {
@@ -40,7 +38,7 @@ export default class extends React.Component {
     )
   }
   componentDidMount () {
-    const auth = cookies.get('auth')
+    const auth = window.localStorage.getItem('auth')
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',

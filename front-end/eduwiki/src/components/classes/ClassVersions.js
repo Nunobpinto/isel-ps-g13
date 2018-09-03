@@ -44,4 +44,3 @@ export default class extends React.Component {
       .catch(_ => message.error('Error fetching class versions'))
   }
 }
-

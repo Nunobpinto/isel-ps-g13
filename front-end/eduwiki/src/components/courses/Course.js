@@ -5,8 +5,6 @@ import MyLayout from '../layout/Layout'
 import CourseVersions from './CourseVersions'
 import TermMenu from '../term/TermMenu'
 import {Button, Tooltip, Popover, message} from 'antd'
-import Cookies from 'universal-cookie'
-const cookies = new Cookies()
 
 export default (props) => (
   <MyLayout>
@@ -57,7 +55,7 @@ class Course extends React.Component {
               <h1>{this.state.full_name} - {this.state.short_name} <small>({this.state.timestamp})</small></h1>
             </div>
             <div className='version_div'>
-              <Popover placement='bottom' content={<CourseVersions auth={cookies.get('auth')} id={this.props.courseId} version={this.state.version} />} trigger='click'>
+              <Popover placement='bottom' content={<CourseVersions auth={window.localStorage.getItem('auth')} id={this.props.courseId} version={this.state.version} />} trigger='click'>
                 <Button type='primary' id='show_reports_btn' icon='down'>
               Version {this.state.version}
                 </Button>
@@ -115,7 +113,7 @@ class Course extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
@@ -149,7 +147,7 @@ class Course extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
@@ -178,7 +176,7 @@ class Course extends React.Component {
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
@@ -226,7 +224,7 @@ class Course extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
 
       }
@@ -250,7 +248,7 @@ class Course extends React.Component {
       method: 'DELETE',
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }

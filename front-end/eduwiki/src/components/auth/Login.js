@@ -1,9 +1,7 @@
 import React from 'react'
 import {Redirect, Link} from 'react-router-dom'
 import {message, Form, Input, Button, Icon} from 'antd'
-import Cookies from 'universal-cookie'
 import fetcher from '../../fetcher'
-const cookies = new Cookies()
 
 class LoginForm extends React.Component {
   constructor (props) {
@@ -33,7 +31,7 @@ class LoginForm extends React.Component {
   }
 
   render () {
-    if (cookies.get('auth')) {
+    if (window.localStorage.getItem('auth')) {
       return (<Redirect to='' />)
     }
     const { getFieldDecorator } = this.props.form
@@ -76,27 +74,6 @@ class LoginForm extends React.Component {
     )
   }
 
-  tryLogin (authCredentials) {
-    const options = {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + authCredentials
-      }
-    }
-    return new Promise((resolve, reject) => {
-      fetch('http://localhost:8080/user', options)
-        .then(resp => {
-          if (resp.status >= 400) {
-            return resp.json().then(error =>
-              reject(error)
-            )
-          }
-          return resolve(resp.json())
-        })
-        .catch(err => reject(err))
-    })
-  }
-
   componentDidUpdate () {
     if (this.state.redirect) {
       const credentials = Buffer.from(this.state.username + ':' + this.state.password).toString('base64')
@@ -109,7 +86,7 @@ class LoginForm extends React.Component {
       }
       fetcher('http://localhost:8080/user', options)
         .then(_ => {
-          cookies.set('auth', credentials, {maxAge: 9999})
+          window.localStorage.setItem('auth', credentials)
           if (this.props.destination) {
             return this.props.history.push(this.props.destination.from.pathname)
           }
@@ -118,8 +95,7 @@ class LoginForm extends React.Component {
         .catch(error => {
           if (error.detail) {
             message.error(error.detail)
-          }
-          else {
+          } else {
             message.error('Error checking your account, please try again')
           }
           this.setState({redirect: false})

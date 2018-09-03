@@ -552,8 +552,8 @@ class ClassController {
     fun getAllReportsOfHomeworkFromCourseInClass(
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
-            @PathVariable homeWorkId: Int
-    ) = classService.getAllReportsOfHomeworkFromCourseInClass(classId, courseId, homeWorkId)
+            @PathVariable homeworkId: Int
+    ) = classService.getAllReportsOfHomeworkFromCourseInClass(classId, courseId, homeworkId)
 
     @GetMapping("/{classId}/courses/{courseId}/homeworks/{homeworkId}/reports/{reportId}")
     fun getSpecificReportOfHomeworkFromCourseInClass(
@@ -616,7 +616,7 @@ class ClassController {
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
             @PathVariable homeworkId: Int,
-            @PathVariable version: Int
-    ) = classService.getSpecificVersionOfHomeworkOfCourseInClass(classId, courseId, homeworkId, version)
+            @PathVariable versionId: Int
+    ) = classService.getSpecificVersionOfHomeworkOfCourseInClass(classId, courseId, homeworkId, versionId)
 
 }

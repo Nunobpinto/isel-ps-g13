@@ -15,5 +15,8 @@ data class HomeworkReportOutputModel (
         val multipleDeliveries: Boolean? = null,
         val reportedBy: String = "",
         val votes: Int = 0,
+        val className: String = "",
+        val lecturedTerm: String = "",
+        val courseShortName: String = "",
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 )

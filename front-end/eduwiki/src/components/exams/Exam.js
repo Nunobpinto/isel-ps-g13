@@ -1,11 +1,9 @@
 import React from 'react'
-import Cookies from 'universal-cookie'
 import {Button, Row, Col, Card, message, Breadcrumb, Popover, Tooltip} from 'antd'
 import fetcher from '../../fetcher'
 import Layout from '../layout/Layout'
 import ReportExam from './ReportExam'
 import ExamVersions from './ExamVersions'
-const cookies = new Cookies()
 
 export default class extends React.Component {
   constructor (props) {
@@ -35,7 +33,7 @@ export default class extends React.Component {
             placement='bottom'
             content={
               <ExamVersions
-                auth={cookies.get('auth')}
+                auth={window.localStorage.getItem('auth')}
                 courseId={this.props.match.params.courseId}
                 termId={this.props.match.params.termId}
                 examId={this.props.match.params.examId}
@@ -55,14 +53,9 @@ export default class extends React.Component {
           <Tooltip placement='bottom' title={`Vote Down`}>
             <Button id='dislike_btn' shape='circle' icon='dislike' onClick={() => this.setState({voteDown: true})} />
           </Tooltip>
-          <Popover content={<ReportExam
-            courseId={this.props.match.params.courseId}
-            termId={this.props.match.params.termId}
-            examId={this.props.match.params.examId} />} trigger='click'>
-            <Tooltip placement='bottom' title='Report this Exam'>
-              <Button id='report_btn' shape='circle' icon='warning' />
-            </Tooltip>
-          </Popover>
+          <Tooltip placement='bottom' title='Report this Exam'>
+            <Button id='report_btn' shape='circle' icon='warning' onClick={() => this.setState({report: true})} />
+          </Tooltip>
           <Button type='primary' id='show_reports_btn' onClick={() => this.props.history.push(`/courses/${this.props.match.params.courseId}/terms/${this.props.match.params.termId}/exams/${this.props.match.params.examId}/reports`)}>
               Show all Reports On This Exam
           </Button>
@@ -87,6 +80,12 @@ export default class extends React.Component {
             </Col>
             }
           </Row>
+          {this.state.report &&
+          <ReportExam
+           courseId={this.props.match.params.courseId}
+           termId={this.props.match.params.termId}
+           examId={this.props.match.params.examId} />
+          }
         </div>
       </Layout>
     )
@@ -101,7 +100,7 @@ export default class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
@@ -133,7 +132,7 @@ export default class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
@@ -167,7 +166,7 @@ export default class extends React.Component {
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }

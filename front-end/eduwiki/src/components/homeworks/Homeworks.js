@@ -1,5 +1,4 @@
 import React from 'react'
-import Cookies from 'universal-cookie'
 import {Col, Row, Button, Card} from 'antd'
 
 export default class extends React.Component {

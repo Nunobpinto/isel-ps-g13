@@ -5,10 +5,8 @@ import ProgrammesStage from '../programmes/ProgrammesStage'
 import UserActivity from './UserActivity'
 import UserReputation from './UserReputation'
 import {Layout, Menu, message} from 'antd'
-import Cookies from 'universal-cookie'
 import CoursesStage from '../courses/CoursesStage'
 import ClassesStage from '../classes/ClassesStage'
-const cookies = new Cookies()
 const {Content} = Layout
 
 export default (props) => (
@@ -115,7 +113,7 @@ class Profile extends React.Component {
     )
   }
   componentDidMount () {
-    const auth = cookies.get('auth')
+    const auth = window.localStorage.getItem('auth')
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',

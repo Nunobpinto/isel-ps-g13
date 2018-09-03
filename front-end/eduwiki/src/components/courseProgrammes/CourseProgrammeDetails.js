@@ -3,9 +3,7 @@ import {Link} from 'react-router-dom'
 import {Col, Card, Button, Popover, Tooltip, message} from 'antd'
 import ReportCourseProgramme from './ReportCourseProgramme'
 import CourseProgrammeVersions from './CourseProgrammeVersions'
-import Cookies from 'universal-cookie'
 import fetcher from '../../fetcher'
-const cookies = new Cookies()
 
 export default class extends React.Component {
   constructor (props) {
@@ -59,7 +57,7 @@ export default class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
@@ -96,7 +94,7 @@ export default class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)

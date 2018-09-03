@@ -1,9 +1,7 @@
 import React from 'react'
 import fetcher from '../../fetcher'
 import {Input, Form, Button, message, Radio, DatePicker} from 'antd'
-import Cookies from 'universal-cookie'
 import moment from 'moment'
-const cookies = new Cookies()
 
 export default class extends React.Component {
   constructor (props) {
@@ -17,6 +15,12 @@ export default class extends React.Component {
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleDateChange = this.handleDateChange.bind(this)
+  }
+  handleDateChange (date, dateString) {
+    this.setState({
+      due_date: dateString
+    })
   }
   handleChange (ev) {
     this.setState({
@@ -26,12 +30,8 @@ export default class extends React.Component {
 
   handleSubmit (ev) {
     ev.preventDefault()
-    let date
-    if (this.state.due_date) {
-      date = this.state.due_date.format('YYYY-MM-DD')
-    }
     const data = {
-      due_date: date,
+      due_date: this.state.due_date,
       exam_type: this.state.type,
       phase: this.state.phase,
       location: this.state.location
@@ -64,6 +64,7 @@ export default class extends React.Component {
             name='due_date'
             defaultValue={moment(new Date().toJSON().slice(0, 10), dateFormat)}
             format={dateFormat}
+            onChange={this.handleDateChange}
           />
           <br />
           <Button type='primary' onClick={this.handleSubmit}>Create</Button>
@@ -86,7 +87,7 @@ export default class extends React.Component {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json',
-          'Authorization': 'Basic ' + cookies.get('auth'),
+          'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
           'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
         },
         body: JSON.stringify(data)

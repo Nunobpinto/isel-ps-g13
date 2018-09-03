@@ -15,5 +15,8 @@ data class HomeworkVersionOutputModel(
         val dueDate: LocalDate = LocalDate.now(),
         val lateDelivery: Boolean = false,
         val multipleDeliveries: Boolean = false,
+        val className: String = "",
+        val lecturedTerm: String = "",
+        val courseShortName: String = "",
         val timestamp: Timestamp = Timestamp.valueOf(LocalDateTime.now())
 )

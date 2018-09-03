@@ -37,6 +37,8 @@ import WorkAssignmentReports from './components/workAssignments/WorkAssignmentRe
 import WorkAssignmentVersion from './components/workAssignments/WorkAssignmentVersion'
 import CourseClassReports from './components/courseClass/CourseClassReports'
 import AllHomeworksPage from './components/homeworks/AllHomeworksPage'
+import HomeworkReports from './components/homeworks/HomeworkReports'
+import HomeworkVersion from './components/homeworks/HomeworkVersion'
 
 export default () => (
   <div>
@@ -75,6 +77,8 @@ export default () => (
         <ProtectedRoute exact path='/classes/:classId/courses/:courseId/lectures/:lectureId' component={Lecture} />
         <ProtectedRoute exact path='/classes/:classId/courses/:courseId/homeworks' component={AllHomeworksPage} />
         <ProtectedRoute exact path='/classes/:classId/courses/:courseId/homeworks/:homeworkId' component={Homework} />
+        <ProtectedRoute exact path='/classes/:classId/courses/:courseId/homeworks/:homeworkId/reports' component={HomeworkReports} />
+        <ProtectedRoute exact path='/classes/:classId/courses/:courseId/homeworks/:homeworkId/versions/:version' component={HomeworkVersion} />
         <ProtectedRoute exact path='/logout' component={Logout} />
         <ProtectedRoute exact path='/user' component={Profile} />
         <ProtectedRoute exact path='/users/:username' component={OtherUser} />

@@ -595,8 +595,6 @@ class ClassServiceImpl : ClassService {
 
     override fun getStageEntriesOfCoursesInClass(classId: Int): CourseClassStageCollectionOutputModel {
         val stageEntries = classDAO.getStageEntriesOfCoursesInClass(classId).map {
-            val test = it
-            val id = test.classId
             toCourseClassStageOutputModel(
                     it,
                     getCourse(it.courseId),
@@ -1000,19 +998,26 @@ class ClassServiceImpl : ClassService {
      */
 
     override fun getAllHomeworksOfCourseInClass(classId: Int, courseId: Int): HomeworkCollectionOutputModel {
+        val course = getCourse(courseId)
+        val klass: Class = getClass(classId)
+        val term: Term = getTerm(klass.termId)
         val homeworks = homeworkDAO.getAllHomeworksFromCourseInClass(classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
                 .courseClassId)
-        return toHomeworkCollectionOutputModel(homeworks.map { toHomeworkOutputModel(it) })
+        return toHomeworkCollectionOutputModel(homeworks.map { toHomeworkOutputModel(it, course, klass, term) })
     }
 
     override fun getSpecificHomeworkFromSpecificCourseInClass(classId: Int, courseId: Int, homeworkId: Int): HomeworkOutputModel {
-        return toHomeworkOutputModel(homeworkDAO.getSpecificHomeworkFromSpecificCourseInClass(
+        val course = getCourse(courseId)
+        val klass: Class = getClass(classId)
+        val term: Term = getTerm(klass.termId)
+        val homework =  homeworkDAO.getSpecificHomeworkFromSpecificCourseInClass(
                 classDAO.getCourseClass(classId, courseId)
                         .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
                         .courseClassId,
                 homeworkId
-        ).orElseThrow { NotFoundException("No homework found", "Try other homework id") })
+        ).orElseThrow { NotFoundException("No homework found", "Try other homework id") }
+        return toHomeworkOutputModel(homework, course, klass, term)
     }
 
     override fun createHomeworkOnCourseInClass(
@@ -1022,6 +1027,9 @@ class ClassServiceImpl : ClassService {
             homeworkInputModel: HomeworkInputModel,
             principal: Principal
     ): HomeworkOutputModel {
+        val course = getCourse(courseId)
+        val klass: Class = getClass(classId)
+        val term: Term = getTerm(klass.termId)
         val createdHomework = homeworkDAO.createHomeworkOnCourseInClass(
                 classDAO.getCourseClass(classId, courseId)
                         .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
@@ -1038,7 +1046,7 @@ class ClassServiceImpl : ClassService {
                 HOMEWORK_TABLE,
                 createdHomework.logId
         ))
-        return toHomeworkOutputModel(createdHomework)
+        return toHomeworkOutputModel(createdHomework, course, klass, term)
     }
 
     override fun voteOnHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, vote: VoteInputModel, principal: Principal): Int {
@@ -1119,6 +1127,9 @@ class ClassServiceImpl : ClassService {
     }
 
     override fun createHomeworkFromStaged(classId: Int, courseId: Int, stageId: Int, principal: Principal): HomeworkOutputModel {
+        val course = getCourse(courseId)
+        val klass: Class = getClass(classId)
+        val term: Term = getTerm(klass.termId)
         val courseClassId = classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
                 .courseClassId
@@ -1141,7 +1152,7 @@ class ClassServiceImpl : ClassService {
                 HOMEWORK_TABLE,
                 createdHomework.logId
         ))
-        return toHomeworkOutputModel(createdHomework)
+        return toHomeworkOutputModel(createdHomework, course, klass, term)
     }
 
     override fun voteOnStagedHomeworkOfCourseInClass(classId: Int, courseId: Int, stageId: Int, vote: VoteInputModel, principal: Principal): Int {
@@ -1185,25 +1196,30 @@ class ClassServiceImpl : ClassService {
     }
 
     override fun getAllReportsOfHomeworkFromCourseInClass(classId: Int, courseId: Int, homeWorkId: Int): HomeworkReportCollectionOutputModel {
+        val course = getCourse(courseId)
+        val klass: Class = getClass(classId)
+        val term: Term = getTerm(klass.termId)
         val reports = homeworkDAO.getAllReportsOfHomeworkFromCourseInClass(
                 classDAO.getCourseClass(classId, courseId)
                         .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
                         .courseClassId,
                 homeWorkId
-        ).map { toHomeworkReportOutputModel(it) }
+        ).map { toHomeworkReportOutputModel(it, course, klass, term) }
         return toHomeworkReportCollectionOutputModel(reports)
     }
 
     override fun getSpecificReportOfHomeworkFromCourseInClass(classId: Int, courseId: Int, homeworkId: Int, reportId: Int): HomeworkReportOutputModel {
-        return toHomeworkReportOutputModel(
-                homeworkDAO.getSpecificReportOfHomeworkFromCourseInClass(
-                        classDAO.getCourseClass(classId, courseId)
-                                .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
-                                .courseClassId,
-                        homeworkId,
-                        reportId
-                ).orElseThrow { NotFoundException("No report found", "Try with other report id") }
-        )
+        val course = getCourse(courseId)
+        val klass: Class = getClass(classId)
+        val term: Term = getTerm(klass.termId)
+        val report =  homeworkDAO.getSpecificReportOfHomeworkFromCourseInClass(
+                classDAO.getCourseClass(classId, courseId)
+                        .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
+                        .courseClassId,
+                homeworkId,
+                reportId
+        ).orElseThrow { NotFoundException("No report found", "Try with other report id") }
+        return toHomeworkReportOutputModel(report,course, klass, term)
     }
 
     override fun createReportOnHomeworkFromCourseInClass(
@@ -1213,6 +1229,9 @@ class ClassServiceImpl : ClassService {
             homeworkReportInputModel: HomeworkReportInputModel,
             principal: Principal
     ): HomeworkReportOutputModel {
+        val course = getCourse(courseId)
+        val klass: Class = getClass(classId)
+        val term: Term = getTerm(klass.termId)
         val courseClassId = classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
                 .courseClassId
@@ -1225,10 +1244,13 @@ class ClassServiceImpl : ClassService {
                 HOMEWORK_REPORT_TABLE,
                 homeworkReport.logId
         ))
-        return toHomeworkReportOutputModel(homeworkReport)
+        return toHomeworkReportOutputModel(homeworkReport, course, klass, term)
     }
 
     override fun updateHomeworkFromReport(classId: Int, courseId: Int, homeworkId: Int, reportId: Int, principal: Principal): HomeworkOutputModel {
+        val course = getCourse(courseId)
+        val klass: Class = getClass(classId)
+        val term: Term = getTerm(klass.termId)
         val courseClassId = classDAO.getCourseClass(classId, courseId)
                 .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
                 .courseClassId
@@ -1246,7 +1268,8 @@ class ClassServiceImpl : ClassService {
                 dueDate = homeworkReport.dueDate ?: homework.dueDate,
                 lateDelivery = homeworkReport.lateDelivery ?: homework.lateDelivery,
                 multipleDeliveries = homeworkReport.multipleDeliveries ?: homework.multipleDeliveries,
-                votes = homework.votes
+                votes = homework.votes,
+                homeworkName = homeworkReport.homeworkName?: homework.homeworkName
         ))
         homeworkDAO.createHomeworkVersion(toHomeworkVersion(res))
         homeworkDAO.deleteSpecificReportOnHomeworkOfCourseInClass(courseClassId, homeworkId, reportId)
@@ -1261,7 +1284,7 @@ class ClassServiceImpl : ClassService {
                 HOMEWORK_TABLE,
                 res.logId
         ))
-        return toHomeworkOutputModel(res)
+        return toHomeworkOutputModel(res, course, klass, term)
     }
 
     override fun voteOnReportOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, reportId: Int, vote: VoteInputModel, principal: Principal): Int {
@@ -1305,23 +1328,30 @@ class ClassServiceImpl : ClassService {
     }
 
     override fun getAllVersionsOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int): HomeworkVersionCollectionOutputModel {
+        val course = getCourse(courseId)
+        val klass: Class = getClass(classId)
+        val term: Term = getTerm(klass.termId)
         val homeworkVersions = homeworkDAO.getAllVersionsOfHomeworkOfCourseInclass(
                 classDAO.getCourseClass(classId, courseId)
                         .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
                         .courseClassId,
                 homeworkId
-        ).map { toHomeworkVersionOutputModel(it) }
+        ).map { toHomeworkVersionOutputModel(it, course, klass, term) }
         return toHomeworkVersionCollectionOutputModel(homeworkVersions)
     }
 
     override fun getSpecificVersionOfHomeworkOfCourseInClass(classId: Int, courseId: Int, homeworkId: Int, version: Int): HomeworkVersionOutputModel {
-        return toHomeworkVersionOutputModel(
-                homeworkDAO.getSpecificVersionOfHomeworkOfCourseInClass(
-                        classDAO.getCourseClass(classId, courseId)
-                                .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
-                                .courseClassId,
-                        homeworkId,
-                        version
-                ).orElseThrow { NotFoundException("No version found", "Try with other version number") })
+        val course = getCourse(courseId)
+        val klass: Class = getClass(classId)
+        val term: Term = getTerm(klass.termId)
+        val homeworkVersion =  homeworkDAO.getSpecificVersionOfHomeworkOfCourseInClass(
+                classDAO.getCourseClass(classId, courseId)
+                        .orElseThrow { NotFoundException("this course in class does not exist", "try other ids") }
+                        .courseClassId,
+                homeworkId,
+                version
+        ).orElseThrow { NotFoundException("No version found", "Try with other version number") }
+        return toHomeworkVersionOutputModel(homeworkVersion, course, klass, term)
+
     }
 }

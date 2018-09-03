@@ -4,14 +4,16 @@ import { List, message, Button } from 'antd'
 import IconText from '../comms/IconText'
 import Layout from '../layout/Layout'
 
-class WorkAssignmentReports extends React.Component {
+class HomeworkReports extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
       reports: [],
       loading: true,
-      course: '',
-      term: ''
+      lecturedTerm: '',
+      className: '',
+      courseShortName: '',
+      homeworkName: ''
     }
     this.voteUp = this.voteUp.bind(this)
     this.voteDown = this.voteDown.bind(this)
@@ -24,8 +26,8 @@ class WorkAssignmentReports extends React.Component {
         itemLayout='vertical'
         bordered
         loading={this.state.loading}
-        header={<div><h1>Work Assignment Reports on {this.state.course}/{this.state.term}</h1></div>}
-        footer={<div><a href={`/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}`}><Button>See Assignment Page</Button></a></div>}
+        header={<div><h1>Homework {this.state.lecturedTerm}/{this.state.className}/{this.state.courseShortName}/{this.state.homeworkName}</h1></div>}
+        footer={<div><a href={`/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/${this.props.homeworkId}`}><Button>See Homework Page</Button></a></div>}
         dataSource={this.state.reports}
         renderItem={item => (
           <List.Item
@@ -54,17 +56,9 @@ class WorkAssignmentReports extends React.Component {
               title={`Reported by ${item.reportedBy}`}
               description={`Votes: ${item.votes}`}
             />
-            {item.dueDate && `DueDate: ${item.dueDate}`}
+            {item.dueDate && `Due Date: ${item.dueDate}`}
             <br />
-            {item.phase && `Phase: ${item.phase}`}
-            <br />
-            {item.individual !== null && `Individual: ${item.individual ? 'Yes' : 'No'}`}
-            <br />
-            {item.lateDelivery !== null && `Late Delivery: ${item.lateDelivery ? 'Yes' : 'No'}`}
-            <br />
-            {item.multipleDeliveries !== null && `Multiple Deliveries: ${item.multipleDeliveries ? 'Yes' : 'No'}`}
-            <br />
-            {item.requiresReport !== null && `Requires Report: ${item.requiresReport ? 'Yes' : 'No'}`}
+            {item.homeworkName && `Homework Name: ${item.homeworkName}`}
             <br />
             Created at {item.timestamp}
             <br />
@@ -99,7 +93,7 @@ class WorkAssignmentReports extends React.Component {
     )
   }
   componentDidMount () {
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}/reports`
+    const url = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.classId}/homeworks/${this.props.homeworkId}/reports`
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -107,28 +101,28 @@ class WorkAssignmentReports extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetcher(`http://localhost:8080/courses/${this.props.courseId}`, options)
-      .then(course =>
-        fetcher(`http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}`, options)
-          .then(term =>
-            fetcher(url, options)
-              .then(list => {
-                let reports = list.workAssignmentReportList
-                reports = reports.filter(report => report.reportedBy !== this.props.user.username)
-                this.setState({ reports: reports, loading: false, course: course.shortName, term: term.shortName })
-              })
-              .catch(_ => {
-                message.error('Error obtaining reports of work Assignment')
-                this.setState({loading: false})
-              })
-          )
+    fetcher(`http://localhost:8080/classes/${this.props.classId}/courses/${this.props.classId}/homeworks/${this.props.homeworkId}`, options)
+      .then(homework =>
+        fetcher(url, options)
+          .then(list => {
+            let reports = list.homeworkReportList
+            reports = reports.filter(report => report.reportedBy !== this.props.user.username)
+            this.setState({
+              reports: reports,
+              loading: false,
+              lecturedTerm: homework.lecturedTerm,
+              className: homework.className,
+              courseShortName: homework.courseShortName,
+              homeworkName: homework.homeworkName
+            })
+          })
           .catch(_ => {
-            message.error('Error finding the term')
+            message.error('Error obtaining reports of homework')
             this.setState({loading: false})
           })
       )
       .catch(_ => {
-        message.error('Error finding the course')
+        message.error('Error finding the homework')
         this.setState({loading: false})
       })
   }
@@ -138,7 +132,7 @@ class WorkAssignmentReports extends React.Component {
       vote: 'Up'
     }
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}/reports/${reportId}/vote`
+    const url = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.classId}/homeworks/${this.props.homeworkId}/reports/${reportId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -171,7 +165,7 @@ class WorkAssignmentReports extends React.Component {
       vote: 'Down'
     }
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}/reports/${reportId}/vote`
+    const url = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.classId}/homeworks/${this.props.homeworkId}/reports/${reportId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -200,7 +194,7 @@ class WorkAssignmentReports extends React.Component {
   }
   approve () {
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}/reports/${reportId}`
+    const url = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.classId}/homeworks/${this.props.homeworkId}/reports/${reportId}`
     const body = {
       method: 'POST',
       headers: {
@@ -234,7 +228,7 @@ class WorkAssignmentReports extends React.Component {
 
   reject () {
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}/reports/${reportId}`
+    const url = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.classId}/homeworks/${this.props.homeworkId}/reports/${reportId}`
     const body = {
       method: 'DELETE',
       headers: {
@@ -280,10 +274,10 @@ class WorkAssignmentReports extends React.Component {
 
 export default (props) => (
   <Layout>
-    <WorkAssignmentReports
+    <HomeworkReports
       courseId={props.match.params.courseId}
-      termId={props.match.params.termId}
-      workAssignmentId={props.match.params.workAssignmentId}
+      classId={props.match.params.classId}
+      homeworkId={props.match.params.homeworkId}
     />
   </Layout>
 )

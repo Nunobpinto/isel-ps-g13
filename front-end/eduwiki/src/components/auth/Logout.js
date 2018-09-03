@@ -1,10 +1,8 @@
 import React from 'react'
 import {Redirect} from 'react-router-dom'
-import Cookies from 'universal-cookie'
-const cookies = new Cookies()
 
 export default (props) => {
-  cookies.remove('auth')
+  window.localStorage.removeItem('auth')
   return (
     <Redirect to='/' />
   )

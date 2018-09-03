@@ -2,8 +2,6 @@ import React from 'react'
 import fetcher from '../../fetcher'
 import Layout from '../layout/Layout'
 import {Button, Icon, message} from 'antd'
-import Cookies from 'universal-cookie'
-const cookies = new Cookies()
 
 export default class extends React.Component {
   constructor (props) {
@@ -42,7 +40,7 @@ export default class extends React.Component {
     const headers = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }

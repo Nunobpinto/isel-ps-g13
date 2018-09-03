@@ -5,10 +5,8 @@ import ReportProgramme from './ReportProgramme'
 import ProgrammeVersions from './ProgrammeVersions'
 import CourseProgramme from '../courseProgrammes/CourseProgramme'
 import {Row, Col, Card, Button, Tooltip, Popover, message} from 'antd'
-import Cookies from 'universal-cookie'
 import CourseProgrammeDetails from '../courseProgrammes/CourseProgrammeDetails'
 import CoursesProgrammeStage from '../courseProgrammes/CoursesProgrammeStage'
-const cookies = new Cookies()
 
 class Programme extends React.Component {
   constructor (props) {
@@ -54,7 +52,7 @@ class Programme extends React.Component {
           <h1>{this.state.full_name} - {this.state.short_name} <small>({this.state.timestamp})</small></h1>
         </div>
         <div className='version_div'>
-          <Popover placement='bottom' content={<ProgrammeVersions auth={cookies.get('auth')} id={this.props.match.params.id} version={this.state.versionNumber} />} trigger='click'>
+          <Popover placement='bottom' content={<ProgrammeVersions auth={window.localStorage.getItem('auth')} id={this.props.match.params.id} version={this.state.versionNumber} />} trigger='click'>
             <Button type='primary' id='show_reports_btn' icon='down'>
               Version {this.state.versionNumber}
             </Button>
@@ -160,7 +158,7 @@ class Programme extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(data)
@@ -203,7 +201,7 @@ class Programme extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(data)
@@ -233,7 +231,7 @@ class Programme extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
@@ -267,7 +265,7 @@ class Programme extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
@@ -291,7 +289,7 @@ class Programme extends React.Component {
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
@@ -313,7 +311,7 @@ class Programme extends React.Component {
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
@@ -380,7 +378,7 @@ class Programme extends React.Component {
       method: 'DELETE',
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
@@ -409,7 +407,7 @@ class Programme extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
 
       }
@@ -437,7 +435,7 @@ class Programme extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }

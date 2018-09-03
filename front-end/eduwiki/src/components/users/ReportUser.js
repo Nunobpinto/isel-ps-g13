@@ -1,8 +1,6 @@
 import { Form, Input, Button, message } from 'antd'
 import React from 'react'
-import Cookies from 'universal-cookie'
 import fetcher from '../../fetcher'
-const cookies = new Cookies()
 
 const FormItem = Form.Item
 const { TextArea } = Input
@@ -57,7 +55,7 @@ class ReportForm extends React.Component {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json',
-          'Authorization': 'Basic ' + cookies.get('auth'),
+          'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
           'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
         },
         body: JSON.stringify(report)
