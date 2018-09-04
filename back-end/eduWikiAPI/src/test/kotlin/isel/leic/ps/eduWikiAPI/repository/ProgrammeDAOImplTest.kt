@@ -10,6 +10,7 @@ import isel.leic.ps.eduWikiAPI.repository.interfaces.ProgrammeDAO
 import org.junit.Test
 
 import junit.framework.TestCase.*
+import org.junit.After
 import org.junit.Before
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -339,6 +340,11 @@ class ProgrammeDAOImplTest {
         assertEquals(6, programmeStage.duration)
         assertEquals("jorge", programmeStage.createdBy)
         assertEquals(0, programmeStage.votes)
+    }
+
+    @After
+    fun cleanup() {
+        TenantContext.resetTenantSchema()
     }
 
 }

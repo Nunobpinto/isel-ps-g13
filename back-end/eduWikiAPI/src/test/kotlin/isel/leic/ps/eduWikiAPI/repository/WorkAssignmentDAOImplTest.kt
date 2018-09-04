@@ -8,6 +8,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.staging.WorkAssignmentStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.WorkAssignmentVersion
 import isel.leic.ps.eduWikiAPI.repository.interfaces.WorkAssignmentDAO
 import junit.framework.TestCase.*
+import org.junit.After
 import org.junit.Test
 
 import org.junit.Before
@@ -389,6 +390,11 @@ class WorkAssignmentDAOImplTest {
     fun getAllStagedWorkAssignmentOnSpecificCourse() {
         val stagedWorkAssignments = workAssignmentDAO.getAllStagedWorkAssignmentOnSpecificCourse(1)
         assertEquals(2, stagedWorkAssignments.size)
+    }
+
+    @After
+    fun cleanup() {
+        TenantContext.resetTenantSchema()
     }
 
 }

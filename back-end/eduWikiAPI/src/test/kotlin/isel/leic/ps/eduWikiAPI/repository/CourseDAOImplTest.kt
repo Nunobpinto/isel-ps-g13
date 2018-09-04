@@ -13,6 +13,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.version.CourseProgrammeVersion
 import isel.leic.ps.eduWikiAPI.domain.model.version.CourseVersion
 import isel.leic.ps.eduWikiAPI.repository.interfaces.CourseDAO
 import junit.framework.TestCase.*
+import org.junit.After
 import org.junit.Before
 
 import org.junit.Test
@@ -92,7 +93,7 @@ class CourseDAOImplTest {
         assertEquals(1, klass.logId)
         assertEquals(1, klass.programmeId)
         assertEquals(1, klass.termId)
-        assertEquals(1, klass.version)
+        assertEquals(2, klass.version)
         assertEquals(0, klass.votes)
     }
 
@@ -673,6 +674,11 @@ class CourseDAOImplTest {
         assertEquals("ruben", courseProgrammeStage.createdBy)
         assertEquals(3, courseProgrammeStage.votes)
         assertEquals(false, courseProgrammeStage.optional)
+    }
+
+    @After
+    fun cleanup() {
+        TenantContext.resetTenantSchema()
     }
 
 }

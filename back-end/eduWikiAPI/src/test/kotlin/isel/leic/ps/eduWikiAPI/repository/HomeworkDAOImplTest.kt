@@ -10,7 +10,7 @@ import isel.leic.ps.eduWikiAPI.repository.interfaces.HomeworkDAO
 import org.junit.Test
 
 import junit.framework.TestCase.*
-import org.apache.tomcat.jni.Local
+import org.junit.After
 import org.junit.Before
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -55,7 +55,7 @@ class HomeworkDAOImplTest {
         assertEquals(1, homework.logId)
         assertEquals(0, homework.votes)
         assertEquals("bruno", homework.createdBy)
-        assertEquals(LocalDate.parse("2018-09-02"), homework.dueDate)
+        assertEquals(LocalDate.parse("2017-09-14"), homework.dueDate)
         assertEquals(true, homework.lateDelivery)
         assertEquals(true, homework.multipleDeliveries)
     }
@@ -203,9 +203,9 @@ class HomeworkDAOImplTest {
 
     @Test
     fun getSpecificStagedHomeworkOfCourseInClass() {
-        val stagedHomework = homeworkDAO.getSpecificStagedHomeworkOfCourseInClass(3, 1).get()
+        val stagedHomework = homeworkDAO.getSpecificStagedHomeworkOfCourseInClass(3, 3).get()
         assertEquals("TPC14", stagedHomework.homeworkName)
-        assertEquals(1, stagedHomework.stageId)
+        assertEquals(3, stagedHomework.stageId)
         assertEquals(2, stagedHomework.classId)
         assertEquals(3, stagedHomework.courseId)
         assertEquals(1, stagedHomework.logId)
@@ -221,7 +221,7 @@ class HomeworkDAOImplTest {
         val stagingHomework = homeworkDAO.createStagingHomeworkOnCourseInClass(
                 3,
                 HomeworkStage(
-                        stageId = 3,
+                        stageId = 5,
                         classId = 2,
                         courseId = 3,
                         homeworkName = "TPC05",
@@ -232,7 +232,7 @@ class HomeworkDAOImplTest {
                         votes = -18
                 )
         )
-        assertEquals(3, stagingHomework.stageId)
+        assertEquals(5, stagingHomework.stageId)
         assertEquals(3, stagingHomework.logId)
         assertEquals("TPC05", stagingHomework.homeworkName)
         assertEquals(LocalDate.parse("2004-06-27"), stagingHomework.dueDate)
@@ -244,17 +244,17 @@ class HomeworkDAOImplTest {
 
     @Test
     fun updateVotesOnStagedHomework() {
-        val oldStagedHomework = homeworkDAO.getSpecificStagedHomeworkOfCourseInClass(3, 1).get()
+        val oldStagedHomework = homeworkDAO.getSpecificStagedHomeworkOfCourseInClass(3, 3).get()
         assertEquals(0, oldStagedHomework.votes)
-        val rowsAffected = homeworkDAO.updateVotesOnStagedHomework(1, 157)
+        val rowsAffected = homeworkDAO.updateVotesOnStagedHomework(3, 157)
         assertEquals(1, rowsAffected)
-        val updatedStagedHomework = homeworkDAO.getSpecificStagedHomeworkOfCourseInClass(3, 1).get()
+        val updatedStagedHomework = homeworkDAO.getSpecificStagedHomeworkOfCourseInClass(3, 3).get()
         assertEquals(157, updatedStagedHomework.votes)
     }
 
     @Test
     fun deleteSpecificStagedHomeworkOfCourseInClass() {
-        val rowsAffected = homeworkDAO.deleteSpecificStagedHomeworkOfCourseInClass(3, 1)
+        val rowsAffected = homeworkDAO.deleteSpecificStagedHomeworkOfCourseInClass(3, 3)
         assertEquals(1, rowsAffected)
     }
 
@@ -270,7 +270,7 @@ class HomeworkDAOImplTest {
         assertEquals(5, homeworkVersion.homeworkId)
         assertEquals(1, homeworkVersion.version)
         assertEquals("TPC03", homeworkVersion.homeworkName)
-        assertEquals(LocalDate.parse("2018-09-02"), homeworkVersion.dueDate)
+        assertEquals(LocalDate.parse("2017-09-14"), homeworkVersion.dueDate)
         assertEquals("joao", homeworkVersion.createdBy)
         assertEquals(false, homeworkVersion.lateDelivery)
         assertEquals(true, homeworkVersion.multipleDeliveries)
@@ -309,7 +309,7 @@ class HomeworkDAOImplTest {
         assertEquals(1, homework.logId)
         assertEquals(0, homework.votes)
         assertEquals("bruno", homework.createdBy)
-        assertEquals(LocalDate.parse("2018-09-02"), homework.dueDate)
+        assertEquals(LocalDate.parse("2017-09-14"), homework.dueDate)
         assertEquals(true, homework.lateDelivery)
         assertEquals(true, homework.multipleDeliveries)
     }
@@ -333,7 +333,7 @@ class HomeworkDAOImplTest {
     fun getHomeworkStageByLogId() {
         val stagedHomework = homeworkDAO.getHomeworkStageByLogId(1).get()
         assertEquals("TPC14", stagedHomework.homeworkName)
-        assertEquals(1, stagedHomework.stageId)
+        assertEquals(3, stagedHomework.stageId)
         assertEquals(2, stagedHomework.classId)
         assertEquals(3, stagedHomework.courseId)
         assertEquals(1, stagedHomework.logId)
@@ -344,4 +344,10 @@ class HomeworkDAOImplTest {
         assertEquals(0, stagedHomework.votes)
 
     }
+
+    @After
+    fun cleanup() {
+        TenantContext.resetTenantSchema()
+    }
+
 }

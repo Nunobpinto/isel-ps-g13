@@ -5,6 +5,7 @@ import isel.leic.ps.eduWikiAPI.configuration.persistence.TenantContext
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ResourceDAO
 import org.junit.Test
 import junit.framework.TestCase.*
+import org.junit.After
 import org.junit.Before
 
 import org.junit.runner.RunWith
@@ -78,4 +79,10 @@ class ResourceDAOImplTest {
         val rowsAffected = resourceDAO.deleteSpecificResource(UUID.fromString("fd5af6b8-132b-4820-9c07-0e7fcb180b56"))
         assertEquals(1, rowsAffected)
     }
+
+    @After
+    fun cleanup() {
+        TenantContext.resetTenantSchema()
+    }
+
 }

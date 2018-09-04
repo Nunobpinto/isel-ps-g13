@@ -10,6 +10,7 @@ import isel.leic.ps.eduWikiAPI.domain.model.version.ExamVersion
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ExamDAO
 import org.junit.Test
 import junit.framework.TestCase.*
+import org.junit.After
 
 import org.junit.Before
 import org.junit.runner.RunWith
@@ -353,6 +354,11 @@ class ExamDAOImplTest {
     fun getAllStagedExamOnSpecificCourse() {
         val stagedExams = examDAO.getAllStagedExamOnSpecificCourse(1)
         assertEquals(2, stagedExams.size)
+    }
+
+    @After
+    fun cleanup() {
+        TenantContext.resetTenantSchema()
     }
 
 }

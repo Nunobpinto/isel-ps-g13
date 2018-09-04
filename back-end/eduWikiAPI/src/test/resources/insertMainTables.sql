@@ -339,11 +339,20 @@ insert into isel.course_class (course_id, class_id, term_id, created_by, votes, 
 insert into isel.class_misc_unit (misc_type, course_class_id)
     values ('LECTURE', 1);
 
-insert into isel.lecture (lecture_id, created_by, weekday, begins, duration, location, time_stamp)
-    values (1, 'bruno', 'MONDAY', current_time, '02:00:00', 'E.1.07', current_timestamp);
+insert into isel.lecture (lecture_id, created_by, weekday, begins, duration, location, time_stamp, lecture_version)
+    values (1, 'bruno', 'MONDAY', '12:00:00', '02:00:00', 'E.1.07', current_timestamp, 2);
 
 insert into isel.lecture_version (lecture_id, lecture_version, created_by, weekday, begins, duration, location, time_stamp)
-    values (1, 1, 'bruno', 'MONDAY', current_time, '02:00:00', 'E.1.07', current_timestamp);
+    values (1, 1, 'rui', 'TUESDAY', '11:00:00', '02:00:00', 'E.1.07', current_timestamp);
+
+insert into isel.lecture_version (lecture_id, lecture_version, created_by, weekday, begins, duration, location, time_stamp)
+    values (1, 2, 'bruno', 'MONDAY', '12:00:00', '02:00:00', 'E.1.07', current_timestamp);
+
+insert into isel.lecture_report (lecture_id, reported_by, weekday, begins, duration, location, time_stamp)
+    values (1, 'ruben', 'FRIDAY', '10:00:00', '02:00:00', 'G.1.05', current_timestamp);
+
+insert into isel.lecture_report (lecture_id, reported_by, weekday, begins, duration, location, time_stamp)
+    values (1, 'patricia', 'SATURDAY', '18:30:00', '02:00:00', 'E.1.07', current_timestamp);
 
 insert into isel.class_misc_unit (misc_type, course_class_id)
   values ('LECTURE', 1);
@@ -372,19 +381,31 @@ insert into isel.lecture (lecture_id, created_by, weekday, begins, duration, loc
 insert into isel.lecture_version (lecture_id, lecture_version, created_by, weekday, begins, duration, location, time_stamp)
     values (4, 1, 'bruno', 'FRIDAY', current_time, '02:00:00', 'G.0.14', current_timestamp);
 
+insert into isel.class_misc_unit_stage (misc_type, course_class_id)
+    values ('LECTURE', 1);
+
+insert into isel.class_misc_unit_stage (misc_type, course_class_id)
+    values ('LECTURE', 1);
+
+insert into isel.lecture_stage (lecture_stage_id, created_by, weekday, begins, duration, location, time_stamp)
+    values (1, 'alex', 'THURSDAY', '11:30:00', '02:00:00', 'G.0.10', current_timestamp);
+
+insert into isel.lecture_stage (lecture_stage_id, created_by, weekday, begins, duration, location, time_stamp)
+    values (2, 'oscar', 'SATURDAY', '09:30:00', '03:00:00', 'E.1.14', current_timestamp);
+
 -- Homework Insert
 
 insert into isel.class_misc_unit (misc_type, course_class_id)
     values ('HOMEWORK', 1);
 
 insert into isel.homework (homework_id, created_by, homework_name, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp, homework_version)
-    values (5,'bruno', 'TPC01',gen_random_uuid(), current_date, true, true, current_timestamp, 2);
+    values (5,'bruno', 'TPC01',gen_random_uuid(), '2017-09-14', true, true, current_timestamp, 2);
 
 insert into isel.homework_version (homework_id, homework_version, homework_name, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (5, 1, 'TPC03', 'joao',gen_random_uuid(), current_date, false, true, current_timestamp);
+    values (5, 1, 'TPC03', 'joao',gen_random_uuid(), '2017-09-14', false, true, current_timestamp);
 
 insert into isel.homework_version (homework_id, homework_version, homework_name, created_by, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (5, 2, 'TPC01', 'bruno',gen_random_uuid(), current_date, true, true, current_timestamp);
+    values (5, 2, 'TPC01', 'bruno',gen_random_uuid(), '2017-09-14', true, true, current_timestamp);
 
 insert into isel.class_misc_unit (misc_type, course_class_id)
     values ('HOMEWORK', 2);
@@ -411,10 +432,10 @@ insert into isel.class_misc_unit_stage (misc_type, course_class_id)
     values ('HOMEWORK', 3);
 
 insert into isel.homework_stage(homework_stage_id, created_by, homework_name, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (1, 'francisco', 'TPC14', gen_random_uuid(), '2014-03-24', true , true , current_timestamp);
+    values (3, 'francisco', 'TPC14', gen_random_uuid(), '2014-03-24', true , true , current_timestamp);
 
 insert into isel.homework_stage(homework_stage_id, created_by, homework_name, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
-    values (2, 'wayne', 'TPC07', gen_random_uuid(), '2014-01-08', false , true , current_timestamp);
+    values (4, 'wayne', 'TPC07', gen_random_uuid(), '2014-01-08', false , true , current_timestamp);
 
 insert into isel.homework_report(homework_id, reported_by, homework_name, sheet_id, due_date, late_delivery, multiple_deliveries, time_stamp)
     values (5, 'vitor', 'TPC06', gen_random_uuid(), '2017-09-24', false , true , current_timestamp);

@@ -14,6 +14,7 @@ import isel.leic.ps.eduWikiAPI.repository.interfaces.ClassDAO
 import org.junit.Test
 
 import junit.framework.TestCase.*
+import org.junit.After
 import org.junit.Before
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -50,7 +51,7 @@ class ClassDAOImplTest {
     fun getSpecificClass() {
         val klass = classDAO.getSpecificClass(1).get()
         assertEquals(1, klass.classId)
-        assertEquals(1, klass.version)
+        assertEquals(2, klass.version)
         assertEquals("ze", klass.createdBy)
         assertEquals("LI51D", klass.className)
         assertEquals(1, klass.termId)
@@ -92,7 +93,7 @@ class ClassDAOImplTest {
                 1,
                 ClassMiscUnitType.HOMEWORK
         )
-        assertEquals(7, classMiscUnit.classMiscUnitId)
+        assertEquals(8, classMiscUnit.classMiscUnitId)
         assertEquals("HOMEWORK", classMiscUnit.miscType.name)
         assertEquals(1, classMiscUnit.courseClassId)
     }
@@ -100,7 +101,7 @@ class ClassDAOImplTest {
     @Test
     fun updateClass() {
         val oldClass = classDAO.getSpecificClass(1).get()
-        assertEquals(1, oldClass.version)
+        assertEquals(2, oldClass.version)
         val classUpdated = classDAO.updateClass(
                 Class(
                         classId = 1,
@@ -113,7 +114,7 @@ class ClassDAOImplTest {
                 )
         )
         assertEquals(1, classUpdated.classId)
-        assertEquals(2, classUpdated.version)
+        assertEquals(3, classUpdated.version)
         assertEquals("edu", classUpdated.createdBy)
         assertEquals("LI51N", classUpdated.className)
         assertEquals(1, classUpdated.termId)
@@ -133,7 +134,7 @@ class ClassDAOImplTest {
 
     @Test
     fun deleteSpecificClass() {
-        val rowsAffected = classDAO.deleteSpecificClass(1)
+        val rowsAffected = classDAO.deleteSpecificClass(3)
         assertEquals(1, rowsAffected)
     }
 
@@ -192,7 +193,7 @@ class ClassDAOImplTest {
         val stagingClassMiscUnit = classDAO.createStagingClassMiscUnit(1, ClassMiscUnitType.LECTURE)
         assertEquals(1, stagingClassMiscUnit.courseClassId)
         assertEquals("LECTURE", stagingClassMiscUnit.miscType.name)
-        assertEquals(3, stagingClassMiscUnit.stageId)
+        assertEquals(5, stagingClassMiscUnit.stageId)
     }
 
     @Test
@@ -213,11 +214,13 @@ class ClassDAOImplTest {
 
     @Test
     fun deleteAllStagedClassMiscUnitsFromTypeOfCourseInClass() {
+        val rowsAffected = classDAO.deleteAllStagedClassMiscUnitsFromTypeOfCourseInClass(1, ClassMiscUnitType.LECTURE)
+        assertEquals(2, rowsAffected)
     }
 
     @Test
     fun deleteSpecificStagedClassMiscUnitFromTypeOfCourseInClass() {
-        val rowsAffected = classDAO.deleteSpecificStagedClassMiscUnitFromTypeOfCourseInClass(3, 1, ClassMiscUnitType.HOMEWORK)
+        val rowsAffected = classDAO.deleteSpecificStagedClassMiscUnitFromTypeOfCourseInClass(1, 1, ClassMiscUnitType.LECTURE)
         assertEquals(1, rowsAffected)
     }
 
@@ -352,7 +355,7 @@ class ClassDAOImplTest {
         assertEquals(1, reportCourseClass.courseClassId)
         assertEquals(1, reportCourseClass.courseId)
         assertEquals(1, reportCourseClass.termId)
-        assertEquals(false, reportCourseClass.deletePermanently)
+        assertEquals(true, reportCourseClass.deletePermanently)
         assertEquals(1, reportCourseClass.logId)
         assertEquals("alice", reportCourseClass.reportedBy)
         assertEquals(19, reportCourseClass.votes)
@@ -504,7 +507,7 @@ class ClassDAOImplTest {
     fun getClassByLogId() {
         val klass = classDAO.getClassByLogId(1).get()
         assertEquals(1, klass.classId)
-        assertEquals(1, klass.version)
+        assertEquals(2, klass.version)
         assertEquals("ze", klass.createdBy)
         assertEquals("LI51D", klass.className)
         assertEquals(1, klass.termId)
@@ -560,7 +563,7 @@ class ClassDAOImplTest {
         assertEquals(1, courseClassReport.courseClassId)
         assertEquals(1, courseClassReport.courseId)
         assertEquals(1, courseClassReport.termId)
-        assertEquals(false, courseClassReport.deletePermanently)
+        assertEquals(true, courseClassReport.deletePermanently)
         assertEquals(1, courseClassReport.logId)
     }
 
@@ -574,6 +577,11 @@ class ClassDAOImplTest {
         assertEquals(88, courseClassStage.votes)
         assertEquals(2, courseClassStage.courseId)
         assertEquals(2, courseClassStage.classId)
+    }
+
+    @After
+    fun cleanup() {
+        TenantContext.resetTenantSchema()
     }
 
 }
