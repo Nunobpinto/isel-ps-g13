@@ -1,15 +1,13 @@
 import React from 'react'
-import Cookies from 'universal-cookie'
 import fetch from 'isomorphic-fetch'
-import { message, List, Card, Row, Col } from 'antd'
+import { message, List, Card, Row } from 'antd'
 import Layout from './Layout'
-const cookies = new Cookies()
 
 export default class extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      pending: [],
+      pending: {},
       loading: true
     }
   }
@@ -19,37 +17,32 @@ export default class extends React.Component {
         <h2>All pending Tenants</h2>
         <Row gutter={16}>
           <List
+            grid={{ gutter: 16, column: 4 }}
             loading={this.state.loading}
             dataSource={this.state.pending}
             renderItem={item => (
-              <Col span={8} key={item.tenantUuid}>
-                <List.Item>
-                  <Card
-                    title={item.shortName}
-                    actions={[<a href={`/pending/${item.tenantUuid}`}>Check it's page</a>]}
-                  >
-                    <p>{item.fullName}</p>
-                    <p>{item.address}</p>
-                    <p>{item.contact}</p>
-                    <p>{item.website}</p>
-                    <p>{item.orgSummary}</p>
-                    <p>{item.orgSummary}</p>
-                  </Card>
-
-                </List.Item>
-              </Col>)}
+              <List.Item>
+                <Card
+                  title={item.shortName}
+                  actions={[<a href={`/pending/${item.tenantUuid}`}>Check it's page</a>]}
+                >
+                  <p>{item.fullName}</p>
+                  <p>Address: {item.address}</p>
+                  <p>Contact: {item.contact}</p>
+                  <p>Website: {item.website}</p>
+                </Card>
+              </List.Item>
+            )}
           />
         </Row>
-        }
       </Layout>
     )
   }
   componentDidMount () {
-    const uri = 'http://localhost:8080/pending'
+    const uri = 'http://localhost:8080/tenants/pending/'
     const options = {
       headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Access-Control-Allow-Origin': '*'
       }
     }
     fetch(uri, options)
@@ -60,14 +53,13 @@ export default class extends React.Component {
         return resp.json()
       })
       .then(json => this.setState({
-        pending: json.tenantList,
+        pending: json.pendingTenantList,
         loading: false
       }))
       .catch(() => {
         message.error('Error fetching tenants')
-        this.setState({
-          loading: false
-        })
-      })
+        this.setState({loading: false})
+      }
+      )
   }
 }

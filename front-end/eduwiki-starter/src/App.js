@@ -17,7 +17,8 @@ class App extends Component {
           <Route exact path='/create-tenant' component={CreateTenant} />
           <Route exact path='/login' component={AdminLogin} />
           <ProtectedRoute exact path='/admin' component={AdminPage} />
-          <ProtectedRoute exact path='/pending/:tennantId' component={PendingTenant} />
+          <ProtectedRoute exact path='/logout' component={Logout} />
+          <ProtectedRoute exact path='/pending/:tenantId' component={PendingTenant} />
           <Redirect from='*' to='/home' />
         </Switch>
       </BrowserRouter>

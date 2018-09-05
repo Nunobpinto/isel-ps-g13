@@ -224,7 +224,7 @@ class TenantCreator extends React.Component {
   }
   componentDidUpdate () {
     if (this.state.submit) {
-      const uri = 'http://localhost:8080/pending'
+      const uri = 'http://localhost:8080/tenants/pending'
       const options = {
         method: 'POST',
         headers: {

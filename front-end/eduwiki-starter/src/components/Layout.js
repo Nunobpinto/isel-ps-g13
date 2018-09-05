@@ -1,18 +1,13 @@
 import React from 'react'
-import { Layout, Menu, Button } from 'antd'
-import { NavLink } from 'react-router-dom'
+import { Layout, Button, Row, Col } from 'antd'
 const { Header, Content, Footer } = Layout
 
 export default(props) => (
   <Layout className='layout'>
     <Header id='navbar'>
       <div className='logo' />
-      <Menu
-        theme='dark'
-        mode='horizontal'
-        style={{ lineHeight: '64px' }}
-      >
-        <Menu.Item as={NavLink} exact to={'/home'}>
+      <Row gutter={16}>
+        <Col className='gutter-row' span={6}>
           <Button
             type='default'
             ghost
@@ -21,8 +16,8 @@ export default(props) => (
             }}>
                 Home
           </Button>
-        </Menu.Item>
-        <Menu.Item>
+        </Col>
+        <Col className='gutter-row' span={6}>
           <Button
             type='default'
             ghost
@@ -32,20 +27,33 @@ export default(props) => (
           >
                 Create Tenant
           </Button>
-        </Menu.Item>
-        {props.auth
-          ? <Menu.Item>
-            <Button
-              type='default'
-              ghost
-              onClick={() => {
-                props.history.push('/logout')
-              }}
-            >
+        </Col>
+        {window.localStorage.getItem('auth')
+          ? <div>
+            <Col className='gutter-row' span={6}>
+              <Button
+                type='default'
+                ghost
+                onClick={() => {
+                  props.history.push('/admin')
+                }}
+              >
+              Admin Page
+              </Button>
+            </Col>
+            <Col className='gutter-row' span={6}>
+              <Button
+                type='default'
+                ghost
+                onClick={() => {
+                  props.history.push('/logout')
+                }}
+              >
               Sign Out
-            </Button>
-          </Menu.Item>
-          : <Menu.Item>
+              </Button>
+            </Col>
+          </div>
+          : <Col className='gutter-row' span={6}>
             <Button
               type='default'
               ghost
@@ -55,11 +63,12 @@ export default(props) => (
             >
             Admin Login
             </Button>
-          </Menu.Item>}
-      </Menu>
+          </Col>
+        }
+      </Row>
     </Header>
-    <Content style={{ padding: '2%' }}>
-      <div style={{ background: '#fff', padding: 24, minHeight: 280 }}>
+    <Content>
+      <div style={{ background: '#fff', padding: 24, minHeight: 500 }}>
         {props.children}
       </div>
     </Content>
