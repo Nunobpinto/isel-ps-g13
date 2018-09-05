@@ -32,7 +32,7 @@ import java.time.LocalDateTime
 class TenantServiceImpl : TenantService {
 
     companion object {
-        const val REQUIRED_REQUEST_COUNT = 2
+        const val REQUIRED_REQUEST_COUNT = 3
     }
 
     @Autowired

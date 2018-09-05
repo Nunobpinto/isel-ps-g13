@@ -29,7 +29,7 @@ fun tenantRequestDetailsToPendingTenantDetails(requestDetails: TenantRequestDeta
         address = requestDetails.address,
         contact = requestDetails.contact,
         website = requestDetails.website,
-        email_pattern = requestDetails.emailPattern,
+        emailPattern = requestDetails.emailPattern,
         orgSummary = requestDetails.organizationSummary
 )
 
@@ -49,7 +49,7 @@ fun toPendingTenantDetailsOutputModel(pendingTenantDetails: PendingTenantDetails
         address = pendingTenantDetails.address,
         contact = pendingTenantDetails.contact,
         website = pendingTenantDetails.website,
-        emailPattern = pendingTenantDetails.email_pattern,
+        emailPattern = pendingTenantDetails.emailPattern,
         orgSummary = pendingTenantDetails.orgSummary,
         timestamp = pendingTenantDetails.timestamp,
         creators = findPendingTenantCreatorsByTenantId.map { toPendingTenantCreatorOutputModel(it) }
