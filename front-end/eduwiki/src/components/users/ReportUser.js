@@ -60,8 +60,8 @@ class ReportForm extends React.Component {
         },
         body: JSON.stringify(report)
       }
-      this.props.form.resetFields()
-      fetcher(`http://localhost:8080/users/${this.props.username}/report`, options)
+      const uri = `http://localhost:8080/users/${this.props.username}/reports`
+      fetcher(uri, options)
         .then(_ => {
           message.success('Successfully reported')
           this.setState({

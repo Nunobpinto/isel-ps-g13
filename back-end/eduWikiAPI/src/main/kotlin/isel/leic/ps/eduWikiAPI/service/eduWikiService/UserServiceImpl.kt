@@ -16,7 +16,6 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.collections.UserReputationColl
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.*
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.UserReportOutputModel
 import isel.leic.ps.eduWikiAPI.service.eduWikiService.interfaces.UserService
-import isel.leic.ps.eduWikiAPI.eventListeners.events.OnRegistrationEvent
 import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.*
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_REPORT_TABLE
 import isel.leic.ps.eduWikiAPI.repository.ClassDAOImpl.Companion.CLASS_STAGE_TABLE
@@ -157,7 +156,7 @@ class UserServiceImpl : UserService {
                 .orElseThrow { BadRequestException("Bad tenant", "You must provide a valid tenant to register yourself in to") }
         // Check if email is valid
         if(! isEmailValid(inputUser.email) || ! inputUser.email.endsWith(tenantDetails.emailPattern))
-            throw BadRequestException("invalid email", "Get an from your organization")
+            throw BadRequestException("invalid email", "Get an email from your organization")
         // Check if username was taken
         if(tenantDAO.getRegisteredUserByUsername(inputUser.username).isPresent)
             throw ConflictException("Username already picked", "Please try another username")
@@ -171,7 +170,16 @@ class UserServiceImpl : UserService {
                 username = user.username
         ))
         // Send confirmation email
-        eventPublisher.publishEvent(OnRegistrationEvent(user))
+        val token = ValidationToken(token = UUID.randomUUID())
+        tokenDAO.saveToken(token)
+        val message =
+                "Please follow this link to confirm your account " +
+                        "" + "http://localhost:8080/users/" + user.username + "/confirm/" + token.token
+        emailService.sendSimpleMessage(
+                to = user.email,
+                subject = "Verify your Eduwiki account",
+                text = message
+        )
         return toAuthUserOutputModel(user, reputation)
     }
 

@@ -1,12 +1,16 @@
 package isel.leic.ps.eduWikiAPI.domain.outputModel.single
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import java.sql.Time
 import java.sql.Timestamp
-import java.time.*
+import java.time.DayOfWeek
+import java.time.Duration
+import java.time.LocalDateTime
+import java.time.LocalTime
 
 data class LectureOutputModel(
         val lectureId: Int = 0,
+        val className: String = "",
+        val lecturedTerm: String = "",
+        val courseShortName: String = "",
         val version: Int = 0,
         val createdBy: String = "",
         val weekDay: DayOfWeek = DayOfWeek.MONDAY,

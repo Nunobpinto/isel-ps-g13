@@ -4,11 +4,11 @@ import UserPage from '../users/UserPage'
 import Layout from '../layout/Layout'
 
 export default (props, context) => {
-  const authCookie = window.localStorage.getItem('auth')
-  if (authCookie) {
+  const auth = window.localStorage.getItem('auth')
+  if (auth) {
     return (
       <Layout>
-        <UserPage auth={authCookie} history={props.history} />
+        <UserPage auth={auth} history={props.history} />
       </Layout>
     )
   }

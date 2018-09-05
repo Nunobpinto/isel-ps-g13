@@ -2,8 +2,7 @@ package isel.leic.ps.eduWikiAPI.domain.mappers
 
 import isel.leic.ps.eduWikiAPI.domain.inputModel.LectureInputModel
 import isel.leic.ps.eduWikiAPI.domain.inputModel.reports.LectureReportInputModel
-import isel.leic.ps.eduWikiAPI.domain.model.ActionLog
-import isel.leic.ps.eduWikiAPI.domain.model.Lecture
+import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.domain.model.report.LectureReport
 import isel.leic.ps.eduWikiAPI.domain.model.staging.LectureStage
 import isel.leic.ps.eduWikiAPI.domain.model.version.LectureVersion
@@ -17,21 +16,22 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.LectureReportOu
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.staging.LectureStageOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.version.LectureVersionOutputModel
 import java.time.Duration
+import java.time.LocalTime
 
 
 fun toLecture(lectureInputModel: LectureInputModel, createdBy: String) = Lecture(
         createdBy = createdBy,
         weekDay = lectureInputModel.weekDay,
-        begins = lectureInputModel.begins,
-        duration = lectureInputModel.duration,
+        begins = LocalTime.parse(lectureInputModel.begins),
+        duration = Duration.ofHours(lectureInputModel.duration),
         location = lectureInputModel.location
 )
 
 fun toLectureStage(lectureInputModel: LectureInputModel, createdBy: String) = LectureStage(
         createdBy = createdBy,
         weekDay = lectureInputModel.weekDay,
-        begins = lectureInputModel.begins,
-        duration = lectureInputModel.duration,
+        begins = LocalTime.parse(lectureInputModel.begins),
+        duration = Duration.ofHours(lectureInputModel.duration),
         location = lectureInputModel.location
 )
 
@@ -63,7 +63,7 @@ fun toLectureReport(lectureReportInputModel: LectureReportInputModel, lectureId:
         reportedBy = reportedBy
 )
 
-fun toLectureOutputModel(lecture: Lecture) = LectureOutputModel(
+fun toLectureOutputModel(lecture: Lecture, course: Course, klass: Class, term: Term) = LectureOutputModel(
         createdBy = lecture.createdBy,
         weekDay = lecture.weekDay,
         begins = lecture.begins,
@@ -72,10 +72,13 @@ fun toLectureOutputModel(lecture: Lecture) = LectureOutputModel(
         lectureId = lecture.lectureId,
         timestamp = lecture.timestamp,
         version = lecture.version,
-        votes = lecture.votes
+        votes = lecture.votes,
+        className = klass.className,
+        courseShortName = course.shortName,
+        lecturedTerm = term.shortName
 )
 
-fun toLectureReportOutputModel(lectureReport: LectureReport) = LectureReportOutputModel(
+fun toLectureReportOutputModel(lectureReport: LectureReport, course: Course, klass: Class, term: Term) = LectureReportOutputModel(
         reportedBy = lectureReport.reportedBy,
         weekDay = lectureReport.weekDay,
         begins = lectureReport.begins,
@@ -84,7 +87,10 @@ fun toLectureReportOutputModel(lectureReport: LectureReport) = LectureReportOutp
         lectureId = lectureReport.lectureId,
         timestamp = lectureReport.timestamp,
         votes = lectureReport.votes,
-        reportId = lectureReport.reportId
+        reportId = lectureReport.reportId,
+        className = klass.className,
+        courseShortName = course.shortName,
+        lecturedTerm = term.shortName
 )
 
 fun toLectureStageOutputModel(lectureStage: LectureStage) = LectureStageOutputModel(
@@ -94,10 +100,11 @@ fun toLectureStageOutputModel(lectureStage: LectureStage) = LectureStageOutputMo
         duration = lectureStage.duration,
         location = lectureStage.location,
         timestamp = lectureStage.timestamp,
-        votes = lectureStage.votes
+        votes = lectureStage.votes,
+        createdBy = lectureStage.createdBy
 )
 
-fun toLectureVersionOutputModel(lectureVersion: LectureVersion) = LectureVersionOutputModel(
+fun toLectureVersionOutputModel(lectureVersion: LectureVersion, course: Course, klass: Class, term: Term) = LectureVersionOutputModel(
         createdBy = lectureVersion.createdBy,
         weekDay = lectureVersion.weekDay,
         begins = lectureVersion.begins,
@@ -105,7 +112,10 @@ fun toLectureVersionOutputModel(lectureVersion: LectureVersion) = LectureVersion
         location = lectureVersion.location,
         lectureId = lectureVersion.lectureId,
         timestamp = lectureVersion.timestamp,
-        version = lectureVersion.version
+        version = lectureVersion.version,
+        className = klass.className,
+        courseShortName = course.shortName,
+        lecturedTerm = term.shortName
 )
 
 fun toLectureCollectionOutputModel(lectureList: List<LectureOutputModel>) = LectureCollectionOutputModel(

@@ -45,14 +45,14 @@ class UsersController {
             @RequestBody report: UserReportInputModel
     ) = userService.reportUser(username, report, principal)
 
-    @PostMapping("/{username}/report/{reportId}")
+    @PostMapping("/{username}/reports/{reportId}")
     fun approveUserReport(
             principal: Principal,
             @PathVariable username: String,
             @PathVariable reportId: Int
     ) = userService.approveReport(username, reportId, principal)
 
-    @DeleteMapping("/{username}/report/{reportId}")
+    @DeleteMapping("/{username}/reports/{reportId}")
     fun deleteReportOnUser(
             principal: Principal,
             @PathVariable username: String,

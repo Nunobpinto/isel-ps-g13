@@ -2,8 +2,9 @@ import React from 'react'
 import fetcher from '../../fetcher'
 import MyLayout from '../layout/Layout'
 import ReportUser from './ReportUser'
-import {message, Layout} from 'antd'
+import {Layout, Button} from 'antd'
 import {Redirect} from 'react-router-dom'
+import UserReports from './UserReports'
 
 const { Content, Sider } = Layout
 
@@ -32,7 +33,15 @@ class OtherUserDetail extends React.Component {
             <h1><strong>Username</strong> : {this.state.user.username}</h1>
           </Sider>
           <Content style={{ padding: '0 24px', minHeight: 280 }}>
-            <ReportUser username={this.state.user.username} />
+            <Button onClick={() => this.setState({seeReports: true})}>Show User Reports</Button>
+            { this.state.seeReports &&
+              <div>
+                <ReportUser username={this.state.user.username} />
+                <UserReports
+                  username={this.state.user.username}
+                  authUser={this.props.user}
+                />
+              </div>}
           </Content>
         </Layout>
       </div>
@@ -56,7 +65,6 @@ class OtherUserDetail extends React.Component {
           }
         })
       })
-      .catch(_ => message.error('Error fetching user'))
   }
 }
 

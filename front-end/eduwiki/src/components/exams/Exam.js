@@ -82,9 +82,9 @@ export default class extends React.Component {
           </Row>
           {this.state.report &&
           <ReportExam
-           courseId={this.props.match.params.courseId}
-           termId={this.props.match.params.termId}
-           examId={this.props.match.params.examId} />
+            courseId={this.props.match.params.courseId}
+            termId={this.props.match.params.termId}
+            examId={this.props.match.params.examId} />
           }
         </div>
       </Layout>

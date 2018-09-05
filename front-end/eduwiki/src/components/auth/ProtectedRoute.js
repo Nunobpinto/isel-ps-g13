@@ -5,12 +5,12 @@ import {
   withRouter
 } from 'react-router-dom'
 
-const privateRoute = ({ path, component: Component, ...props }) => (
+const protectedRoute = ({ path, component: Component, ...props }) => (
   <Route
     {...props}
     render={compProps => {
-      let cookie = window.localStorage.getItem('auth')
-      if (cookie) {
+      const auth = window.localStorage.getItem('auth')
+      if (auth) {
         return (<Component {...compProps} />)
       }
       return (<Redirect to={{ pathname: '/', state: {from: props.location} }} />)
@@ -18,4 +18,4 @@ const privateRoute = ({ path, component: Component, ...props }) => (
     } />
 )
 
-export default withRouter(privateRoute)
+export default withRouter(protectedRoute)

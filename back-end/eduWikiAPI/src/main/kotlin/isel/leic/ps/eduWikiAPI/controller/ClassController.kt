@@ -345,7 +345,7 @@ class ClassController {
             @PathVariable courseId: Int,
             @PathVariable lectureId: Int,
             @PathVariable reportId: Int,
-            @PathVariable inputVote: VoteInputModel,
+            @RequestBody inputVote: VoteInputModel,
             principal: Principal
     ) = classService.voteOnReportOfLectureOfCourseInClass(classId, courseId, lectureId, reportId, inputVote, principal)
 
@@ -424,8 +424,8 @@ class ClassController {
             @PathVariable classId: Int,
             @PathVariable courseId: Int,
             @PathVariable lectureId: Int,
-            @PathVariable version: Int
-    ) = classService.getSpecificVersionOfLectureOfCourseInClass(classId, courseId, lectureId, version)
+            @PathVariable versionId: Int
+    ) = classService.getSpecificVersionOfLectureOfCourseInClass(classId, courseId, lectureId, versionId)
 
     // ----------------------------
     // Homeworks in Class Endpoints

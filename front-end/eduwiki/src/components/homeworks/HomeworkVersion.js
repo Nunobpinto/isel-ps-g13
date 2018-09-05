@@ -1,8 +1,7 @@
 import React from 'react'
-import {Row, Col, Card, message, Breadcrumb} from 'antd'
+import {Row, Col, Card, message, Breadcrumb, Button, Icon} from 'antd'
 import fetcher from '../../fetcher'
 import Layout from '../layout/Layout'
-import ReportHomework from './ReportHomework'
 
 export default class extends React.Component {
   constructor (props) {
@@ -57,13 +56,9 @@ export default class extends React.Component {
             </Col>
             }
           </Row>
-          {this.state.report &&
-          <ReportHomework
-            courseId={this.props.match.params.courseId}
-            classId={this.props.match.params.classId}
-            homeworkId={this.props.match.params.homeworkId}
-          />
-          }
+          <Button type='primary' onClick={() => this.props.history.push(`/classes/${this.props.match.params.classId}/courses/${this.props.match.params.courseId}/homeworks/${this.props.match.params.homeworkId}`)}>
+            <Icon type='left' />Back to actual version
+          </Button>
         </div>
       </Layout>
     )

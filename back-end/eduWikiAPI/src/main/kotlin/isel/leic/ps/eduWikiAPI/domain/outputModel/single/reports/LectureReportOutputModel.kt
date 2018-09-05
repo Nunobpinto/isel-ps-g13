@@ -6,6 +6,9 @@ import java.time.*
 
 data class LectureReportOutputModel (
         val reportId: Int = -1,
+        val className: String = "",
+        val lecturedTerm: String = "",
+        val courseShortName: String = "",
         val lectureId: Int = 0,
         val weekDay: DayOfWeek? = null,
         val begins: LocalTime? = null,

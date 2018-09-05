@@ -109,7 +109,7 @@ class CourseClass extends React.Component {
                     /
                 <strong>{this.state.courseClass.className}</strong>
                     /
-                <strong>{this.state.courseClass.courseShortName}</strong>
+                <a href={`/courses/${this.state.courseClass.courseId}`}><strong>{this.state.courseClass.courseShortName}</strong></a>
               </h1>
             </div>
             <h1>{this.state.courseClass.courseFullName} - <small>({this.state.courseClass.timestamp})</small></h1>

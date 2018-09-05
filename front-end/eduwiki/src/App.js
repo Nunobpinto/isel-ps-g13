@@ -39,6 +39,9 @@ import CourseClassReports from './components/courseClass/CourseClassReports'
 import AllHomeworksPage from './components/homeworks/AllHomeworksPage'
 import HomeworkReports from './components/homeworks/HomeworkReports'
 import HomeworkVersion from './components/homeworks/HomeworkVersion'
+import LectureReports from './components/lectures/LectureReports'
+import LectureVersion from './components/lectures/LectureVersion'
+import AllLecturesPage from './components/lectures/AllLecturesPage'
 
 export default () => (
   <div>
@@ -74,7 +77,10 @@ export default () => (
         <ProtectedRoute exact path='/classes/:classId/versions/:version' component={ClassVersion} />
         <ProtectedRoute exact path='/classes/:classId/courses/:courseId' component={CourseClass} />
         <ProtectedRoute exact path='/classes/:classId/courses/:courseId/reports' component={CourseClassReports} />
+        <ProtectedRoute exact path='/classes/:classId/courses/:courseId/lectures' component={AllLecturesPage} />
         <ProtectedRoute exact path='/classes/:classId/courses/:courseId/lectures/:lectureId' component={Lecture} />
+        <ProtectedRoute exact path='/classes/:classId/courses/:courseId/lectures/:lectureId/reports' component={LectureReports} />
+        <ProtectedRoute exact path='/classes/:classId/courses/:courseId/lectures/:lectureId/versions/:version' component={LectureVersion} />
         <ProtectedRoute exact path='/classes/:classId/courses/:courseId/homeworks' component={AllHomeworksPage} />
         <ProtectedRoute exact path='/classes/:classId/courses/:courseId/homeworks/:homeworkId' component={Homework} />
         <ProtectedRoute exact path='/classes/:classId/courses/:courseId/homeworks/:homeworkId/reports' component={HomeworkReports} />

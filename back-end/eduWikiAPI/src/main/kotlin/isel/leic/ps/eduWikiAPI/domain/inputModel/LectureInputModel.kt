@@ -6,9 +6,9 @@ import java.time.Duration
 import java.time.LocalTime
 
 class LectureInputModel(
-        @JsonProperty("weekday")
+        @JsonProperty("weekDay")
         val weekDay: DayOfWeek = DayOfWeek.MONDAY,
-        val begins: LocalTime = LocalTime.now(),
-        val duration: Duration = Duration.ZERO,
+        val begins: String = "",
+        val duration: Long = 0,
         val location: String = ""
 )

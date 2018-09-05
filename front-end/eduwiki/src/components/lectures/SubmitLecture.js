@@ -1,27 +1,32 @@
 import React from 'react'
-import { Form, Input, Button, InputNumber, Select, TimePicker, message } from 'antd'
+import { Form, Input, Button, TimePicker, Select, InputNumber } from 'antd'
 import moment from 'moment'
-import fetcher from '../../fetcher'
 
 const FormItem = Form.Item
 
-class SubmitExam extends React.Component {
+class SubmitLecture extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      dueDate: undefined,
-      type: '',
-      phase: '',
+      weekDay: undefined,
+      begins: '',
+      duration: '',
       location: '',
       createFlag: '',
       data: undefined
     }
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleDateChange = this.handleDateChange.bind(this)
+  }
+
+  handleDateChange (time, timeString) {
+    this.setState({begins: timeString})
   }
   handleSubmit (e) {
     e.preventDefault()
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        values.begins = this.state.begins
         this.setState({
           createFlag: true,
           data: values
@@ -66,7 +71,7 @@ class SubmitExam extends React.Component {
                 required: true, message: 'Please choose beginning time of the new Lecture'
               }]
             })(
-              <TimePicker defaultValue={moment('12:08', timeFormat)} format={timeFormat} />
+              <TimePicker defaultValue={moment('00:00', timeFormat)} format={timeFormat} onChange={this.handleDateChange}/>
             )}
           </FormItem>
           <FormItem
@@ -100,22 +105,10 @@ class SubmitExam extends React.Component {
   }
   componentDidUpdate () {
     if (this.state.createFlag) {
-      const uri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/lectures`
-      const options = {
-        method: 'POST',
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Content-Type': 'application/json',
-          'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
-          'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
-        },
-        body: JSON.stringify(this.state.data)
-      }
-      fetcher(uri, options)
-        .then(_ => message.success('Saved Lecture'))
-        .catch(_ => message.error(''))
+      this.props.action(this.state.data)
+      this.setState({createFlag: false})
     }
   }
 }
 
-export default Form.create()(SubmitExam)
+export default Form.create()(SubmitLecture)
