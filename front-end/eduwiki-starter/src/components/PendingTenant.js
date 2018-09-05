@@ -1,9 +1,7 @@
 import React from 'react'
-import Cookies from 'universal-cookie'
 import fetch from 'isomorphic-fetch'
-import { message, List, Card, Row, Col } from 'antd'
+import { message, List, Card, Row, Col, Button, Icon } from 'antd'
 import Layout from './Layout'
-const cookies = new Cookies()
 
 export default class extends React.Component {
   constructor (props) {
@@ -12,44 +10,140 @@ export default class extends React.Component {
       pending: {},
       loading: true
     }
+    this.approve = this.approve.bind(this)
+    this.reject = this.reject.bind(this)
+  }
+  approve () {
+    const uri = 'http://localhost:8080/tenants/pending/' + this.props.match.params.tenantId
+    const options = {
+      method: 'POST',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
+        'tenant-uuid': '1ed95f93-5533-47b8-81d3-369c8c30ff80'
+      }
+    }
+    fetch(uri, options)
+      .then(resp => {
+        if (resp.status >= 400) {
+          throw new Error()
+        }
+        message.success('Approved Tenant')
+        this.setState({
+          approve: false
+        })
+      })
+      .catch(() => {
+        message.error('Error approving tenant')
+        this.setState({
+          approve: false
+        })
+      })
+  }
+
+  reject () {
+    const uri = 'http://localhost:8080/tenants/pending/' + this.props.match.params.tenantId
+    const options = {
+      method: 'DELETE',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
+        'tenant-uuid': '1ed95f93-5533-47b8-81d3-369c8c30ff80'
+      }
+    }
+    fetch(uri, options)
+      .then(resp => {
+        if (resp.status >= 400) {
+          throw new Error()
+        }
+        message.success('Rejected Tenant')
+        this.setState({
+          reject: false
+        })
+        return resp.json()
+      })
+      .catch(() => {
+        message.error('Error rejecting tenant')
+        this.setState({
+          reject: false
+        })
+      })
   }
   render () {
     return (
       <Layout history={this.props.history} auth>
-        <h2>All pending Tenants</h2>
+        <h2>{this.state.pending.fullName} - {this.state.pending.timestamp}</h2>
         <Row gutter={16}>
-          <List
-            loading={this.state.loading}
-            dataSource={this.state.pending}
-            renderItem={item => (
-              <Col span={8} key={item.tenantUuid}>
-                <List.Item>
-                  <Card
-                    title={item.shortName}
-                    actions={[<a href={`/pending/${item.tenantUuid}`}>Check it's page</a>]}
-                  >
-                    <p>{item.fullName}</p>
-                    <p>{item.address}</p>
-                    <p>{item.contact}</p>
-                    <p>{item.website}</p>
-                    <p>{item.orgSummary}</p>
-                    <p>{item.orgSummary}</p>
-                  </Card>
-
-                </List.Item>
-              </Col>)}
-          />
+          <Col span={8}>
+            <Card title='Address' loading={this.state.loading}>
+              {this.state.pending.address}
+            </Card>
+          </Col>
+          <Col span={8}>
+            <Card title='Contact' loading={this.state.loading}>
+              {this.state.pending.contact}
+            </Card>
+          </Col>
+          <Col span={8}>
+            <Card title='Website' loading={this.state.loading}>
+              {this.state.pending.website}
+            </Card>
+          </Col>
+          <Col span={8}>
+            <Card title='Email Pattern' loading={this.state.loading}>
+              {this.state.pending.emailPattern}
+            </Card>
+          </Col>
+          <Col span={8}>
+            <Card title='Summary' loading={this.state.loading}>
+              {this.state.pending.orgSummary}
+            </Card>
+          </Col>
         </Row>
-        }
+        <List
+          loading={this.state.loading}
+          header={<h1>List of Creators</h1>}
+          dataSource={this.state.pending.creators}
+          grid={{ gutter: 16, column: 4 }}
+          renderItem={item => (
+            <List.Item>
+              <Card
+                title={item.username}
+              >
+                <p>{item.email}</p>
+                <p>{item.givenName}</p>
+                <p>{item.familyName}</p>
+                {item.isPrincipal && <p>Principal User</p>}
+              </Card>
+            </List.Item>
+          )}
+        />
+
+        <Button type='primary' onClick={() => this.setState({approve: true})}>
+          <Icon type='check' />Approve Tenant
+        </Button>
+        <br />
+        <Button type='danger' onClick={() => this.setState({reject: true})}>
+          <Icon type='close' />Reject Tenant
+        </Button>
+
       </Layout>
     )
   }
+  componentDidUpdate () {
+    if (this.state.approve) {
+      this.approve()
+    } else if (this.state.reject) {
+      this.reject()
+    }
+  }
   componentDidMount () {
-    const uri = 'http://localhost:8080/pending/' + this.props.tennantId
+    const uri = 'http://localhost:8080/tenants/pending/' + this.props.match.params.tenantId
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth')
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
+        'tenant-uuid': '1ed95f93-5533-47b8-81d3-369c8c30ff80'
       }
     }
     fetch(uri, options)

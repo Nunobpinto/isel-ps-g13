@@ -4,15 +4,13 @@ import {
   Redirect,
   withRouter
 } from 'react-router-dom'
-import Cookies from 'universal-cookie'
-const cookies = new Cookies()
 
-const privateRoute = ({ path, component: Component, ...props }) => (
+const protectedRoute = ({ path, component: Component, ...props }) => (
   <Route
     {...props}
     render={compProps => {
-      let cookie = cookies.get('auth')
-      if (cookie) {
+      const auth = window.localStorage.getItem('auth')
+      if (auth) {
         return (<Component {...compProps} />)
       }
       return (<Redirect to={{ pathname: '/', state: {from: props.location} }} />)
@@ -20,4 +18,4 @@ const privateRoute = ({ path, component: Component, ...props }) => (
     } />
 )
 
-export default withRouter(privateRoute)
+export default withRouter(protectedRoute)

@@ -1,10 +1,7 @@
 import React from 'react'
 import {Redirect} from 'react-router-dom'
 import {message, Form, Input, Button, Icon} from 'antd'
-import Cookies from 'universal-cookie'
 import fetch from 'isomorphic-fetch'
-import Layout from './Layout'
-const cookies = new Cookies()
 
 class LoginForm extends React.Component {
   constructor (props) {
@@ -34,7 +31,7 @@ class LoginForm extends React.Component {
   }
 
   render () {
-    if (cookies.get('auth')) {
+    if (window.localStorage.getItem('auth')) {
       return (<Redirect to='' />)
     }
     const { getFieldDecorator } = this.props.form
@@ -78,7 +75,8 @@ class LoginForm extends React.Component {
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + authCredentials
+        'Authorization': 'Basic ' + authCredentials,
+        'tenant-uuid': '1ed95f93-5533-47b8-81d3-369c8c30ff80'
       }
     }
     return new Promise((resolve, reject) => {
@@ -100,9 +98,10 @@ class LoginForm extends React.Component {
       const credentials = Buffer.from(this.state.username + ':' + this.state.password).toString('base64')
       this.tryLogin(credentials)
         .then(user => {
-          if (user.role === 'ROLE_DEV') {
-            cookies.set('auth', credentials, {maxAge: 9999})
+          if (user.reputation.role === 'ROLE_DEV') {
+            window.localStorage.setItem('auth', credentials)
             if (this.props.destination) {
+              message.success('Logged in')
               return this.props.history.push(this.props.destination.from.pathname)
             }
             this.props.history.push('/admin')

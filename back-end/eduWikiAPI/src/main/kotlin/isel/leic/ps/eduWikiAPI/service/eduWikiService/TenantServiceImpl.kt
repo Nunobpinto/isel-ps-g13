@@ -100,7 +100,7 @@ class TenantServiceImpl : TenantService {
         return toPendingTenantDetailsOutputModel(pendingTenant, creators)
     }
 
-    override fun realizePendingTenant(tenantUuid: String, principal: Principal) {
+    override fun realizePendingTenant(tenantUuid: String, principal: Principal): String {
         // Get tenant details to create
         val pendingTenant = tenantDAO.findPendingTenantById(tenantUuid)
                 .orElseThrow { NotFoundException("Pending tenant not found", "Please provide a valid tenant id") }
@@ -139,9 +139,10 @@ class TenantServiceImpl : TenantService {
         tenantDAO.deletePendingTenantById(tenantUuid)
         // Register tenant in tenant details
         tenantDAO.createActiveTenantEntry(principal.name, Timestamp.valueOf(LocalDateTime.now()), pendingTenant)
+        return "Success"
     }
 
-    override fun rejectPendingTenant(tenantUuid: String, principal: Principal) {
+    override fun rejectPendingTenant(tenantUuid: String, principal: Principal): String {
         val pendingTenant = tenantDAO.findPendingTenantById(tenantUuid)
                 .orElseThrow { NotFoundException("No pending tenant found", "Are you sure the specified tenant exists?") }
         val pendingTenantCreators = tenantDAO.findPendingTenantCreatorsByTenantId(tenantUuid)
@@ -151,5 +152,6 @@ class TenantServiceImpl : TenantService {
 
         // Notify creators
         pendingTenantCreators.forEach { emailService.sendTenantRejectedEmail(it, pendingTenant) }
+        return "Success"
     }
 }

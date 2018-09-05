@@ -1,6 +1,6 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
-import { message, List, Button } from 'antd'
+import { message, List, Button, Card } from 'antd'
 
 export default class extends React.Component {
   constructor (props) {
@@ -28,6 +28,7 @@ export default class extends React.Component {
         <Button onClick={() => this.setState({seePending: true})}>Add other Tenant</Button>
         {this.state.showPendingList &&
         <List
+          grid={{ gutter: 16, column: 4 }}
           header={<div>Pending Tenants Waiting to be Approved</div>}
           footer={<div><Button onClick={() => this.props.history.push('/create-tenant')}>Petition to create Tenant</Button></div>}
           bordered
@@ -35,12 +36,17 @@ export default class extends React.Component {
           loading={this.state.loadingPending}
           renderItem={item => (
             <List.Item>
-              <p>{item.fullName} ({item.shortName})</p>
-              <p>{item.address}</p>
-              <p>{item.contact}</p>
-              <p>{item.website}</p>
-              <p>{item.orgSummary}</p>
-            </List.Item>)}
+              <Card
+                title={item.shortName}
+              >
+                <p>Full Name: {item.fullName}</p>
+                <p>Address: {item.address}</p>
+                <p>Contact: {item.contact}</p>
+                <p>Website: <a href={item.website}>{item.website}</a></p>
+                <p>Summary: {item.orgSummary}</p>
+              </Card>
+            </List.Item>
+          )}
         />
         }
       </div>
