@@ -70,7 +70,7 @@ class ClassDAOImplTest {
     fun createClass() {
         val klass = classDAO.createClass(
                 Class(
-                        createdBy = "ricardo",
+                        createdBy = "jg",
                         className = "LI61N",
                         termId = 2,
                         programmeId = 2,
@@ -79,7 +79,7 @@ class ClassDAOImplTest {
         )
         assertEquals(4, klass.classId)
         assertEquals(1, klass.version)
-        assertEquals("ricardo", klass.createdBy)
+        assertEquals("jg", klass.createdBy)
         assertEquals("LI61N", klass.className)
         assertEquals(2, klass.termId)
         assertEquals(2, klass.programmeId)
@@ -106,7 +106,7 @@ class ClassDAOImplTest {
                 Class(
                         classId = 1,
                         version = oldClass.version.inc(),
-                        createdBy = "edu",
+                        createdBy = "bruno",
                         className = "LI51N",
                         termId = 1,
                         programmeId = 1,
@@ -115,7 +115,7 @@ class ClassDAOImplTest {
         )
         assertEquals(1, classUpdated.classId)
         assertEquals(3, classUpdated.version)
-        assertEquals("edu", classUpdated.createdBy)
+        assertEquals("bruno", classUpdated.createdBy)
         assertEquals("LI51N", classUpdated.className)
         assertEquals(1, classUpdated.termId)
         assertEquals(1, classUpdated.programmeId)
@@ -163,7 +163,7 @@ class ClassDAOImplTest {
         assertEquals("LI41D", stagedClass.className)
         assertEquals(1, stagedClass.termId)
         assertEquals(1, stagedClass.programmeId)
-        assertEquals("joana", stagedClass.createdBy)
+        assertEquals("bruno", stagedClass.createdBy)
         assertEquals(1, stagedClass.logId)
         assertEquals(0, stagedClass.votes)
     }
@@ -175,7 +175,7 @@ class ClassDAOImplTest {
                         className = "LM63N",
                         termId = 1,
                         programmeId = 1,
-                        createdBy = "alice",
+                        createdBy = "nuno",
                         votes = 34
                 )
         )
@@ -183,7 +183,7 @@ class ClassDAOImplTest {
         assertEquals("LM63N", stagedClass.className)
         assertEquals(1, stagedClass.termId)
         assertEquals(1, stagedClass.programmeId)
-        assertEquals("alice", stagedClass.createdBy)
+        assertEquals("nuno", stagedClass.createdBy)
         assertEquals(34, stagedClass.votes)
         assertEquals(3, stagedClass.logId)
     }
@@ -237,7 +237,7 @@ class ClassDAOImplTest {
         assertEquals(1, reportedClass.reportId)
         assertEquals("LI53N", reportedClass.className)
         assertEquals(1, reportedClass.programmeId)
-        assertEquals("john", reportedClass.reportedBy)
+        assertEquals("jg", reportedClass.reportedBy)
         assertEquals(0, reportedClass.votes)
         assertEquals(1, reportedClass.logId)
     }
@@ -295,7 +295,7 @@ class ClassDAOImplTest {
         assertEquals(2, classVersion.programmeId)
         assertEquals(1, classVersion.termId)
         assertEquals("LI51D", classVersion.className)
-        assertEquals("cris", classVersion.createdBy)
+        assertEquals("nuno", classVersion.createdBy)
     }
 
     @Test
@@ -306,7 +306,7 @@ class ClassDAOImplTest {
                         className = "LI43N",
                         programmeId = 1,
                         termId = 1,
-                        createdBy = "johnny",
+                        createdBy = "jg",
                         version = 3
                 )
         )
@@ -314,7 +314,7 @@ class ClassDAOImplTest {
         assertEquals(3, classVersion.version)
         assertEquals(1, classVersion.programmeId)
         assertEquals(1, classVersion.classId)
-        assertEquals("johnny", classVersion.createdBy)
+        assertEquals("jg", classVersion.createdBy)
     }
 
     @Test
@@ -330,7 +330,7 @@ class ClassDAOImplTest {
         assertEquals(1, courseClass.classId)
         assertEquals(1, courseClass.courseId)
         assertEquals(1, courseClass.termId)
-        assertEquals("rui", courseClass.createdBy)
+        assertEquals("nuno", courseClass.createdBy)
         assertEquals(0, courseClass.votes)
         assertEquals(1, courseClass.logId)
     }
@@ -342,7 +342,7 @@ class ClassDAOImplTest {
         assertEquals(1, courseClass.classId)
         assertEquals(1, courseClass.courseId)
         assertEquals(1, courseClass.termId)
-        assertEquals("rui", courseClass.createdBy)
+        assertEquals("nuno", courseClass.createdBy)
         assertEquals(0, courseClass.votes)
         assertEquals(1, courseClass.logId)
     }
@@ -357,7 +357,7 @@ class ClassDAOImplTest {
         assertEquals(1, reportCourseClass.termId)
         assertEquals(true, reportCourseClass.deletePermanently)
         assertEquals(1, reportCourseClass.logId)
-        assertEquals("alice", reportCourseClass.reportedBy)
+        assertEquals("nuno", reportCourseClass.reportedBy)
         assertEquals(19, reportCourseClass.votes)
     }
 
@@ -380,7 +380,7 @@ class ClassDAOImplTest {
         assertEquals(2, stagedCourseClass.courseId)
         assertEquals(2, stagedCourseClass.classId)
         assertEquals(2, stagedCourseClass.termId)
-        assertEquals("manuel", stagedCourseClass.createdBy)
+        assertEquals("nuno", stagedCourseClass.createdBy)
         assertEquals(2, stagedCourseClass.logId)
         assertEquals(3, stagedCourseClass.votes)
     }
@@ -404,7 +404,7 @@ class ClassDAOImplTest {
                         courseId = 3,
                         classId = 1,
                         termId = 1,
-                        createdBy = "miguel",
+                        createdBy = "bruno",
                         votes = -14
                 )
         )
@@ -412,7 +412,7 @@ class ClassDAOImplTest {
         assertEquals(3, courseClass.courseId)
         assertEquals(1, courseClass.classId)
         assertEquals(1, courseClass.termId)
-        assertEquals("miguel", courseClass.createdBy)
+        assertEquals("bruno", courseClass.createdBy)
         assertEquals(-14, courseClass.votes)
         assertEquals(4, courseClass.logId)
     }
@@ -433,11 +433,11 @@ class ClassDAOImplTest {
                         termId = 1,
                         deletePermanently = true,
                         votes = 41,
-                        reportedBy = "joao"
+                        reportedBy = "jg"
                 )
         )
         assertEquals(2, reportCourseClass.classId)
-        assertEquals("joao", reportCourseClass.reportedBy)
+        assertEquals("jg", reportCourseClass.reportedBy)
         assertEquals(3, reportCourseClass.reportId)
         assertEquals(1, reportCourseClass.courseClassId)
         assertEquals(1, reportCourseClass.courseId)
@@ -460,7 +460,7 @@ class ClassDAOImplTest {
                         courseId = 2,
                         classId = 1,
                         termId = 1,
-                        createdBy = "edgar",
+                        createdBy = "nuno",
                         votes = 10
                 )
         )
@@ -468,7 +468,7 @@ class ClassDAOImplTest {
         assertEquals(3, stagingCourseInClass.stageId)
         assertEquals(1, stagingCourseInClass.classId)
         assertEquals(1, stagingCourseInClass.termId)
-        assertEquals("edgar", stagingCourseInClass.createdBy)
+        assertEquals("nuno", stagingCourseInClass.createdBy)
         assertEquals(10, stagingCourseInClass.votes)
         assertEquals(3, stagingCourseInClass.logId)
     }
@@ -523,7 +523,7 @@ class ClassDAOImplTest {
         assertEquals(1, classReport.reportId)
         assertEquals("LI53N", classReport.className)
         assertEquals(1, classReport.programmeId)
-        assertEquals("john", classReport.reportedBy)
+        assertEquals("jg", classReport.reportedBy)
         assertEquals(0, classReport.votes)
         assertEquals(1, classReport.logId)
     }
@@ -535,7 +535,7 @@ class ClassDAOImplTest {
         assertEquals("LI41D", classStage.className)
         assertEquals(1, classStage.termId)
         assertEquals(1, classStage.programmeId)
-        assertEquals("joana", classStage.createdBy)
+        assertEquals("bruno", classStage.createdBy)
         assertEquals(1, classStage.logId)
         assertEquals(0, classStage.votes)
     }
@@ -547,7 +547,7 @@ class ClassDAOImplTest {
         assertEquals(1, courseClass.classId)
         assertEquals(1, courseClass.courseId)
         assertEquals(1, courseClass.termId)
-        assertEquals("rui", courseClass.createdBy)
+        assertEquals("nuno", courseClass.createdBy)
         assertEquals(0, courseClass.votes)
         assertEquals(1, courseClass.logId)
     }
@@ -557,7 +557,7 @@ class ClassDAOImplTest {
         val courseClassReport = classDAO.getCourseClassReportByLogId(1).get()
         assertEquals(1, courseClassReport.classId)
         assertEquals(1, courseClassReport.reportId)
-        assertEquals("alice", courseClassReport.reportedBy)
+        assertEquals("nuno", courseClassReport.reportedBy)
         assertEquals(19, courseClassReport.votes)
         assertEquals(1, courseClassReport.logId)
         assertEquals(1, courseClassReport.courseClassId)
@@ -572,7 +572,7 @@ class ClassDAOImplTest {
         val courseClassStage = classDAO.getCourseClassStageByLogId(1).get()
         assertEquals(1, courseClassStage.stageId)
         assertEquals(2, courseClassStage.termId)
-        assertEquals("xico", courseClassStage.createdBy)
+        assertEquals("ze", courseClassStage.createdBy)
         assertEquals(1, courseClassStage.logId)
         assertEquals(88, courseClassStage.votes)
         assertEquals(2, courseClassStage.courseId)

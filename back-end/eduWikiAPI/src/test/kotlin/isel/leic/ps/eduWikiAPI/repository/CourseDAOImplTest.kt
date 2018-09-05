@@ -179,7 +179,7 @@ class CourseDAOImplTest {
     @Test
     fun getCourseSpecificStageEntry() {
         val stagedCourse = courseDAO.getCourseSpecificStageEntry(1).get()
-        assertEquals("jg", stagedCourse.createdBy)
+        assertEquals("nuno", stagedCourse.createdBy)
         assertEquals("Programação", stagedCourse.fullName)
         assertEquals(1, stagedCourse.logId)
         assertEquals("PG", stagedCourse.shortName)
@@ -250,7 +250,7 @@ class CourseDAOImplTest {
         assertEquals("Modelacao Ambientes Virtuais", reportOnCourse.fullName)
         assertEquals(1, reportOnCourse.logId)
         assertEquals(1, reportOnCourse.reportId)
-        assertEquals("Gedson", reportOnCourse.reportedBy)
+        assertEquals("bruno", reportOnCourse.reportedBy)
         assertEquals("MAV", reportOnCourse.shortName)
         assertEquals(2, reportOnCourse.votes)
     }
@@ -407,7 +407,7 @@ class CourseDAOImplTest {
     fun getSpecificStagedCourseProgramme() {
         val stageEntry = courseDAO.getSpecificStagedCourseProgramme(1, 2).get()
         assertEquals(3, stageEntry.courseId)
-        assertEquals("rui", stageEntry.createdBy)
+        assertEquals("nuno", stageEntry.createdBy)
         assertEquals(6, stageEntry.credits)
         assertEquals("thirth", stageEntry.lecturedTerm)
         assertEquals(2, stageEntry.logId)
@@ -513,7 +513,7 @@ class CourseDAOImplTest {
         assertEquals(false, report.optional)
         assertEquals(1, report.programmeId)
         assertEquals(2, report.reportId)
-        assertEquals("cristiano", report.reportedBy)
+        assertEquals("nuno", report.reportedBy)
         assertEquals(31, report.votes)
     }
 
@@ -612,7 +612,7 @@ class CourseDAOImplTest {
     @Test
     fun getCourseReportByLogId() {
         val courseReport = courseDAO.getCourseReportByLogId(1).get()
-        assertEquals("Gedson", courseReport.reportedBy)
+        assertEquals("bruno", courseReport.reportedBy)
         assertEquals(1, courseReport.reportId)
         assertEquals(3, courseReport.courseId)
         assertEquals(2, courseReport.votes)
@@ -624,7 +624,7 @@ class CourseDAOImplTest {
     @Test
     fun getCourseStageByLogId() {
         val courseStage = courseDAO.getCourseStageByLogId(1).get()
-        assertEquals("jg", courseStage.createdBy)
+        assertEquals("nuno", courseStage.createdBy)
         assertEquals(1, courseStage.logId)
         assertEquals("Programação", courseStage.fullName)
         assertEquals("PG", courseStage.shortName)
@@ -656,7 +656,7 @@ class CourseDAOImplTest {
         assertEquals(6, courseProgrammeReport.credits)
         assertEquals("first", courseProgrammeReport.lecturedTerm)
         assertEquals(1, courseProgrammeReport.programmeId)
-        assertEquals("miguel", courseProgrammeReport.reportedBy)
+        assertEquals("bruno", courseProgrammeReport.reportedBy)
         assertEquals(24, courseProgrammeReport.votes)
         assertEquals(true, courseProgrammeReport.optional)
         assertEquals(false, courseProgrammeReport.deleteFlag)
@@ -671,7 +671,7 @@ class CourseDAOImplTest {
         assertEquals(7, courseProgrammeStage.credits)
         assertEquals("sixth", courseProgrammeStage.lecturedTerm)
         assertEquals(1, courseProgrammeStage.programmeId)
-        assertEquals("ruben", courseProgrammeStage.createdBy)
+        assertEquals("bruno", courseProgrammeStage.createdBy)
         assertEquals(3, courseProgrammeStage.votes)
         assertEquals(false, courseProgrammeStage.optional)
     }

@@ -23,8 +23,8 @@ import org.springframework.transaction.annotation.Transactional
 @RunWith(SpringJUnit4ClassRunner::class)
 @SpringBootTest(classes = [EduWikiApiApplication::class])
 @SqlGroup(
-        (Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = ["classpath:createMainTablesDb.sql", "classpath:insertMainTables.sql"])),
-        (Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = ["classpath:dropMainTablesDb.sql"]))
+        (Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = ["classpath:createMainTablesDb.sql", "classpath:insertMainTables.sql", "classpath:createMasterTables.sql", "classpath:insertMasterTables.sql"])),
+        (Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = ["classpath:dropMainTablesDb.sql", "classpath:dropMasterTables.sql"]))
 )
 @Transactional
 class UserDAOImplTest {
@@ -58,7 +58,7 @@ class UserDAOImplTest {
                         givenName = "bob",
                         familyName = "simons",
                         confirmed = true,
-                        email = "bob@alunos.isel.pt",
+                        email = "bob@isel.pt",
                         locked = false
                 )
         )
@@ -67,7 +67,7 @@ class UserDAOImplTest {
         assertEquals("bob", user.givenName)
         assertEquals("simons", user.familyName)
         assertEquals(true, user.confirmed)
-        assertEquals("bob@alunos.isel.pt", user.email)
+        assertEquals("bob@isel.pt", user.email)
         assertEquals(false, user.locked)
     }
 
@@ -80,7 +80,7 @@ class UserDAOImplTest {
                         givenName = "bob",
                         familyName = "simons",
                         confirmed = false,
-                        email = "bob@alunos.isel.pt",
+                        email = "bob@isel.pt",
                         locked = false
                 )
         )
@@ -176,11 +176,11 @@ class UserDAOImplTest {
                         reason = "bad behavior"
                 )
         )
-        assertEquals(1, report.logId)
+        assertEquals(3, report.logId)
         assertEquals("bruno", report.username)
         assertEquals("ze", report.reportedBy)
         assertEquals("bad behavior", report.reason)
-        assertEquals(1, report.reportId)
+        assertEquals(3, report.reportId)
 
     }
 
@@ -245,24 +245,40 @@ class UserDAOImplTest {
 
     @Test
     fun getDevs() {
-
+        val devs = userDAO.getDevs()
+        assertEquals(1, devs.size)
     }
 
     @Test
     fun getUsersByRole() {
-
+        val users = userDAO.getUsersByRole("ROLE_BEGINNER")
+        assertEquals(2, users.size)
     }
 
     @Test
     fun lockUser() {
+        val user = userDAO.getUser("bruno").get()
+        assertEquals(false, user.locked)
+        val lock = userDAO.lockUser("bruno")
+        assertEquals(true, lock.locked)
     }
 
     @Test
     fun deleteAllReportsOnUser() {
+        val rowsAffected = userDAO.deleteAllReportsOnUser("ze")
+        assertEquals(2, rowsAffected)
     }
 
     @Test
     fun getUserByEmail() {
+        val user = userDAO.getUserByEmail("bruno@isel.pt").get()
+        assertEquals("bruno", user.username)
+        assertEquals("1234", user.password)
+        assertEquals("Bruno", user.givenName)
+        assertEquals("Filipe", user.familyName)
+        assertEquals(true, user.confirmed)
+        assertEquals("bruno@isel.pt", user.email)
+        assertEquals(false, user.locked)
     }
 
     @After

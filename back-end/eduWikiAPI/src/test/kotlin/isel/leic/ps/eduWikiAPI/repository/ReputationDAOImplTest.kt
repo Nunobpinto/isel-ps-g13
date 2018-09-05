@@ -109,7 +109,7 @@ class ReputationDAOImplTest {
         )
         assertEquals("jg", register.user)
         assertEquals("course", register.entity)
-        assertEquals(3, register.actionId)
+        assertEquals(4, register.actionId)
         assertEquals("CREATE", register.actionType.name)
         assertEquals(3, register.logId)
     }
@@ -124,7 +124,7 @@ class ReputationDAOImplTest {
                 actionId = 2
         )
         assertEquals("jg", register.user)
-        assertEquals(2, register.repLogId)
+        assertEquals(3, register.repLogId)
         assertEquals(2, register.repActionId)
         assertEquals("bruno", register.givenBy)
         assertEquals(7, register.points)

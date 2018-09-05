@@ -332,7 +332,7 @@ class UserDAOImpl : UserDAO {
         override fun lockUser(username: String): User
 
         @SqlUpdate("DELETE FROM :schema.$USER_REPORT_TABLE WHERE $USER_USERNAME = :username")
-        override fun deleteAllReportsOnUser(username: String)
+        override fun deleteAllReportsOnUser(username: String) : Int
 
         @SqlQuery("SELECT * FROM :schema.$USER_TABLE where $USER_EMAIL = :email")
         override fun getUserByEmail(email: String): Optional<User>

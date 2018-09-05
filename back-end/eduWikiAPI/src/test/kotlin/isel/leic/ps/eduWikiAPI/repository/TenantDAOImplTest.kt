@@ -2,6 +2,7 @@ package isel.leic.ps.eduWikiAPI.repository
 
 import isel.leic.ps.eduWikiAPI.EduWikiApiApplication
 import isel.leic.ps.eduWikiAPI.configuration.persistence.TenantContext
+import isel.leic.ps.eduWikiAPI.domain.mappers.tenantRequestDetailsToPendingTenantCreator
 import isel.leic.ps.eduWikiAPI.domain.model.PendingTenantCreator
 import isel.leic.ps.eduWikiAPI.domain.model.PendingTenantDetails
 import isel.leic.ps.eduWikiAPI.repository.interfaces.TenantDAO
@@ -44,7 +45,7 @@ class TenantDAOImplTest {
         assertEquals("4cd93a0f-5b5c-4902-ae0a-181c780fedb1", tenant.uuid)
         assertEquals(Timestamp.valueOf("2018-07-14 13:30:00.0"), tenant.createdAt)
         assertEquals("nuno", tenant.createdBy)
-        assertEquals("@alunos.isel.pt", tenant.emailPattern)
+        assertEquals("@isel.pt", tenant.emailPattern)
         assertEquals("isel", tenant.schemaName)
     }
 
@@ -56,7 +57,7 @@ class TenantDAOImplTest {
 
     @Test
     fun createPendingTenant() {
-        val uuid = "9c509b5e-2451-408b-a245-fa0476570132"
+        val uuid = "9c509b5e-2451-408b-a245-fa0476577132"
         val pending = tenantDAO.createPendingTenant(
                 PendingTenantDetails(
                         tenantUuid = UUID.fromString(uuid),
@@ -65,7 +66,7 @@ class TenantDAOImplTest {
                         address = "alameda",
                         contact = "213098765",
                         website = "www.ist.pt",
-                        email_pattern = "@alunos.ist.pt",
+                        emailPattern = "@alunos.ist.pt",
                         orgSummary = "faculdade de engenharia em lisboa"
                 )
         )
@@ -75,7 +76,7 @@ class TenantDAOImplTest {
         assertEquals(UUID.fromString(uuid), pending.tenantUuid)
         assertEquals("213098765", pending.contact)
         assertEquals("www.ist.pt", pending.website)
-        assertEquals("@alunos.ist.pt", pending.email_pattern)
+        assertEquals("@alunos.ist.pt", pending.emailPattern)
         assertEquals("faculdade de engenharia em lisboa", pending.orgSummary)
     }
 
@@ -128,7 +129,7 @@ class TenantDAOImplTest {
         assertEquals("fp", pending.shortName)
         assertEquals("porto", pending.address)
         assertEquals("www.fp.pt", pending.website)
-        assertEquals("@alunos.fp.pt", pending.email_pattern)
+        assertEquals("@fp.pt", pending.emailPattern)
         assertEquals("faculdade situada no porto", pending.orgSummary)
         assertEquals(UUID.fromString("9c509b5e-2451-408b-a245-fa0476570132"), pending.tenantUuid)
     }
@@ -173,7 +174,7 @@ class TenantDAOImplTest {
                         address = "alameda",
                         contact = "213098765",
                         website = "www.ist.pt",
-                        email_pattern = "@alunos.ist.pt",
+                        emailPattern = "@alunos.ist.pt",
                         orgSummary = "faculdade de engenharia em lisboa"
                 )
         )

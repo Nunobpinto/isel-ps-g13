@@ -93,7 +93,7 @@ class ExamDAOImplTest {
                 examId = 5,
                 exam = Exam(
                         examId = exam.examId,
-                        createdBy = "mike",
+                        createdBy = "ze",
                         dueDate = LocalDate.parse("2016-07-22"),
                         type = ExamType.TEST,
                         phase = "Global",
@@ -103,7 +103,7 @@ class ExamDAOImplTest {
                 )
         )
         assertEquals(3, updatedExam.version)
-        assertEquals("mike", updatedExam.createdBy)
+        assertEquals("ze", updatedExam.createdBy)
         assertEquals(LocalDate.parse("2016-07-22"), updatedExam.dueDate)
         assertEquals("TEST", updatedExam.type.name)
         assertEquals("Global", updatedExam.phase)
@@ -140,7 +140,7 @@ class ExamDAOImplTest {
         val stageEntry = examDAO.getStageEntryFromExamOnSpecificTermOfCourse(1, 1, 1).get()
         assertEquals(1, stageEntry.courseId)
         assertEquals(1, stageEntry.termId)
-        assertEquals("jg", stageEntry.createdBy)
+        assertEquals("bruno", stageEntry.createdBy)
         assertEquals(LocalDate.parse("2015-06-30"), stageEntry.dueDate)
         assertEquals("F.0.1", stageEntry.location)
         assertEquals(1, stageEntry.logId)
@@ -163,7 +163,7 @@ class ExamDAOImplTest {
                         type = ExamType.TEST,
                         phase = "Global",
                         location = "G.0.24",
-                        createdBy = "andreia"
+                        createdBy = "ze"
                 )
         )
         assertEquals("TEST", stagingExam.type.name)
@@ -172,7 +172,7 @@ class ExamDAOImplTest {
         assertEquals(3, stagingExam.logId)
         assertEquals("G.0.24", stagingExam.location)
         assertEquals(LocalDate.parse("2014-06-14"), stagingExam.dueDate)
-        assertEquals("andreia", stagingExam.createdBy)
+        assertEquals("ze", stagingExam.createdBy)
         assertEquals(0, stagingExam.votes)
     }
 
@@ -220,10 +220,10 @@ class ExamDAOImplTest {
                         type = ExamType.EXAM,
                         phase = "1ª",
                         location = "C.1.21",
-                        createdBy = "maria"
+                        createdBy = "nuno"
                 )
         )
-        assertEquals("maria", examVersion.createdBy)
+        assertEquals("nuno", examVersion.createdBy)
         assertEquals(LocalDate.parse("2012-08-17"), examVersion.dueDate)
         assertEquals(5, examVersion.examId)
         assertEquals("C.1.21", examVersion.location)
@@ -247,7 +247,7 @@ class ExamDAOImplTest {
         assertEquals(2, report.logId)
         assertEquals("1ª", report.phase)
         assertEquals(2, report.reportId)
-        assertEquals("rita", report.reportedBy)
+        assertEquals("nuno", report.reportedBy)
         assertEquals(1, report.termId)
         assertEquals(1, report.courseId)
         assertEquals("TEST", report.type!!.name)
@@ -265,7 +265,7 @@ class ExamDAOImplTest {
                         type = ExamType.EXAM,
                         phase = "1",
                         location = "E.2.20",
-                        reportedBy = "filipa",
+                        reportedBy = "ze",
                         votes = 73
                 )
         )
@@ -275,7 +275,7 @@ class ExamDAOImplTest {
         assertEquals(3, report.logId)
         assertEquals("1", report.phase)
         assertEquals(3, report.reportId)
-        assertEquals("filipa", report.reportedBy)
+        assertEquals("ze", report.reportedBy)
         assertEquals("EXAM", report.type!!.name)
         assertEquals(73, report.votes)
     }
@@ -317,7 +317,7 @@ class ExamDAOImplTest {
         val stage = examDAO.getExamStageByLogId(1).get()
         assertEquals(1, stage.courseId)
         assertEquals(1, stage.termId)
-        assertEquals("jg", stage.createdBy)
+        assertEquals("bruno", stage.createdBy)
         assertEquals(LocalDate.parse("2015-06-30"), stage.dueDate)
         assertEquals("F.0.1", stage.location)
         assertEquals(1, stage.logId)
@@ -337,7 +337,7 @@ class ExamDAOImplTest {
         assertEquals(1, report.logId)
         assertEquals("1ª", report.phase)
         assertEquals(1, report.reportId)
-        assertEquals("sara", report.reportedBy)
+        assertEquals("nuno", report.reportedBy)
         assertEquals(1, report.termId)
         assertEquals(1, report.courseId)
         assertEquals("TEST", report.type!!.name)

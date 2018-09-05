@@ -177,7 +177,7 @@ class TenantDAOImpl : TenantDAO {
                         "$TENANTS_SCHEMA_NAME, " +
                         "$TENANTS_UUID)" +
                         "VALUES (:dev, :timestamp, " +
-                        ":pendingTenant.email_pattern, :pendingTenant.shortName, :pendingTenant.tenantUuid)"
+                        ":pendingTenant.emailPattern, :pendingTenant.shortName, :pendingTenant.tenantUuid)"
         )
         @GetGeneratedKeys
         override fun createActiveTenantEntry(dev: String, timestamp: Timestamp, pendingTenant: PendingTenantDetails): TenantDetails

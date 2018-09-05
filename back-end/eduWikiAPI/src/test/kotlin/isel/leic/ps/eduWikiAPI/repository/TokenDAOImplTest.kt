@@ -46,7 +46,7 @@ class TokenDAOImplTest {
                         date = Timestamp.valueOf("2018-07-09 14:00:00.000000")
                         )
         )
-        assertEquals(1, savedToken.id)
+        assertEquals(2, savedToken.id)
         assertEquals(Timestamp.valueOf("2018-07-09 14:00:00.000000"), savedToken.date)
         assertEquals( UUID.fromString(uuid), savedToken.token)
 

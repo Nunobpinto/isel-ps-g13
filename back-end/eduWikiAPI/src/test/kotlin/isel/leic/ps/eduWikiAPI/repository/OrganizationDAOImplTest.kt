@@ -114,13 +114,13 @@ class OrganizationDAOImplTest {
                 OrganizationReport(
                         fullName = "New Full Name",
                         shortName = "NFN",
-                        reportedBy = "Nuno"
+                        reportedBy = "nuno"
                 )
         )
         assertEquals(2, orgReport.reportId)
         assertEquals("New Full Name", orgReport.fullName)
         assertEquals("NFN", orgReport.shortName)
-        assertEquals("Nuno", orgReport.reportedBy)
+        assertEquals("nuno", orgReport.reportedBy)
         assertNull(orgReport.address)
         assertNull(orgReport.contact)
         assertNull(orgReport.website)
@@ -150,7 +150,7 @@ class OrganizationDAOImplTest {
         assertEquals(1, orgReport.reportId)
         assertEquals("Instituo Superior de Engenharia de Torres Novas", orgReport.fullName)
         assertEquals("ISETN", orgReport.shortName)
-        assertEquals("Nuno", orgReport.reportedBy)
+        assertEquals("nuno", orgReport.reportedBy)
         assertEquals(2, orgReport.votes)
         assertNull(orgReport.address)
         assertNull(orgReport.contact)

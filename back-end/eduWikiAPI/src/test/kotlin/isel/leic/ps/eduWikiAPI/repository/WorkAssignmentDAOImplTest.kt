@@ -153,7 +153,7 @@ class WorkAssignmentDAOImplTest {
         val stageEntry = workAssignmentDAO.getStageEntryFromWorkAssignmentOnSpecificTermOfCourse(1, 1, 1).get()
         assertEquals(1, stageEntry.courseId)
         assertEquals(1, stageEntry.termId)
-        assertEquals("carlos", stageEntry.createdBy)
+        assertEquals("nuno", stageEntry.createdBy)
         assertEquals(LocalDate.parse("2014-12-10"), stageEntry.dueDate)
         assertEquals(false, stageEntry.individual)
         assertEquals(1, stageEntry.logId)
@@ -178,11 +178,11 @@ class WorkAssignmentDAOImplTest {
                         multipleDeliveries = true,
                         requiresReport = true,
                         phase = "Epoca Especial",
-                        createdBy = "daniela",
+                        createdBy = "ze",
                         votes = 7
                 )
         )
-        assertEquals("daniela", stageEntry.createdBy)
+        assertEquals("ze", stageEntry.createdBy)
         assertEquals(LocalDate.parse("2010-11-14"), stageEntry.dueDate)
         assertEquals(true, stageEntry.individual)
         assertEquals(3, stageEntry.logId)
@@ -274,7 +274,7 @@ class WorkAssignmentDAOImplTest {
         assertEquals(1, report.logId)
         assertEquals("2º", report.phase)
         assertEquals(1, report.reportId)
-        assertEquals("gonçalo", report.reportedBy)
+        assertEquals("nuno", report.reportedBy)
         assertEquals(0, report.votes)
         assertEquals(1, report.courseId)
         assertEquals(1, report.termId)
@@ -330,7 +330,7 @@ class WorkAssignmentDAOImplTest {
     fun getWorkAssignmentByLogId() {
         val workAssignment = workAssignmentDAO.getWorkAssignmentByLogId(1).get()
         assertEquals(1, workAssignment.courseId)
-        assertEquals("wilson", workAssignment.createdBy)
+        assertEquals("bruno", workAssignment.createdBy)
         assertEquals(LocalDate.parse("2015-04-28"), workAssignment.dueDate)
         assertEquals(1, workAssignment.logId)
         assertEquals("2º", workAssignment.phase)
@@ -360,7 +360,7 @@ class WorkAssignmentDAOImplTest {
         assertEquals(true, report.multipleDeliveries)
         assertEquals(true, report.requiresReport)
         assertEquals(0, report.votes)
-        assertEquals("gonçalo", report.reportedBy)
+        assertEquals("nuno", report.reportedBy)
     }
 
     @Test
@@ -368,7 +368,7 @@ class WorkAssignmentDAOImplTest {
         val stage = workAssignmentDAO.getWorkAssignmentStageByLogId(1).get()
         assertEquals(1, stage.courseId)
         assertEquals(1, stage.termId)
-        assertEquals("carlos", stage.createdBy)
+        assertEquals("nuno", stage.createdBy)
         assertEquals(LocalDate.parse("2014-12-10"), stage.dueDate)
         assertEquals(false, stage.individual)
         assertEquals(true, stage.lateDelivery)

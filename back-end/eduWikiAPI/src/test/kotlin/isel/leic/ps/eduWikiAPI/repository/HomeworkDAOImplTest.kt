@@ -70,7 +70,7 @@ class HomeworkDAOImplTest {
                         courseId = 1,
                         homeworkName = "TPC10",
                         votes = 74,
-                        createdBy = "arminda",
+                        createdBy = "ze",
                         dueDate = LocalDate.parse("2014-11-15"),
                         lateDelivery = false,
                         multipleDeliveries = false
@@ -81,7 +81,7 @@ class HomeworkDAOImplTest {
         assertEquals(1, homework.version)
         assertEquals(4, homework.logId)
         assertEquals(74, homework.votes)
-        assertEquals("arminda", homework.createdBy)
+        assertEquals("ze", homework.createdBy)
         assertEquals(LocalDate.parse("2014-11-15"), homework.dueDate)
         assertEquals(false, homework.lateDelivery)
         assertEquals(false, homework.multipleDeliveries)
@@ -99,7 +99,7 @@ class HomeworkDAOImplTest {
                         homeworkName = "TPC04",
                         version = oldHomework.version.inc(),
                         votes = -14,
-                        createdBy = "allison",
+                        createdBy = "jg",
                         dueDate = LocalDate.parse("2016-05-14"),
                         lateDelivery = false,
                         multipleDeliveries = true
@@ -110,7 +110,7 @@ class HomeworkDAOImplTest {
         assertEquals(3, homework.version)
         assertEquals(1, homework.logId)
         assertEquals(-14, homework.votes)
-        assertEquals("allison", homework.createdBy)
+        assertEquals("jg", homework.createdBy)
         assertEquals(LocalDate.parse("2016-05-14"), homework.dueDate)
         assertEquals(false, homework.lateDelivery)
         assertEquals(true, homework.multipleDeliveries)
@@ -149,7 +149,7 @@ class HomeworkDAOImplTest {
         assertEquals("TPC06", reportedHomework.homeworkName)
         assertEquals(false, reportedHomework.lateDelivery)
         assertEquals(true, reportedHomework.multipleDeliveries)
-        assertEquals("vitor", reportedHomework.reportedBy)
+        assertEquals("ze", reportedHomework.reportedBy)
         assertEquals(0, reportedHomework.votes)
     }
 
@@ -164,7 +164,7 @@ class HomeworkDAOImplTest {
                         dueDate = LocalDate.parse("2011-11-12"),
                         lateDelivery = false,
                         multipleDeliveries = false,
-                        reportedBy = "guilherme",
+                        reportedBy = "nuno",
                         votes = 44
                 )
         )
@@ -175,7 +175,7 @@ class HomeworkDAOImplTest {
         assertEquals(LocalDate.parse("2011-11-12"), homework.dueDate)
         assertEquals(false, homework.lateDelivery)
         assertEquals(false, homework.multipleDeliveries)
-        assertEquals("guilherme", homework.reportedBy)
+        assertEquals("nuno", homework.reportedBy)
         assertEquals(44, homework.votes)
     }
 
@@ -212,7 +212,7 @@ class HomeworkDAOImplTest {
         assertEquals(LocalDate.parse("2014-03-24"), stagedHomework.dueDate)
         assertEquals(true, stagedHomework.lateDelivery)
         assertEquals(true, stagedHomework.multipleDeliveries)
-        assertEquals("francisco", stagedHomework.createdBy)
+        assertEquals("nuno", stagedHomework.createdBy)
         assertEquals(0, stagedHomework.votes)
     }
 
@@ -228,7 +228,7 @@ class HomeworkDAOImplTest {
                         dueDate = LocalDate.parse("2004-06-27"),
                         lateDelivery = true,
                         multipleDeliveries = true,
-                        createdBy = "adelino",
+                        createdBy = "ze",
                         votes = -18
                 )
         )
@@ -238,7 +238,7 @@ class HomeworkDAOImplTest {
         assertEquals(LocalDate.parse("2004-06-27"), stagingHomework.dueDate)
         assertEquals(true, stagingHomework.lateDelivery)
         assertEquals(true, stagingHomework.multipleDeliveries)
-        assertEquals("adelino", stagingHomework.createdBy)
+        assertEquals("ze", stagingHomework.createdBy)
         assertEquals(-18, stagingHomework.votes)
     }
 
@@ -271,7 +271,7 @@ class HomeworkDAOImplTest {
         assertEquals(1, homeworkVersion.version)
         assertEquals("TPC03", homeworkVersion.homeworkName)
         assertEquals(LocalDate.parse("2017-09-14"), homeworkVersion.dueDate)
-        assertEquals("joao", homeworkVersion.createdBy)
+        assertEquals("jg", homeworkVersion.createdBy)
         assertEquals(false, homeworkVersion.lateDelivery)
         assertEquals(true, homeworkVersion.multipleDeliveries)
     }
@@ -284,7 +284,7 @@ class HomeworkDAOImplTest {
                         homeworkId = 5,
                         homeworkName = "TPC97",
                         dueDate = LocalDate.parse("2008-03-21"),
-                        createdBy = "gabriel",
+                        createdBy = "jg",
                         lateDelivery = false,
                         multipleDeliveries = true
                 )
@@ -293,7 +293,7 @@ class HomeworkDAOImplTest {
         assertEquals(3, homeworkVersion.version)
         assertEquals("TPC97", homeworkVersion.homeworkName)
         assertEquals(LocalDate.parse("2008-03-21"), homeworkVersion.dueDate)
-        assertEquals("gabriel", homeworkVersion.createdBy)
+        assertEquals("jg", homeworkVersion.createdBy)
         assertEquals(false, homeworkVersion.lateDelivery)
         assertEquals(true, homeworkVersion.multipleDeliveries)
     }
@@ -325,7 +325,7 @@ class HomeworkDAOImplTest {
         assertEquals("TPC06", reportedHomework.homeworkName)
         assertEquals(false, reportedHomework.lateDelivery)
         assertEquals(true, reportedHomework.multipleDeliveries)
-        assertEquals("vitor", reportedHomework.reportedBy)
+        assertEquals("ze", reportedHomework.reportedBy)
         assertEquals(0, reportedHomework.votes)
     }
 
@@ -340,7 +340,7 @@ class HomeworkDAOImplTest {
         assertEquals(LocalDate.parse("2014-03-24"), stagedHomework.dueDate)
         assertEquals(true, stagedHomework.lateDelivery)
         assertEquals(true, stagedHomework.multipleDeliveries)
-        assertEquals("francisco", stagedHomework.createdBy)
+        assertEquals("nuno", stagedHomework.createdBy)
         assertEquals(0, stagedHomework.votes)
 
     }

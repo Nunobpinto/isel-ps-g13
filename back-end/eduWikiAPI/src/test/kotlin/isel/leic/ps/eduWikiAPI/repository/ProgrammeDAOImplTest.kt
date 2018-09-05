@@ -62,7 +62,7 @@ class ProgrammeDAOImplTest {
     fun createProgramme() {
         val programme = programmeDAO.createProgramme(
                 Programme(
-                        createdBy = "marta",
+                        createdBy = "jg",
                         fullName = "Mestrado Em Engenharia e Gestão Industrial",
                         shortName = "MEGI",
                         academicDegree = "Mestrado",
@@ -72,7 +72,7 @@ class ProgrammeDAOImplTest {
                 )
         )
         assertEquals(4, programme.programmeId)
-        assertEquals("marta", programme.createdBy)
+        assertEquals("jg", programme.createdBy)
         assertEquals("Mestrado Em Engenharia e Gestão Industrial", programme.fullName)
         assertEquals("MEGI", programme.shortName)
         assertEquals("Mestrado", programme.academicDegree)
@@ -93,7 +93,7 @@ class ProgrammeDAOImplTest {
                         programmeId = 1,
                         version = oldProgramme.version.inc(),
                         votes = 22,
-                        createdBy = "irene",
+                        createdBy = "jg",
                         fullName = "Licenciatura em Engenharia Quimica",
                         shortName = "LEQ",
                         academicDegree = oldProgramme.academicDegree,
@@ -102,7 +102,7 @@ class ProgrammeDAOImplTest {
                 )
         )
         assertEquals(1, programme.programmeId)
-        assertEquals("irene", programme.createdBy)
+        assertEquals("jg", programme.createdBy)
         assertEquals("Licenciatura em Engenharia Quimica", programme.fullName)
         assertEquals("LEQ", programme.shortName)
         assertEquals("Licenciatura", programme.academicDegree)
@@ -139,7 +139,7 @@ class ProgrammeDAOImplTest {
         assertEquals("Licenciatura", stagedProgramme.academicDegree)
         assertEquals(180, stagedProgramme.totalCredits)
         assertEquals(6, stagedProgramme.duration)
-        assertEquals("jorge", stagedProgramme.createdBy)
+        assertEquals("nuno", stagedProgramme.createdBy)
         assertEquals(0, stagedProgramme.votes)
     }
 
@@ -154,7 +154,7 @@ class ProgrammeDAOImplTest {
         val stagingProgramme = programmeDAO.createStagingProgramme(
                 ProgrammeStage(
                         votes = 3,
-                        createdBy = "grimaldo",
+                        createdBy = "bruno",
                         fullName = "Licenciatura em Engenharia Ambiental",
                         shortName = "LEA",
                         academicDegree = "Licenciatura",
@@ -163,7 +163,7 @@ class ProgrammeDAOImplTest {
                 )
         )
         assertEquals(3, stagingProgramme.votes)
-        assertEquals("grimaldo", stagingProgramme.createdBy)
+        assertEquals("bruno", stagingProgramme.createdBy)
         assertEquals("Licenciatura em Engenharia Ambiental", stagingProgramme.fullName)
         assertEquals("LEA", stagingProgramme.shortName)
         assertEquals("Licenciatura", stagingProgramme.academicDegree)
@@ -205,7 +205,7 @@ class ProgrammeDAOImplTest {
         assertEquals(2, programmeVersion.version)
         assertEquals(180, programmeVersion.totalCredits)
         assertEquals(6, programmeVersion.duration)
-        assertEquals("renato", programmeVersion.createdBy)
+        assertEquals("jg", programmeVersion.createdBy)
     }
 
     @Test
@@ -219,7 +219,7 @@ class ProgrammeDAOImplTest {
                         academicDegree = "Mestrado",
                         totalCredits = 100,
                         duration = 4,
-                        createdBy = "tiago"
+                        createdBy = "bruno"
                 )
         )
         assertEquals(3, programmeVersion.programmeId)
@@ -229,7 +229,7 @@ class ProgrammeDAOImplTest {
         assertEquals("Mestrado", programmeVersion.academicDegree)
         assertEquals(100, programmeVersion.totalCredits)
         assertEquals(4, programmeVersion.duration)
-        assertEquals("tiago", programmeVersion.createdBy)
+        assertEquals("bruno", programmeVersion.createdBy)
     }
 
     @Test
@@ -255,7 +255,7 @@ class ProgrammeDAOImplTest {
         assertEquals("Licenciatura", programmeReport.academicDegree)
         assertEquals(180, programmeReport.totalCredits)
         assertEquals(6, programmeReport.duration)
-        assertEquals("pedro", programmeReport.reportedBy)
+        assertEquals("nuno", programmeReport.reportedBy)
         assertEquals(0, programmeReport.votes)
     }
 
@@ -268,7 +268,7 @@ class ProgrammeDAOImplTest {
                         fullName = "Mestrado em Engenharia Informatica",
                         shortName = "MEI",
                         academicDegree = "Mestrado",
-                        reportedBy = "kanye",
+                        reportedBy = "ze",
                         votes = 2
                 )
         )
@@ -278,7 +278,7 @@ class ProgrammeDAOImplTest {
         assertEquals("Mestrado em Engenharia Informatica", reportProgramme.fullName)
         assertEquals("MEI", reportProgramme.shortName)
         assertEquals("Mestrado", reportProgramme.academicDegree)
-        assertEquals("kanye", reportProgramme.reportedBy)
+        assertEquals("ze", reportProgramme.reportedBy)
         assertEquals(2, reportProgramme.votes)
     }
 
@@ -324,7 +324,7 @@ class ProgrammeDAOImplTest {
         assertEquals("Licenciatura", programmeReport.academicDegree)
         assertEquals(180, programmeReport.totalCredits)
         assertEquals(6, programmeReport.duration)
-        assertEquals("pedro", programmeReport.reportedBy)
+        assertEquals("nuno", programmeReport.reportedBy)
         assertEquals(0, programmeReport.votes)
     }
 
@@ -338,7 +338,7 @@ class ProgrammeDAOImplTest {
         assertEquals("Licenciatura", programmeStage.academicDegree)
         assertEquals(180, programmeStage.totalCredits)
         assertEquals(6, programmeStage.duration)
-        assertEquals("jorge", programmeStage.createdBy)
+        assertEquals("nuno", programmeStage.createdBy)
         assertEquals(0, programmeStage.votes)
     }
 

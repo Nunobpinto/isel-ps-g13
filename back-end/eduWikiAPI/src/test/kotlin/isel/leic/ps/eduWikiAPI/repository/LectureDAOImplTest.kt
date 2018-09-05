@@ -103,7 +103,7 @@ class LectureDAOImplTest {
                         duration = Duration.parse("PT2H"),
                         version = oldLecture.version.inc(),
                         votes = 98,
-                        createdBy = "jonas",
+                        createdBy = "ze",
                         location = "C.0.12",
                         begins = LocalTime.parse("18:30:00"),
                         weekDay = DayOfWeek.MONDAY
@@ -112,7 +112,7 @@ class LectureDAOImplTest {
         assertEquals(1, lecture.lectureId)
         assertEquals(1, lecture.logId)
         assertEquals(98, lecture.votes)
-        assertEquals("jonas", lecture.createdBy)
+        assertEquals("ze", lecture.createdBy)
         assertEquals(Duration.parse("PT2H"), lecture.duration)
         assertEquals(3, lecture.version)
         assertEquals("C.0.12", lecture.location)
@@ -152,7 +152,7 @@ class LectureDAOImplTest {
         assertEquals(1, stagedLecture.logId)
         assertEquals(DayOfWeek.THURSDAY, stagedLecture.weekDay)
         assertEquals(Duration.parse("PT2H"), stagedLecture.duration)
-        assertEquals("alex", stagedLecture.createdBy)
+        assertEquals("nuno", stagedLecture.createdBy)
         assertEquals(0, stagedLecture.votes)
         assertEquals("G.0.10", stagedLecture.location)
     }
@@ -165,7 +165,7 @@ class LectureDAOImplTest {
                         stageId = 5,
                         classId = 1,
                         courseId = 1,
-                        createdBy = "hugo",
+                        createdBy = "nuno",
                         votes = -47,
                         weekDay = DayOfWeek.FRIDAY,
                         begins = LocalTime.parse("17:00:00"),
@@ -178,7 +178,7 @@ class LectureDAOImplTest {
         assertEquals(DayOfWeek.FRIDAY, stagingHomeworkLecture.weekDay)
         assertEquals(LocalTime.parse("17:00:00"), stagingHomeworkLecture.begins)
         assertEquals(Duration.parse("PT3H"), stagingHomeworkLecture.duration)
-        assertEquals("hugo", stagingHomeworkLecture.createdBy)
+        assertEquals("nuno", stagingHomeworkLecture.createdBy)
         assertEquals(-47, stagingHomeworkLecture.votes)
         assertEquals("E.2.21", stagingHomeworkLecture.location)
     }
@@ -216,7 +216,7 @@ class LectureDAOImplTest {
         assertEquals(DayOfWeek.FRIDAY, reportedLecture.weekDay)
         assertEquals(LocalTime.parse("10:00:00"), reportedLecture.begins)
         assertEquals(Duration.parse("PT2H"), reportedLecture.duration)
-        assertEquals("ruben", reportedLecture.reportedBy)
+        assertEquals("nuno", reportedLecture.reportedBy)
         assertEquals(0, reportedLecture.votes)
         assertEquals("G.1.05", reportedLecture.location)
     }
@@ -232,7 +232,7 @@ class LectureDAOImplTest {
                         begins = LocalTime.parse("15:00:00"),
                         duration = Duration.parse("PT1H30M"),
                         weekDay = DayOfWeek.WEDNESDAY,
-                        reportedBy = "maria",
+                        reportedBy = "nuno",
                         votes = 10
                 )
         )
@@ -243,7 +243,7 @@ class LectureDAOImplTest {
         assertEquals(LocalTime.parse("15:00:00"), lecture.begins)
         assertEquals(Duration.parse("PT1H30M"), lecture.duration)
         assertEquals(DayOfWeek.WEDNESDAY, lecture.weekDay)
-        assertEquals("maria", lecture.reportedBy)
+        assertEquals("nuno", lecture.reportedBy)
         assertEquals(10, lecture.votes)
     }
 
@@ -289,7 +289,7 @@ class LectureDAOImplTest {
                         lectureId = 1,
                         location = "F.2.04",
                         begins = LocalTime.parse("20:00:00"),
-                        createdBy = "luis",
+                        createdBy = "bruno",
                         duration = Duration.parse("PT3H"),
                         weekDay = DayOfWeek.TUESDAY
                 )
@@ -298,7 +298,7 @@ class LectureDAOImplTest {
         assertEquals(3, lectureVersion.version)
         assertEquals("F.2.04", lectureVersion.location)
         assertEquals(LocalTime.parse("20:00:00"), lectureVersion.begins)
-        assertEquals("luis", lectureVersion.createdBy)
+        assertEquals("bruno", lectureVersion.createdBy)
         assertEquals(Duration.parse("PT3H"), lectureVersion.duration)
         assertEquals(DayOfWeek.TUESDAY, lectureVersion.weekDay)
     }
@@ -330,7 +330,7 @@ class LectureDAOImplTest {
         assertEquals(DayOfWeek.FRIDAY, report.weekDay)
         assertEquals(LocalTime.parse("10:00:00"), report.begins)
         assertEquals(Duration.parse("PT2H"), report.duration)
-        assertEquals("ruben", report.reportedBy)
+        assertEquals("nuno", report.reportedBy)
         assertEquals(0, report.votes)
         assertEquals("G.1.05", report.location)
     }
@@ -345,7 +345,7 @@ class LectureDAOImplTest {
         assertEquals(1, stagedLecture.logId)
         assertEquals(DayOfWeek.THURSDAY, stagedLecture.weekDay)
         assertEquals(Duration.parse("PT2H"), stagedLecture.duration)
-        assertEquals("alex", stagedLecture.createdBy)
+        assertEquals("nuno", stagedLecture.createdBy)
         assertEquals(0, stagedLecture.votes)
         assertEquals("G.0.10", stagedLecture.location)
     }

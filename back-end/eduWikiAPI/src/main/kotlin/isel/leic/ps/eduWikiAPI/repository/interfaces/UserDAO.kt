@@ -52,7 +52,7 @@ interface UserDAO {
 
     fun lockUser(username: String): User
 
-    fun deleteAllReportsOnUser(username: String)
+    fun deleteAllReportsOnUser(username: String) : Int
 
     fun getUserByEmail(email: String): Optional<User>
 }
