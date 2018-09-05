@@ -158,8 +158,8 @@ class UserDAOImpl : UserDAO {
                 "$USER_GIVEN_NAME," +
                 "$USER_FAMILY_NAME," +
                 "$USER_CONFIRMED_FLAG," +
-                "$USER_EMAIL, "+
-                "$USER_LOCKED "+
+                "$USER_EMAIL, " +
+                "$USER_LOCKED " +
                 ") VALUES ( " +
                 ":user.username," +
                 ":user.password," +
@@ -220,7 +220,7 @@ class UserDAOImpl : UserDAO {
 
         @SqlUpdate("INSERT INTO :schema.$USER_COURSE_CLASS_TABLE (" +
                 "$USER_USERNAME, " +
-                "$USER_COURSE_CLASS_COURSE_ID)"+
+                "$USER_COURSE_CLASS_COURSE_ID)" +
                 " VALUES ( " +
                 ":userCourseClass.username," +
                 ":userCourseClass.courseId)")
@@ -271,10 +271,12 @@ class UserDAOImpl : UserDAO {
         @SqlUpdate("DELETE FROM :schema.$USER_PROGRAMME_TABLE WHERE $USER_USERNAME = :username")
         override fun deleteProgramme(username: String): Int
 
-        @SqlUpdate("UPDATE :schema.$USER_TABLE" +
-                " SET $USER_GIVEN_NAME = :newUser.givenName," +
-                "$USER_FAMILY_NAME = :newUser.familyName," +
-                "WHERE $USER_USERNAME = :newUser.username")
+        @SqlUpdate(
+                "UPDATE :schema.$USER_TABLE " +
+                        " SET $USER_GIVEN_NAME = :newUser.givenName, " +
+                        "$USER_FAMILY_NAME = :newUser.familyName " +
+                        "WHERE $USER_USERNAME = :newUser.username"
+        )
         @GetGeneratedKeys
         override fun updateUser(newUser: User): User
 

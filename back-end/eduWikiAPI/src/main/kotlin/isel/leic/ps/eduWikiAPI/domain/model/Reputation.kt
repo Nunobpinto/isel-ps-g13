@@ -8,7 +8,7 @@ import isel.leic.ps.eduWikiAPI.repository.ReputationDAOImpl.Companion.REPUTATION
 
 data class Reputation (
         @ColumnName(REPUTATION_ID)
-        val reputationId: Int = 0,
+        val reputationId: Int = -1,
         @ColumnName(REPUTATION_POINTS)
         var points: Int = 0,
         @ColumnName(REPUTATION_ROLE)

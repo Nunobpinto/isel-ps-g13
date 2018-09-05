@@ -9,7 +9,6 @@ import org.jdbi.v3.sqlobject.statement.*
 import org.jdbi.v3.stringtemplate4.StringTemplateEngine
 import org.springframework.stereotype.Repository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import java.sql.Timestamp
 import java.util.*
 
@@ -56,8 +55,8 @@ class TenantDAOImpl : TenantDAO {
     @Autowired
     lateinit var jdbi: Jdbi
 
-    override fun findActiveTenatById(tenantUuid: String): Optional<TenantDetails> =
-            jdbi.open().attach(TenantDAOJdbi::class.java).findActiveTenatById(tenantUuid)
+    override fun findActiveTenantById(tenantUuid: String): Optional<TenantDetails> =
+            jdbi.open().attach(TenantDAOJdbi::class.java).findActiveTenantById(tenantUuid)
 
     override fun getAllActiveTenants(): List<TenantDetails> =
             jdbi.open().attach(TenantDAOJdbi::class.java).getAllActiveTenants()
@@ -83,16 +82,10 @@ class TenantDAOImpl : TenantDAO {
     override fun getCurrentTenantDetails(): Optional<TenantDetails> =
             jdbi.open().attach(TenantDAOJdbi::class.java).getCurrentTenantDetails()
 
-    override fun getPendingTenantById(tenantUuid: String): Optional<PendingTenantDetails> =
-            jdbi.open().attach(TenantDAOJdbi::class.java).getPendingTenantById(tenantUuid)
-
-    override fun getPendingTenantCreators(tenantUuid: String): List<PendingTenantCreator> =
-            jdbi.open().attach(TenantDAOJdbi::class.java).getPendingTenantCreators(tenantUuid)
-
     override fun deletePendingTenantById(tenantUuid: String): Int =
             jdbi.open().attach(TenantDAOJdbi::class.java).deletePendingTenantById(tenantUuid)
 
-    override fun createActiveTenantEntry(dev: String, timestamp: Timestamp, pendingTenant: PendingTenantDetails): PendingTenantDetails =
+    override fun createActiveTenantEntry(dev: String, timestamp: Timestamp, pendingTenant: PendingTenantDetails): TenantDetails =
             jdbi.open().attach(TenantDAOJdbi::class.java).createActiveTenantEntry(dev, timestamp, pendingTenant)
 
     override fun createTenantBasedOnPendingTenant(schema: String) {
@@ -115,7 +108,7 @@ class TenantDAOImpl : TenantDAO {
     interface TenantDAOJdbi : TenantDAO {
 
         @SqlQuery("SELECT * FROM $MASTER_SCHEMA.$TENANTS_TABLE WHERE $TENANTS_UUID = :tenantUuid")
-        override fun findActiveTenatById(tenantUuid: String): Optional<TenantDetails>
+        override fun findActiveTenantById(tenantUuid: String): Optional<TenantDetails>
 
         @SqlQuery("SELECT * FROM $MASTER_SCHEMA.$TENANTS_TABLE")
         override fun getAllActiveTenants(): List<TenantDetails>
@@ -173,12 +166,6 @@ class TenantDAOImpl : TenantDAO {
         @SqlQuery("SELECT * FROM $MASTER_SCHEMA.$TENANTS_TABLE WHERE $TENANTS_SCHEMA_NAME = ':schema'")
         override fun getCurrentTenantDetails(): Optional<TenantDetails>
 
-        @SqlQuery("SELECT * FROM $MASTER_SCHEMA.$PENDING_TENANTS_TABLE WHERE $PENDING_TENANTS_UUID = :tenantUuid")
-        override fun getPendingTenantById(tenantUuid: String): Optional<PendingTenantDetails>
-
-        @SqlQuery("SELECT * FROM $MASTER_SCHEMA.$PENDING_TENANTS_CREATOR_TABLE WHERE $PENDING_TENANTS_CREATOR_TENANT_UUID = :tenantUuid")
-        override fun getPendingTenantCreators(tenantUuid: String): List<PendingTenantCreator>
-
         @SqlUpdate("DELETE FROM $MASTER_SCHEMA.$PENDING_TENANTS_TABLE WHERE $PENDING_TENANTS_UUID = :tenantUuid")
         override fun deletePendingTenantById(tenantUuid: String): Int
 
@@ -190,10 +177,10 @@ class TenantDAOImpl : TenantDAO {
                         "$TENANTS_SCHEMA_NAME, " +
                         "$TENANTS_UUID)" +
                         "VALUES (:dev, :timestamp, " +
-                        ":pendingTenant.emailPattern, :pendingTenant.shortName, :pendingTenant.tenantUuid)"
+                        ":pendingTenant.email_pattern, :pendingTenant.shortName, :pendingTenant.tenantUuid)"
         )
         @GetGeneratedKeys
-        override fun createActiveTenantEntry(dev: String, timestamp: Timestamp, pendingTenant: PendingTenantDetails): PendingTenantDetails
+        override fun createActiveTenantEntry(dev: String, timestamp: Timestamp, pendingTenant: PendingTenantDetails): TenantDetails
 
     }
 }
