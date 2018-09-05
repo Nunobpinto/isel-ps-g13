@@ -72,13 +72,13 @@ class WorkAssignmentDAOImplTest {
                         lateDelivery = false,
                         multipleDeliveries = true,
                         requiresReport = false,
-                        createdBy = "ines",
+                        createdBy = "bruno",
                         dueDate = LocalDate.parse("2017-09-07"),
                         phase = "Epoca Especial",
                         votes = 36
                 )
         )
-        assertEquals("ines", workAssignment.createdBy)
+        assertEquals("bruno", workAssignment.createdBy)
         assertEquals(LocalDate.parse("2017-09-07"), workAssignment.dueDate)
         assertEquals("Epoca Especial", workAssignment.phase)
         assertEquals(5, workAssignment.logId)
@@ -101,7 +101,7 @@ class WorkAssignmentDAOImplTest {
                         courseId = workAssignment.courseId,
                         termId = workAssignment.termId,
                         workAssignmentId = workAssignment.workAssignmentId,
-                        createdBy = "carolina",
+                        createdBy = "jg",
                         dueDate = LocalDate.parse("2017-05-12"),
                         votes = 78,
                         individual = false,
@@ -114,7 +114,7 @@ class WorkAssignmentDAOImplTest {
                 )
         )
         assertEquals(3, updatedworkAssignment.version)
-        assertEquals("carolina", updatedworkAssignment.createdBy)
+        assertEquals("jg", updatedworkAssignment.createdBy)
         assertEquals(LocalDate.parse("2017-05-12"), updatedworkAssignment.dueDate)
         assertEquals("2º", updatedworkAssignment.phase)
         assertEquals(false, updatedworkAssignment.individual)
@@ -242,10 +242,10 @@ class WorkAssignmentDAOImplTest {
                         workAssignmentId = 1,
                         dueDate = LocalDate.parse("2015-01-10"),
                         phase = "1ª",
-                        createdBy = "ana"
+                        createdBy = "ze"
                 )
         )
-        assertEquals("ana", workAssignmentVersion.createdBy)
+        assertEquals("ze", workAssignmentVersion.createdBy)
         assertEquals(LocalDate.parse("2015-01-10"), workAssignmentVersion.dueDate)
         assertEquals(1, workAssignmentVersion.workAssignmentId)
         assertEquals("1ª", workAssignmentVersion.phase)
