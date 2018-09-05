@@ -43,7 +43,7 @@ class TenantServiceImpl : TenantService {
     lateinit var emailService: EmailService
 
     override fun findTenantById(tenantId: String): TenantDetailsOutputModel =
-            toTenantDetailsOutputModel(tenantDAO.findActiveTenatById(tenantId).orElseThrow { NotFoundException("Tenant not found", "Try a valid tenant id") })
+            toTenantDetailsOutputModel(tenantDAO.findActiveTenantById(tenantId).orElseThrow { NotFoundException("Tenant not found", "Try a valid tenant id") })
 
     override fun getAllActiveTenants(): TenantDetailsCollectionOutputModel =
             toTenantDetailsCollectionOutputModel(tenantDAO.getAllActiveTenants())
@@ -142,9 +142,9 @@ class TenantServiceImpl : TenantService {
     }
 
     override fun rejectPendingTenant(tenantUuid: String, principal: Principal) {
-        val pendingTenant = tenantDAO.getPendingTenantById(tenantUuid)
+        val pendingTenant = tenantDAO.findPendingTenantById(tenantUuid)
                 .orElseThrow { NotFoundException("No pending tenant found", "Are you sure the specified tenant exists?") }
-        val pendingTenantCreators = tenantDAO.getPendingTenantCreators(tenantUuid)
+        val pendingTenantCreators = tenantDAO.findPendingTenantCreatorsByTenantId(tenantUuid)
 
         // Delete pending tenant and its creators
         tenantDAO.deletePendingTenantById(tenantUuid)

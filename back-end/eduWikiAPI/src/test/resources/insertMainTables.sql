@@ -454,6 +454,13 @@ insert into isel.user_account (user_username, user_password, user_given_name, us
 insert into isel.user_account (user_username, user_password, user_given_name, user_family_name, user_confirmed, user_email, user_locked)
     values ('jg', 1234, 'João', 'Gameiro', true, 'jg@isel.pt', false);
 
+insert into isel.user_report (user_username, reason, reported_by, time_stamp)
+    values ('ze', 'bad infos', 'bruno', current_timestamp );
+
+insert into isel.user_report (user_username, reason, reported_by, time_stamp)
+    values ('ze', 'bad infos', 'jg', current_timestamp );
+
+
 -- Reputation Insert
 
 insert into isel.reputation (points, role, user_username)
@@ -472,10 +479,16 @@ insert into isel.action_log (user_username, action, entity, log_id, time_stamp)
 insert into isel.action_log (user_username, action, entity, log_id, time_stamp)
   values ('bruno','VOTE_UP','course',1,current_timestamp);
 
+insert into isel.action_log (user_username, action, entity, log_id, time_stamp)
+  values ('jg','VOTE_DOWN','course',1,current_timestamp);
+
 -- Reputation Log Insert
 
 insert into isel.reputation_log (reputation_log_action, reputation_log_given_by, reputation_log_points, reputation_id, user_username)
   values (2,'bruno',5,1,'ze');
+
+insert into isel.reputation_log (reputation_log_action, reputation_log_given_by, reputation_log_points, reputation_id, user_username)
+  values (2,'jg',10,1,'ze');
 
 -- Student Course Class
 
@@ -489,6 +502,9 @@ insert into isel.user_course_class (user_username, course_id, course_class_id)
 
 insert into isel.user_course_class (user_username, course_id, course_class_id)
   values ('bruno', 1, 1);
+
+insert into isel.validation_token (token, validation_date)
+  values ('04805b5d-e089-48e0-b7da-68a6321a17ff', '2018-07-09 14:00:00.000000');
 
 -- Student Programme
 

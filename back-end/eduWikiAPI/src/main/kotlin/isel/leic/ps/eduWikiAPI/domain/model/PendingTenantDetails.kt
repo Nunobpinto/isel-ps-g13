@@ -28,7 +28,7 @@ data class PendingTenantDetails(
         @ColumnName(PENDING_TENANTS_WEBSITE)
         val website: String = "",
         @ColumnName(PENDING_TENANTS_EMAIL_PATTERN)
-        val emailPattern: String = "",
+        val email_pattern: String = "",
         @ColumnName(PENDING_TENANTS_ORG_SUMMARY)
         val orgSummary: String = "",
         @ColumnName(PENDING_TENANTS_TIMESTAMP)

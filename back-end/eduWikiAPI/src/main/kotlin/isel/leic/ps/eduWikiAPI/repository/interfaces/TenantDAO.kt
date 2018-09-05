@@ -6,7 +6,7 @@ import java.util.*
 
 interface TenantDAO {
 
-    fun findActiveTenatById(tenantUuid: String): Optional<TenantDetails>
+    fun findActiveTenantById(tenantUuid: String): Optional<TenantDetails>
 
     fun getAllActiveTenants(): List<TenantDetails>
 
@@ -28,12 +28,8 @@ interface TenantDAO {
 
     fun getCurrentTenantDetails(): Optional<TenantDetails>
 
-    fun getPendingTenantById(tenantUuid: String): Optional<PendingTenantDetails>
-
-    fun getPendingTenantCreators(tenantUuid: String): List<PendingTenantCreator>
-
     fun deletePendingTenantById(tenantUuid: String): Int
 
-    fun createActiveTenantEntry(dev: String, timestamp: Timestamp, pendingTenant: PendingTenantDetails): PendingTenantDetails
+    fun createActiveTenantEntry(dev: String, timestamp: Timestamp, pendingTenant: PendingTenantDetails): TenantDetails
 
 }
