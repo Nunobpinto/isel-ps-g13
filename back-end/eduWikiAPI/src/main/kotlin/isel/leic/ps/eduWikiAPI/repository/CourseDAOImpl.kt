@@ -344,7 +344,8 @@ class CourseDAOImpl : CourseDAO {
                         "C.$CLASS_TERM_ID, " +
                         "C.$CLASS_VOTES, " +
                         "C.$CLASS_TIMESTAMP, " +
-                        "C.$CLASS_LOG_ID " +
+                        "C.$CLASS_LOG_ID, " +
+                        "C.$CLASS_PROGRAMME_ID " +
                         "FROM :schema.$CLASS_TABLE AS C " +
                         "INNER JOIN :schema.$COURSE_CLASS_TABLE AS CC " +
                         "ON C.$CLASS_ID = CC.$COURSE_CLASS_CLASS_ID " +
