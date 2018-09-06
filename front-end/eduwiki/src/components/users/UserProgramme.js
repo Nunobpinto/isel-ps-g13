@@ -1,6 +1,7 @@
 import React from 'react'
 import {Card} from 'antd'
 import fetcher from '../../fetcher'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -49,7 +50,7 @@ export default class extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetcher('http://localhost:8080/user/programme', options)
+    fetcher(config.API_PATH + '/user/programme', options)
       .then(json => this.setState({
         programme: json,
         loadingProgramme: false,

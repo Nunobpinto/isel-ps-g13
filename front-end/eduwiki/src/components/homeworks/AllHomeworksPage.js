@@ -6,6 +6,7 @@ import Layout from '../layout/Layout'
 import { Button, message, List, Card } from 'antd'
 import SubmitHomework from './SubmitHomework'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 export default (props) => (
   <Layout>
@@ -37,7 +38,7 @@ class AllHomeworks extends React.Component {
     this.deleteStaged = this.deleteStaged.bind(this)
   }
   approveStaged () {
-    const stagedUri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/stage/${this.state.stagedId}`
+    const stagedUri = `${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/stage/${this.state.stagedId}`
     const options = {
       method: 'POST',
       headers: {
@@ -69,7 +70,7 @@ class AllHomeworks extends React.Component {
       })
   }
   deleteStaged () {
-    const stagedUri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/stage/${this.state.stagedId}`
+    const stagedUri = `${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/stage/${this.state.stagedId}`
     const options = {
       method: 'DELETE',
       headers: {
@@ -103,7 +104,7 @@ class AllHomeworks extends React.Component {
     const voteInput = {
       vote: 'Up'
     }
-    const stagedUri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/stage/${this.state.stagedId}/vote`
+    const stagedUri = `${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/stage/${this.state.stagedId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -139,7 +140,7 @@ class AllHomeworks extends React.Component {
     const voteInput = {
       vote: 'Up'
     }
-    const stagedUri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/stage/${this.state.stagedId}/vote`
+    const stagedUri = `${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/stage/${this.state.stagedId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -278,7 +279,7 @@ class AllHomeworks extends React.Component {
   }
 
   createDefinitiveHomework (homework) {
-    const uri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks`
+    const uri = `${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks`
     let data = new FormData()
     data.append('sheet', homework.file)
     data.append('multipleDeliveries', homework.multipleDeliveries)
@@ -303,14 +304,18 @@ class AllHomeworks extends React.Component {
         }
         )
       })
-      .catch(_ => {
-        message.error('Error while saving the Homework you requested')
+      .catch(error => {
+        if (error.detail) {
+          message.error(error.detail)
+        } else {
+          message.error('Error while saving the Homework you requested')
+        }
         this.setState({actionFlag: false})
       })
   }
 
   createStagedHomework (homework) {
-    const uri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/stage`
+    const uri = `${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/stage`
     let data = new FormData()
     data.append('sheet', homework.file)
     data.append('multipleDeliveries', homework.multipleDeliveries)
@@ -335,19 +340,23 @@ class AllHomeworks extends React.Component {
         }
         )
       })
-      .catch(_ => {
-        message.error('Error while saving the Homework you requested')
+      .catch(error => {
+        if (error.detail) {
+          message.error(error.detail)
+        } else {
+          message.error('Error while saving the Homework you requested')
+        }
         this.setState({actionFlag: false})
       })
   }
 
   showResource (sheet) {
-    const resourceUrl = `http://localhost:8080/resources/${sheet}`
+    const resourceUrl = `${config.API_PATH}/resources/${sheet}`
     window.open(resourceUrl)
   }
 
   componentDidMount () {
-    const uri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks`
+    const uri = `${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks`
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -355,11 +364,11 @@ class AllHomeworks extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetcher(`http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}`, header)
+    fetcher(`${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.courseId}`, header)
       .then(courseClass => {
         fetcher(uri, header)
           .then(homeworks => {
-            const stagedUri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/stage`
+            const stagedUri = `${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/stage`
             fetcher(stagedUri, header)
               .then(stagedHomeworks => this.setState({
                 homeworks: homeworks.homeworkList,
@@ -370,7 +379,7 @@ class AllHomeworks extends React.Component {
                 loading: false
               }))
               .catch(stagedError => {
-                message.error('Error fetching staged homeworks')
+                message.error(stagedError.detail)
                 this.setState({
                   homeworks: homeworks.homeworkList,
                   stagedError: stagedError,
@@ -382,7 +391,7 @@ class AllHomeworks extends React.Component {
               })
           })
           .catch(error => {
-            message.error('Error fetching homeworks')
+            message.error(error.detail)
             this.setState({error: error})
           })
       })

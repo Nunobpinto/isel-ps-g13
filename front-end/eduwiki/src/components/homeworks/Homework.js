@@ -5,6 +5,7 @@ import Layout from '../layout/Layout'
 import HomeworkVersions from './HomeworkVersions'
 import ReportHomework from './ReportHomework'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -15,7 +16,7 @@ export default class extends React.Component {
     this.showResource = this.showResource.bind(this)
   }
   showResource (sheet) {
-    const resourceUrl = `http://localhost:8080/resources/${sheet}`
+    const resourceUrl = `${config.API_PATH}/resources/${sheet}`
     window.open(resourceUrl)
   }
   render () {
@@ -101,7 +102,7 @@ export default class extends React.Component {
     )
   }
   componentDidMount () {
-    const uri = `http://localhost:8080/classes/${this.props.match.params.classId}/courses/${this.props.match.params.courseId}/homeworks/${this.props.match.params.homeworkId}`
+    const uri = `${config.API_PATH}/classes/${this.props.match.params.classId}/courses/${this.props.match.params.courseId}/homeworks/${this.props.match.params.homeworkId}`
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -111,6 +112,6 @@ export default class extends React.Component {
     }
     fetcher(uri, header)
       .then(homework => this.setState({homework: homework}))
-      .catch(_ => message.error('Error getting the Specific Homework'))
+      .catch(error => message.error(error.detail))
   }
 }

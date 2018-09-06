@@ -4,6 +4,7 @@ import timestampParser from '../../timestampParser'
 import ReportOrganization from './ReportOrganization'
 import {Row, Col, Card, Button, Popover, message} from 'antd'
 import fetcher from '../../fetcher'
+import config from '../../config'
 
 class OrganizationDetails extends React.Component {
   constructor (props) {
@@ -83,7 +84,7 @@ class OrganizationDetails extends React.Component {
   }
 
   componentDidMount () {
-    const url = 'http://localhost:8080/organization'
+    const url = config.API_PATH + '/organization'
     const headers = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -93,7 +94,7 @@ class OrganizationDetails extends React.Component {
     }
     fetcher(url, headers)
       .then(json => {
-        const versionsUri = 'http://localhost:8080/organization/versions'
+        const versionsUri = config.API_PATH + '/organization/versions'
         fetcher(versionsUri, headers)
           .then(versionJson => {
             const versions = versionJson.organizationVersionList
@@ -124,7 +125,7 @@ class OrganizationDetails extends React.Component {
           }))
       })
       .catch(err => {
-        message.error('Cannot access organization details')
+        message.error(err.detail)
         this.setState({err: err, loading: false})
       })
   }

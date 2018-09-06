@@ -4,6 +4,7 @@ import { List, message, Button } from 'antd'
 import IconText from '../comms/IconText'
 import Layout from '../layout/Layout'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 class ExamReports extends React.Component {
   constructor (props) {
@@ -96,7 +97,7 @@ class ExamReports extends React.Component {
     )
   }
   componentDidMount () {
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/${this.props.examId}/reports`
+    const url = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/exams/${this.props.examId}/reports`
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -104,9 +105,9 @@ class ExamReports extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetcher(`http://localhost:8080/courses/${this.props.courseId}`, options)
+    fetcher(`${config.API_PATH}/courses/${this.props.courseId}`, options)
       .then(course =>
-        fetcher(`http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}`, options)
+        fetcher(`${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}`, options)
           .then(term =>
             fetcher(url, options)
               .then(list => {
@@ -135,7 +136,7 @@ class ExamReports extends React.Component {
       vote: 'Up'
     }
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/${this.props.examId}/reports/${reportId}/vote`
+    const url = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/exams/${this.props.examId}/reports/${reportId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -157,8 +158,8 @@ class ExamReports extends React.Component {
           voteUp: false
         })
       }))
-      .catch(_ => {
-        message.error('Error while processing your vote')
+      .catch(error => {
+        message.error(error.detail)
         this.setState({voteUp: false})
       })
   }
@@ -168,7 +169,7 @@ class ExamReports extends React.Component {
       vote: 'Down'
     }
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/${this.props.examId}/reports/${reportId}/vote`
+    const url = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/exams/${this.props.examId}/reports/${reportId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -190,14 +191,14 @@ class ExamReports extends React.Component {
           voteDown: false
         })
       }))
-      .catch(_ => {
-        message.error('Error while processing your vote')
+      .catch(error => {
+        message.error(error.detail)
         this.setState({voteDown: false})
       })
   }
   approve () {
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/${this.props.examId}/reports/${reportId}`
+    const url = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/exams/${this.props.examId}/reports/${reportId}`
     const body = {
       method: 'POST',
       headers: {
@@ -231,7 +232,7 @@ class ExamReports extends React.Component {
 
   reject () {
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/${this.props.examId}/reports/${reportId}`
+    const url = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/exams/${this.props.examId}/reports/${reportId}`
     const body = {
       method: 'DELETE',
       headers: {

@@ -2,6 +2,7 @@ import React from 'react'
 import { Layout, message } from 'antd'
 import Navbar from './Navbar'
 import fetcher from '../../fetcher'
+import config from '../../config'
 const { Header, Content, Footer } = Layout
 
 export default class extends React.Component {
@@ -46,10 +47,10 @@ export default class extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetcher('http://localhost:8080/user', options)
+    fetcher(config.API_PATH + '/user', options)
       .then(json => this.setState({
         user: json
       }))
-      .catch(_ => message.error('Something bad happened'))
+      .catch(error => message.error(error.detail))
   }
 }

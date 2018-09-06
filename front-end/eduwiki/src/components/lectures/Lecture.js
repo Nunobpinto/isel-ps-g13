@@ -5,6 +5,7 @@ import Layout from '../layout/Layout'
 import LectureVersions from './LectureVersions'
 import ReportLecture from './ReportLecture'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -104,7 +105,7 @@ export default class extends React.Component {
     const voteInput = {
       vote: 'Up'
     }
-    const url = `http://localhost:8080/classes/${this.props.match.params.classId}/courses/${this.props.match.params.courseId}/lectures/${this.props.match.params.lectureId}/vote`
+    const url = `${config.API_PATH}/classes/${this.props.match.params.classId}/courses/${this.props.match.params.courseId}/lectures/${this.props.match.params.lectureId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -130,13 +131,16 @@ export default class extends React.Component {
         } else {
           message.error('Error processing your vote!!')
         }
+        this.setState({
+          voteUp: false
+        })
       })
   }
   voteDown () {
     const voteInput = {
       vote: 'Down'
     }
-    const url = `http://localhost:8080/classes/${this.props.match.params.classId}/courses/${this.props.match.params.courseId}/lectures/${this.props.match.params.lectureId}/vote`
+    const url = `${config.API_PATH}/classes/${this.props.match.params.classId}/courses/${this.props.match.params.courseId}/lectures/${this.props.match.params.lectureId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -162,6 +166,7 @@ export default class extends React.Component {
         } else {
           message.error('Error processing your vote!!')
         }
+        this.setState({voteDown: false})
       })
   }
   componentDidUpdate () {
@@ -172,7 +177,7 @@ export default class extends React.Component {
     }
   }
   componentDidMount () {
-    const uri = `http://localhost:8080/classes/${this.props.match.params.classId}/courses/${this.props.match.params.courseId}/lectures/${this.props.match.params.lectureId}`
+    const uri = `${config.API_PATH}/classes/${this.props.match.params.classId}/courses/${this.props.match.params.courseId}/lectures/${this.props.match.params.lectureId}`
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -182,6 +187,6 @@ export default class extends React.Component {
     }
     fetcher(uri, header)
       .then(lecture => this.setState({lecture: lecture}))
-      .catch(_ => message.error('Error getting the Specific Lecture'))
+      .catch(error => message.error(error.detail))
   }
 }

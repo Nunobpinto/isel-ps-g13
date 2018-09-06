@@ -4,6 +4,7 @@ import { List, message } from 'antd'
 import IconText from '../comms/IconText'
 import Layout from '../layout/Layout'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 class ProgrammeReports extends React.Component {
   constructor (props) {
@@ -94,7 +95,7 @@ class ProgrammeReports extends React.Component {
     )
   }
   componentDidMount () {
-    const url = 'http://localhost:8080/programmes/' + this.props.programmeId + '/reports'
+    const url = config.API_PATH + '/programmes/' + this.props.programmeId + '/reports'
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -102,7 +103,7 @@ class ProgrammeReports extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetcher('http://localhost:8080/programmes/' + this.props.programmeId, options)
+    fetcher(config.API_PATH + '/programmes/' + this.props.programmeId, options)
       .then(programme => {
         fetcher(url, options)
           .then(list => {
@@ -124,7 +125,7 @@ class ProgrammeReports extends React.Component {
     }
     const reportId = this.state.reportId
     const progID = this.props.programmeId
-    const url = `http://localhost:8080/programmes/${progID}/reports/${reportId}/vote`
+    const url = `${config.API_PATH}/programmes/${progID}/reports/${reportId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -158,7 +159,7 @@ class ProgrammeReports extends React.Component {
     }
     const reportId = this.state.reportId
     const progID = this.props.programmeId
-    const url = `http://localhost:8080/programmes/${progID}/reports/${reportId}/vote`
+    const url = `${config.API_PATH}/programmes/${progID}/reports/${reportId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -187,7 +188,7 @@ class ProgrammeReports extends React.Component {
   }
   approve () {
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/programmes/${this.props.programmeId}/reports/${reportId}`
+    const url = `${config.API_PATH}/programmes/${this.props.programmeId}/reports/${reportId}`
     const body = {
       method: 'POST',
       headers: {
@@ -221,7 +222,7 @@ class ProgrammeReports extends React.Component {
 
   reject () {
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/programmes/${this.props.programmeId}/reports/${reportId}`
+    const url = `${config.API_PATH}/programmes/${this.props.programmeId}/reports/${reportId}`
     const body = {
       method: 'DELETE',
       headers: {

@@ -1,6 +1,7 @@
 import React from 'react'
 import fetcher from '../../fetcher'
 import {List, message} from 'antd'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -25,7 +26,7 @@ export default class extends React.Component {
     )
   }
   componentDidMount () {
-    const url = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/${this.props.homeworkId}/versions`
+    const url = `${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/${this.props.homeworkId}/versions`
     const body = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -38,6 +39,6 @@ export default class extends React.Component {
         const homeworkVersions = versions.homeworkVersionList.filter(version => version.version !== this.props.version)
         this.setState({versions: homeworkVersions})
       })
-      .catch(_ => message.error('Error getting all Versions of Homework'))
+      .catch(error => message.error(error.detail))
   }
 }

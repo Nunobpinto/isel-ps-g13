@@ -1,10 +1,9 @@
 import React from 'react'
-import fetcher from '../../fetcher'
 import MyLayout from '../layout/Layout'
 import ProgrammesStage from '../programmes/ProgrammesStage'
 import UserActivity from './UserActivity'
 import UserReputation from './UserReputation'
-import {Layout, Menu, message} from 'antd'
+import {Layout, Menu} from 'antd'
 import CoursesStage from '../courses/CoursesStage'
 import ClassesStage from '../classes/ClassesStage'
 const {Content} = Layout
@@ -19,10 +18,10 @@ class Profile extends React.Component {
     super(props)
     this.state = {
       user: {
-        username: '',
-        familyName: '',
-        givenName: '',
-        email: ''
+        username: props.user.username,
+        familyName: props.user.familyName,
+        givenName: props.user.familyName,
+        email: props.user.email
       },
       showProgrammeStage: true,
       showCourseStage: false,
@@ -111,27 +110,5 @@ class Profile extends React.Component {
         }
       </div>
     )
-  }
-  componentDidMount () {
-    const auth = window.localStorage.getItem('auth')
-    const options = {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + auth,
-        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
-      }
-    }
-    fetcher('http://localhost:8080/user', options)
-      .then(user => {
-        this.setState({
-          user: {
-            username: user.username,
-            familyName: user.familyName,
-            givenName: user.givenName,
-            email: user.email
-          }
-        })
-      })
-      .catch(_ => message.error('Error getting your profile'))
   }
 }

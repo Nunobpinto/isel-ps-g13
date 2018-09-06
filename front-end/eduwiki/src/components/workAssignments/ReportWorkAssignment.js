@@ -2,6 +2,7 @@ import React from 'react'
 import fetcher from '../../fetcher'
 import {Input, Form, Button, message, Radio, DatePicker} from 'antd'
 import moment from 'moment'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -113,7 +114,7 @@ export default class extends React.Component {
         },
         body: JSON.stringify(data)
       }
-      const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}/reports`
+      const url = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}/reports`
       fetcher(url, options)
         .then(_ => {
           message.success('Reported!!')

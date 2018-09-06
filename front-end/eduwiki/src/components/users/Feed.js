@@ -1,6 +1,7 @@
 import React from 'react'
 import { List, Avatar, message } from 'antd'
 import fetcher from '../../fetcher'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -87,7 +88,7 @@ export default class extends React.Component {
     }
   }
   componentDidMount () {
-    const uri = `http://localhost:8080/user/feed`
+    const uri = `${config.API_PATH}/user/feed`
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',

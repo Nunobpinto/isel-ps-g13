@@ -1,6 +1,7 @@
 import React from 'react'
 import fetcher from '../../fetcher'
 import {Card} from 'antd'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -61,7 +62,7 @@ export default class extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetcher('http://localhost:8080/user/classes', options)
+    fetcher(config.API_PATH + '/user/classes', options)
       .then(json => this.setState({
         classes: json.courseClassList,
         loadingClasses: false,

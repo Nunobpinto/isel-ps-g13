@@ -2,6 +2,7 @@ import React from 'react'
 import fetcher from '../../fetcher'
 import { List, message } from 'antd'
 import IconText from '../comms/IconText'
+import config from '../../config'
 
 export default class UserReports extends React.Component {
   constructor (props) {
@@ -81,7 +82,7 @@ export default class UserReports extends React.Component {
     )
   }
   componentDidMount () {
-    const url = `http://localhost:8080/users/${this.props.username}/reports`
+    const url = `${config.API_PATH}/users/${this.props.username}/reports`
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -98,14 +99,14 @@ export default class UserReports extends React.Component {
           loading: false
         })
       })
-      .catch(_ => {
-        message.error('Error getting all reports on user')
+      .catch(error => {
+        message.error(error.detail)
         this.setState({loading: false})
       })
   }
   approve () {
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/users/${this.props.username}/reports/${reportId}`
+    const url = `${config.API_PATH}/users/${this.props.username}/reports/${reportId}`
     const body = {
       method: 'POST',
       headers: {
@@ -139,7 +140,7 @@ export default class UserReports extends React.Component {
 
   reject () {
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/users/${this.props.username}/reports/${reportId}`
+    const url = `${config.API_PATH}/users/${this.props.username}/reports/${reportId}`
     const body = {
       method: 'DELETE',
       headers: {

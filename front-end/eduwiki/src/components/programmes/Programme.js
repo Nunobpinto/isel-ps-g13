@@ -8,6 +8,7 @@ import {Row, Col, Card, Button, Tooltip, Popover, message} from 'antd'
 import CourseProgrammeDetails from '../courseProgrammes/CourseProgrammeDetails'
 import CoursesProgrammeStage from '../courseProgrammes/CoursesProgrammeStage'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 class Programme extends React.Component {
   constructor (props) {
@@ -146,7 +147,7 @@ class Programme extends React.Component {
     if (this.props.user.reputation.role !== 'ROLE_ADMIN') {
       return this.addStagedCourseToProgramme()
     }
-    const url = 'http://localhost:8080/programmes/' + id + '/courses'
+    const url = config.API_PATH + '/programmes/' + id + '/courses'
     const data = {
       programme_id: this.props.match.params.id,
       course_id: courseToAdd.course_id,
@@ -189,7 +190,7 @@ class Programme extends React.Component {
   addStagedCourseToProgramme () {
     const id = this.props.match.params.id
     const courseToAdd = this.state.course
-    const url = 'http://localhost:8080/programmes/' + id + '/courses/stage'
+    const url = config.API_PATH + '/programmes/' + id + '/courses/stage'
     const data = {
       programme_id: this.props.match.params.id,
       course_id: courseToAdd.course_id,
@@ -226,7 +227,7 @@ class Programme extends React.Component {
       vote: 'Up'
     }
     const id = this.props.match.params.id
-    const uri = 'http://localhost:8080/programmes/' + id + '/vote'
+    const uri = config.API_PATH + '/programmes/' + id + '/vote'
     const body = {
       method: 'POST',
       headers: {
@@ -260,7 +261,7 @@ class Programme extends React.Component {
       vote: 'Down'
     }
     const id = this.props.match.params.id
-    const uri = 'http://localhost:8080/programmes/' + id + '/vote'
+    const uri = config.API_PATH + '/programmes/' + id + '/vote'
     const body = {
       method: 'POST',
       headers: {
@@ -286,7 +287,7 @@ class Programme extends React.Component {
   }
 
   fetchOtherCourses () {
-    const uri = 'http://localhost:8080/courses'
+    const uri = config.API_PATH + '/courses'
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -308,7 +309,7 @@ class Programme extends React.Component {
 
   componentDidMount () {
     const id = this.props.match.params.id
-    const uri = 'http://localhost:8080/programmes/' + id
+    const uri = config.API_PATH + '/programmes/' + id
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -318,10 +319,10 @@ class Programme extends React.Component {
     }
     fetcher(uri, header)
       .then(programme => {
-        const coursesUri = `http://localhost:8080/programmes/${id}/courses`
+        const coursesUri = `${config.API_PATH}/programmes/${id}/courses`
         fetcher(coursesUri, header)
           .then(courses => {
-            const userProgrammeUri = 'http://localhost:8080/user/programme'
+            const userProgrammeUri = config.API_PATH + '/user/programme'
             fetcher(userProgrammeUri, header)
               .then(userProgramme => this.setState({
                 full_name: programme.fullName,
@@ -383,7 +384,7 @@ class Programme extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetcher('http://localhost:8080/user/programme', options)
+    fetcher(config.API_PATH + '/user/programme', options)
       .then(_ => {
         message.success('Unfollowed Programme')
         this.setState({
@@ -413,7 +414,7 @@ class Programme extends React.Component {
 
       }
     }
-    fetcher('http://localhost:8080/user/programme', options)
+    fetcher(config.API_PATH + '/user/programme', options)
       .then(_ => {
         message.success('Followed Programme')
         this.setState({
@@ -430,7 +431,7 @@ class Programme extends React.Component {
 
   approveStagedCourseInProgramme (stageId) {
     const id = this.props.match.params.id
-    const uri = 'http://localhost:8080/programmes/' + id + '/courses/stage/' + stageId
+    const uri = config.API_PATH + '/programmes/' + id + '/courses/stage/' + stageId
     const body = {
       method: 'POST',
       headers: {
@@ -450,6 +451,7 @@ class Programme extends React.Component {
           const idx = allCourses.findIndex(crs => crs.courseId === courseProgramme.courseId)
           delete allCourses[idx]
           return ({
+            approved: false,
             courses: courses,
             allCourses: allCourses
           })

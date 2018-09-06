@@ -3,6 +3,7 @@ import {Row, Col, Card, message, Breadcrumb, Button, Icon} from 'antd'
 import fetcher from '../../fetcher'
 import Layout from '../layout/Layout'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -59,7 +60,7 @@ export default class extends React.Component {
     )
   }
   componentDidMount () {
-    const uri = `http://localhost:8080/courses/${this.props.match.params.courseId}/terms/${this.props.match.params.termId}/exams/${this.props.match.params.examId}/versions/${this.props.match.params.version}`
+    const uri = `${config.API_PATH}/courses/${this.props.match.params.courseId}/terms/${this.props.match.params.termId}/exams/${this.props.match.params.examId}/versions/${this.props.match.params.version}`
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',

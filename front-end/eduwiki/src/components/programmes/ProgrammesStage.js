@@ -3,6 +3,7 @@ import fetcher from '../../fetcher'
 import {Input, List, message} from 'antd'
 import IconText from '../comms/IconText'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -24,7 +25,7 @@ export default class extends React.Component {
     })
   }
   approveStaged () {
-    const stagedUri = `http://localhost:8080/programmes/stage/${this.state.stageID}`
+    const stagedUri = `${config.API_PATH}/programmes/stage/${this.state.stageID}`
     const options = {
       method: 'POST',
       headers: {
@@ -51,7 +52,7 @@ export default class extends React.Component {
       })
   }
   deleteStaged () {
-    const stagedUri = `http://localhost:8080/programmes/stage/${this.state.stageID}`
+    const stagedUri = `${config.API_PATH}/programmes/stage/${this.state.stageID}`
     const options = {
       method: 'DELETE',
       headers: {
@@ -132,7 +133,7 @@ export default class extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    const stagedUri = 'http://localhost:8080/programmes/stage'
+    const stagedUri = config.API_PATH + '/programmes/stage'
     fetcher(stagedUri, options)
       .then(json => {
         let staged = json.programmeStageList
@@ -142,7 +143,7 @@ export default class extends React.Component {
           viewStaged: staged
         })
       })
-      .catch(_ => message.error('Something bad happened'))
+      .catch(error => message.error(error.detail))
   }
   componentDidUpdate () {
     if (this.state.approveStage) {

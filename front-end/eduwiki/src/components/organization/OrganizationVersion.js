@@ -3,6 +3,7 @@ import fetcher from '../../fetcher'
 import Layout from '../layout/Layout'
 import {Row, Col, Card, Button, Icon, message} from 'antd'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -64,7 +65,7 @@ export default class extends React.Component {
   }
 
   componentDidMount () {
-    const url = `http://localhost:8080/organization/versions/${this.props.match.params.version}`
+    const url = `${config.API_PATH}/organization/versions/${this.props.match.params.version}`
     const headers = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -78,7 +79,7 @@ export default class extends React.Component {
         version: json.version
       }))
       .catch(err => {
-        message.error('Error obtaining this version')
+        message.error(err.detail)
         this.setState({err: err})
       })
   }

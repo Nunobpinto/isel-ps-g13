@@ -4,6 +4,7 @@ import { List, message, Button } from 'antd'
 import IconText from '../comms/IconText'
 import Layout from '../layout/Layout'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 class WorkAssignmentReports extends React.Component {
   constructor (props) {
@@ -99,7 +100,7 @@ class WorkAssignmentReports extends React.Component {
     )
   }
   componentDidMount () {
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}/reports`
+    const url = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}/reports`
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -107,9 +108,9 @@ class WorkAssignmentReports extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetcher(`http://localhost:8080/courses/${this.props.courseId}`, options)
+    fetcher(`${config.API_PATH}/courses/${this.props.courseId}`, options)
       .then(course =>
-        fetcher(`http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}`, options)
+        fetcher(`${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}`, options)
           .then(term =>
             fetcher(url, options)
               .then(list => {
@@ -138,7 +139,7 @@ class WorkAssignmentReports extends React.Component {
       vote: 'Up'
     }
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}/reports/${reportId}/vote`
+    const url = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}/reports/${reportId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -171,7 +172,7 @@ class WorkAssignmentReports extends React.Component {
       vote: 'Down'
     }
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}/reports/${reportId}/vote`
+    const url = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}/reports/${reportId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -200,7 +201,7 @@ class WorkAssignmentReports extends React.Component {
   }
   approve () {
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}/reports/${reportId}`
+    const url = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}/reports/${reportId}`
     const body = {
       method: 'POST',
       headers: {
@@ -234,7 +235,7 @@ class WorkAssignmentReports extends React.Component {
 
   reject () {
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}/reports/${reportId}`
+    const url = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/${this.props.workAssignmentId}/reports/${reportId}`
     const body = {
       method: 'DELETE',
       headers: {

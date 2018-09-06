@@ -6,6 +6,7 @@ import Layout from '../layout/Layout'
 import { Button, message, List, Card } from 'antd'
 import SubmitExam from './SubmitExam'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 export default (props) => (
   <Layout>
@@ -36,7 +37,7 @@ class AllExams extends React.Component {
     this.deleteStaged = this.deleteStaged.bind(this)
   }
   approveStaged () {
-    const stagedUri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage/${this.state.stagedId}`
+    const stagedUri = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage/${this.state.stagedId}`
     const options = {
       method: 'POST',
       headers: {
@@ -68,7 +69,7 @@ class AllExams extends React.Component {
       })
   }
   deleteStaged () {
-    const stagedUri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage/${this.state.stagedId}`
+    const stagedUri = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage/${this.state.stagedId}`
     const options = {
       method: 'DELETE',
       headers: {
@@ -103,7 +104,7 @@ class AllExams extends React.Component {
       vote: 'Up'
     }
     const stageID = this.state.stageID
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage/${stageID}/vote`
+    const url = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage/${stageID}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -140,7 +141,7 @@ class AllExams extends React.Component {
       vote: 'Up'
     }
     const stageID = this.state.stageID
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage/${stageID}/vote`
+    const url = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage/${stageID}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -277,7 +278,7 @@ class AllExams extends React.Component {
   }
 
   createDefinitiveExam (exam) {
-    const uri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams`
+    const uri = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/exams`
     let data = new FormData()
     data.append('sheet', exam.file)
     data.append('phase', exam.phase)
@@ -302,14 +303,18 @@ class AllExams extends React.Component {
         }
         )
       })
-      .catch(_ => {
-        message.error('Error while saving the Exam you requested')
+      .catch(error => {
+        if (error.detail) {
+          message.error(error.detail)
+        } else {
+          message.error('Error saving exam')
+        }
         this.setState({actionFlag: false})
       })
   }
 
   createStagedExam (exam) {
-    const uri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage`
+    const uri = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage`
     let data = new FormData()
     data.append('sheet', exam.file)
     data.append('phase', exam.phase)
@@ -334,19 +339,23 @@ class AllExams extends React.Component {
         }
         )
       })
-      .catch(_ => {
-        message.error('Error while saving the Exam you requested')
+      .catch(error => {
+        if (error.detail) {
+          message.error(error.detail)
+        } else {
+          message.error('Error saving exam')
+        }
         this.setState({actionFlag: false})
       })
   }
 
   showResource (sheet) {
-    const resourceUrl = `http://localhost:8080/resources/${sheet}`
+    const resourceUrl = `${config.API_PATH}/resources/${sheet}`
     window.open(resourceUrl)
   }
 
   componentDidMount () {
-    const uri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams`
+    const uri = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/exams`
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -354,13 +363,13 @@ class AllExams extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetcher('http://localhost:8080/courses/' + this.props.courseId, header)
+    fetcher(config.API_PATH + '/courses/' + this.props.courseId, header)
       .then(course => {
-        fetcher(`http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}`, header)
+        fetcher(`${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}`, header)
           .then(term => {
             fetcher(uri, header)
               .then(exams => {
-                const stagedUri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage`
+                const stagedUri = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage`
                 fetcher(stagedUri, header)
                   .then(stagedExams => this.setState({
                     exams: exams.examList,
@@ -381,13 +390,13 @@ class AllExams extends React.Component {
                   })
               })
               .catch(error => {
-                message.error('Error fetching exams')
+                message.error(error.detail)
                 this.setState({error: error})
               })
           })
-          .catch(_ => message.error('Error getting term'))
+          .catch(error => message.error(error.detail))
       })
-      .catch(_ => message.error('Error getting course'))
+      .catch(error => message.error(error.detail))
   }
   componentDidUpdate () {
     if (this.state.actionFlag) {

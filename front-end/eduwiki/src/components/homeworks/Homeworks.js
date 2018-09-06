@@ -1,6 +1,7 @@
 import React from 'react'
 import {Col, Row, Button, Card} from 'antd'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -11,7 +12,7 @@ export default class extends React.Component {
     this.showResource = this.showResource.bind(this)
   }
   showResource (sheet) {
-    const resourceUrl = `http://localhost:8080/resources/${sheet}`
+    const resourceUrl = `${config.API_PATH}/resources/${sheet}`
     window.open(resourceUrl)
   }
   render () {

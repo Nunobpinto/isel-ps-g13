@@ -6,6 +6,7 @@ import Layout from '../layout/Layout'
 import { Button, message, List, Card } from 'antd'
 import SubmitWorkAssignment from './SubmitWorkAssignment'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 export default (props) => (
   <Layout>
@@ -37,7 +38,7 @@ class AllWorkAssignments extends React.Component {
   }
 
   approveStaged () {
-    const stagedUri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/stage/${this.state.stagedId}`
+    const stagedUri = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/stage/${this.state.stagedId}`
     const options = {
       method: 'POST',
       headers: {
@@ -69,7 +70,7 @@ class AllWorkAssignments extends React.Component {
       })
   }
   deleteStaged () {
-    const stagedUri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/stage/${this.state.stagedId}`
+    const stagedUri = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/stage/${this.state.stagedId}`
     const options = {
       method: 'DELETE',
       headers: {
@@ -104,7 +105,7 @@ class AllWorkAssignments extends React.Component {
       vote: 'Up'
     }
     const stageID = this.state.stageID
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/stage/${stageID}/vote`
+    const url = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/stage/${stageID}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -141,7 +142,7 @@ class AllWorkAssignments extends React.Component {
       vote: 'Up'
     }
     const stageID = this.state.stageID
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/stage/${stageID}/vote`
+    const url = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/stage/${stageID}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -282,7 +283,7 @@ class AllWorkAssignments extends React.Component {
   }
 
   createDefinitiveWorkAssignment (work) {
-    const uri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments`
+    const uri = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments`
     let data = new FormData()
     data.append('sheet', work.sheet)
     data.append('supplement', work.supplement)
@@ -317,7 +318,7 @@ class AllWorkAssignments extends React.Component {
   }
 
   createStagedWorkAssignment (work) {
-    const uri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/stage`
+    const uri = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/stage`
     let data = new FormData()
     data.append('sheet', work.sheet)
     data.append('supplement', work.supplement)
@@ -352,12 +353,12 @@ class AllWorkAssignments extends React.Component {
   }
 
   showResource (sheet) {
-    const resourceUrl = `http://localhost:8080/resources/${sheet}`
+    const resourceUrl = `${config.API_PATH}/resources/${sheet}`
     window.open(resourceUrl)
   }
 
   componentDidMount () {
-    const uri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments`
+    const uri = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments`
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -365,13 +366,13 @@ class AllWorkAssignments extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetcher('http://localhost:8080/courses/' + this.props.courseId, header)
+    fetcher(config.API_PATH + '/courses/' + this.props.courseId, header)
       .then(course => {
-        fetcher(`http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}`, header)
+        fetcher(`${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}`, header)
           .then(term => {
             fetcher(uri, header)
               .then(works => {
-                const stagedUri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/stage`
+                const stagedUri = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/work-assignments/stage`
                 fetcher(stagedUri, header)
                   .then(stagedWorks => this.setState({
                     works: works.workAssignmentList,

@@ -6,6 +6,7 @@ import Layout from '../layout/Layout'
 import { Button, message, List, Card } from 'antd'
 import SubmitLecture from './SubmitLecture'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 export default (props) => (
   <Layout>
@@ -39,7 +40,7 @@ class AllLecturesPage extends React.Component {
   }
 
   approveStaged () {
-    const stagedUri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/lectures/stage/${this.state.stagedId}`
+    const stagedUri = `${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.courseId}/lectures/stage/${this.state.stagedId}`
     const options = {
       method: 'POST',
       headers: {
@@ -71,7 +72,7 @@ class AllLecturesPage extends React.Component {
       })
   }
   deleteStaged () {
-    const stagedUri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/lectures/stage/${this.state.stagedId}`
+    const stagedUri = `${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.courseId}/lectures/stage/${this.state.stagedId}`
     const options = {
       method: 'DELETE',
       headers: {
@@ -105,7 +106,7 @@ class AllLecturesPage extends React.Component {
     const voteInput = {
       vote: 'Up'
     }
-    const stagedUri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/lectures/stage/${this.state.stagedId}/vote`
+    const stagedUri = `${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.courseId}/lectures/stage/${this.state.stagedId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -141,7 +142,7 @@ class AllLecturesPage extends React.Component {
     const voteInput = {
       vote: 'Up'
     }
-    const stagedUri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/lectures/stage/${this.state.stagedId}/vote`
+    const stagedUri = `${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.courseId}/lectures/stage/${this.state.stagedId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -290,7 +291,7 @@ class AllLecturesPage extends React.Component {
   }
 
   createDefinitiveLecture (data) {
-    const uri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/lectures`
+    const uri = `${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.courseId}/lectures`
     const options = {
       method: 'POST',
       headers: {
@@ -317,7 +318,7 @@ class AllLecturesPage extends React.Component {
   }
 
   createStagedLecture (data) {
-    const uri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/lectures/stage`
+    const uri = `${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.courseId}/lectures/stage`
     const options = {
       method: 'POST',
       headers: {
@@ -344,7 +345,7 @@ class AllLecturesPage extends React.Component {
   }
 
   componentDidMount () {
-    const uri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/lectures`
+    const uri = `${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.courseId}/lectures`
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -352,11 +353,11 @@ class AllLecturesPage extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetcher(`http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}`, header)
+    fetcher(`${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.courseId}`, header)
       .then(courseClass => {
         fetcher(uri, header)
           .then(lectures => {
-            const stagedUri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/lectures/stage`
+            const stagedUri = `${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.courseId}/lectures/stage`
             fetcher(stagedUri, header)
               .then(stagedLectures => this.setState({
                 lectures: lectures.lectureList,

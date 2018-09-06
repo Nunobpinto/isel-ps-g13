@@ -5,6 +5,7 @@ import Layout from '../layout/Layout'
 import ReportExam from './ReportExam'
 import ExamVersions from './ExamVersions'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -15,7 +16,7 @@ export default class extends React.Component {
     this.showResource = this.showResource.bind(this)
   }
   showResource (sheet) {
-    const resourceUrl = `http://localhost:8080/resources/${sheet}`
+    const resourceUrl = `${config.API_PATH}/resources/${sheet}`
     window.open(resourceUrl)
   }
   render () {
@@ -97,7 +98,7 @@ export default class extends React.Component {
     const voteInput = {
       vote: 'Up'
     }
-    const url = `http://localhost:8080/courses/${this.props.match.params.courseId}/terms/${this.props.match.params.termId}/exams/${this.props.match.params.examId}/vote`
+    const url = `${config.API_PATH}/courses/${this.props.match.params.courseId}/terms/${this.props.match.params.termId}/exams/${this.props.match.params.examId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -129,7 +130,7 @@ export default class extends React.Component {
     const voteInput = {
       vote: 'Down'
     }
-    const url = `http://localhost:8080/courses/${this.props.match.params.courseId}/terms/${this.props.match.params.termId}/exams/${this.props.match.params.examId}/vote`
+    const url = `${config.API_PATH}/courses/${this.props.match.params.courseId}/terms/${this.props.match.params.termId}/exams/${this.props.match.params.examId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -165,7 +166,7 @@ export default class extends React.Component {
     }
   }
   componentDidMount () {
-    const uri = `http://localhost:8080/courses/${this.props.match.params.courseId}/terms/${this.props.match.params.termId}/exams/${this.props.match.params.examId}`
+    const uri = `${config.API_PATH}/courses/${this.props.match.params.courseId}/terms/${this.props.match.params.termId}/exams/${this.props.match.params.examId}`
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',

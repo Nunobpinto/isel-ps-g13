@@ -1,6 +1,7 @@
 import React from 'react'
 import {List, message} from 'antd'
 import fetcher from '../../fetcher'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -25,7 +26,7 @@ export default class extends React.Component {
     )
   }
   componentDidMount () {
-    const url = 'http://localhost:8080/organization/versions'
+    const url = config.API_PATH + '/organization/versions'
     const body = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -40,6 +41,6 @@ export default class extends React.Component {
         const organizationVersions = versionsArray.filter(version => version.version !== versionNumber)
         this.setState({versions: organizationVersions})
       })
-      .catch(_ => message.error('Error obtaining versions'))
+      .catch(error => message.error(error.detail))
   }
 }

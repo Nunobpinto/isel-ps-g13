@@ -6,6 +6,7 @@ import Layout from '../layout/Layout'
 import { Button, Input, List, message } from 'antd'
 import CreateProgramme from './CreateProgramme'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 class Programmes extends React.Component {
   constructor (props) {
@@ -177,7 +178,7 @@ class Programmes extends React.Component {
   }
 
   componentDidMount () {
-    const uri = 'http://localhost:8080/programmes/'
+    const uri = config.API_PATH + '/programmes/'
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -187,7 +188,7 @@ class Programmes extends React.Component {
     }
     fetcher(uri, header)
       .then(programmes => {
-        const stagedUri = 'http://localhost:8080/programmes/stage'
+        const stagedUri = config.API_PATH + '/programmes/stage'
         fetcher(stagedUri, header)
           .then(stagedProgrammes => this.setState({
             programmes: programmes.programmeList,
@@ -228,7 +229,7 @@ class Programmes extends React.Component {
       },
       body: JSON.stringify(body)
     }
-    const url = 'http://localhost:8080/programmes/stage'
+    const url = config.API_PATH + '/programmes/stage'
     fetcher(url, options)
       .then(staged => {
         const newItem = {
@@ -273,7 +274,7 @@ class Programmes extends React.Component {
       },
       body: JSON.stringify(body)
     }
-    const url = 'http://localhost:8080/programmes'
+    const url = config.API_PATH + '/programmes'
     fetcher(url, options)
       .then(json => {
         const newItem = {
@@ -305,7 +306,7 @@ class Programmes extends React.Component {
       vote: 'Up'
     }
     const progID = this.state.progID
-    const url = `http://localhost:8080/programmes/${progID}/vote`
+    const url = `${config.API_PATH}/programmes/${progID}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -342,7 +343,7 @@ class Programmes extends React.Component {
       vote: 'Down'
     }
     const progID = this.state.progID
-    const url = `http://localhost:8080/programmes/${progID}/vote`
+    const url = `${config.API_PATH}/programmes/${progID}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -379,7 +380,7 @@ class Programmes extends React.Component {
       vote: 'Up'
     }
     const stageID = this.state.stageID
-    const url = `http://localhost:8080/programmes/stage/${stageID}/vote`
+    const url = `${config.API_PATH}/programmes/stage/${stageID}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -412,7 +413,7 @@ class Programmes extends React.Component {
       vote: 'Down'
     }
     const stageID = this.state.stageID
-    const url = `http://localhost:8080/programmes/stage/${stageID}/vote`
+    const url = `${config.API_PATH}/programmes/stage/${stageID}/vote`
     const body = {
       method: 'POST',
       headers: {

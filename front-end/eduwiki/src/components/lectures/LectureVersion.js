@@ -3,6 +3,7 @@ import {Row, Col, Card, message, Breadcrumb, Button, Icon} from 'antd'
 import fetcher from '../../fetcher'
 import Layout from '../layout/Layout'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -63,7 +64,7 @@ export default class extends React.Component {
     )
   }
   componentDidMount () {
-    const uri = `http://localhost:8080/classes/${this.props.match.params.classId}/courses/${this.props.match.params.courseId}/lectures/${this.props.match.params.lectureId}/versions/${this.props.match.params.version}`
+    const uri = `${config.API_PATH}/classes/${this.props.match.params.classId}/courses/${this.props.match.params.courseId}/lectures/${this.props.match.params.lectureId}/versions/${this.props.match.params.version}`
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -73,6 +74,6 @@ export default class extends React.Component {
     }
     fetcher(uri, header)
       .then(lecture => this.setState({lecture: lecture}))
-      .catch(_ => message.error('Error getting the Specific Version of lecture'))
+      .catch(error => message.error(error.detail))
   }
 }

@@ -1,6 +1,7 @@
 import React from 'react'
 import { Timeline, message } from 'antd'
 import fetcher from '../../fetcher'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -67,7 +68,7 @@ export default class extends React.Component {
     }
   }
   componentDidMount () {
-    const uri = `http://localhost:8080/user/actions`
+    const uri = `${config.API_PATH}/user/actions`
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -78,8 +79,7 @@ export default class extends React.Component {
     fetcher(uri, options)
       .then(json => this.setState({actions: json.actions}))
       .catch(error => {
-        console.log(error)
-        message.error('Error getting your past actions')
+        message.error(error.detail)
       })
   }
 }

@@ -4,6 +4,7 @@ import { List, message, Button } from 'antd'
 import IconText from '../comms/IconText'
 import Layout from '../layout/Layout'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 class HomeworkReports extends React.Component {
   constructor (props) {
@@ -94,7 +95,7 @@ class HomeworkReports extends React.Component {
     )
   }
   componentDidMount () {
-    const url = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.classId}/homeworks/${this.props.homeworkId}/reports`
+    const url = `${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.classId}/homeworks/${this.props.homeworkId}/reports`
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -102,7 +103,7 @@ class HomeworkReports extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetcher(`http://localhost:8080/classes/${this.props.classId}/courses/${this.props.classId}/homeworks/${this.props.homeworkId}`, options)
+    fetcher(`${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.classId}/homeworks/${this.props.homeworkId}`, options)
       .then(homework =>
         fetcher(url, options)
           .then(list => {
@@ -117,13 +118,13 @@ class HomeworkReports extends React.Component {
               homeworkName: homework.homeworkName
             })
           })
-          .catch(_ => {
-            message.error('Error obtaining reports of homework')
+          .catch(error => {
+            message.error(error.detail)
             this.setState({loading: false})
           })
       )
-      .catch(_ => {
-        message.error('Error finding the homework')
+      .catch(error => {
+        message.error(error.detail)
         this.setState({loading: false})
       })
   }
@@ -133,7 +134,7 @@ class HomeworkReports extends React.Component {
       vote: 'Up'
     }
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.classId}/homeworks/${this.props.homeworkId}/reports/${reportId}/vote`
+    const url = `${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.classId}/homeworks/${this.props.homeworkId}/reports/${reportId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -155,8 +156,8 @@ class HomeworkReports extends React.Component {
           voteUp: false
         })
       }))
-      .catch(_ => {
-        message.error('Error while processing your vote')
+      .catch(error => {
+        message.error(error.detail)
         this.setState({voteUp: false})
       })
   }
@@ -166,7 +167,7 @@ class HomeworkReports extends React.Component {
       vote: 'Down'
     }
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.classId}/homeworks/${this.props.homeworkId}/reports/${reportId}/vote`
+    const url = `${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.classId}/homeworks/${this.props.homeworkId}/reports/${reportId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -188,14 +189,14 @@ class HomeworkReports extends React.Component {
           voteDown: false
         })
       }))
-      .catch(_ => {
-        message.error('Error while processing your vote')
+      .catch(error => {
+        message.error(error.detail)
         this.setState({voteDown: false})
       })
   }
   approve () {
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.classId}/homeworks/${this.props.homeworkId}/reports/${reportId}`
+    const url = `${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.classId}/homeworks/${this.props.homeworkId}/reports/${reportId}`
     const body = {
       method: 'POST',
       headers: {
@@ -229,7 +230,7 @@ class HomeworkReports extends React.Component {
 
   reject () {
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.classId}/homeworks/${this.props.homeworkId}/reports/${reportId}`
+    const url = `${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.classId}/homeworks/${this.props.homeworkId}/reports/${reportId}`
     const body = {
       method: 'DELETE',
       headers: {

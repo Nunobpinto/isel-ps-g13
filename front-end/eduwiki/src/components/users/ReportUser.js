@@ -1,6 +1,7 @@
 import { Form, Input, Button, message } from 'antd'
 import React from 'react'
 import fetcher from '../../fetcher'
+import config from '../../config'
 
 const FormItem = Form.Item
 const { TextArea } = Input
@@ -60,7 +61,7 @@ class ReportForm extends React.Component {
         },
         body: JSON.stringify(report)
       }
-      const uri = `http://localhost:8080/users/${this.props.username}/reports`
+      const uri = `${config.API_PATH}/users/${this.props.username}/reports`
       fetcher(uri, options)
         .then(_ => {
           message.success('Successfully reported')

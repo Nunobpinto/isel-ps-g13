@@ -2,9 +2,10 @@ import React from 'react'
 import fetcher from '../../fetcher'
 import MyLayout from '../layout/Layout'
 import ReportUser from './ReportUser'
-import {Layout, Button, Avatar} from 'antd'
+import {Layout, Button, Avatar, message} from 'antd'
 import {Redirect} from 'react-router-dom'
 import UserReports from './UserReports'
+import config from '../../config'
 
 const { Content, Sider } = Layout
 
@@ -57,7 +58,7 @@ class OtherUserDetail extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetcher('http://localhost:8080/users/' + username, options)
+    fetcher(config.API_PATH + '/users/' + username, options)
       .then(user => {
         this.setState({
           user: {
@@ -65,6 +66,7 @@ class OtherUserDetail extends React.Component {
           }
         })
       })
+      .catch(error => message.error(error.detail))
   }
 }
 

@@ -2,6 +2,7 @@ import React from 'react'
 import Term from './Term'
 import {Menu, Layout, message} from 'antd'
 import fetcher from '../../fetcher'
+import config from '../../config'
 const { Content, Sider } = Layout
 
 export default class extends React.Component {
@@ -27,7 +28,7 @@ export default class extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.state.termId}/exams`
+    const url = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.state.termId}/exams`
     return fetcher(url, options)
       .then(json => json.examList)
       .catch(_ => [])
@@ -41,7 +42,7 @@ export default class extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.state.termId}/work-assignments`
+    const url = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.state.termId}/work-assignments`
     return fetcher(url, options)
       .then(json => json.workAssignmentList)
       .catch(_ => [])
@@ -55,7 +56,7 @@ export default class extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.state.termId}/classes`
+    const url = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.state.termId}/classes`
     return fetcher(url, options)
       .then(json => json.classList)
       .catch(_ => [])
@@ -126,9 +127,9 @@ export default class extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms`
+    const url = `${config.API_PATH}/courses/${this.props.courseId}/terms`
     fetcher(url, options)
       .then(json => this.setState({terms: json.termList}))
-      .catch(_ => message.error('Error fetching terms'))
+      .catch(error => message.error(error.detail))
   }
 }

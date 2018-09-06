@@ -3,6 +3,7 @@ import {Button, Row, Col, Card, message, Breadcrumb, Icon} from 'antd'
 import fetcher from '../../fetcher'
 import Layout from '../layout/Layout'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -13,7 +14,7 @@ export default class extends React.Component {
     this.showResource = this.showResource.bind(this)
   }
   showResource (sheet) {
-    const resourceUrl = `http://localhost:8080/resources/${sheet}`
+    const resourceUrl = `${config.API_PATH}/resources/${sheet}`
     window.open(resourceUrl)
   }
   render () {
@@ -83,7 +84,7 @@ export default class extends React.Component {
     )
   }
   componentDidMount () {
-    const uri = `http://localhost:8080/courses/${this.props.match.params.courseId}/terms/${this.props.match.params.termId}/work-assignments/${this.props.match.params.workAssignmentId}/versions/${this.props.match.params.version}`
+    const uri = `${config.API_PATH}/courses/${this.props.match.params.courseId}/terms/${this.props.match.params.termId}/work-assignments/${this.props.match.params.workAssignmentId}/versions/${this.props.match.params.version}`
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -93,6 +94,6 @@ export default class extends React.Component {
     }
     fetcher(uri, header)
       .then(work => this.setState({work: work}))
-      .catch(_ => message.error('Error getting the Specific Work Assignment'))
+      .catch(error => message.error(error.detail))
   }
 }

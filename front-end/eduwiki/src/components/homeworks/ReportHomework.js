@@ -2,6 +2,7 @@ import React from 'react'
 import fetcher from '../../fetcher'
 import {Input, Form, Button, message, Radio, DatePicker} from 'antd'
 import moment from 'moment'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -93,7 +94,7 @@ export default class extends React.Component {
         },
         body: JSON.stringify(data)
       }
-      const url = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/${this.props.homeworkId}/reports`
+      const url = `${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/${this.props.homeworkId}/reports`
       fetcher(url, options)
         .then(_ => {
           message.success('Reported!!')
@@ -101,8 +102,12 @@ export default class extends React.Component {
             reported: false
           })
         })
-        .catch(_ => {
-          message.error('Error processing your report')
+        .catch(error => {
+          if (error.detail) {
+            message.error(error.detail)
+          } else {
+            message.error('Error processing your report')
+          }
           this.setState({reported: false})
         })
     }

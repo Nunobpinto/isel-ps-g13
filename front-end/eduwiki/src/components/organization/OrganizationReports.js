@@ -4,6 +4,7 @@ import IconText from '../comms/IconText'
 import fetcher from '../../fetcher'
 import Layout from '../layout/Layout'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 class OrganizationReports extends React.Component {
   constructor (props) {
@@ -96,7 +97,7 @@ class OrganizationReports extends React.Component {
     )
   }
   componentDidMount () {
-    const url = 'http://localhost:8080/organization/reports'
+    const url = config.API_PATH + '/organization/reports'
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -106,7 +107,7 @@ class OrganizationReports extends React.Component {
     }
     fetcher(url, options)
       .then(list => this.setState({ reports: list.organizationReportList }))
-      .catch(_ => message.error('Error obtaining reports'))
+      .catch(error => message.error(error.detail))
   }
 
   voteUp () {
@@ -114,7 +115,7 @@ class OrganizationReports extends React.Component {
       vote: 'Up'
     }
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/organization/reports/${reportId}/vote`
+    const url = `${config.API_PATH}/organization/reports/${reportId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -152,7 +153,7 @@ class OrganizationReports extends React.Component {
       vote: 'Down'
     }
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/organization/reports/${reportId}/vote`
+    const url = `${config.API_PATH}/organization/reports/${reportId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -187,7 +188,7 @@ class OrganizationReports extends React.Component {
 
   approve () {
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/organization/reports/${reportId}`
+    const url = `${config.API_PATH}/organization/reports/${reportId}`
     const body = {
       method: 'POST',
       headers: {
@@ -221,7 +222,7 @@ class OrganizationReports extends React.Component {
 
   reject () {
     const reportId = this.state.reportId
-    const url = `http://localhost:8080/organization/reports/${reportId}`
+    const url = `${config.API_PATH}/organization/reports/${reportId}`
     const body = {
       method: 'DELETE',
       headers: {

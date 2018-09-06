@@ -1,6 +1,7 @@
 import React from 'react'
 import fetcher from '../../fetcher'
 import {List, message} from 'antd'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -25,7 +26,7 @@ export default class extends React.Component {
     )
   }
   componentDidMount () {
-    const url = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/${this.props.examId}/versions`
+    const url = `${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}/exams/${this.props.examId}/versions`
     const body = {
       headers: {
         'Access-Control-Allow-Origin': '*',
