@@ -3,6 +3,7 @@ import fetcher from '../../fetcher'
 import { List, message } from 'antd'
 import IconText from '../comms/IconText'
 import Layout from '../layout/Layout'
+import timestampParser from '../../timestampParser'
 
 class ClassReports extends React.Component {
   constructor (props) {
@@ -51,14 +52,14 @@ class ClassReports extends React.Component {
             ]}
           >
             <List.Item.Meta
-              title={`Reported by ${item.reportedBy}`}
               description={`Votes: ${item.votes}`}
             />
+            <h3>Reported by <a href={`/users/${item.reportedBy}`}>{item.reportedBy}</a></h3>
             {item.className && `ClassName: ${item.className}`}
             <br />
             {item.programmeShortName !== undefined && `Programme: ${item.programmeShortName}` }
             <br />
-            <p>Created on {item.timestamp}</p>
+            <p>Created at {timestampParser(item.timestamp)}</p>
             {
               this.props.user.reputation.role === 'ROLE_ADMIN' &&
                 <div>

@@ -2,7 +2,7 @@ import React from 'react'
 import Layout from '../layout/Layout'
 import timestampParser from '../../timestampParser'
 import ReportOrganization from './ReportOrganization'
-import {Row, Col, Card, Button, Tooltip, Popover, message} from 'antd'
+import {Row, Col, Card, Button, Popover, message} from 'antd'
 import fetcher from '../../fetcher'
 
 class OrganizationDetails extends React.Component {
@@ -49,11 +49,9 @@ class OrganizationDetails extends React.Component {
             </Popover>
           </div>
           <p>
-            <Popover content={<ReportOrganization history={this.props.history} />} trigger='click'>
-              <Tooltip placement='bottom' title='Report this Organization'>
-                <Button id='report_btn' shape='circle' icon='warning' />
-              </Tooltip>
-            </Popover>
+            <Button id='report_btn' icon='warning' onClick={() => this.setState({createReport: true})}>
+              Report Organization
+            </Button>
             <Button type='primary' id='show_reports_btn' onClick={() => this.props.history.push('/organization/reports')}>
                       Show all Reports On This Organization
             </Button>
@@ -77,6 +75,9 @@ class OrganizationDetails extends React.Component {
             </Col>
           </Row>
         </div>
+        {this.state.createReport &&
+          <ReportOrganization history={this.props.history} />
+        }
       </div>
     )
   }

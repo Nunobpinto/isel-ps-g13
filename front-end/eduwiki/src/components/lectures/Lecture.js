@@ -4,6 +4,7 @@ import fetcher from '../../fetcher'
 import Layout from '../layout/Layout'
 import LectureVersions from './LectureVersions'
 import ReportLecture from './ReportLecture'
+import timestampParser from '../../timestampParser'
 
 export default class extends React.Component {
   constructor (props) {
@@ -26,7 +27,7 @@ export default class extends React.Component {
             <Breadcrumb.Item><strong>{lecture.className}</strong></Breadcrumb.Item>
             <Breadcrumb.Item><strong>{lecture.courseShortName}</strong></Breadcrumb.Item>
           </Breadcrumb>
-          <h1>{lecture.weekDay} - {this.parseTime(lecture.begins)} added in {lecture.timestamp}</h1>
+          <h1>{lecture.weekDay} - {this.parseTime(lecture.begins)} added in {timestampParser(lecture.timestamp)}</h1>
         </div>
         <div className='version_div'>
           <Popover
@@ -45,7 +46,7 @@ export default class extends React.Component {
             </Button>
           </Popover>
         </div>
-        <p>Created By : {lecture.createdBy}</p>
+        <p>Created By : <a href={`/users/${lecture.createdBy}`}>{lecture.createdBy}</a></p>
         <p>
           Votes : {lecture.votes}
           <Tooltip placement='bottom' title={`Vote Up`}>

@@ -1,5 +1,6 @@
 import React from 'react'
 import {Button, Input, InputNumber, Form, Select} from 'antd'
+import timestampParser from '../../timestampParser'
 
 const FormItem = Form.Item
 
@@ -44,7 +45,8 @@ export default class extends React.Component {
     const {crs} = this.props
     return (
       <div>
-        <p>{crs.fullName} - <small>{crs.createdBy}</small> </p>
+        <p>{crs.fullName} - <small>{timestampParser(crs.timestamp)}</small> </p>
+        <p>Created By : <a href={`/users/${crs.createdBy}`}>{crs.createdBy}</a></p>
         <Form>
           <FormItem label='Lectured Term'>
             <Input

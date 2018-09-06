@@ -5,6 +5,7 @@ import IconText from '../comms/IconText'
 import Layout from '../layout/Layout'
 import { Button, Input, message, List, Card } from 'antd'
 import CreateClass from './CreateClass'
+import timesetampParser from '../../timestampParser'
 
 export default (props) => (
   <Layout>
@@ -133,7 +134,8 @@ class Classes extends React.Component {
                       <Card title={item.className}>
                         <p>Term : {item.lecturedTerm}</p>
                         <p>Programme : {item.programmeShortName}</p>
-                        <p>Created By : {item.createdBy}</p>
+                        <p>Created By : <a href={`/users/${item.createdBy}`}>{item.createdBy}</a></p>
+                        <p>Created at : {timesetampParser(item.timestamp)}</p>
                       </Card>
                       <IconText
                         type='like-o'

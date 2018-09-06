@@ -3,6 +3,7 @@ import fetcher from '../../fetcher'
 import { List, message } from 'antd'
 import IconText from '../comms/IconText'
 import Layout from '../layout/Layout'
+import timestampParser from '../../timestampParser'
 
 class CourseProgrammeReports extends React.Component {
   constructor (props) {
@@ -50,9 +51,9 @@ class CourseProgrammeReports extends React.Component {
             ]}
           >
             <List.Item.Meta
-              title={`Reported by ${item.reportedBy}`}
               description={`Votes: ${item.votes}`}
             />
+            <h3>Reported by <a href={`/users/${item.reportedBy}`}>{item.reportedBy}</a></h3>
             {item.lecturedTerm && `Lectured Term: ${item.lecturedTerm}`}
             <br />
             {item.optional !== undefined && `Optional: ${item.optional}` }
@@ -61,7 +62,7 @@ class CourseProgrammeReports extends React.Component {
             <br />
             {item.deleteFlag && 'To Delete'}
             <br />
-            <p>Created on {item.timestamp}</p>
+            <p>Created at {timestampParser(item.timestamp)}</p>
             {
               this.props.user.reputation.role === 'ROLE_ADMIN' &&
                 <div>

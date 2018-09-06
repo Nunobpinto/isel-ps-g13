@@ -5,6 +5,7 @@ import IconText from '../comms/IconText'
 import Layout from '../layout/Layout'
 import { Button, message, List, Card } from 'antd'
 import SubmitHomework from './SubmitHomework'
+import timestampParser from '../../timestampParser'
 
 export default (props) => (
   <Layout>
@@ -35,7 +36,6 @@ class AllHomeworks extends React.Component {
     this.approveStaged = this.approveStaged.bind(this)
     this.deleteStaged = this.deleteStaged.bind(this)
   }
-
   approveStaged () {
     const stagedUri = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/stage/${this.state.stagedId}`
     const options = {
@@ -207,8 +207,8 @@ class AllHomeworks extends React.Component {
                       <p>Late Delivery : {item.lateDelivery ? 'Yes' : 'No'}</p>
                       <p>Multiple Deliveries : {item.multipleDeliveries ? 'Yes' : 'No'}</p>
                       {item.sheetId && <Button onClick={() => this.showResource(item.sheetId)}>See resource</Button>}
-                      <p>Created By : {item.createdBy}</p>
-                      <p>Added at : {item.timestamp}</p>
+                      <p>Created By : <a href={`/users/${item.createdBy}`}>{item.createdBy}</a></p>
+                      <p>Added at : {timestampParser(item.timestamp)}</p>
                       <IconText
                         type='like-o'
                         id='like_btn'
@@ -264,6 +264,7 @@ class AllHomeworks extends React.Component {
             </div>
           </div>
         </div>
+        <a href={`/classes/${this.props.classId}/courses/${this.props.courseId}`}><Button>Go back to Course Class</Button></a>
       </div>
     )
   }

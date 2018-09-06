@@ -2,6 +2,7 @@ import React from 'react'
 import fetcher from '../../fetcher'
 import Layout from '../layout/Layout'
 import { Button, Icon, message } from 'antd'
+import timestampParser from '../../timestampParser'
 
 export default class extends React.Component {
   constructor (props) {
@@ -19,14 +20,14 @@ export default class extends React.Component {
              /
             <strong>{this.state.klass.programmeShortName}</strong>
              /
-            <strong>{this.state.klass.className} - ({this.state.klass.timestamp})</strong>
+            <strong>{this.state.klass.className} - ({timestampParser(this.state.klass.timestamp)})</strong>
           </h1>
         </div>
         <div className='version_div'>
           <h1> Version {this.state.klass.version}</h1>
         </div>
         <div>
-          <p>Created By : {this.state.klass.createdBy}</p>
+          <p>Created By : <a href={`/users/${this.state.klass.createdBy}`}>{this.state.klass.createdBy}</a></p>
           <Button type='primary' onClick={() => this.props.history.push(`/classes/${this.props.match.params.classId}`)}>
             <Icon type='left' />Back to actual version
           </Button>

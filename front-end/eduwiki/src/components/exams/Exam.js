@@ -4,6 +4,7 @@ import fetcher from '../../fetcher'
 import Layout from '../layout/Layout'
 import ReportExam from './ReportExam'
 import ExamVersions from './ExamVersions'
+import timestampParser from '../../timestampParser'
 
 export default class extends React.Component {
   constructor (props) {
@@ -24,9 +25,11 @@ export default class extends React.Component {
         <div className='title_div'>
           <Breadcrumb>
             <Breadcrumb.Item><strong>{exam.termShortName}</strong></Breadcrumb.Item>
-            <Breadcrumb.Item><strong>{exam.courseShortName}</strong></Breadcrumb.Item>
+            <Breadcrumb.Item>
+              <a href={`/courses/${exam.courseId}`}><strong>{exam.courseShortName}</strong></a>
+            </Breadcrumb.Item>
           </Breadcrumb>
-          <h1>{exam.type} - {exam.phase} added in {exam.timestamp}</h1>
+          <h1>{exam.type} - {exam.phase} added in {timestampParser(exam.timestamp)}</h1>
         </div>
         <div className='version_div'>
           <Popover
@@ -44,7 +47,7 @@ export default class extends React.Component {
             </Button>
           </Popover>
         </div>
-        <p>Created By : {exam.createdBy}</p>
+        <p>Created By : <a href={`/users/${exam.createdBy}`}>{exam.createdBy}</a></p>
         <p>
           Votes : {exam.votes}
           <Tooltip placement='bottom' title={`Vote Up`}>

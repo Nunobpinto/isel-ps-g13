@@ -5,6 +5,7 @@ import IconText from '../comms/IconText'
 import Layout from '../layout/Layout'
 import { Button, message, List, Card } from 'antd'
 import SubmitWorkAssignment from './SubmitWorkAssignment'
+import timestampParser from '../../timestampParser'
 
 export default (props) => (
   <Layout>
@@ -175,7 +176,7 @@ class AllWorkAssignments extends React.Component {
   render () {
     return (
       <div>
-        <h1>All Work Assignments in {this.state.term} / {this.state.course}</h1>
+        <h1>All Work Assignments in {this.state.term} / <a href={`/courses/${this.props.courseId}`}>{this.state.course}</a></h1>
         <div >
           <div className='left-div'>
             <List
@@ -211,8 +212,8 @@ class AllWorkAssignments extends React.Component {
                       <p>Requires Report : {item.requiresReport ? 'Yes' : 'No'}</p>
                       {item.sheetId && <Button onClick={() => this.showResource(item.sheetId)}>See sheet</Button>}
                       {item.supplementId && <Button onClick={() => this.showResource(item.supplementId)}>See supplement</Button>}
-                      <p>Created By : {item.createdBy}</p>
-                      <p>Added at {item.timestamp}</p>
+                      <p>Created By : <a href={`/users/${item.createdBy}`}>{item.createdBy}</a></p>
+                      <p>Created At {timestampParser(item.timestamp)}</p>
                       <IconText
                         type='like-o'
                         id='like_btn'

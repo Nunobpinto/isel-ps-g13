@@ -1,5 +1,6 @@
 import React from 'react'
 import {Col, Row, Button, Card} from 'antd'
+import timestampParser from '../../timestampParser'
 
 export default class extends React.Component {
   constructor (props) {
@@ -23,8 +24,9 @@ export default class extends React.Component {
                 <Card title={`${work.homeworkName} ${work.votes} Votes`}>
                   <p>Late Delivery : {work.lateDelivery ? 'Yes' : 'No'}</p>
                   <p>Multiple Deliveries : {work.multipleDeliveries ? 'Yes' : 'No'}</p>
-                  <p>Added in : {work.timestamp}</p>
-                  <p>Created By : {work.createdBy}</p>
+                  <p>Created By : <a href={`/users/${work.createdBy}`}>{work.createdBy}</a></p>
+                  <p>Due Date : {work.dueDate}</p>
+                  <p>Created At : {timestampParser(work.timestamp)}</p>
                   <button onClick={() => this.showResource(work.sheetId)}> See Homework sheet</button>
                 </Card>
               </Col>

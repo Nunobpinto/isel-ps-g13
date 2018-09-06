@@ -2,6 +2,7 @@ import React from 'react'
 import fetcher from '../../fetcher'
 import {Input, List, message} from 'antd'
 import IconText from '../comms/IconText'
+import timestampParser from '../../timestampParser'
 
 export default class extends React.Component {
   constructor (props) {
@@ -95,7 +96,8 @@ export default class extends React.Component {
               <h1>{item.className}</h1>
               <p>Term : {item.lecturedTerm}</p>
               <p>Programme : {item.programmeShortName}</p>
-              <p>Created By : {item.createdBy}</p>
+              <p>Created By : <a href={`/users/${item.createdBy}`}>{item.createdBy}</a>{item.createdBy}</p>
+              <p>Created at: {timestampParser(item.timestamp)}</p>
               <IconText
                 type='check'
                 onClick={() =>

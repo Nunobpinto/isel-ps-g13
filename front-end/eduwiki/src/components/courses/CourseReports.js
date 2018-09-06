@@ -2,9 +2,8 @@ import React from 'react'
 import fetcher from '../../fetcher'
 import { List, message } from 'antd'
 import IconText from '../comms/IconText'
-import Cookies from 'universal-cookie'
 import Layout from '../layout/Layout'
-const cookies = new Cookies()
+import timestampParser from '../../timestampParser'
 
 class CourseReports extends React.Component {
   constructor (props) {
@@ -26,6 +25,7 @@ class CourseReports extends React.Component {
         bordered
         loading={this.state.loading}
         header={<div><h1>{this.state.name} reports</h1></div>}
+        footer={<h1><a href={`/courses/${this.props.courseId}`}>Go to Course page</a></h1>}
         dataSource={this.state.reports}
         renderItem={item => (
           <List.Item
@@ -51,12 +51,13 @@ class CourseReports extends React.Component {
             ]}
           >
             <List.Item.Meta
-              title={`Reported by ${item.reportedBy}`}
               description={`Votes: ${item.votes}`}
             />
+            <h3>Reported by <a href={`/users/${item.reportedBy}`}>{item.reportedBy}</a></h3>
             {item.fullName && `Full name: ${item.fullName}`}
             <br />
             {item.shortName && `Short name: ${item.shortName}`}
+            <p>Created at {timestampParser(item.timestamp)}</p>
             {
               this.props.user.reputation.role === 'ROLE_ADMIN' &&
                 <div>
@@ -92,7 +93,7 @@ class CourseReports extends React.Component {
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
@@ -127,7 +128,7 @@ class CourseReports extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
@@ -161,7 +162,7 @@ class CourseReports extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       },
       body: JSON.stringify(voteInput)
@@ -191,7 +192,7 @@ class CourseReports extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
@@ -225,7 +226,7 @@ class CourseReports extends React.Component {
       method: 'DELETE',
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + cookies.get('auth'),
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }

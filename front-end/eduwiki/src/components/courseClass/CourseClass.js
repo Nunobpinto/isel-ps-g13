@@ -5,6 +5,7 @@ import Lectures from '../lectures/Lectures'
 import Homeworks from '../homeworks/Homeworks'
 import Layout from '../layout/Layout'
 import ReportCourseClass from './ReportCourseClass'
+import timestampParser from '../../timestampParser'
 
 export default (props) => (
   <Layout>
@@ -112,8 +113,8 @@ class CourseClass extends React.Component {
                 <a href={`/courses/${this.state.courseClass.courseId}`}><strong>{this.state.courseClass.courseShortName}</strong></a>
               </h1>
             </div>
-            <h1>{this.state.courseClass.courseFullName} - <small>({this.state.courseClass.timestamp})</small></h1>
-            <p>Created By {this.state.courseClass.createdBy} </p>
+            <h1>{this.state.courseClass.courseFullName} - <small>({timestampParser(this.state.courseClass.timestamp)})</small></h1>
+            <p>Created By <a href={`/users/${this.state.courseClass.createdBy}`}>{this.state.courseClass.createdBy}</a></p>
             <p>
           Votes : {this.state.courseClass.votes}
               <Tooltip placement='bottom' title={`Vote Up`}>
@@ -337,14 +338,10 @@ class CourseClass extends React.Component {
     fetcher(userClassesUrl, options)
       .then(json => {
         let userClasses = json.courseClassList
-        if (userClasses.length === 0) throw new Error()
-        this.setState(prevState => {
-          const userFollowing = userClasses.find(cl => cl.classId === Number(this.props.classId))
-          const canBeFollowed = userClasses.find(cl => cl.courseId === Number(this.props.courseId)) && !userFollowing
-          this.setState({
-            userFollowing: userFollowing,
-            canBeFollowed: canBeFollowed
-          })
+        const userFollowing = userClasses.find(cl => cl.classId === Number(this.props.classId))
+        if (!userFollowing) throw new Error()
+        this.setState({
+          userFollowing: userFollowing
         })
       })
       .catch(_ => {

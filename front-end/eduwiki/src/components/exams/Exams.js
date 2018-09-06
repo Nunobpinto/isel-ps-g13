@@ -1,5 +1,6 @@
 import React from 'react'
 import {Card, List, Button} from 'antd'
+import timestampParser from '../../timestampParser'
 
 export default class extends React.Component {
   constructor (props) {
@@ -22,6 +23,7 @@ export default class extends React.Component {
           renderItem={exam => (
             <List.Item>
               <Card title={`${exam.type} - ${exam.phase} - ${exam.dueDate} - ${exam.votes} Votes`} >
+                <p>Created at: {timestampParser(exam.timestamp)}</p>
                 <a href={`/courses/${this.props.courseId}/terms/${this.props.termId}/exams/${exam.examId}`}>See it's page</a>
               </Card>
             </List.Item>

@@ -5,6 +5,7 @@ import MyLayout from '../layout/Layout'
 import CourseVersions from './CourseVersions'
 import TermMenu from '../term/TermMenu'
 import {Button, Tooltip, Popover, message} from 'antd'
+import timestampParser from '../../timestampParser'
 
 export default (props) => (
   <MyLayout>
@@ -52,7 +53,7 @@ class Course extends React.Component {
           ? <p> Error getting this course, please try again !!! </p>
           : <div>
             <div className='title_div'>
-              <h1>{this.state.full_name} - {this.state.short_name} <small>({this.state.timestamp})</small></h1>
+              <h1>{this.state.full_name} - {this.state.short_name} <small>({timestampParser(this.state.timestamp)})</small></h1>
             </div>
             <div className='version_div'>
               <Popover placement='bottom' content={<CourseVersions auth={window.localStorage.getItem('auth')} id={this.props.courseId} version={this.state.version} />} trigger='click'>
@@ -62,7 +63,7 @@ class Course extends React.Component {
               </Popover>
             </div>
             <div>
-              <p>Created By : {this.state.createdBy}</p>
+              <p>Created By : <a href={`/users/${this.state.createdBy}`}>{this.state.createdBy}</a></p>
               <p>
                   Votes : {this.state.votes}
                 <Tooltip placement='bottom' title={`Vote Up on ${this.state.short_name}`}>

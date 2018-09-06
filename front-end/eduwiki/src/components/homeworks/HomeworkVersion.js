@@ -2,6 +2,7 @@ import React from 'react'
 import {Row, Col, Card, message, Breadcrumb, Button, Icon} from 'antd'
 import fetcher from '../../fetcher'
 import Layout from '../layout/Layout'
+import timestampParser from '../../timestampParser'
 
 export default class extends React.Component {
   constructor (props) {
@@ -25,12 +26,12 @@ export default class extends React.Component {
             <Breadcrumb.Item><strong>{homework.className}</strong></Breadcrumb.Item>
             <Breadcrumb.Item><strong>{homework.courseShortName}</strong></Breadcrumb.Item>
           </Breadcrumb>
-          <h1>{homework.homeworkName} added in {homework.timestamp}</h1>
+          <h1>{homework.homeworkName} added in {timestampParser(homework.timestamp)}</h1>
         </div>
         <div className='version_div'>
           <h1>Version {homework.version}</h1>
         </div>
-        <p>Created By : {homework.createdBy}</p>
+        <p>Created By : <a href={`/users/${homework.createdBy}`}>{homework.createdBy}</a></p>
         <div style={{ padding: '30px' }}>
           <Row gutter={16}>
             <Col span={5}>

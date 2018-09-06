@@ -5,6 +5,7 @@ import IconText from '../comms/IconText'
 import Layout from '../layout/Layout'
 import { Button, Input, List, message } from 'antd'
 import CreateProgramme from './CreateProgramme'
+import timestampParser from '../../timestampParser'
 
 class Programmes extends React.Component {
   constructor (props) {
@@ -142,7 +143,8 @@ class Programmes extends React.Component {
                     <p>Academic degree: {item.academicDegree}</p>
                     <p>Total Credits: {item.totalCredits}</p>
                     <p>Duration: {item.duration}</p>
-                    <p>Created by: {item.createdBy}</p>
+                    <p>Created by: <a href={`/users/${item.createdBy}`}>{item.createdBy}</a></p>
+                    <p>Created at {timestampParser(item.timestamp)}</p>
                     <IconText
                       type='like-o'
                       id='like_btn'

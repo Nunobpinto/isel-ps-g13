@@ -2,6 +2,7 @@ import React from 'react'
 import {Row, Col, Card, message, Breadcrumb, Button, Icon} from 'antd'
 import fetcher from '../../fetcher'
 import Layout from '../layout/Layout'
+import timestampParser from '../../timestampParser'
 
 export default class extends React.Component {
   constructor (props) {
@@ -22,14 +23,14 @@ export default class extends React.Component {
         <div className='title_div'>
           <Breadcrumb>
             <Breadcrumb.Item><strong>{exam.termShortName}</strong></Breadcrumb.Item>
-            <Breadcrumb.Item><strong>{exam.courseShortName}</strong></Breadcrumb.Item>
+            <Breadcrumb.Item><a href={`/courses/${this.props.courseId}`}><strong>{exam.courseShortName}</strong></a></Breadcrumb.Item>
           </Breadcrumb>
-          <h1>{exam.type} - {exam.phase} added in {exam.timestamp}</h1>
+          <h1>{exam.type} - {exam.phase} added in {timestampParser(exam.timestamp)}</h1>
         </div>
         <div className='version_div'>
           <p> Version {exam.version}</p>
         </div>
-        <p>Created By : {exam.createdBy}</p>
+        <p>Created By : <a href={`/users/${exam.createdBy}`}>{exam.createdBy}</a></p>
         <div style={{ padding: '30px' }}>
           <Row gutter={16}>
             <Col span={5}>

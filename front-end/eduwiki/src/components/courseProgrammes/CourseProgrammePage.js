@@ -5,6 +5,7 @@ import ReportCourseProgramme from './ReportCourseProgramme'
 import CourseProgrammeVersions from './CourseProgrammeVersions'
 import fetcher from '../../fetcher'
 import Layout from '../layout/Layout'
+import timestampParser from '../../timestampParser'
 
 export default (props) => (
   <Layout>
@@ -24,14 +25,14 @@ class CourseProgramme extends React.Component {
   render () {
     return (
       <div>
-        <h1>Course {this.state.course.shortName} on {this.state.course.programmeShortName}</h1>
+        <h1>Course <a href={`/courses/${this.props.courseId}`}>{this.state.course.shortName}</a> on <a href={`/programmes/${this.props.programmeId}`}>{this.state.course.programmeShortName}</a></h1>
         <Col span={8} key={this.state.course.courseId}>
           <Card title={this.state.course.shortName}>
-            <p>{this.state.course.fullName} - <small>{this.state.course.createdBy}</small> </p>
+            <p>{this.state.course.fullName} - <small>{timestampParser(this.state.course.timestamp)}</small> </p>
             {this.state.course.optional === false ? <p>Mandatory</p> : <p>Optional</p>}
             <p>Credits : {this.state.course.credits}</p>
             <p>Lectured in term {this.state.course.lecturedTerm} </p>
-            <p>Created By: {this.state.course.createdBy}</p>
+            <p>Created By: <a href={`/users/${this.state.course.createdBy}`}>{this.state.course.createdBy}</a></p>
             <Popover placement='bottom' content={<CourseProgrammeVersions courseId={this.state.course.courseId} programmeId={this.props.programmeId} version={this.state.course.version} />} trigger='click'>
               <Button type='primary' id='show_reports_btn' icon='down'>
               Version {this.state.course.version}

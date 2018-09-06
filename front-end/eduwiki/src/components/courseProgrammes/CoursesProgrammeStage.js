@@ -2,6 +2,7 @@ import React from 'react'
 import fetcher from '../../fetcher'
 import {message, List, Card} from 'antd'
 import IconText from '../comms/IconText'
+import timestampParser from '../../timestampParser'
 
 export default class extends React.Component {
   constructor (props) {
@@ -34,8 +35,8 @@ export default class extends React.Component {
                 <p>Optional : {staged.optional ? 'Yes' : 'No'}</p>
                 <p>Credits: {staged.credits}</p>
                 <p>Votes: {staged.votes}</p>
-                <p>Created By {staged.createdBy}</p>
-                <p>{staged.timestamp}</p>
+                <p>Created By <a href={`/users/${staged.createdBy}`}>{staged.createdBy}</a></p>
+                <p>Created at {timestampParser(staged.timestamp)}</p>
                 <IconText
                   type='like-o'
                   id='like_btn'

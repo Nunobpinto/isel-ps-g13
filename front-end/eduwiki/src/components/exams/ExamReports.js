@@ -3,6 +3,7 @@ import fetcher from '../../fetcher'
 import { List, message, Button } from 'antd'
 import IconText from '../comms/IconText'
 import Layout from '../layout/Layout'
+import timestampParser from '../../timestampParser'
 
 class ExamReports extends React.Component {
   constructor (props) {
@@ -51,9 +52,9 @@ class ExamReports extends React.Component {
             ]}
           >
             <List.Item.Meta
-              title={`Reported by ${item.reportedBy}`}
               description={`Votes: ${item.votes}`}
             />
+            <h3>Reported By <a href={`/users/${item.reportedBy}`}>{item.reportedBy}</a></h3>
             {item.dueDate && `DueDate: ${item.dueDate}`}
             <br />
             {item.type && `Type: ${item.type}`}
@@ -62,7 +63,7 @@ class ExamReports extends React.Component {
             <br />
             {item.location && `Location: ${item.location}`}
             <br />
-            Created at {item.timestamp}
+            Created at {timestampParser(item.timestamp)}
             <br />
             {
               this.props.user.reputation.role === 'ROLE_ADMIN' &&

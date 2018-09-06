@@ -4,6 +4,7 @@ import fetcher from '../../fetcher'
 import Layout from '../layout/Layout'
 import HomeworkVersions from './HomeworkVersions'
 import ReportHomework from './ReportHomework'
+import timestampParser from '../../timestampParser'
 
 export default class extends React.Component {
   constructor (props) {
@@ -27,7 +28,7 @@ export default class extends React.Component {
             <Breadcrumb.Item><strong>{homework.className}</strong></Breadcrumb.Item>
             <Breadcrumb.Item><strong>{homework.courseShortName}</strong></Breadcrumb.Item>
           </Breadcrumb>
-          <h1>{homework.homeworkName} added in {homework.timestamp}</h1>
+          <h1>{homework.homeworkName} added in {timestampParser(homework.timestamp)}</h1>
         </div>
         <div className='version_div'>
           <Popover
@@ -46,7 +47,7 @@ export default class extends React.Component {
             </Button>
           </Popover>
         </div>
-        <p>Created By : {homework.createdBy}</p>
+        <p>Created By : <a href={`/users/${homework.createdBy}`}>{homework.createdBy}</a></p>
         <p>
           Votes : {homework.votes}
           <Tooltip placement='bottom' title={`Vote Up`}>
@@ -95,6 +96,7 @@ export default class extends React.Component {
           />
           }
         </div>
+        <a href={`/classes/${this.props.match.params.classId}/courses/${this.props.match.params.courseId}`}><Button>Go Back to Course Class</Button></a>
       </Layout>
     )
   }

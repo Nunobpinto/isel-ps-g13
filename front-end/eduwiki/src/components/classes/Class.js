@@ -6,6 +6,7 @@ import ClassVersions from './ClassVersions'
 import Layout from '../layout/Layout'
 import { Button, Row, Col, message, Tooltip, Card, Popover } from 'antd'
 import CoursesClassStage from '../courseClass/CoursesClassStage'
+import timestampParser from '../../timestampParser'
 
 export default (props) => (
   <Layout>
@@ -38,7 +39,7 @@ class Class extends React.Component {
              /
             <strong>{this.state.klass.programmeShortName}</strong>
              /
-            <strong>{this.state.klass.className} - ({this.state.klass.timestamp})</strong>
+            <strong>{this.state.klass.className} - ({timestampParser(this.state.klass.timestamp)})</strong>
           </h1>
         </div>
         <div className='version_div'>
@@ -49,7 +50,7 @@ class Class extends React.Component {
           </Popover>
         </div>
         <div>
-          <p>Created By : {this.state.klass.createdBy}</p>
+          <p>Created By : <a href={`/users/${this.state.klass.createdBy}`}>{this.state.klass.createdBy}</a></p>
           <p>
                   Votes : {this.state.klass.votes}
             <Tooltip placement='bottom' title={`Vote Up on ${this.state.klass.className}`}>
@@ -104,7 +105,7 @@ class Class extends React.Component {
               {this.state.otherCourses.map(crs =>
                 <Col span={8} key={crs.courseId}>
                   <Card title={crs.shortName}>
-                    <p>{crs.fullName} ({crs.shortName}) - <small> Created By {crs.createdBy}</small> </p>
+                    <p>{crs.fullName} ({crs.shortName}) - <small> Created By {timestampParser(crs.createdBy)}</small> </p>
                     <Button
                       type='primary'
                       onClick={() => this.setState({

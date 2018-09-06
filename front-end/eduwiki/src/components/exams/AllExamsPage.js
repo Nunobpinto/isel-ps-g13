@@ -5,6 +5,7 @@ import IconText from '../comms/IconText'
 import Layout from '../layout/Layout'
 import { Button, message, List, Card } from 'antd'
 import SubmitExam from './SubmitExam'
+import timestampParser from '../../timestampParser'
 
 export default (props) => (
   <Layout>
@@ -34,7 +35,6 @@ class AllExams extends React.Component {
     this.approveStaged = this.approveStaged.bind(this)
     this.deleteStaged = this.deleteStaged.bind(this)
   }
-
   approveStaged () {
     const stagedUri = `http://localhost:8080/courses/${this.props.courseId}/terms/${this.props.termId}/exams/stage/${this.state.stagedId}`
     const options = {
@@ -175,7 +175,7 @@ class AllExams extends React.Component {
   render () {
     return (
       <div>
-        <h1>All Exams in {this.state.term} / {this.state.course}</h1>
+        <h1>All Exams in {this.state.term} / <a href={`/courses/${this.props.courseId}`}>{this.state.course}</a></h1>
         <div >
           <div className='left-div'>
             <List
@@ -204,9 +204,11 @@ class AllExams extends React.Component {
                 footer={<Button type='primary' onClick={() => this.setState({createExamFlag: true})}>Create Exam</Button>}
                 renderItem={item => (
                   <List.Item>
-                    <Card title={`${item.type} - ${item.phase} - ${item.dueDate}`}>
+                    <Card title={`${item.type} - ${item.phase}`}>
                       {item.sheetId && <Button onClick={() => this.showResource(item.sheetId)}>See resource</Button>}
-                      <p>Created By : {item.createdBy}</p>
+                      <p>Due Date: {item.dueDate}</p>
+                      <p>Created By: <a href={`/users/${item.createdBy}`}>{item.createdBy}</a></p>
+                      <p>Created At: {timestampParser(item.timestamp)}</p>
                       <IconText
                         type='like-o'
                         id='like_btn'

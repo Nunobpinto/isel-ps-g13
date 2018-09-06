@@ -14,7 +14,7 @@ export default class extends React.Component {
   render () {
     return (
       <div>
-        <Row gutter={16}>
+        <Row gutter={18}>
           <Col span={6}>
             <a href='/'>
               <img
@@ -22,11 +22,12 @@ export default class extends React.Component {
                 src='/logo.png'
                 alt='EduWiki Logo' />
             </a>
+          </Col>
+          <Col span={6}>
             <TransparentButton
               destiny='/user'
               message={`${this.props.user.username} (${this.props.user.reputation.role} - ${this.props.user.reputation.points} points)`} />
           </Col>
-          <Col span={6} />
           <Col span={6} />
           <Col span={6}>
             <div className='right_side'>

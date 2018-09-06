@@ -5,6 +5,7 @@ import IconText from '../comms/IconText'
 import Layout from '../layout/Layout'
 import { Button, message, List, Card } from 'antd'
 import SubmitLecture from './SubmitLecture'
+import timestampParser from '../../timestampParser'
 
 export default (props) => (
   <Layout>
@@ -205,11 +206,11 @@ class AllLecturesPage extends React.Component {
                 renderItem={item => (
                   <List.Item>
                     <Card title={`${item.weekDay}`}>
-                      <p>Created By : {item.createdBy}</p>
+                      <p>Created By : <a href={`/users/${item.createdBy}`}>{item.createdBy}</a></p>
                       <p>Begins : {this.parseTime(item.begins)}</p>
                       <p>Duration : {this.parseDuration(item.duration)}</p>
                       <p>Location : {item.location}</p>
-                      <p>Timestamp: {item.timestamp}</p>
+                      <p>Created At: {timestampParser(item.timestamp)}</p>
                       <IconText
                         type='like-o'
                         id='like_btn'
@@ -265,6 +266,7 @@ class AllLecturesPage extends React.Component {
             </div>
           </div>
         </div>
+        <a href={`/classes/${this.props.classId}/courses/${this.props.courseId}`}><Button>Go back to Course Class</Button></a>
       </div>
     )
   }

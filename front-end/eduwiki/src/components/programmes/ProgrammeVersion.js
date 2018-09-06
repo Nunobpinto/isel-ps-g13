@@ -2,6 +2,7 @@ import React from 'react'
 import Layout from '../layout/Layout'
 import fetcher from '../../fetcher'
 import {Row, Col, Card, Button, Icon, message} from 'antd'
+import timestampParser from '../../timestampParser'
 
 export default class extends React.Component {
   constructor (props) {
@@ -22,12 +23,12 @@ export default class extends React.Component {
     return (
       <Layout>
         <div className='title_div'>
-          <h1>{this.state.full_name} - {this.state.short_name} <small>({this.state.timestamp})</small></h1>
+          <h1>{this.state.full_name} - {this.state.short_name} <small>({timestampParser(this.state.timestamp)})</small></h1>
         </div>
         <div className='version_div'>
           <p>Version {this.state.versionNumber}</p>
         </div>
-        <p>Created By : {this.state.createdBy}</p>
+        <p>Created By : <a href={`/users/${this.state.createdBy}`}>{this.state.createdBy}</a></p>
         <div style={{ padding: '20px' }}>
           <Row gutter={16}>
             <Col span={5}>

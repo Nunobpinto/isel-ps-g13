@@ -2,6 +2,7 @@ import React from 'react'
 import {Button, Row, Col, Card, message, Breadcrumb, Icon} from 'antd'
 import fetcher from '../../fetcher'
 import Layout from '../layout/Layout'
+import timestampParser from '../../timestampParser'
 
 export default class extends React.Component {
   constructor (props) {
@@ -24,14 +25,14 @@ export default class extends React.Component {
             <Breadcrumb.Item><strong>{work.termShortName}</strong></Breadcrumb.Item>
             <Breadcrumb.Item><strong>{work.courseShortName}</strong></Breadcrumb.Item>
           </Breadcrumb>
-          <h1>Work Assignment {work.phase} added in {work.timestamp}</h1>
+          <h1>Work Assignment {work.phase} added in {timestampParser(work.timestamp)}</h1>
         </div>
         <div className='version_div'>
           <h1>
               Version {work.version}
           </h1>
         </div>
-        <p>Created By : {work.createdBy}</p>
+        <p>Created By : <a href={`/users/${work.createdBy}`}>{work.createdBy}</a></p>
         <div style={{ padding: '30px' }}>
           <Row gutter={16}>
             <Col span={5}>

@@ -3,6 +3,7 @@ import { List, message } from 'antd'
 import IconText from '../comms/IconText'
 import fetcher from '../../fetcher'
 import Layout from '../layout/Layout'
+import timestampParser from '../../timestampParser'
 
 class OrganizationReports extends React.Component {
   constructor (props) {
@@ -48,9 +49,10 @@ class OrganizationReports extends React.Component {
               ]}
             >
               <List.Item.Meta
-                title={`Reported by ${item.reportedBy}`}
                 description={`Votes: ${item.votes}`}
               />
+              <h3>Reported by <a href={`/users/${item.reportedBy}`}>{item.reportedBy}</a></h3>
+              <p>Created at {timestampParser(item.timestampParser)}</p>
               {item.fullName && `Full name: ${item.fullName}`}
               <br />
               {item.shortName && `Short name: ${item.shortName}`}

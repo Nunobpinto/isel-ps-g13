@@ -7,6 +7,7 @@ import CourseProgramme from '../courseProgrammes/CourseProgramme'
 import {Row, Col, Card, Button, Tooltip, Popover, message} from 'antd'
 import CourseProgrammeDetails from '../courseProgrammes/CourseProgrammeDetails'
 import CoursesProgrammeStage from '../courseProgrammes/CoursesProgrammeStage'
+import timestampParser from '../../timestampParser'
 
 class Programme extends React.Component {
   constructor (props) {
@@ -49,7 +50,7 @@ class Programme extends React.Component {
     return (
       <div>
         <div className='title_div'>
-          <h1>{this.state.full_name} - {this.state.short_name} <small>({this.state.timestamp})</small></h1>
+          <h1>{this.state.full_name} - {this.state.short_name} <small>({timestampParser(this.state.timestamp)})</small></h1>
         </div>
         <div className='version_div'>
           <Popover placement='bottom' content={<ProgrammeVersions auth={window.localStorage.getItem('auth')} id={this.props.match.params.id} version={this.state.versionNumber} />} trigger='click'>
@@ -58,7 +59,7 @@ class Programme extends React.Component {
             </Button>
           </Popover>
         </div>
-        <p>Created By : {this.state.createdBy}</p>
+        <p>Created By : <a href={`/users/${this.state.createdBy}`}>{this.state.createdBy}</a></p>
         <p>
           Votes : {this.state.votes}
           <Tooltip placement='bottom' title={`Vote Up on ${this.state.short_name}`}>

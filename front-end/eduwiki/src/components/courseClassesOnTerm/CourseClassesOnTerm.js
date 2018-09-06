@@ -5,7 +5,7 @@ export default (props) => (
   <div style={{ padding: '30px' }}>
     <List
       grid={{ gutter: 16, xs: 1, sm: 2, md: 4, lg: 4, xl: 6, xxl: 3 }}
-      dataSource={this.props.classes}
+      dataSource={props.classes}
       renderItem={klass => (
         <List.Item>
           <Card title={`${klass.className} - ${klass.votes} votes`} >
