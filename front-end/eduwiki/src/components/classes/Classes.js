@@ -6,6 +6,7 @@ import Layout from '../layout/Layout'
 import { Button, Input, message, List, Card } from 'antd'
 import CreateClass from './CreateClass'
 import timesetampParser from '../../timestampParser'
+import config from '../../config'
 
 export default (props) => (
   <Layout>
@@ -44,7 +45,7 @@ class Classes extends React.Component {
   }
 
   fetchStagedClasses () {
-    const stagedUrl = 'http://localhost:8080/classes/stage'
+    const stagedUrl = config.API_PATH + '/classes/stage'
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -204,7 +205,7 @@ class Classes extends React.Component {
   }
 
   componentDidMount () {
-    const uri = 'http://localhost:8080/classes/'
+    const uri = config.API_PATH + '/classes/'
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -231,7 +232,7 @@ class Classes extends React.Component {
       vote: 'Up'
     }
     const stageID = this.state.stageID
-    const url = `http://localhost:8080/classes/stage/${stageID}/vote`
+    const url = `${config.API_PATH}/classes/stage/${stageID}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -270,7 +271,7 @@ class Classes extends React.Component {
       vote: 'Down'
     }
     const stageID = this.state.stageID
-    const url = `http://localhost:8080/classes/stage/${stageID}/vote`
+    const url = `${config.API_PATH}/classes/stage/${stageID}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -305,7 +306,7 @@ class Classes extends React.Component {
   }
 
   createDefinitiveClass () {
-    const stagedUrl = 'http://localhost:8080/classes'
+    const stagedUrl = config.API_PATH + '/classes'
     const options = {
       method: 'POST',
       headers: {
@@ -338,7 +339,7 @@ class Classes extends React.Component {
   }
 
   createStagedClass () {
-    const stagedUrl = 'http://localhost:8080/classes/stage'
+    const stagedUrl = config.API_PATH + '/classes/stage'
     const options = {
       method: 'POST',
       headers: {

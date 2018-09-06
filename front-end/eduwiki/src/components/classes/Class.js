@@ -7,6 +7,7 @@ import Layout from '../layout/Layout'
 import { Button, Row, Col, message, Tooltip, Card, Popover } from 'antd'
 import CoursesClassStage from '../courseClass/CoursesClassStage'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 export default (props) => (
   <Layout>
@@ -126,7 +127,7 @@ class Class extends React.Component {
   }
   approveStagedCourseInClass (stageId) {
     const id = this.props.match.params.classId
-    const uri = 'http://localhost:8080/classes/' + id + '/courses/stage/' + stageId
+    const uri = config.API_PATH + '/classes/' + id + '/courses/stage/' + stageId
     const body = {
       method: 'POST',
       headers: {
@@ -165,7 +166,7 @@ class Class extends React.Component {
     const voteInput = {
       vote: 'Up'
     }
-    const url = `http://localhost:8080/classes/${this.props.match.params.classId}/vote`
+    const url = `${config.API_PATH}/classes/${this.props.match.params.classId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -200,7 +201,7 @@ class Class extends React.Component {
     const voteInput = {
       vote: 'Down'
     }
-    const url = `http://localhost:8080/classes/${this.props.match.params.classId}/vote`
+    const url = `${config.API_PATH}/classes/${this.props.match.params.classId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -237,7 +238,7 @@ class Class extends React.Component {
     if (this.props.user.reputation.role !== 'ROLE_ADMIN') {
       return this.addStagedCourseToClass()
     }
-    const url = 'http://localhost:8080/classes/' + id + '/courses/' + courseToAdd.courseId
+    const url = config.API_PATH + '/classes/' + id + '/courses/' + courseToAdd.courseId
     const options = {
       method: 'POST',
       headers: {
@@ -272,7 +273,7 @@ class Class extends React.Component {
   addStagedCourseToClass () {
     const id = this.props.match.params.classId
     const courseToAdd = this.state.course
-    const url = 'http://localhost:8080/classes/' + id + '/courses/' + courseToAdd.courseId + '/stage'
+    const url = config.API_PATH + '/classes/' + id + '/courses/' + courseToAdd.courseId + '/stage'
     const options = {
       method: 'POST',
       headers: {
@@ -296,7 +297,7 @@ class Class extends React.Component {
       })
   }
   fetchOtherCourses () {
-    const uri = `http://localhost:8080/programmes/${this.state.klass.programmeId}/courses`
+    const uri = `${config.API_PATH}/programmes/${this.state.klass.programmeId}/courses`
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -330,7 +331,7 @@ class Class extends React.Component {
   }
   componentDidMount () {
     const id = this.props.match.params.classId
-    const uri = 'http://localhost:8080/classes/' + id
+    const uri = config.API_PATH + '/classes/' + id
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -340,7 +341,7 @@ class Class extends React.Component {
     }
     fetcher(uri, header)
       .then(klass => {
-        const coursesUri = `http://localhost:8080/classes/${id}/courses`
+        const coursesUri = `${config.API_PATH}classes/${id}/courses`
         fetcher(coursesUri, header)
           .then(json => {
             this.setState({

@@ -6,6 +6,7 @@ import Layout from '../layout/Layout'
 import CreateCourse from './CreateCourse'
 import { Button, Input, message, List, Card } from 'antd'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 export default (props) => (
   <Layout>
@@ -178,7 +179,7 @@ class Courses extends React.Component {
   }
 
   componentDidMount () {
-    const uri = 'http://localhost:8080/courses/'
+    const uri = config.API_PATH + '/courses/'
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -226,7 +227,7 @@ class Courses extends React.Component {
       },
       body: JSON.stringify(body)
     }
-    const url = 'http://localhost:8080/courses/stage'
+    const url = config.API_PATH + '/courses/stage'
     fetcher(url, options)
       .then(json => {
         const newItem = {
@@ -263,7 +264,7 @@ class Courses extends React.Component {
       },
       body: JSON.stringify(body)
     }
-    const url = 'http://localhost:8080/courses'
+    const url = config.API_PATH + '/courses'
     fetcher(url, options)
       .then(json => {
         const newItem = {
@@ -290,7 +291,7 @@ class Courses extends React.Component {
       vote: 'Up'
     }
     const courseId = this.state.courseID
-    const url = `http://localhost:8080/courses/${courseId}/vote`
+    const url = `${config.API_PATH}/courses/${courseId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -327,7 +328,7 @@ class Courses extends React.Component {
       vote: 'Down'
     }
     const courseId = this.state.courseID
-    const url = `http://localhost:8080/courses/${courseId}/vote`
+    const url = `${config.API_PATH}/courses/${courseId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -364,7 +365,7 @@ class Courses extends React.Component {
       vote: 'Up'
     }
     const stageID = this.state.stageID
-    const url = `http://localhost:8080/courses/stage/${stageID}/vote`
+    const url = `${config.API_PATH}/courses/stage/${stageID}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -403,7 +404,7 @@ class Courses extends React.Component {
       vote: 'Down'
     }
     const stageID = this.state.stageID
-    const url = `http://localhost:8080/courses/stage/${stageID}/vote`
+    const url = `${config.API_PATH}/courses/stage/${stageID}/vote`
     const body = {
       method: 'POST',
       headers: {

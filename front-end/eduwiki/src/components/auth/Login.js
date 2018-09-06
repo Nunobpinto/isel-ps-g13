@@ -2,6 +2,7 @@ import React from 'react'
 import {Redirect, Link} from 'react-router-dom'
 import {message, Form, Input, Button, Icon} from 'antd'
 import fetcher from '../../fetcher'
+import config from '../../config'
 
 class LoginForm extends React.Component {
   constructor (props) {
@@ -84,7 +85,7 @@ class LoginForm extends React.Component {
           'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
         }
       }
-      fetcher('http://localhost:8080/user', options)
+      fetcher(config.API_PATH + '/user', options)
         .then(_ => {
           window.localStorage.setItem('auth', credentials)
           if (this.props.destination) {

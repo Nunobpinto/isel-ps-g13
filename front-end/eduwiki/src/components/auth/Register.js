@@ -3,6 +3,7 @@ import {message, Button, Steps} from 'antd'
 import RegisterForm from './RegisterForm'
 import {Redirect} from 'react-router-dom'
 import fetcher from '../../fetcher'
+import config from '../../config'
 const Step = Steps.Step
 
 export default class Register extends React.Component {
@@ -56,7 +57,7 @@ export default class Register extends React.Component {
         },
         body: JSON.stringify(user)
       }
-      fetcher('http://localhost:8080/users', options)
+      fetcher(config.API_PATH + '/users', options)
         .then(_ => {
           this.setState(prevState => {
             const current = prevState.current + 1

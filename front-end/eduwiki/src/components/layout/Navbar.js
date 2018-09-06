@@ -1,6 +1,6 @@
 import React from 'react'
 import TransparentButton from '../comms/TransparentButton'
-import { Row, Col } from 'antd'
+import { Row, Col, Avatar } from 'antd'
 
 export default class extends React.Component {
   constructor (props) {
@@ -24,6 +24,7 @@ export default class extends React.Component {
             </a>
           </Col>
           <Col span={6}>
+            <Avatar src='/defaultUser.png' />
             <TransparentButton
               destiny='/user'
               message={`${this.props.user.username} (${this.props.user.reputation.role} - ${this.props.user.reputation.points} points)`} />

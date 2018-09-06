@@ -1,6 +1,7 @@
 import React from 'react'
 import fetcher from '../../fetcher'
 import {Input, Form, Button, message} from 'antd'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -69,7 +70,7 @@ export default class extends React.Component {
         },
         body: JSON.stringify(data)
       }
-      const url = `http://localhost:8080/courses/${this.props.id}/reports`
+      const url = `${config.API_PATH}/courses/${this.props.id}/reports`
       fetcher(url, options)
         .then(_ => {
           message.success('Reported!!')

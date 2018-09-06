@@ -4,6 +4,7 @@ import { List, message } from 'antd'
 import IconText from '../comms/IconText'
 import Layout from '../layout/Layout'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 class CourseClassReports extends React.Component {
   constructor (props) {
@@ -95,7 +96,7 @@ class CourseClassReports extends React.Component {
   componentDidMount () {
     const classId = this.props.classId
     const courseId = this.props.courseId
-    const url = 'http://localhost:8080/classes/' + classId + '/courses/' + courseId + '/reports'
+    const url = config.API_PATH + '/classes/' + classId + '/courses/' + courseId + '/reports'
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -103,7 +104,7 @@ class CourseClassReports extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetcher('http://localhost:8080/classes/' + classId + '/courses/' + courseId, options)
+    fetcher(config.API_PATH + '/classes/' + classId + '/courses/' + courseId, options)
       .then(klass => {
         fetcher(url, options)
           .then(list => {
@@ -131,7 +132,7 @@ class CourseClassReports extends React.Component {
     const reportId = this.state.reportId
     const classId = this.props.classId
     const courseId = this.props.courseId
-    const url = `http://localhost:8080/classes/${classId}/courses/${courseId}/reports/${reportId}/vote`
+    const url = `${config.API_PATH}/classes/${classId}/courses/${courseId}/reports/${reportId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -170,7 +171,7 @@ class CourseClassReports extends React.Component {
     const reportId = this.state.reportId
     const classId = this.props.classId
     const courseId = this.props.courseId
-    const url = `http://localhost:8080/classes/${classId}/courses/${courseId}/reports/${reportId}/vote`
+    const url = `${config.API_PATH}/classes/${classId}/courses/${courseId}/reports/${reportId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -205,7 +206,7 @@ class CourseClassReports extends React.Component {
     const reportId = this.state.reportId
     const courseId = this.props.courseId
     const classId = this.props.classId
-    const url = `http://localhost:8080/classes/${classId}/courses/${courseId}/reports/${reportId}`
+    const url = `${config.API_PATH}/classes/${classId}/courses/${courseId}/reports/${reportId}`
     const body = {
       method: 'POST',
       headers: {
@@ -241,7 +242,7 @@ class CourseClassReports extends React.Component {
     const reportId = this.state.reportId
     const courseId = this.props.courseId
     const classId = this.props.classId
-    const url = `http://localhost:8080/classes/${classId}/courses/${courseId}/reports/${reportId}`
+    const url = `${config.API_PATH}/classes/${classId}/courses/${courseId}/reports/${reportId}`
     const body = {
       method: 'DELETE',
       headers: {

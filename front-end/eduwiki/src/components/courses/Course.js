@@ -6,6 +6,7 @@ import CourseVersions from './CourseVersions'
 import TermMenu from '../term/TermMenu'
 import {Button, Tooltip, Popover, message} from 'antd'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 export default (props) => (
   <MyLayout>
@@ -108,7 +109,7 @@ class Course extends React.Component {
       vote: 'Up'
     }
     const id = this.props.courseId
-    const uri = 'http://localhost:8080/courses/' + id + '/vote'
+    const uri = config.API_PATH + '/courses/' + id + '/vote'
     const body = {
       method: 'POST',
       headers: {
@@ -142,7 +143,7 @@ class Course extends React.Component {
       vote: 'Down'
     }
     const id = this.props.courseId
-    const uri = 'http://localhost:8080/courses/' + id + '/vote'
+    const uri = config.API_PATH + '/courses/' + id + '/vote'
     const body = {
       method: 'POST',
       headers: {
@@ -173,7 +174,7 @@ class Course extends React.Component {
 
   componentDidMount () {
     const id = this.props.courseId
-    const uri = 'http://localhost:8080/courses/' + id
+    const uri = config.API_PATH + '/courses/' + id
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -183,7 +184,7 @@ class Course extends React.Component {
     }
     fetcher(uri, header)
       .then(course => {
-        const userCoursesUri = 'http://localhost:8080/user/courses'
+        const userCoursesUri = config.API_PATH + '/user/courses'
         fetcher(userCoursesUri, header)
           .then(userCourses => this.setState({
             full_name: course.fullName,
@@ -230,7 +231,7 @@ class Course extends React.Component {
 
       }
     }
-    fetcher('http://localhost:8080/user/courses', options)
+    fetcher(config.API_PATH + '/user/courses', options)
       .then(_ => {
         message.success('Followed this course !!!')
         this.setState({
@@ -253,7 +254,7 @@ class Course extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    fetcher('http://localhost:8080/user/courses/' + this.props.courseId, options)
+    fetcher(config.API_PATH + '/user/courses/' + this.props.courseId, options)
       .then(_ => {
         message.success('Unfollowed this course !!!')
         this.setState({

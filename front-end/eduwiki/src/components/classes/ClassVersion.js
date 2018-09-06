@@ -3,6 +3,7 @@ import fetcher from '../../fetcher'
 import Layout from '../layout/Layout'
 import { Button, Icon, message } from 'antd'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -38,7 +39,7 @@ export default class extends React.Component {
   componentDidMount () {
     const id = this.props.match.params.classId
     const version = this.props.match.params.version
-    const uri = 'http://localhost:8080/classes/' + id + '/versions/' + version
+    const uri = config.API_PATH + '/classes/' + id + '/versions/' + version
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',

@@ -1,6 +1,7 @@
 import React from 'react'
 import fetcher from '../../fetcher'
 import {List, message} from 'antd'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -28,7 +29,7 @@ export default class extends React.Component {
     const programmeId = this.props.programmeId
     const courseId = this.props.courseId
     const versionNumber = this.props.version
-    const url = 'http://localhost:8080/programmes/' + programmeId + '/courses/' + courseId + '/versions'
+    const url = config.API_PATH + '/programmes/' + programmeId + '/courses/' + courseId + '/versions'
     const body = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -45,4 +46,3 @@ export default class extends React.Component {
       .catch(_ => message.error('Error fetching programme versions'))
   }
 }
-

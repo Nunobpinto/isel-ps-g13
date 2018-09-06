@@ -5,6 +5,7 @@ import ReportCourseProgramme from './ReportCourseProgramme'
 import CourseProgrammeVersions from './CourseProgrammeVersions'
 import fetcher from '../../fetcher'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -52,7 +53,7 @@ export default class extends React.Component {
       vote: 'Up'
     }
     const id = this.props.programmeId
-    const uri = 'http://localhost:8080/programmes/' + id + '/courses/' + this.state.course.courseId + '/vote'
+    const uri = config.API_PATH + '/programmes/' + id + '/courses/' + this.state.course.courseId + '/vote'
     const body = {
       method: 'POST',
       headers: {
@@ -89,7 +90,7 @@ export default class extends React.Component {
       vote: 'Down'
     }
     const id = this.props.programmeId
-    const uri = 'http://localhost:8080/programmes/' + id + '/courses/' + this.state.course.courseId + '/vote'
+    const uri = config.API_PATH + '/programmes/' + id + '/courses/' + this.state.course.courseId + '/vote'
     const body = {
       method: 'POST',
       headers: {

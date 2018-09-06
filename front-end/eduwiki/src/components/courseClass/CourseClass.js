@@ -6,6 +6,7 @@ import Homeworks from '../homeworks/Homeworks'
 import Layout from '../layout/Layout'
 import ReportCourseClass from './ReportCourseClass'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 export default (props) => (
   <Layout>
@@ -50,7 +51,7 @@ class CourseClass extends React.Component {
       course_class_id: this.state.courseClass.courseClassId,
       course_id: this.props.courseId
     }
-    const url = 'http://localhost:8080/user/classes'
+    const url = config.API_PATH + '/user/classes'
     const options = {
       method: 'POST',
       body: JSON.stringify(inputModel),
@@ -76,7 +77,7 @@ class CourseClass extends React.Component {
       })
   }
   unFollowCourse () {
-    const url = `http://localhost:8080/user/classes/${this.state.courseClass.courseClassId}`
+    const url = `${config.API_PATH}/user/classes/${this.state.courseClass.courseClassId}`
     const options = {
       method: 'DELETE',
       headers: {
@@ -176,7 +177,7 @@ class CourseClass extends React.Component {
     )
   }
   fetchLectures (classId, courseId) {
-    const uri = `http://localhost:8080/classes/${classId}/courses/${courseId}/lectures`
+    const uri = `${config.API_PATH}/classes/${classId}/courses/${courseId}/lectures`
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -188,7 +189,7 @@ class CourseClass extends React.Component {
   }
 
   fetchHomeworks (classId, courseId) {
-    const uri = `http://localhost:8080/classes/${classId}/courses/${courseId}/homeworks`
+    const uri = `${config.API_PATH}/classes/${classId}/courses/${courseId}/homeworks`
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -215,7 +216,7 @@ class CourseClass extends React.Component {
     }
     const classId = this.props.classId
     const courseId = this.props.courseId
-    const uri = `http://localhost:8080/classes/${classId}/courses/${courseId}/vote`
+    const uri = `${config.API_PATH}/classes/${classId}/courses/${courseId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -253,7 +254,7 @@ class CourseClass extends React.Component {
     }
     const classId = this.props.classId
     const courseId = this.props.courseId
-    const uri = `http://localhost:8080/classes/${classId}/courses/${courseId}/vote`
+    const uri = `${config.API_PATH}/classes/${classId}/courses/${courseId}/vote`
     const body = {
       method: 'POST',
       headers: {
@@ -295,7 +296,7 @@ class CourseClass extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    const uri = `http://localhost:8080/classes/${classId}/courses/${courseId}`
+    const uri = `${config.API_PATH}/classes/${classId}/courses/${courseId}`
     fetcher(uri, options)
       .then(courseClass => {
         this.fetchLectures(classId, courseId)
@@ -334,7 +335,7 @@ class CourseClass extends React.Component {
           })
       })
       .catch(_ => message.error('Error fetching the course class'))
-    const userClassesUrl = 'http://localhost:8080/user/classes'
+    const userClassesUrl = config.API_PATH + '/user/classes'
     fetcher(userClassesUrl, options)
       .then(json => {
         let userClasses = json.courseClassList
@@ -345,7 +346,7 @@ class CourseClass extends React.Component {
         })
       })
       .catch(_ => {
-        const userCoursesUrl = 'http://localhost:8080/user/courses'
+        const userCoursesUrl = config.API_PATH + '/user/courses'
         fetcher(userCoursesUrl, options)
           .then(json => {
             let userCourses = json.courseList

@@ -23,15 +23,17 @@ export default class extends React.Component {
             </p>
           ]}
         >
-          {this.state.error
-            ? <p>{this.state.error}</p>
+          {this.state.courses.length === 0
+            ? <p>Try following a course or try later</p>
             : <ul>
               {this.state.courses.map(course => (
                 <a href={`/courses/${course.courseId}`}>
                   <li>{course.shortName}</li>
                 </a>
               ))}
-            </ul>}
+            </ul>
+          }
+
         </Card>
       </div>
     )

@@ -2,7 +2,7 @@ import React from 'react'
 import fetcher from '../../fetcher'
 import MyLayout from '../layout/Layout'
 import ReportUser from './ReportUser'
-import {Layout, Button} from 'antd'
+import {Layout, Button, Avatar} from 'antd'
 import {Redirect} from 'react-router-dom'
 import UserReports from './UserReports'
 
@@ -29,7 +29,7 @@ class OtherUserDetail extends React.Component {
         {this.props.user.username === this.props.match.params.username && <Redirect to='/user' />}
         <Layout style={{ padding: '24px 0', background: '#fff' }}>
           <Sider width={200} style={{ background: '#fff' }}>
-            <img alt={'User Avatar'} src='defaultUser.png' />
+            <Avatar src='/defaultUser.png' size='large' />
             <h1><strong>Username</strong> : {this.state.user.username}</h1>
           </Sider>
           <Content style={{ padding: '0 24px', minHeight: 280 }}>

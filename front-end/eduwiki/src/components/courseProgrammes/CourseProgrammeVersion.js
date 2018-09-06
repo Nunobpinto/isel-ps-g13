@@ -3,6 +3,7 @@ import Layout from '../layout/Layout'
 import fetcher from '../../fetcher'
 import {Row, Col, Card, Button, Icon, message} from 'antd'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -65,7 +66,7 @@ export default class extends React.Component {
         'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
       }
     }
-    const uri = `http://localhost:8080/programmes/${programmeId}/courses/${courseId}/versions/${versionNumber}`
+    const uri = `${config.API_PATH}/programmes/${programmeId}/courses/${courseId}/versions/${versionNumber}`
     fetcher(uri, options)
       .then(json => this.setState({
         lecturedTerm: json.lecturedTerm,

@@ -1,6 +1,7 @@
 import React from 'react'
 import fetcher from '../../fetcher'
 import { Form, Input, Button, Select } from 'antd'
+import config from '../../config'
 
 const FormItem = Form.Item
 
@@ -89,8 +90,8 @@ class CreateCourseForm extends React.Component {
     }
   }
   componentDidMount () {
-    const termsUrl = 'http://localhost:8080/terms'
-    const programmesUrl = 'http://localhost:8080/programmes'
+    const termsUrl = config.API_PATH + '/terms'
+    const programmesUrl = config.API_PATH + '/programmes'
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',

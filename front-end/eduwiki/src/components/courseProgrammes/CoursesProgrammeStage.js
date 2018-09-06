@@ -3,6 +3,7 @@ import fetcher from '../../fetcher'
 import {message, List, Card} from 'antd'
 import IconText from '../comms/IconText'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -92,7 +93,7 @@ export default class extends React.Component {
       vote: 'Up'
     }
     const id = this.props.programmeId
-    const uri = 'http://localhost:8080/programmes/' + id + '/courses/stage/' + this.state.stagedId + '/vote'
+    const uri = config.API_PATH + '/programmes/' + id + '/courses/stage/' + this.state.stagedId + '/vote'
     const body = {
       method: 'POST',
       headers: {
@@ -130,7 +131,7 @@ export default class extends React.Component {
       vote: 'Down'
     }
     const id = this.props.programmeId
-    const uri = 'http://localhost:8080/programmes/' + id + '/courses/stage/' + this.state.stagedId + '/vote'
+    const uri = config.API_PATH + '/programmes/' + id + '/courses/stage/' + this.state.stagedId + '/vote'
     const body = {
       method: 'POST',
       headers: {
@@ -176,7 +177,7 @@ export default class extends React.Component {
   }
   rejectStaged () {
     const id = this.props.programmeId
-    const uri = 'http://localhost:8080/programmes/' + id + '/courses/stage/' + this.state.stagedId
+    const uri = config.API_PATH + '/programmes/' + id + '/courses/stage/' + this.state.stagedId
     const body = {
       method: 'DELETE',
       headers: {
@@ -219,7 +220,7 @@ export default class extends React.Component {
   }
   componentDidMount () {
     const id = this.props.programmeId
-    const uri = `http://localhost:8080/programmes/${id}/courses/stage`
+    const uri = `${config.API_PATH}/programmes/${id}/courses/stage`
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',

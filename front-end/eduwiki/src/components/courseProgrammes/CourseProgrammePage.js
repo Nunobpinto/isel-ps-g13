@@ -6,6 +6,7 @@ import CourseProgrammeVersions from './CourseProgrammeVersions'
 import fetcher from '../../fetcher'
 import Layout from '../layout/Layout'
 import timestampParser from '../../timestampParser'
+import config from '../../config'
 
 export default (props) => (
   <Layout>
@@ -62,7 +63,7 @@ class CourseProgramme extends React.Component {
       vote: 'Up'
     }
     const id = this.props.programmeId
-    const uri = 'http://localhost:8080/programmes/' + id + '/courses/' + this.state.course.courseId + '/vote'
+    const uri = config.API_PATH + '/programmes/' + id + '/courses/' + this.state.course.courseId + '/vote'
     const body = {
       method: 'POST',
       headers: {
@@ -99,7 +100,7 @@ class CourseProgramme extends React.Component {
       vote: 'Down'
     }
     const id = this.props.programmeId
-    const uri = 'http://localhost:8080/programmes/' + id + '/courses/' + this.state.course.courseId + '/vote'
+    const uri = config.API_PATH + '/programmes/' + id + '/courses/' + this.state.course.courseId + '/vote'
     const body = {
       method: 'POST',
       headers: {
@@ -139,7 +140,7 @@ class CourseProgramme extends React.Component {
     }
   }
   componentDidMount () {
-    const url = `http://localhost:8080/programmes/${this.props.programmeId}/courses/${this.props.courseId}`
+    const url = `${config.API_PATH}/programmes/${this.props.programmeId}/courses/${this.props.courseId}`
     const body = {
       headers: {
         'Access-Control-Allow-Origin': '*',

@@ -2,6 +2,7 @@ import React from 'react'
 import fetcher from '../../fetcher'
 import {Form, Button, message, Radio} from 'antd'
 import RadioGroup from 'antd/lib/radio/group'
+import config from '../../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -79,7 +80,7 @@ export default class extends React.Component {
         },
         body: JSON.stringify(data)
       }
-      const url = `http://localhost:8080/classes/${this.props.classId}/courses/${this.props.courseId}/reports`
+      const url = `${config.API_PATH}/classes/${this.props.classId}/courses/${this.props.courseId}/reports`
       fetcher(url, options)
         .then(_ => {
           message.success('Reported!!')
@@ -94,7 +95,7 @@ export default class extends React.Component {
     }
   }
   componentDidMount () {
-    const classUrl = `http://localhost:8080/classes/${this.props.classId}`
+    const classUrl = `${config.API_PATH}/classes/${this.props.classId}`
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -104,7 +105,7 @@ export default class extends React.Component {
     }
     fetcher(classUrl, options)
       .then(klass => {
-        const url = `http://localhost:8080/programmes/${klass.programmeId}/courses`
+        const url = `${config.API_PATH}/programmes/${klass.programmeId}/courses`
         fetcher(url, options)
           .then(json => {
             let courses = json.courseProgrammeList
