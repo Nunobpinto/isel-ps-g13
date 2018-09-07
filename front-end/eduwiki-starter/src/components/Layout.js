@@ -72,7 +72,7 @@ export default(props) => (
         {props.children}
       </div>
     </Content>
-    <Footer className='footer' style={{ textAlign: 'center' }}>
+    <Footer style={{ textAlign: 'center' }}>
             Eduwiki - Final Project 2018
     </Footer>
   </Layout>

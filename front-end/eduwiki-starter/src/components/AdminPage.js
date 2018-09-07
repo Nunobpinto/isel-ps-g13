@@ -1,7 +1,8 @@
 import React from 'react'
-import fetch from 'isomorphic-fetch'
 import { message, List, Card, Row } from 'antd'
 import Layout from './Layout'
+import config from '../config'
+import fetcher from '../fetcher'
 
 export default class extends React.Component {
   constructor (props) {
@@ -39,25 +40,19 @@ export default class extends React.Component {
     )
   }
   componentDidMount () {
-    const uri = 'http://localhost:8080/tenants/pending/'
+    const url = config.API_PATH + '/tenants/pending/'
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*'
       }
     }
-    fetch(uri, options)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error()
-        }
-        return resp.json()
-      })
+    fetcher(url, options)
       .then(json => this.setState({
         pending: json.pendingTenantList,
         loading: false
       }))
-      .catch(() => {
-        message.error('Error fetching tenants')
+      .catch(error => {
+        message.error(error.detail)
         this.setState({loading: false})
       }
       )

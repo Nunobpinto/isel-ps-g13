@@ -1,6 +1,6 @@
 import React from 'react'
 import {Form, Input, Button, message} from 'antd'
-import fetch from 'isomorphic-fetch'
+import fetcher from '../fetcher'
 
 const { TextArea } = Input
 
@@ -65,10 +65,21 @@ class TenantCreator extends React.Component {
     })
   }
   userForm (user, getFieldDecorator) {
+    const formItemLayout = {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 8 }
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 16 }
+      }
+    }
     return (
       <div>
         <Form.Item
           label='Username'
+          {...formItemLayout}
         >
           {getFieldDecorator(`${user}_username`, {
             rules: [{ required: true, message: 'Please input your username!' }]
@@ -76,7 +87,7 @@ class TenantCreator extends React.Component {
             <Input />
           )}
         </Form.Item>
-        <Form.Item label='Organization Email'>
+        <Form.Item label='Organization Email' {...formItemLayout}>
           {getFieldDecorator(`${user}_organizationEmail`, {
             rules: [
               {type: 'email', message: 'The input is not valid E-mail!'},
@@ -85,14 +96,14 @@ class TenantCreator extends React.Component {
             <Input />
           )}
         </Form.Item>
-        <Form.Item label='Family Name'>
+        <Form.Item label='Family Name' {...formItemLayout}>
           {getFieldDecorator(`${user}_familyName`, {
             rules: [{ required: true, message: 'Please input your family name!' }]
           })(
             <Input />
           )}
         </Form.Item>
-        <Form.Item label='Given Name'>
+        <Form.Item label='Given Name' {...formItemLayout}>
           {getFieldDecorator(`${user}_givenName`, {
             rules: [{ required: true, message: 'Please input your given name!' }]
           })(
@@ -210,14 +221,14 @@ class TenantCreator extends React.Component {
         <p>
               Describe your own information, you'll be the Principal user, the devs will reach you for every information they need
         </p>
-        <p>Principal</p>
+        <h3>Principal</h3>
         {this.userForm('principal', getFieldDecorator)}
-        <p>Other User 1</p>
+        <h3>Other User 1</h3>
         {this.userForm('user1', getFieldDecorator)}
-        <p>Other User 2</p>
+        <h3>Other User 2</h3>
         {this.userForm('user2', getFieldDecorator)}
         <Form.Item {...tailFormItemLayout}>
-          <Button type='primary' htmlType='submit'>submit</Button>
+          <Button type='primary' htmlType='submit'>Submit</Button>
         </Form.Item>
       </Form>
     )
@@ -233,18 +244,17 @@ class TenantCreator extends React.Component {
         },
         body: JSON.stringify(this.state.data)
       }
-      fetch(uri, options)
-        .then(resp => {
-          if (resp.status >= 400) {
-            throw new Error()
-          }
-          return resp.json()
-        })
+      fetcher(uri, options)
         .then(_ => {
           this.props.successCb()
           this.setState({submit: false})
         })
-        .catch(() => message.error('Error submiting your data'))
+        .catch(err => {
+          message.error(err.detail)
+          this.setState({
+            submit: false
+          })
+        })
     }
   }
 }

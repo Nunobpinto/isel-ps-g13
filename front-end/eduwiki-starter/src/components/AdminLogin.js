@@ -1,7 +1,8 @@
 import React from 'react'
 import {Redirect} from 'react-router-dom'
 import {message, Form, Input, Button, Icon} from 'antd'
-import fetch from 'isomorphic-fetch'
+import fetcher from '../fetcher'
+import config from '../config'
 
 class LoginForm extends React.Component {
   constructor (props) {
@@ -71,32 +72,17 @@ class LoginForm extends React.Component {
     )
   }
 
-  tryLogin (authCredentials) {
-    const options = {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Authorization': 'Basic ' + authCredentials,
-        'tenant-uuid': '1ed95f93-5533-47b8-81d3-369c8c30ff80'
-      }
-    }
-    return new Promise((resolve, reject) => {
-      fetch('http://localhost:8080/user', options)
-        .then(resp => {
-          if (resp.status >= 400) {
-            return resp.json().then(error =>
-              reject(error)
-            )
-          }
-          return resolve(resp.json())
-        })
-        .catch(err => reject(err))
-    })
-  }
-
   componentDidUpdate () {
     if (this.state.redirect) {
       const credentials = Buffer.from(this.state.username + ':' + this.state.password).toString('base64')
-      this.tryLogin(credentials)
+      const options = {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Authorization': 'Basic ' + credentials,
+          'tenant-uuid': '1ed95f93-5533-47b8-81d3-369c8c30ff80'
+        }
+      }
+      fetcher(config.API_PATH + '/user', options)
         .then(user => {
           if (user.reputation.role === 'ROLE_DEV') {
             window.localStorage.setItem('auth', credentials)

@@ -1,7 +1,8 @@
 import React from 'react'
-import fetch from 'isomorphic-fetch'
+import fetcher from '../fetcher'
 import { message, List, Card, Row, Col, Button, Icon } from 'antd'
 import Layout from './Layout'
+import config from '../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -14,7 +15,7 @@ export default class extends React.Component {
     this.reject = this.reject.bind(this)
   }
   approve () {
-    const uri = 'http://localhost:8080/tenants/pending/' + this.props.match.params.tenantId
+    const uri = config.API_PATH + '/tenants/pending/' + this.props.match.params.tenantId
     const options = {
       method: 'POST',
       headers: {
@@ -23,18 +24,19 @@ export default class extends React.Component {
         'tenant-uuid': '1ed95f93-5533-47b8-81d3-369c8c30ff80'
       }
     }
-    fetch(uri, options)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error()
-        }
+    fetcher(uri, options)
+      .then(_ => {
         message.success('Approved Tenant')
         this.setState({
           approve: false
         })
       })
-      .catch(() => {
-        message.error('Error approving tenant')
+      .catch(err => {
+        if (err.detail) {
+          message.error(err.detail)
+        } else {
+          message.error('Error approving tenant')
+        }
         this.setState({
           approve: false
         })
@@ -42,7 +44,7 @@ export default class extends React.Component {
   }
 
   reject () {
-    const uri = 'http://localhost:8080/tenants/pending/' + this.props.match.params.tenantId
+    const uri = config.API_PATH + '/tenants/pending/' + this.props.match.params.tenantId
     const options = {
       method: 'DELETE',
       headers: {
@@ -51,19 +53,19 @@ export default class extends React.Component {
         'tenant-uuid': '1ed95f93-5533-47b8-81d3-369c8c30ff80'
       }
     }
-    fetch(uri, options)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error()
-        }
+    fetcher(uri, options)
+      .then(_ => {
         message.success('Rejected Tenant')
         this.setState({
           reject: false
         })
-        return resp.json()
       })
-      .catch(() => {
-        message.error('Error rejecting tenant')
+      .catch(error => {
+        if (error.detail) {
+          message.error(error.detail)
+        } else {
+          message.error('Error rejecting tenant')
+        }
         this.setState({
           reject: false
         })
@@ -138,7 +140,7 @@ export default class extends React.Component {
     }
   }
   componentDidMount () {
-    const uri = 'http://localhost:8080/tenants/pending/' + this.props.match.params.tenantId
+    const uri = config.API_PATH + '/tenants/pending/' + this.props.match.params.tenantId
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -146,19 +148,17 @@ export default class extends React.Component {
         'tenant-uuid': '1ed95f93-5533-47b8-81d3-369c8c30ff80'
       }
     }
-    fetch(uri, options)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error()
-        }
-        return resp.json()
-      })
+    fetcher(uri, options)
       .then(json => this.setState({
         pending: json,
         loading: false
       }))
-      .catch(() => {
-        message.error('Error fetching tenant')
+      .catch(error => {
+        if (error.detail) {
+          message.error(error.detail)
+        } else {
+          message.error('Error fetching tenant')
+        }
         this.setState({
           loading: false
         })

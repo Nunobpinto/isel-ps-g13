@@ -1,6 +1,7 @@
 import React from 'react'
-import fetch from 'isomorphic-fetch'
+import fetcher from '../fetcher'
 import { message, List, Button, Card } from 'antd'
+import config from '../config'
 
 export default class extends React.Component {
   constructor (props) {
@@ -53,47 +54,45 @@ export default class extends React.Component {
     )
   }
   componentDidMount () {
-    const uri = 'http://localhost:8080/tenants'
+    const uri = config.API_PATH + '/tenants'
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*'
       }
     }
-    fetch(uri, options)
-      .then(resp => {
-        if (resp.status >= 400) {
-          throw new Error()
-        }
-        return resp.json()
-      })
+    fetcher(uri, options)
       .then(json => this.setState({
-        tenants: json.tenantList,
+        tenants: json.tenantList.filter(tenant => tenant.schemaName !== 'master'),
         loadingTenants: false
       }))
-      .catch(() => message.error('Error fetching tenants'))
+      .catch(error => {
+        message.error(error.detail)
+        this.setState({loadingTenants: false})
+      })
   }
   componentDidUpdate () {
     if (this.state.seePending) {
-      const uri = 'http://localhost:8080/tenants/pending'
+      const uri = config.API_PATH + '/tenants/pending'
       const options = {
         headers: {
           'Access-Control-Allow-Origin': '*'
         }
       }
-      fetch(uri, options)
-        .then(resp => {
-          if (resp.status >= 400) {
-            throw new Error()
-          }
-          return resp.json()
-        })
+      fetcher(uri, options)
         .then(json => this.setState({
           pending: json.pendingTenantList,
           loadingPending: false,
           seePending: false,
           showPendingList: true
         }))
-        .catch(() => message.error('Error fetching pending tenants'))
+        .catch(err => {
+          message.error(err.detail)
+          this.setState({
+            loadingPending: false,
+            seePending: false,
+            showPendingList: true
+          })
+        })
     }
   }
 }
