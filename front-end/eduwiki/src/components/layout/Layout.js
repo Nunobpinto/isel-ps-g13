@@ -28,7 +28,7 @@ export default class extends React.Component {
           {React.cloneElement(<Navbar />, { user: this.state.user })}
         </Header>
         <Content className='layout'>
-          <div style={{ background: '#fff', padding: 90, minHeight: 200 }}>
+          <div style={{ background: '#fff', padding: 30, minHeight: 1000 }}>
             {childrenWithProps}
           </div>
         </Content>
