@@ -18,10 +18,10 @@ class Profile extends React.Component {
     super(props)
     this.state = {
       user: {
-        username: props.user.username,
-        familyName: props.user.familyName,
-        givenName: props.user.familyName,
-        email: props.user.email
+        username: '',
+        familyName: '',
+        givenName: '',
+        email: ''
       },
       showProgrammeStage: true,
       showCourseStage: false,
@@ -34,9 +34,9 @@ class Profile extends React.Component {
         <div className='left_side'>
           <img alt={'User Avatar'} src='defaultUser.png' />
           <p>
-            <h1><strong>Username</strong> : {this.state.user.username}</h1>
-            <h1><strong>Name</strong> : {this.state.user.givenName} {this.state.user.familyName}</h1>
-            <h1><strong>Email</strong> : {this.state.user.email}</h1>
+            <h1><strong>Username</strong> : {this.props.user.username}</h1>
+            <h1><strong>Name</strong> : {this.props.user.givenName} {this.props.user.familyName}</h1>
+            <h1><strong>Email</strong> : {this.props.user.email}</h1>
             <h1>User Activity :</h1>
             <UserActivity />
           </p>
