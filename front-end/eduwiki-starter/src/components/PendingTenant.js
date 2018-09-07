@@ -21,7 +21,7 @@ export default class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
-        'tenant-uuid': '1ed95f93-5533-47b8-81d3-369c8c30ff80'
+        'tenant-uuid': config.TENANT_UUID
       }
     }
     fetcher(uri, options)
@@ -51,7 +51,7 @@ export default class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
-        'tenant-uuid': '1ed95f93-5533-47b8-81d3-369c8c30ff80'
+        'tenant-uuid': config.TENANT_UUID
       }
     }
     fetcher(uri, options)
@@ -149,7 +149,7 @@ export default class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
-        'tenant-uuid': '1ed95f93-5533-47b8-81d3-369c8c30ff80'
+        'tenant-uuid': config.TENANT_UUID
       }
     }
     fetcher(uri, options)

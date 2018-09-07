@@ -79,7 +79,7 @@ class LoginForm extends React.Component {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Authorization': 'Basic ' + credentials,
-          'tenant-uuid': '1ed95f93-5533-47b8-81d3-369c8c30ff80'
+          'tenant-uuid': config.TENANT_UUID
         }
       }
       fetcher(config.API_PATH + '/user', options)

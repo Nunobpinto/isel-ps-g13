@@ -66,7 +66,7 @@ export default class extends React.Component {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json',
           'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
-          'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
+          'tenant-uuid': config.TENANT_UUID
         },
         body: JSON.stringify(data)
       }

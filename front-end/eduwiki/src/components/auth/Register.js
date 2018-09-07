@@ -53,7 +53,7 @@ export default class Register extends React.Component {
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json',
-          'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
+          'tenant-uuid': config.TENANT_UUID
         },
         body: JSON.stringify(user)
       }
