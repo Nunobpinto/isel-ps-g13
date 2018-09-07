@@ -22,11 +22,11 @@ import kotlinx.android.synthetic.main.homework_collection_fragment.*
 
 class HomeworkCollectionFragment: Fragment() {
 
-    lateinit var app: EduWikiApplication
+    private lateinit var app: EduWikiApplication
     private lateinit var recyclerView: RecyclerView
     private lateinit var homeworkList: MutableList<Homework>
     private lateinit var homeworkAdapter: HomeworkListAdapter
-    lateinit var dataComunication: IDataComunication
+    private lateinit var dataComunication: IDataComunication
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,7 +80,7 @@ class HomeworkCollectionFragment: Fragment() {
                             }
                             else {
                                 homeworks_progress_bar.visibility = View.GONE
-                                Toast.makeText(app, "Error", Toast.LENGTH_LONG).show()
+                                Toast.makeText(app, "${error.title} ${error.detail}", Toast.LENGTH_LONG).show()
                             }
                         }
                 )
@@ -96,4 +96,5 @@ class HomeworkCollectionFragment: Fragment() {
             throw ClassCastException(e.message)
         }
     }
+
 }

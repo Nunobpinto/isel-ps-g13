@@ -3,12 +3,10 @@ package isel.ps.eduwikimobile.adapters
 import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import isel.ps.eduwikimobile.R
-import isel.ps.eduwikimobile.domain.single.Class
 import isel.ps.eduwikimobile.domain.single.Course
 import isel.ps.eduwikimobile.domain.single.CourseClass
 import isel.ps.eduwikimobile.domain.single.Programme
@@ -54,7 +52,7 @@ class FollowingListAdapter(var context: Context, var list: MutableList<Any>) : R
         fun bindView(position: Int) {
             val item = getItem(position)
             when(item.toString()) {
-                "course_class" -> followingItem.text =  (item as CourseClass).lecturedTerm + "/" + item.className +  "/" + item.courseShortName
+                "course_class" -> followingItem.text =  "${(item as CourseClass).lecturedTerm}/${item.className}/${item.courseShortName}"
                 "course" -> followingItem.text = (item as Course).shortName
                 "programme" -> followingItem.text = (item as Programme).shortName
             }

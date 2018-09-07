@@ -7,8 +7,6 @@ import android.support.v7.app.ActionBar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
-import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import com.android.volley.TimeoutError
@@ -23,11 +21,11 @@ import isel.ps.eduwikimobile.ui.activities.MainActivity
 
 class HomeworkFragment : Fragment() {
 
-    lateinit var dataComunication: IDataComunication
-    lateinit var homework: Homework
-    lateinit var mainActivity: MainActivity
-    lateinit var app: EduWikiApplication
-    var courseClass: CourseClass? = null
+    private lateinit var dataComunication: IDataComunication
+    private lateinit var homework: Homework
+    private lateinit var mainActivity: MainActivity
+    private lateinit var app: EduWikiApplication
+    private var courseClass: CourseClass? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +37,6 @@ class HomeworkFragment : Fragment() {
         val view: View = inflater.inflate(R.layout.homework_details_fragment, container, false)
         val bundle: Bundle = arguments
         homework = bundle.getParcelable("item_selected")
-        dataComunication.setHomework(homework)
         courseClass = dataComunication.getCourseClass()
 
         val homeworkName = view.findViewById<TextView>(R.id.homework_details_name)
@@ -69,13 +66,12 @@ class HomeworkFragment : Fragment() {
                                 errorCb = { error ->
                                     if (error.exception is TimeoutError) {
                                         Toast.makeText(app, "Server isn't responding...", Toast.LENGTH_LONG).show()
-                                    } else Toast.makeText(mainActivity, "Error", Toast.LENGTH_LONG).show()
+                                    } else Toast.makeText(app, "${error.title} ${error.detail}", Toast.LENGTH_LONG).show()
                                 }
                         )
                 )
             }
         }
-
         return view
     }
 

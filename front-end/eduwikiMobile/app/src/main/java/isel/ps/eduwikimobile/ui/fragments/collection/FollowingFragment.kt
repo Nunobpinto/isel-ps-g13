@@ -14,15 +14,14 @@ import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.adapters.FollowingListAdapter
 import isel.ps.eduwikimobile.controller.AppController
-import isel.ps.eduwikimobile.domain.single.Programme
 import isel.ps.eduwikimobile.domain.paramsContainer.CourseClassCollectionParametersContainer
 import isel.ps.eduwikimobile.domain.paramsContainer.CourseCollectionParametersContainer
-import isel.ps.eduwikimobile.domain.paramsContainer.EntityParametersContainer
+import isel.ps.eduwikimobile.domain.paramsContainer.UserProgrammeParametersContainer
 import kotlinx.android.synthetic.main.following_fragment.*
 
 class FollowingFragment : Fragment() {
 
-    lateinit var app: EduWikiApplication
+    private lateinit var app: EduWikiApplication
     private lateinit var recyclerView: RecyclerView
     private lateinit var followingList: MutableList<Any>
     private lateinit var followingAdapter: FollowingListAdapter
@@ -60,7 +59,7 @@ class FollowingFragment : Fragment() {
     }
 
     private fun getUserFollowingItems() {
-        //getting classes
+        //getting following classes
         app.controller.actionHandler(
                 AppController.USER_FOLLOWING_CLASSES,
                 CourseClassCollectionParametersContainer(
@@ -76,12 +75,12 @@ class FollowingFragment : Fragment() {
                                 Toast.makeText(app, "Server isn't responding...", Toast.LENGTH_LONG).show()
                             } else {
                                 following_progress_bar.visibility = View.GONE
-                                Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show()
+                                Toast.makeText(app, "${error.title} ${error.detail}", Toast.LENGTH_LONG).show()
                             }
                         }
                 )
         )
-        //getting courses
+        //getting following courses
         app.controller.actionHandler(
                 AppController.USER_FOLLOWING_COURSES,
                 CourseCollectionParametersContainer(
@@ -97,15 +96,15 @@ class FollowingFragment : Fragment() {
                                 Toast.makeText(app, "Server isn't responding...", Toast.LENGTH_LONG).show()
                             } else {
                                 following_progress_bar.visibility = View.GONE
-                                Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show()
+                                Toast.makeText(app, "${error.title} ${error.detail}", Toast.LENGTH_LONG).show()
                             }
                         }
                 )
         )
-        //getting programme
+        //getting following programme
         app.controller.actionHandler(
                 AppController.USER_FOLLOWING_PROGRAMME,
-                EntityParametersContainer<Programme>(
+                UserProgrammeParametersContainer(
                         app = app,
                         successCb = { programme ->
                             followingList.addAll(listOf(programme))
@@ -118,7 +117,7 @@ class FollowingFragment : Fragment() {
                                 Toast.makeText(app, "Server isn't responding...", Toast.LENGTH_LONG).show()
                             } else {
                                 following_progress_bar.visibility = View.GONE
-                                Toast.makeText(app, "Error", Toast.LENGTH_LONG).show()
+                                Toast.makeText(app, "${error.title} ${error.detail}", Toast.LENGTH_LONG).show()
                             }
                         }
                 )

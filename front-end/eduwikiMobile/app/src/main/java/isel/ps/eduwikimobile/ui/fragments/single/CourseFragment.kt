@@ -19,23 +19,23 @@ import isel.ps.eduwikimobile.domain.single.Term
 import isel.ps.eduwikimobile.domain.paramsContainer.TermCollectionParametersContainer
 import isel.ps.eduwikimobile.ui.IDataComunication
 import isel.ps.eduwikimobile.ui.activities.MainActivity
+import kotlinx.android.synthetic.main.course_details_fragment.*
 
 class CourseFragment : Fragment() {
 
-    lateinit var app: EduWikiApplication
-    lateinit var dataComunication: IDataComunication
-    lateinit var termList: MutableList<Term>
-    lateinit var course: Course
+    private lateinit var app: EduWikiApplication
+    private lateinit var dataComunication: IDataComunication
+    private lateinit var termList: MutableList<Term>
+    private lateinit var course: Course
+    private lateinit var mainActivity: MainActivity
     private lateinit var recyclerView: RecyclerView
     private lateinit var courseTermsAdapter: CourseTermListAdapter
-    private lateinit var map: HashMap<Int, MutableList<Term>>
-    lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mainActivity = context as MainActivity
         app = activity.applicationContext as EduWikiApplication
         termList = ArrayList()
-        map = HashMap()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -46,24 +46,20 @@ class CourseFragment : Fragment() {
 
         val bundle: Bundle = arguments
         course = bundle.getParcelable("item_selected")
+        dataComunication.setCourse(course)
 
-        if (map[course.courseId] == null) {
+        if (termList.size != 0) {
             termList.clear()
-            dataComunication.setCourse(course)
-            progressBar = view.findViewById(R.id.course_progress_bar)
-            progressBar.visibility = View.VISIBLE
-            getCourseTerms(course.courseId)
-        } else if (course.courseId != dataComunication.getCourse()!!.courseId) {
-            dataComunication.setCourse(course)
-            termList = map[course.courseId]!!
         }
+
+        view.findViewById<ProgressBar>(R.id.course_progress_bar).visibility = View.VISIBLE
+        getCourseTerms(course.courseId)
+
 
         courseTermsAdapter = CourseTermListAdapter(context, termList)
         recyclerView.adapter = courseTermsAdapter
 
-        val mainActivity = context as MainActivity
         mainActivity.toolbar.displayOptions = ActionBar.DISPLAY_SHOW_TITLE
-
         mainActivity.toolbar.title = course.shortName
         mainActivity.toolbar.subtitle = course.createdBy
 
@@ -98,18 +94,16 @@ class CourseFragment : Fragment() {
                         app = app,
                         successCb = { terms ->
                             termList.addAll(terms.termList)
-                            map[courseId] = terms.termList.toMutableList()
                             courseTermsAdapter.notifyDataSetChanged()
                             recyclerView.visibility = View.VISIBLE
-                            progressBar.visibility = View.GONE
+                            course_progress_bar.visibility = View.GONE
                         },
                         errorCb = { error ->
-                            if(error.exception is TimeoutError) {
+                            if (error.exception is TimeoutError) {
                                 Toast.makeText(app, "Server isn't responding...", LENGTH_LONG).show()
-                            }
-                            else{
-                                progressBar.visibility = View.GONE
-                                Toast.makeText(app, "Error", LENGTH_LONG).show()
+                            } else {
+                                course_progress_bar.visibility = View.GONE
+                                Toast.makeText(app, "${error.title} ${error.detail}", Toast.LENGTH_LONG).show()
                             }
                         }
                 )

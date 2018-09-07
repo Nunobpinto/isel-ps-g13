@@ -1,6 +1,5 @@
 package isel.ps.eduwikimobile.ui.fragments.single
 
-import android.content.Context
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
@@ -19,16 +18,13 @@ import isel.ps.eduwikimobile.domain.single.Programme
 import isel.ps.eduwikimobile.domain.single.User
 import isel.ps.eduwikimobile.domain.paramsContainer.EntityParametersContainer
 import isel.ps.eduwikimobile.domain.paramsContainer.UserProgrammeParametersContainer
-import isel.ps.eduwikimobile.ui.IDataComunication
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 import kotlinx.android.synthetic.main.profile_fragment.*
 
 class ProfileFragment : Fragment() {
 
-    lateinit var dataComunication: IDataComunication
-    lateinit var programme: Programme
-    lateinit var mainActivity: MainActivity
-    lateinit var app: EduWikiApplication
+    private lateinit var mainActivity: MainActivity
+    private lateinit var app: EduWikiApplication
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,7 +72,7 @@ class ProfileFragment : Fragment() {
                             }
                             else {
                                 user_profile_progressBar.visibility = View.GONE
-                                Toast.makeText(app, "Error" + error.message, LENGTH_LONG).show()
+                                Toast.makeText(app, "${error.title} ${error.detail}", Toast.LENGTH_LONG).show()
                             }
                         }
                 )
@@ -84,7 +80,7 @@ class ProfileFragment : Fragment() {
 
         app.controller.actionHandler(
                 AppController.USER_FOLLOWING_PROGRAMME,
-                EntityParametersContainer<Programme>(
+                UserProgrammeParametersContainer(
                         app = app,
                         successCb = { programme ->
                             user_profile_programme.text = programme.shortName
@@ -96,20 +92,10 @@ class ProfileFragment : Fragment() {
                                 Toast.makeText(app, "Server isn't responding...", LENGTH_LONG).show()
                             }
                             user_profile_progressBar.visibility = View.GONE
-                            Toast.makeText(app, "Error", LENGTH_LONG).show()
+                            Toast.makeText(app, "${error.title} ${error.detail}", Toast.LENGTH_LONG).show()
                         }
                 )
         )
-    }
-
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-
-        try {
-            dataComunication = context as IDataComunication
-        } catch (e: ClassCastException) {
-            throw ClassCastException(e.message)
-        }
     }
 
 }

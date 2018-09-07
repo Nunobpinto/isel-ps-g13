@@ -2,7 +2,6 @@ package isel.ps.eduwikimobile.ui.fragments.single
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
 import android.support.v7.app.ActionBar
 import android.view.LayoutInflater
@@ -24,13 +23,12 @@ import isel.ps.eduwikimobile.ui.activities.MainActivity
 
 class ExamFragment : Fragment() {
 
-    lateinit var dataComunication: IDataComunication
-    lateinit var app: EduWikiApplication
-    lateinit var exam: Exam
-    var course: Course? = null
-    var term: Term? = null
-
-    lateinit var mainActivity: MainActivity
+    private lateinit var dataComunication: IDataComunication
+    private lateinit var app: EduWikiApplication
+    private lateinit var exam: Exam
+    private var course: Course? = null
+    private var term: Term? = null
+    private lateinit var mainActivity: MainActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +42,6 @@ class ExamFragment : Fragment() {
         exam = bundle.getParcelable("item_selected")
         course = dataComunication.getCourse()
         term = dataComunication.getTerm()
-        dataComunication.setExam(exam)
 
         val examName = view.findViewById<TextView>(R.id.exam_details_name)
         val examDueDate = view.findViewById<TextView>(R.id.exam_details_insert_due_date)
@@ -71,7 +68,7 @@ class ExamFragment : Fragment() {
                                 errorCb = { error ->
                                     if (error.exception is TimeoutError) {
                                         Toast.makeText(app, "Server isn't responding...", Toast.LENGTH_LONG).show()
-                                    } else Toast.makeText(mainActivity, "Error", Toast.LENGTH_LONG).show()
+                                    } else Toast.makeText(app, "${error.title} ${error.detail}", Toast.LENGTH_LONG).show()
                                 }
                         )
                 )

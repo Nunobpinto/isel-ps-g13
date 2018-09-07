@@ -8,22 +8,18 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import isel.ps.eduwikimobile.API_URL
+import isel.ps.eduwikimobile.API_URL_EMULATOR
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.domain.single.*
-import isel.ps.eduwikimobile.domain.paramsContainer.CourseClassCollectionParametersContainer
-import isel.ps.eduwikimobile.domain.paramsContainer.CourseProgrammeCollectionParametersContainer
 import isel.ps.eduwikimobile.domain.paramsContainer.EntityParametersContainer
-import isel.ps.eduwikimobile.domain.paramsContainer.ParametersContainer
 import isel.ps.eduwikimobile.ui.activities.MainActivity
-import isel.ps.eduwikimobile.ui.fragments.single.CourseClassFragment
 
 class ActionsFeedListAdapter(var context: Context, var list: MutableList<UserAction>) : RecyclerView.Adapter<ActionsFeedListAdapter.ListViewHolder>() {
 
-    val mainActivity: MainActivity = context as MainActivity
-    val app: EduWikiApplication = context.applicationContext as EduWikiApplication
-    var userActionsMap: HashMap<String, String> =
+    private val mainActivity: MainActivity = context as MainActivity
+    private val app: EduWikiApplication = context.applicationContext as EduWikiApplication
+    private var userActionsMap: HashMap<String, String> =
             hashMapOf(
                     "CREATE" to "created",
                     "ALTER" to "altered",
@@ -112,7 +108,8 @@ class ActionsFeedListAdapter(var context: Context, var list: MutableList<UserAct
 
         fun bindView(position: Int) {
             val item = list[position]
-            timestamp.text = item.timestamp
+            val time = item.timestamp.split('T')
+            timestamp.text = "${time[0]} ${time[1].split('.')[0]}"
             actionType.text = userActionsMap[item.action_type]
             entity.text = supportedEntitiesMap[item.entity_type]
             createdBy.text = item.action_user
@@ -120,14 +117,14 @@ class ActionsFeedListAdapter(var context: Context, var list: MutableList<UserAct
                 resource.visibility = View.VISIBLE
                 resource.setOnClickListener {
                     app.repository.getEntity(
-                            "$API_URL/${item.entity_link}",
+                            "$API_URL_EMULATOR/${item.entity_link}",
                             getType(item.entity_type)!!,
                             EntityParametersContainer(
                                     app = app,
                                     successCb = { entity ->
                                         mainActivity.navigateToListItem(entity)
                                     },
-                                    errorCb = { error -> Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                                    errorCb = { error -> Toast.makeText(app, "${error.title} - ${error.detail}", Toast.LENGTH_LONG).show() }
                             )
                     )
                 }

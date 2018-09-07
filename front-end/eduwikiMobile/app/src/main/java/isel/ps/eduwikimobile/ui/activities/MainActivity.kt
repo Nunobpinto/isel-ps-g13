@@ -25,20 +25,14 @@ class MainActivity : AppCompatActivity(), IDataComunication {
 
     lateinit var toolbar: ActionBar
     lateinit var fragmentsMap: HashMap<String, Fragment>
-    lateinit var actualProgramme: Programme
+    var actualProgramme: Programme? = null
     var actualCourse: Course? = null
-    lateinit var actualClass: Class
-    lateinit var actualOrganization: Organization
-    lateinit var actualTerm: Term
-    lateinit var actualExam: Exam
-    lateinit var actualWorkAssignment: WorkAssignment
-    lateinit var actualCourseClass: CourseClass
-    lateinit var actualLecture: Lecture
-    lateinit var actualHomework: Homework
-    lateinit var actualCourseProgramme: CourseProgramme
+    var actualTerm: Term? = null
+    var actualCourseClass: CourseClass? = null
+    var actualCourseProgramme: CourseProgramme? = null
 
-    lateinit var url: String
-    lateinit var header: String
+    lateinit var fileUrl: String
+    lateinit var fileHeader: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,76 +109,10 @@ class MainActivity : AppCompatActivity(), IDataComunication {
         transaction.commit()
     }
 
-    override fun getProgramme(): Programme = actualProgramme
-
-    override fun setProgramme(programme: Programme) {
-        actualProgramme = programme
-    }
-
-    override fun getClass(): Class = actualClass
-
-    override fun setClass(klass: Class) {
-        actualClass = klass
-    }
-
-    override fun getCourse(): Course? = actualCourse
-
-    override fun setCourse(course: Course) {
-        actualCourse = course
-    }
-
-    override fun getOrganization(): Organization = actualOrganization
-
-    override fun setOrganization(org: Organization) {
-        actualOrganization = org
-    }
-
-    override fun getTerm(): Term = actualTerm
-
-    override fun setTerm(term: Term) {
-        actualTerm = term
-    }
-
-    override fun getExam(): Exam = actualExam
-
-    override fun setExam(exam: Exam) {
-        actualExam = exam
-    }
-
-    override fun getWorkAssignment(): WorkAssignment = actualWorkAssignment
-
-    override fun setWorkAssignment(workAssignment: WorkAssignment) {
-        actualWorkAssignment = workAssignment
-    }
-
-    override fun getCourseClass(): CourseClass = actualCourseClass
-
-    override fun setCourseClass(courseClass: CourseClass) {
-        actualCourseClass = courseClass
-    }
-
-    override fun getHomework(): Homework = actualHomework
-
-    override fun setHomework(homework: Homework) {
-        actualHomework = homework
-    }
-
-    override fun getLecture(): Lecture = actualLecture
-
-    override fun setLecture(lecture: Lecture) {
-        actualLecture = lecture
-    }
-
-    override fun getCourseProgramme(): CourseProgramme = actualCourseProgramme
-
-    override fun setCourseProgramme(courseProgramme: CourseProgramme) {
-        actualCourseProgramme = courseProgramme
-    }
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            (application as EduWikiApplication).repository.downloadFile(header, url, application as EduWikiApplication)
+            (application as EduWikiApplication).repository.downloadFile(fileHeader, fileUrl, application as EduWikiApplication)
         }
     }
 
@@ -201,6 +129,36 @@ class MainActivity : AppCompatActivity(), IDataComunication {
             startActivity(Intent(baseContext, LoginActivity::class.java))
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun getProgramme(): Programme? = actualProgramme
+
+    override fun setProgramme(programme: Programme) {
+        actualProgramme = programme
+    }
+
+    override fun getCourse(): Course? = actualCourse
+
+    override fun setCourse(course: Course) {
+        actualCourse = course
+    }
+
+    override fun getTerm(): Term? = actualTerm
+
+    override fun setTerm(term: Term) {
+        actualTerm = term
+    }
+
+    override fun getCourseClass(): CourseClass? = actualCourseClass
+
+    override fun setCourseClass(courseClass: CourseClass) {
+        actualCourseClass = courseClass
+    }
+
+    override fun getCourseProgramme(): CourseProgramme? = actualCourseProgramme
+
+    override fun setCourseProgramme(courseProgramme: CourseProgramme) {
+        actualCourseProgramme = courseProgramme
     }
 
 }

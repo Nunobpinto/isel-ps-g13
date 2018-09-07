@@ -27,16 +27,18 @@ import kotlinx.android.synthetic.main.exam_collection_fragment.*
 
 class ExamCollectionFragment : Fragment() {
 
-    lateinit var app: EduWikiApplication
+    private lateinit var app: EduWikiApplication
     private lateinit var recyclerView: RecyclerView
     private lateinit var examList: MutableList<Exam>
     private lateinit var examAdapter: ExamListAdapter
-    lateinit var dataComunication: IDataComunication
-    var course: Course? = null
-    var courseProgramme: CourseProgramme? = null
+    private lateinit var dataComunication: IDataComunication
+    private lateinit var mainActivity: MainActivity
+    private var course: Course? = null
+    private var courseProgramme: CourseProgramme? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mainActivity = activity as MainActivity
         app = activity.applicationContext as EduWikiApplication
         examList = ArrayList()
     }
@@ -48,22 +50,22 @@ class ExamCollectionFragment : Fragment() {
         val bundle: Bundle = arguments
         val term: Term = bundle.getParcelable("actualTerm")
         dataComunication.setTerm(term)
-        val activity = activity as MainActivity
-        view.findViewById<ProgressBar>(R.id.exams_progress_bar).visibility = View.VISIBLE
-        if (dataComunication.getCourse() != null) {
-            course = dataComunication.getCourse()
-            getExamItems(course!!.courseId, term.termId)
-            activity.toolbar.title = course!!.shortName + "/" + term.shortName + "/" + "Exams"
-        } else {
-            courseProgramme = dataComunication.getCourseProgramme()
-            getExamItems(courseProgramme!!.courseId, term.termId)
-            activity.toolbar.title = courseProgramme!!.shortName + "/" + term.shortName + "/" + "Exams"
-        }
-
-        activity.toolbar.subtitle = ""
 
         if (examList.size != 0) {
             examList.clear()
+        }
+        view.findViewById<ProgressBar>(R.id.exams_progress_bar).visibility = View.VISIBLE
+
+        if (dataComunication.getCourse() != null) {
+            course = dataComunication.getCourse()
+            getExamItems(course!!.courseId, term.termId)
+            mainActivity.toolbar.title = course!!.shortName + "/" + term.shortName + "/" + "Exams"
+            mainActivity.toolbar.subtitle = course!!.createdBy
+        } else {
+            courseProgramme = dataComunication.getCourseProgramme()
+            getExamItems(courseProgramme!!.courseId, term.termId)
+            mainActivity.toolbar.title = courseProgramme!!.shortName + "/" + term.shortName + "/" + "Exams"
+            mainActivity.toolbar.subtitle = courseProgramme!!.createdBy
         }
 
         examAdapter = ExamListAdapter(context, examList)
@@ -98,7 +100,7 @@ class ExamCollectionFragment : Fragment() {
                                 Toast.makeText(app, "Server isn't responding...", LENGTH_LONG).show()
                             } else {
                                 exams_progress_bar.visibility = View.GONE
-                                Toast.makeText(app, "Error", LENGTH_LONG).show()
+                                Toast.makeText(app, "${error.title} ${error.detail}", Toast.LENGTH_LONG).show()
                             }
                         }
                 )

@@ -27,16 +27,18 @@ import kotlinx.android.synthetic.main.work_assignment_collection_fragment.*
 
 class WorkAssignmentCollectionFragment : Fragment() {
 
-    lateinit var app: EduWikiApplication
+    private lateinit var app: EduWikiApplication
     private lateinit var recyclerView: RecyclerView
     private lateinit var workAssignmentList: MutableList<WorkAssignment>
     private lateinit var workAssignmentAdapter: WorkAssignmentListAdapter
-    lateinit var dataComunication: IDataComunication
-    var course: Course? = null
-    var courseProgramme: CourseProgramme? = null
+    private lateinit var dataComunication: IDataComunication
+    private lateinit var mainActivity: MainActivity
+    private var course: Course? = null
+    private var courseProgramme: CourseProgramme? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mainActivity = activity as MainActivity
         app = activity.applicationContext as EduWikiApplication
         workAssignmentList = ArrayList()
     }
@@ -48,23 +50,22 @@ class WorkAssignmentCollectionFragment : Fragment() {
         val bundle: Bundle = arguments
         val term: Term = bundle.getParcelable("actualTerm")
         dataComunication.setTerm(term)
-        val activity = activity as MainActivity
+
+        if (workAssignmentList.size != 0) {
+            workAssignmentList.clear()
+        }
         view.findViewById<ProgressBar>(R.id.work_assignments_progress_bar).visibility = View.VISIBLE
 
         if (dataComunication.getCourse() != null) {
             course = dataComunication.getCourse()
             getWorkAssignmentItems(course!!.courseId, term.termId)
-            activity.toolbar.title =  course!!.shortName + "/" + term.shortName + "/" + "Work-Assignments"
+            mainActivity.toolbar.title = course!!.shortName + "/" + term.shortName + "/" + "Work-Assignments"
+            mainActivity.toolbar.subtitle = course!!.createdBy
         } else {
             courseProgramme = dataComunication.getCourseProgramme()
             getWorkAssignmentItems(courseProgramme!!.courseId, term.termId)
-            activity.toolbar.title =  courseProgramme!!.shortName + "/" + term.shortName + "/" + "Work-Assignments"
-        }
-        activity.toolbar.subtitle = ""
-
-
-        if (workAssignmentList.size != 0) {
-            workAssignmentList.clear()
+            mainActivity.toolbar.title = courseProgramme!!.shortName + "/" + term.shortName + "/" + "Work-Assignments"
+            mainActivity.toolbar.subtitle = courseProgramme!!.createdBy
         }
 
         workAssignmentAdapter = WorkAssignmentListAdapter(context, workAssignmentList)
@@ -95,12 +96,11 @@ class WorkAssignmentCollectionFragment : Fragment() {
                             work_assignments_progress_bar.visibility = View.GONE
                         },
                         errorCb = { error ->
-                            if(error.exception is TimeoutError) {
+                            if (error.exception is TimeoutError) {
                                 Toast.makeText(app, "Server isn't responding...", LENGTH_LONG).show()
-                            }
-                            else {
+                            } else {
                                 work_assignments_progress_bar.visibility = View.GONE
-                                Toast.makeText(app, "Error", LENGTH_LONG).show()
+                                Toast.makeText(app, "${error.title} ${error.detail}", Toast.LENGTH_LONG).show()
                             }
                         }
                 )

@@ -23,11 +23,11 @@ import kotlinx.android.synthetic.main.lecture_collection_fragment.*
 
 class LectureCollectionFragment : Fragment() {
 
-    lateinit var app: EduWikiApplication
+    private lateinit var app: EduWikiApplication
     private lateinit var recyclerView: RecyclerView
     private lateinit var lectureList: MutableList<Lecture>
     private lateinit var lectureAdapter: LectureListAdapter
-    lateinit var dataComunication: IDataComunication
+    private lateinit var dataComunication: IDataComunication
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,7 +80,7 @@ class LectureCollectionFragment : Fragment() {
                                 Toast.makeText(app, "Server isn't responding...", LENGTH_LONG).show()
                             } else {
                                 lectures_progress_bar.visibility = View.GONE
-                                Toast.makeText(app, "Error", LENGTH_LONG).show()
+                                Toast.makeText(app, "${error.title} ${error.detail}", Toast.LENGTH_LONG).show()
                             }
                         }
                 )

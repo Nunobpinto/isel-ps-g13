@@ -10,19 +10,19 @@ import android.widget.Toast.LENGTH_LONG
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.controller.AppController
-import isel.ps.eduwikimobile.domain.paramsContainer.ProgrammeCollectionParametersContainer
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.widget.ProgressBar
 import com.android.volley.TimeoutError
 import isel.ps.eduwikimobile.adapters.ProgrammeListAdapter
+import isel.ps.eduwikimobile.domain.paramsContainer.ProgrammeCollectionParametersContainer
 import isel.ps.eduwikimobile.domain.single.Programme
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 import kotlinx.android.synthetic.main.programme_collection_fragment.*
 
 class ProgrammeCollectionFragment : Fragment() {
 
-    lateinit var app: EduWikiApplication
+    private lateinit var app: EduWikiApplication
     private lateinit var recyclerView: RecyclerView
     private lateinit var programmeList: MutableList<Programme>
     private lateinit var pAdapter: ProgrammeListAdapter
@@ -53,6 +53,7 @@ class ProgrammeCollectionFragment : Fragment() {
 
         pAdapter = ProgrammeListAdapter(context, programmeList)
         recyclerView.adapter = pAdapter
+
         val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(activity)
         recyclerView.layoutManager = layoutManager
         recyclerView.isNestedScrollingEnabled = true
@@ -82,7 +83,7 @@ class ProgrammeCollectionFragment : Fragment() {
                             }
                             else {
                                 programmes_progress_bar.visibility = View.GONE
-                                Toast.makeText(app, "Error", LENGTH_LONG).show()
+                                Toast.makeText(app, "${error.title} ${error.detail}", Toast.LENGTH_LONG).show()
                             }
                         }
                 )

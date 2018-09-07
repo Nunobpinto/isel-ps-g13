@@ -19,7 +19,13 @@ import isel.ps.eduwikimobile.ui.activities.MainActivity
 
 class CourseClassFragment : Fragment() {
 
-    lateinit var dataComunication: IDataComunication
+    private lateinit var mainActivity: MainActivity
+    private lateinit var dataComunication: IDataComunication
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        mainActivity = context as MainActivity
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.course_class_details_fragment, container, false)
@@ -33,9 +39,8 @@ class CourseClassFragment : Fragment() {
 
         val courseClassName = view.findViewById<TextView>(R.id.course_class_name)
 
-        val mainActivity = context as MainActivity
         mainActivity.toolbar.displayOptions = ActionBar.DISPLAY_SHOW_TITLE
-        mainActivity.toolbar.title = courseClass.lecturedTerm + "/" + courseClass.className + "/" + courseClass.courseShortName
+        mainActivity.toolbar.title = "${courseClass.lecturedTerm}/${courseClass.className}/courseClass.courseShortName"
         mainActivity.toolbar.subtitle = courseClass.createdBy
 
         courseClassName.text = courseClass.courseFullName
@@ -52,9 +57,9 @@ class CourseClassFragment : Fragment() {
 
         try {
             dataComunication = context as IDataComunication
-        }
-        catch (e: ClassCastException) {
+        } catch (e: ClassCastException) {
             throw ClassCastException(e.message)
         }
     }
+
 }

@@ -49,7 +49,8 @@ class ClassListAdapter (var context: Context, var list: MutableList<Class>) : Re
         fun getItem(position: Int) = list[position]
 
         fun bindView(position: Int) {
-            classShortName.text = list[position].lecturedTerm + '/' + list[position].className
+            val item = list[position]
+            classShortName.text = "${item.lecturedTerm}/${item.className}"
         }
 
         override fun onClick(v: View) {

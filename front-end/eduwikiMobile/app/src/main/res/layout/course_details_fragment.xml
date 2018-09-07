@@ -11,13 +11,15 @@
         <TextView
             android:id="@+id/course_full_name"
             android:layout_width="match_parent"
-            android:layout_height="38dp"
+            android:layout_height="wrap_content"
             android:text="Course Name"
             android:textAlignment="center"
             android:textColor="@android:color/background_dark"
             android:textSize="24sp"
             android:textStyle="bold"
-            tools:layout_editor_absoluteX="16dp" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ProgressBar
             android:id="@+id/course_progress_bar"
@@ -42,9 +44,10 @@
             android:layout_marginTop="8dp"
             android:scrollbars="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/course_full_name"
-            app:layout_constraintVertical_bias="1.0"
-            tools:layout_editor_absoluteX="16dp" />
+            app:layout_constraintVertical_bias="1.0" />
 
 
     </android.support.constraint.ConstraintLayout>

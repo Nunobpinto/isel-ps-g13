@@ -1,6 +1,5 @@
 package isel.ps.eduwikimobile.ui.fragments.collection
 
-import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -25,11 +24,10 @@ import java.util.concurrent.TimeoutException
 
 class ClassCollectionFragment : Fragment() {
 
-    lateinit var app: EduWikiApplication
+    private lateinit var app: EduWikiApplication
     private lateinit var recyclerView: RecyclerView
     private lateinit var classList: MutableList<Class>
     private lateinit var classAdapter: ClassListAdapter
-    lateinit var dataComunication: IDataComunication
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,11 +74,11 @@ class ClassCollectionFragment : Fragment() {
                             classes_progress_bar.visibility = View.GONE
                         },
                         errorCb = { error ->
-                            if(error.exception is TimeoutError) {
+                            if (error.exception is TimeoutError) {
                                 Toast.makeText(app, "Server isn't responding...", LENGTH_LONG).show()
                             }
                             classes_progress_bar.visibility = View.GONE;
-                            Toast.makeText(app, "Error", LENGTH_LONG).show()
+                            Toast.makeText(app, "${error.title} ${error.detail}", Toast.LENGTH_LONG).show()
                         }
                 )
         )
@@ -91,13 +89,4 @@ class ClassCollectionFragment : Fragment() {
         super.onPause()
     }
 
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-
-        try {
-            dataComunication = context as IDataComunication
-        } catch (e: ClassCastException) {
-            throw ClassCastException(e.message)
-        }
-    }
 }
