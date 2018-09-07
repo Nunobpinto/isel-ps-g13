@@ -37,18 +37,6 @@ export default class extends React.Component {
               ))}
             </ul>
           }
-          {this.state.error
-            ? <p>{this.state.error}</p>
-            : <ul>
-              {this.state.classes.map(courseClass => (
-                <a href={`/classes/${courseClass.classId}/courses/${courseClass.courseId}`}>
-                  <li>{courseClass.lecturedTerm}
-                        /{courseClass.className}
-                        /{courseClass.courseShortName}
-                  </li>
-                </a>
-              ))}
-            </ul>}
         </Card>
       </div>
     )
