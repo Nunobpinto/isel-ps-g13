@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.domain.single.*
 import isel.ps.eduwikimobile.ui.IDataComunication
@@ -17,27 +18,27 @@ import isel.ps.eduwikimobile.ui.fragments.collection.ClassCollectionFragment
 import isel.ps.eduwikimobile.ui.fragments.collection.CourseCollectionFragment
 import isel.ps.eduwikimobile.ui.fragments.collection.ProgrammeCollectionFragment
 import isel.ps.eduwikimobile.ui.fragments.single.*
-import isel.ps.eduwikimobile.comms.DownloadAsyncTask
 import isel.ps.eduwikimobile.comms.Session
-import isel.ps.eduwikimobile.domain.paramsContainer.DownloadFileContainer
 
 
 class MainActivity : AppCompatActivity(), IDataComunication {
 
     lateinit var toolbar: ActionBar
     lateinit var fragmentsMap: HashMap<String, Fragment>
-    var actualProgramme: Programme? = null
+    lateinit var actualProgramme: Programme
     var actualCourse: Course? = null
-    var actualClass: Class? = null
-    var actualOrganization: Organization? = null
-    var actualTerm: Term? = null
-    var actualExam: Exam? = null
-    var actualWorkAssignment: WorkAssignment? = null
-    var actualCourseClass: CourseClass? = null
-    var actualLecture: Lecture? = null
-    var actualHomework: Homework? = null
+    lateinit var actualClass: Class
+    lateinit var actualOrganization: Organization
+    lateinit var actualTerm: Term
+    lateinit var actualExam: Exam
+    lateinit var actualWorkAssignment: WorkAssignment
+    lateinit var actualCourseClass: CourseClass
+    lateinit var actualLecture: Lecture
+    lateinit var actualHomework: Homework
+    lateinit var actualCourseProgramme: CourseProgramme
 
-    lateinit var url: String //TODO
+    lateinit var url: String
+    lateinit var header: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,16 +94,14 @@ class MainActivity : AppCompatActivity(), IDataComunication {
                 "course_class" to CourseClassFragment(),
                 "lecture" to LectureFragment(),
                 "homework" to HomeworkFragment(),
-                "profile" to ProfileFragment()
+                "profile" to ProfileFragment(),
+                "course_programme" to CourseProgrammeFragment()
         )
     }
 
-    fun <T> navigateToListItem(item: T, path: String?) {
+    fun <T> navigateToListItem(item: T) {
         val mFragment = fragmentsMap[item.toString()]
         val mBundle = Bundle()
-        if (path != null) {
-            mBundle.putString("path", path)
-        }
         mBundle.putParcelable("item_selected", item as Parcelable)
         mFragment!!.arguments = mBundle
         loadFragment(mFragment)
@@ -116,13 +115,13 @@ class MainActivity : AppCompatActivity(), IDataComunication {
         transaction.commit()
     }
 
-    override fun getProgramme(): Programme? = actualProgramme
+    override fun getProgramme(): Programme = actualProgramme
 
     override fun setProgramme(programme: Programme) {
         actualProgramme = programme
     }
 
-    override fun getClass(): Class? = actualClass
+    override fun getClass(): Class = actualClass
 
     override fun setClass(klass: Class) {
         actualClass = klass
@@ -134,52 +133,58 @@ class MainActivity : AppCompatActivity(), IDataComunication {
         actualCourse = course
     }
 
-    override fun getOrganization(): Organization? = actualOrganization
+    override fun getOrganization(): Organization = actualOrganization
 
     override fun setOrganization(org: Organization) {
         actualOrganization = org
     }
 
-    override fun getTerm(): Term? = actualTerm
+    override fun getTerm(): Term = actualTerm
 
     override fun setTerm(term: Term) {
         actualTerm = term
     }
 
-    override fun getExam(): Exam? = actualExam
+    override fun getExam(): Exam = actualExam
 
     override fun setExam(exam: Exam) {
         actualExam = exam
     }
 
-    override fun getWorkAssignment(): WorkAssignment? = actualWorkAssignment
+    override fun getWorkAssignment(): WorkAssignment = actualWorkAssignment
 
     override fun setWorkAssignment(workAssignment: WorkAssignment) {
         actualWorkAssignment = workAssignment
     }
 
-    override fun getCourseClass(): CourseClass? = actualCourseClass
+    override fun getCourseClass(): CourseClass = actualCourseClass
 
     override fun setCourseClass(courseClass: CourseClass) {
         actualCourseClass = courseClass
     }
 
-    override fun getHomework(): Homework? = actualHomework
+    override fun getHomework(): Homework = actualHomework
 
     override fun setHomework(homework: Homework) {
         actualHomework = homework
     }
 
-    override fun getLecture(): Lecture? = actualLecture
+    override fun getLecture(): Lecture = actualLecture
 
     override fun setLecture(lecture: Lecture) {
         actualLecture = lecture
     }
 
+    override fun getCourseProgramme(): CourseProgramme = actualCourseProgramme
+
+    override fun setCourseProgramme(courseProgramme: CourseProgramme) {
+        actualCourseProgramme = courseProgramme
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            DownloadAsyncTask().execute(DownloadFileContainer(url, applicationContext))
+            (application as EduWikiApplication).repository.downloadFile(header, url, application as EduWikiApplication)
         }
     }
 

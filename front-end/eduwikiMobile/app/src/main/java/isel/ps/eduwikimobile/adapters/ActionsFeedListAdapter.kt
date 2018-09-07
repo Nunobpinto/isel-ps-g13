@@ -82,14 +82,7 @@ class ActionsFeedListAdapter(var context: Context, var list: MutableList<UserAct
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ListViewHolder {
         val view: View = LayoutInflater.from(parent!!.context).inflate(R.layout.action_item_row, parent, false)
-        val newHolder = ListViewHolder(view)
-
-        newHolder.setListItemClickListener(object : ListItemClickListener {
-            override fun onClick(view: View, position: Int) {
-                mainActivity.navigateToListItem(newHolder.getItem(position), null)
-            }
-        })
-        return newHolder
+        return ListViewHolder(view)
     }
 
     override fun getItemCount(): Int = list.size
@@ -106,8 +99,6 @@ class ActionsFeedListAdapter(var context: Context, var list: MutableList<UserAct
         var createdBy: TextView
         var resource: Button
 
-        private lateinit var listener: ListItemClickListener
-
         init {
             timestamp = itemView.findViewById(R.id.action_timestamp)
             actionType = itemView.findViewById(R.id.action_type)
@@ -115,10 +106,6 @@ class ActionsFeedListAdapter(var context: Context, var list: MutableList<UserAct
             createdBy = itemView.findViewById(R.id.action_created_by)
             resource = itemView.findViewById(R.id.action_resource)
             itemView.setOnClickListener(this)
-        }
-
-        fun setListItemClickListener(listener: ListItemClickListener) {
-            this.listener = listener
         }
 
         fun getItem(position: Int) = list[position]
@@ -129,7 +116,7 @@ class ActionsFeedListAdapter(var context: Context, var list: MutableList<UserAct
             actionType.text = userActionsMap[item.action_type]
             entity.text = supportedEntitiesMap[item.entity_type]
             createdBy.text = item.action_user
-            if (getType(item.entity_type) != null) {
+            if (getType(item.entity_type) != null && item.entity_link.isNotEmpty()) {
                 resource.visibility = View.VISIBLE
                 resource.setOnClickListener {
                     app.repository.getEntity(
@@ -138,7 +125,7 @@ class ActionsFeedListAdapter(var context: Context, var list: MutableList<UserAct
                             EntityParametersContainer(
                                     app = app,
                                     successCb = { entity ->
-                                        mainActivity.navigateToListItem(entity, null)
+                                        mainActivity.navigateToListItem(entity)
                                     },
                                     errorCb = { error -> Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show() }
                             )
@@ -148,7 +135,7 @@ class ActionsFeedListAdapter(var context: Context, var list: MutableList<UserAct
         }
 
         override fun onClick(v: View) {
-            listener.onClick(v, adapterPosition)
+            return
         }
 
     }

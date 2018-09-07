@@ -21,7 +21,6 @@ class HomeFragment : Fragment(){
         mainActivity = activity as MainActivity
     }
 
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.home_fragment, container, false)
         mainActivity.toolbar.title = "Home"

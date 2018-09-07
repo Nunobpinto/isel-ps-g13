@@ -4,7 +4,6 @@ import android.os.Parcel
 import android.os.Parcelable
 
 data class Organization (
-        val organizationId: Int = 0,
         val version: Int = 0,
         val createdBy: String = "",
         val fullName: String = "",
@@ -12,24 +11,20 @@ data class Organization (
         val address: String = "",
         val contact: String = "",
         val website: String = "",
-        val votes: Int = 0,
         val timestamp: String = ""
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
             parcel.readInt(),
-            parcel.readInt(),
             parcel.readString(),
             parcel.readString(),
             parcel.readString(),
             parcel.readString(),
             parcel.readString(),
             parcel.readString(),
-            parcel.readInt(),
             parcel.readString()) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(organizationId)
         parcel.writeInt(version)
         parcel.writeString(createdBy)
         parcel.writeString(fullName)
@@ -37,7 +32,6 @@ data class Organization (
         parcel.writeString(address)
         parcel.writeString(contact)
         parcel.writeString(website)
-        parcel.writeInt(votes)
         parcel.writeString(timestamp)
     }
 
@@ -58,4 +52,5 @@ data class Organization (
     override fun toString(): String {
         return "organization"
     }
+
 }

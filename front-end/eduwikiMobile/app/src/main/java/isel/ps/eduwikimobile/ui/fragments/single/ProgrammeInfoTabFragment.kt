@@ -30,7 +30,7 @@ class ProgrammeInfoTabFragment : Fragment() {
         val programmeTotalCredits = view.findViewById<TextView>(R.id.total_credits)
 
         programmeAcademicDegree.text = programme.academicDegree
-        programmeDuration.text = programme.duration.toString() + " semesters"
+        programmeDuration.text = "${programme.duration} semesters"
         programmeTotalCredits.text = programme.totalCredits.toString()
 
         return view

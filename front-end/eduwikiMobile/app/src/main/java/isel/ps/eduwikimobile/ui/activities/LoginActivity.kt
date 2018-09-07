@@ -25,6 +25,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun login() {
+        btn_login.isEnabled = false
         val username = input_username.text.toString()
         val password = input_password.text.toString()
         if(username.isEmpty()|| password.isEmpty()){
@@ -42,7 +43,10 @@ class LoginActivity : AppCompatActivity() {
                                 val intent = Intent(baseContext, MainActivity::class.java)
                                 startActivity(intent)
                             },
-                            errorCb = { error -> Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                            errorCb = { error ->
+                                btn_login.isEnabled = true
+                                Toast.makeText(app, error.message, Toast.LENGTH_LONG).show()
+                            }
                     )
             )
         }

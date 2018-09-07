@@ -11,6 +11,7 @@ import android.widget.CheckBox
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
+import com.android.volley.TimeoutError
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.controller.AppController
@@ -43,22 +44,18 @@ class HomeworkFragment : Fragment() {
 
         val homeworkName = view.findViewById<TextView>(R.id.homework_details_name)
         val homeworkDueDate = view.findViewById<TextView>(R.id.homework_details_insert_due_date)
-        val homeworkLateDelivery = view.findViewById<Switch>(R.id.homework_details_switch_late_delivery)
-        val homeworkMultipleDeliveries = view.findViewById<Switch>(R.id.homework_details_switch_multiple_deliveries)
+        val homeworkLateDelivery = view.findViewById<TextView>(R.id.homework_details_insert_late_delivery)
+        val homeworkMultipleDeliveries = view.findViewById<TextView>(R.id.homework_details_insert_multiple)
         val homeworkSheet = view.findViewById<TextView>(R.id.homework_details_sheet)
 
         mainActivity.toolbar.displayOptions = ActionBar.DISPLAY_SHOW_TITLE
-        if (courseClass != null) {
-            mainActivity.toolbar.title = courseClass!!.lecturedTerm + "/" + courseClass!!.className + "/" + courseClass!!.courseShortName + "/Homework"
-        } else { //TODO pedido para obter o course
-            mainActivity.toolbar.title = "Homework"
-        }
+        mainActivity.toolbar.title = "${homework.lecturedTerm}/${homework.className}/${homework.courseShortName}/Homework"
         mainActivity.toolbar.subtitle = homework.createdBy
 
         homeworkName.text = homework.homeworkName
         homeworkDueDate.text = homework.dueDate
-        homeworkLateDelivery.isChecked = homework.lateDelivery
-        homeworkMultipleDeliveries.isChecked = homework.multipleDeliveries
+        homeworkLateDelivery.text = if (homework.lateDelivery) "Yes" else "No"
+        homeworkMultipleDeliveries.text = if (homework.multipleDeliveries) "Yes" else "No"
         if (homework.sheetId != null) {
             homeworkSheet.visibility = View.VISIBLE
             homeworkSheet.setOnClickListener {
@@ -69,7 +66,11 @@ class HomeworkFragment : Fragment() {
                                 resourceId = homework.sheetId!!,
                                 app = app,
                                 successCb = { _ -> Toast.makeText(mainActivity, "Download Completed", Toast.LENGTH_LONG).show() },
-                                errorCb = { error -> Toast.makeText(mainActivity, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                                errorCb = { error ->
+                                    if (error.exception is TimeoutError) {
+                                        Toast.makeText(app, "Server isn't responding...", Toast.LENGTH_LONG).show()
+                                    } else Toast.makeText(mainActivity, "Error", Toast.LENGTH_LONG).show()
+                                }
                         )
                 )
             }

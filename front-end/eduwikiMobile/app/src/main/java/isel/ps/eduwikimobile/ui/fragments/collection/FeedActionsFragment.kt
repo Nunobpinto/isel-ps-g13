@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
+import com.android.volley.TimeoutError
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.adapters.ActionsFeedListAdapter
@@ -39,9 +40,12 @@ class FeedActionsFragment : Fragment() {
             actionList.clear()
         }
 
+        if(actionList.size != 0) {
+            actionList.clear()
+        }
+
         view.findViewById<ProgressBar>(R.id.actions_progress_bar).visibility = View.VISIBLE
         getFeedActions()
-
         actionsAdapter = ActionsFeedListAdapter(activity, actionList)
         recyclerView.adapter = actionsAdapter
 
@@ -51,6 +55,12 @@ class FeedActionsFragment : Fragment() {
 
         return view
     }
+
+    override fun onPause() {
+        app.repository.cancelPendingRequests(app)
+        super.onPause()
+    }
+
 
     private fun getFeedActions() {
         app.controller.actionHandler(
@@ -65,7 +75,15 @@ class FeedActionsFragment : Fragment() {
                             recyclerView.visibility = View.VISIBLE
                             actions_progress_bar.visibility = View.GONE
                         },
-                        errorCb = { error -> Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                        errorCb = { error ->
+                            if(error.exception is TimeoutError) {
+                                Toast.makeText(app, "Server isn't responding...", Toast.LENGTH_LONG).show()
+                            }
+                            else {
+                                actions_progress_bar.visibility = View.GONE
+                                Toast.makeText(app, "Error", Toast.LENGTH_LONG).show()
+                            }
+                        }
                 )
         )
     }

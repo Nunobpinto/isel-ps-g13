@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import com.android.volley.TimeoutError
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.controller.AppController
@@ -44,25 +45,19 @@ class WorkAssignmentFragment : Fragment() {
         term = dataComunication.getTerm()
 
         val workAssignmentName = view.findViewById<TextView>(R.id.work_assignment_details_name)
-        val workAssignmentVotes = view.findViewById<TextView>(R.id.work_assignment_votes)
-        val workAssignmentDueDate = view.findViewById<TextView>(R.id.lecture_details_week_day)
-        val workAssignmentIndividual = view.findViewById<TextView>(R.id.work_assignment_individual)
-        val workAssignmentRequiresReport = view.findViewById<TextView>(R.id.insert_lecture_location)
-        val workAssignmentMultipleDeliveries = view.findViewById<TextView>(R.id.lecture_details_duration)
-        val workAssignmentLateDelivery = view.findViewById<TextView>(R.id.lecture_details_begins)
+        val workAssignmentDueDate = view.findViewById<TextView>(R.id.work_assignment_insert_due_date)
+        val workAssignmentIndividual = view.findViewById<TextView>(R.id.work_assignment_insert_individual)
+        val workAssignmentRequiresReport = view.findViewById<TextView>(R.id.work_assignment_insert_report)
+        val workAssignmentMultipleDeliveries = view.findViewById<TextView>(R.id.work_assignment_insert_multiple)
+        val workAssignmentLateDelivery = view.findViewById<TextView>(R.id.work_assignment_insert_late_delivery)
         val workAssignmentSupplement = view.findViewById<Button>(R.id.download_work_assignment_supplement)
         val workAssignmentSheet = view.findViewById<Button>(R.id.download_work_assignment_sheet)
 
         mainActivity.toolbar.displayOptions = ActionBar.DISPLAY_SHOW_TITLE
-        if (course != null && term != null) {
-            mainActivity.toolbar.title = course!!.shortName + "/" + term!!.shortName + "/" + "Work-Assignments"
-        } else { //TODO pedido para obter o course
-            mainActivity.toolbar.title = "Work-Assignments"
-        }
+        mainActivity.toolbar.title = "${workAssignment.courseShortName}/${workAssignment.termShortName}/Work-Assignments"
         mainActivity.toolbar.subtitle = workAssignment.createdBy
 
-        workAssignmentName.text = workAssignment.phase + "Work-Assignment"
-        workAssignmentVotes.text = workAssignment.votes.toString()
+        workAssignmentName.text = "${workAssignment.phase} Work-Assignment"
         workAssignmentDueDate.text = workAssignment.dueDate
         workAssignmentIndividual.text = if (workAssignment.individual) "Yes" else "No"
         workAssignmentRequiresReport.text = if (workAssignment.requiresReport) "Yes" else "No"
@@ -79,7 +74,12 @@ class WorkAssignmentFragment : Fragment() {
                                 resourceId = workAssignment.supplementId!!,
                                 app = app,
                                 successCb = { _ -> Toast.makeText(mainActivity, "Download Completed", Toast.LENGTH_LONG).show() },
-                                errorCb = { error -> Toast.makeText(mainActivity, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                                errorCb = { error ->
+                                    if(error.exception is TimeoutError) {
+                                        Toast.makeText(app, "Server isn't responding...", Toast.LENGTH_LONG).show()
+                                    }
+                                    else Toast.makeText(mainActivity, "Error", Toast.LENGTH_LONG).show()
+                                }
                         )
                 )
             }
@@ -95,12 +95,16 @@ class WorkAssignmentFragment : Fragment() {
                                 resourceId = workAssignment.sheetId!!,
                                 app = app,
                                 successCb = { _ -> Toast.makeText(mainActivity, "Download Completed", Toast.LENGTH_LONG).show() },
-                                errorCb = { error -> Toast.makeText(mainActivity, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                                errorCb = { error ->
+                                    if(error.exception is TimeoutError) {
+                                        Toast.makeText(app, "Server isn't responding...", Toast.LENGTH_LONG).show()
+                                    }
+                                    else Toast.makeText(mainActivity, "Error", Toast.LENGTH_LONG).show()
+                                }
                         )
                 )
             }
         }
-
         return view
     }
 

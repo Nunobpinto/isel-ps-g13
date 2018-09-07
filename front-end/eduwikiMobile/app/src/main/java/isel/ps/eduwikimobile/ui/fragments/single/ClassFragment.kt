@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
+import com.android.volley.TimeoutError
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.adapters.CourseClassListAdapter
@@ -43,11 +44,11 @@ class ClassFragment : Fragment() {
         val bundle: Bundle = arguments
         val klass = bundle.getParcelable<Class>("item_selected")
 
-        if(courseClassList.size > 0) {
+        if(courseClassList.size != 0) {
             courseClassList.clear()
         }
         view.findViewById<ProgressBar>(R.id.courses_progress_bar).visibility = View.VISIBLE
-        fetchAllCoursesOfClass(klass.classId)
+        getAllCoursesOfClass(klass.classId)
 
         courseAdapter = CourseClassListAdapter(context, courseClassList)
         recyclerView.adapter = courseAdapter
@@ -63,7 +64,12 @@ class ClassFragment : Fragment() {
         return view
     }
 
-    private fun fetchAllCoursesOfClass(classId: Int) {
+    override fun onPause() {
+        app.repository.cancelPendingRequests(app)
+        super.onPause()
+    }
+
+    private fun getAllCoursesOfClass(classId: Int) {
         app.controller.actionHandler(
                 AppController.ALL_COURSES_OF_SPECIFIC_CLASS,
                 CoursesOfSpecificClassParametersContainer(
@@ -75,7 +81,15 @@ class ClassFragment : Fragment() {
                             recyclerView.visibility = View.VISIBLE
                             courses_progress_bar.visibility = View.GONE
                         },
-                        errorCb = { error -> Toast.makeText(app, "Error" + error.message, LENGTH_LONG).show() }
+                        errorCb = { error ->
+                            if(error.exception is TimeoutError) {
+                                Toast.makeText(app, "Server isn't responding...", LENGTH_LONG).show()
+                            }
+                            else {
+                                courses_progress_bar.visibility = View.GONE
+                                Toast.makeText(app, "Error", LENGTH_LONG).show()
+                            }
+                        }
                 )
         )
     }

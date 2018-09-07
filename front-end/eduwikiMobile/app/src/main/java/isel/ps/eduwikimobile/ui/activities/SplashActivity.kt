@@ -4,6 +4,8 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
+import android.support.v7.app.ActionBar
+import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.comms.Session
@@ -15,6 +17,7 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        this.supportActionBar!!.hide()
         setContentView(R.layout.activity_splash)
         splash_progressBar.indeterminateDrawable.setColorFilter(
                 Color.BLACK, android.graphics.PorterDuff.Mode.SRC_IN)

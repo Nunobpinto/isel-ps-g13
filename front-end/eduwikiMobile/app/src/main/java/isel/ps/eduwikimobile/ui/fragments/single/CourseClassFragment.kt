@@ -21,10 +21,6 @@ class CourseClassFragment : Fragment() {
 
     lateinit var dataComunication: IDataComunication
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.course_class_details_fragment, container, false)
 

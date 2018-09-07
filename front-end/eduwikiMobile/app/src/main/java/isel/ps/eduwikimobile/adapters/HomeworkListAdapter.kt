@@ -24,7 +24,7 @@ class HomeworkListAdapter(var context: Context, var list: MutableList<Homework>)
 
         newHolder.setListItemClickListener(object : ListItemClickListener {
             override fun onClick(view: View, position: Int) {
-                mainActivity.navigateToListItem(newHolder.getItem(position), null)
+                mainActivity.navigateToListItem(newHolder.getItem(position))
             }
         })
         return newHolder
@@ -38,16 +38,12 @@ class HomeworkListAdapter(var context: Context, var list: MutableList<Homework>)
 
     inner class ListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
-        var homeworkDueDate: TextView
-        var homeworkLateDelivery: Switch
-        var homeworkMultipleDeliveries: Switch
+        var homeworkName: TextView
 
         private lateinit var listener: ListItemClickListener
 
         init {
-            homeworkDueDate = itemView.findViewById(R.id.to_insert_homework_due_date)
-            homeworkLateDelivery = itemView.findViewById(R.id.homework_late_delivey_swich)
-            homeworkMultipleDeliveries = itemView.findViewById(R.id.homework_multiple_deliveries_switch)
+            homeworkName = itemView.findViewById(R.id.homework_name)
             itemView.setOnClickListener(this)
         }
 
@@ -58,10 +54,7 @@ class HomeworkListAdapter(var context: Context, var list: MutableList<Homework>)
         fun getItem(position: Int) = list[position]
 
         fun bindView(position: Int) {
-            val item = list[position]
-            homeworkDueDate.text = item.dueDate
-            homeworkLateDelivery.isChecked = item.lateDelivery
-            homeworkMultipleDeliveries.isChecked = item.multipleDeliveries
+            homeworkName.text = list[position].homeworkName
         }
 
         override fun onClick(v: View) {

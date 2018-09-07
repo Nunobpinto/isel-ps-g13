@@ -19,7 +19,7 @@ class CourseClassListAdapter(var context: Context, var list: MutableList<CourseC
         newHolder.setListItemClickListener(object : ListItemClickListener {
             override fun onClick(view: View, position: Int) {
                 val mainActivity = context as MainActivity
-                mainActivity.navigateToListItem(newHolder.getItem(position), null)
+                mainActivity.navigateToListItem(newHolder.getItem(position))
             }
         })
         return newHolder

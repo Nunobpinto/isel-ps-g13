@@ -10,17 +10,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
+import com.android.volley.TimeoutError
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.adapters.ClassListAdapter
-import isel.ps.eduwikimobile.adapters.CourseClassListAdapter
 import isel.ps.eduwikimobile.controller.AppController
-import isel.ps.eduwikimobile.domain.single.Class
-import isel.ps.eduwikimobile.domain.single.Course
-import isel.ps.eduwikimobile.domain.single.CourseClass
-import isel.ps.eduwikimobile.domain.single.Term
 import isel.ps.eduwikimobile.domain.paramsContainer.ClassCollectionParametersContainer
-import isel.ps.eduwikimobile.domain.paramsContainer.CourseClassCollectionParametersContainer
+import isel.ps.eduwikimobile.domain.single.*
 import isel.ps.eduwikimobile.ui.IDataComunication
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 import kotlinx.android.synthetic.main.class_collection_fragment.*
@@ -32,7 +28,8 @@ class ClassCollectionOfSpecificCourseFragment : Fragment() {
     private lateinit var classesOfSpecificCourseList: MutableList<Class>
     private lateinit var classAdapter: ClassListAdapter
     lateinit var dataComunication: IDataComunication
-    lateinit var course: Course
+    var course: Course? = null
+    var courseProgramme: CourseProgramme? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,17 +41,27 @@ class ClassCollectionOfSpecificCourseFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.class_collection_fragment, container, false)
         recyclerView = view.findViewById(R.id.classes_recycler_view)
-
+        val activity = activity as MainActivity
         val bundle: Bundle = arguments
         val term: Term = bundle.getParcelable("actualTerm")
         dataComunication.setTerm(term)
-        course = dataComunication.getCourse()!!
 
+
+        if (classesOfSpecificCourseList.size != 0) {
+            classesOfSpecificCourseList.clear()
+        }
         view.findViewById<ProgressBar>(R.id.classes_progress_bar).visibility = View.VISIBLE
-        fetchClassesOfCourse(course.courseId, term.termId)
 
-        val activity = activity as MainActivity
-        activity.toolbar.title = course.shortName + "/" + term.shortName + "/" + "Classes"
+        if (dataComunication.getCourse() != null) {
+            course = dataComunication.getCourse()
+            getClassesOfCourse(course!!.courseId, term.termId)
+            activity.toolbar.title = course!!.shortName + "/" + term.shortName + "/" + "Classes"
+        } else {
+            courseProgramme = dataComunication.getCourseProgramme()
+            getClassesOfCourse(courseProgramme!!.courseId, term.termId)
+            activity.toolbar.title = courseProgramme!!.shortName + "/" + term.shortName + "/" + "Classes"
+        }
+
         activity.toolbar.subtitle = ""
 
         classAdapter = ClassListAdapter(context, classesOfSpecificCourseList)
@@ -66,7 +73,7 @@ class ClassCollectionOfSpecificCourseFragment : Fragment() {
         return view
     }
 
-    private fun fetchClassesOfCourse(courseId: Int, termId: Int) {
+    private fun getClassesOfCourse(courseId: Int, termId: Int) {
         app.controller.actionHandler(
                 AppController.ALL_CLASSES_OF_SPECIFIC_COURSE,
                 ClassCollectionParametersContainer(
@@ -79,9 +86,21 @@ class ClassCollectionOfSpecificCourseFragment : Fragment() {
                             recyclerView.visibility = View.VISIBLE
                             classes_progress_bar.visibility = View.GONE
                         },
-                        errorCb = { error -> Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                        errorCb = { error ->
+                            if (error.exception is TimeoutError) {
+                                Toast.makeText(app, "Server isn't responding...", Toast.LENGTH_LONG).show()
+                            } else {
+                                classes_progress_bar.visibility = View.GONE
+                                Toast.makeText(app, "Error", Toast.LENGTH_LONG).show()
+                            }
+                        }
                 )
         )
+    }
+
+    override fun onPause() {
+        app.repository.cancelPendingRequests(app)
+        super.onPause()
     }
 
     override fun onAttach(context: Context?) {
