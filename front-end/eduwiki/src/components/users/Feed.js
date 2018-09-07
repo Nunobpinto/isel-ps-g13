@@ -33,7 +33,7 @@ export default class extends React.Component {
               description={item.timestamp}
             />
             {
-              !this.parseEntityType(item.action_type).includes('staged') &&
+              !this.parseEntityType(item.entity_type).includes('staged') &&
               !this.parseEntityType(item.entity_type).includes('report') &&
               <a href={`/${item.entity_link}`}>See it's page</a>
             }

@@ -28,11 +28,11 @@ export default class extends React.Component {
           {React.cloneElement(<Navbar />, { user: this.state.user })}
         </Header>
         <Content className='layout'>
-          <div style={{ background: '#fff', padding: 80, minHeight: 100 }}>
+          <div style={{ background: '#fff', padding: 90, minHeight: 200 }}>
             {childrenWithProps}
           </div>
         </Content>
-        <Footer style={{ textAlign: 'center' }}>
+        <Footer className='footer' style={{ textAlign: 'center' }}>
             Eduwiki - Final Project 2018
         </Footer>
       </Layout>

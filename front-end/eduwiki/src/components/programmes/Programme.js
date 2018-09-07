@@ -342,7 +342,7 @@ class Programme extends React.Component {
                 progError: undefined,
                 courseError: undefined,
                 courses: courses.courseProgrammeList,
-                canBeFollowed: (userProgramme.programmeId !== programme.programmeId),
+                canBeFollowed: false,
                 userFollowing: (userProgramme.programmeId === programme.programmeId),
                 loadingProgramme: false
               }))
