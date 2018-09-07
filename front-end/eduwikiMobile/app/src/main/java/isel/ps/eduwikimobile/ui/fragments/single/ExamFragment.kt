@@ -26,7 +26,6 @@ class ExamFragment : Fragment() {
     private lateinit var dataComunication: IDataComunication
     private lateinit var app: EduWikiApplication
     private lateinit var exam: Exam
-    private var course: Course? = null
     private var term: Term? = null
     private lateinit var mainActivity: MainActivity
 
@@ -40,7 +39,6 @@ class ExamFragment : Fragment() {
         val view: View = inflater.inflate(R.layout.exam_details_fragment, container, false)
         val bundle: Bundle = arguments
         exam = bundle.getParcelable("item_selected")
-        course = dataComunication.getCourse()
         term = dataComunication.getTerm()
 
         val examName = view.findViewById<TextView>(R.id.exam_details_name)
