@@ -1,6 +1,6 @@
 import React from 'react'
 import fetcher from '../fetcher'
-import { message, List, Card, Row, Col, Button, Icon } from 'antd'
+import { message, List, Card, Row, Col, Button, Icon, Spin } from 'antd'
 import Layout from './Layout'
 import config from '../config'
 
@@ -27,6 +27,7 @@ export default class extends React.Component {
     fetcher(uri, options)
       .then(_ => {
         message.success('Approved Tenant')
+        this.props.history.push('/admin')
         this.setState({
           approve: false
         })
@@ -56,6 +57,7 @@ export default class extends React.Component {
     fetcher(uri, options)
       .then(_ => {
         message.success('Rejected Tenant')
+        this.props.history.push('/admin')
         this.setState({
           reject: false
         })
@@ -75,6 +77,8 @@ export default class extends React.Component {
     return (
       <Layout history={this.props.history} auth>
         <h2>{this.state.pending.fullName} - {this.state.pending.timestamp}</h2>
+        {this.state.approve && <Spin tip='Submitting the Approval of this tenant' />}
+        {this.state.reject && <Spin tip='Submitting the Reject of this tenant' />}
         <Row gutter={16}>
           <Col span={8}>
             <Card title='Address' loading={this.state.loading}>

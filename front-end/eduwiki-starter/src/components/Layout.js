@@ -68,11 +68,11 @@ export default(props) => (
       </Row>
     </Header>
     <Content>
-      <div style={{ background: '#fff', padding: 24, minHeight: 500 }}>
+      <div style={{ background: '#fff', padding: 80, minHeight: 100 }}>
         {props.children}
       </div>
     </Content>
-    <Footer style={{ textAlign: 'center' }}>
+    <Footer className='footer' style={{ textAlign: 'center' }}>
             Eduwiki - Final Project 2018
     </Footer>
   </Layout>

@@ -1,5 +1,5 @@
 import React from 'react'
-import {Form, Input, Button, message} from 'antd'
+import {Form, Input, Button, message, Spin} from 'antd'
 import fetcher from '../fetcher'
 
 const { TextArea } = Input
@@ -138,99 +138,105 @@ class TenantCreator extends React.Component {
       }
     }
     return (
-      <Form onSubmit={this.handleSubmit}>
-        <p>
-          Tell us about your organization :
-        </p>
-        <Form.Item
-          {...formItemLayout}
-          label='Email Pattern'
-        >
-          {getFieldDecorator('emailPattern', {
-            rules: [{
-              required: true, message: 'Please input the Email Pattern of your organization'
-            }]
-          })(
-            <Input />
-          )}
-        </Form.Item>
-        <Form.Item
-          {...formItemLayout}
-          label='Organization Full Name'
-        >
-          {getFieldDecorator('fullName', {
-            rules: [{ required: true, message: 'Please tell us your Organization Full Name', whitespace: true }]
-          })(
-            <Input />
-          )}
-        </Form.Item>
-        <Form.Item
-          {...formItemLayout}
-          label='Organization Short Name'
-        >
-          {getFieldDecorator('shortName', {
-            rules: [{ required: true, message: 'Please tell us your Organization Short Name', whitespace: true }]
-          })(
-            <Input />
-          )}
-        </Form.Item>
-        <Form.Item
-          {...formItemLayout}
-          label='Address'
-        >
-          {getFieldDecorator('address', {
-            rules: [{ required: true, message: 'Please tell us your Organization Address', whitespace: true }]
-          })(
-            <Input />
-          )}
-        </Form.Item>
-        <Form.Item
-          {...formItemLayout}
-          label='Contact'
-        >
-          {getFieldDecorator('contact', {
-            rules: [{ required: true, message: 'Please tell us your Organization Contact', whitespace: true }]
-          })(
-            <Input />
-          )}
-        </Form.Item>
-        <Form.Item
-          {...formItemLayout}
-          label='Organization Website'
-        >
-          {getFieldDecorator('website', {
-            rules: [{ required: true, message: 'Please tell us your Organization Website', whitespace: true }]
-          })(
-            <Input />
-          )}
-        </Form.Item>
-        <Form.Item
-          {...formItemLayout}
-          label='Describe your Organization'
-        >
-          {getFieldDecorator('organizationSummary', {
-            rules: [{ required: true, message: 'Please tell us about your Organization', whitespace: true }]
-          })(
-            <TextArea />
-          )}
-        </Form.Item>
-        <p>
-          Now please gather 2 more people and write here their information,
-              so that all of you become administrators in your newly tenant created for your organization.
-        </p>
-        <p>
-              Describe your own information, you'll be the Principal user, the devs will reach you for every information they need
-        </p>
-        <h3>Principal</h3>
-        {this.userForm('principal', getFieldDecorator)}
-        <h3>Other User 1</h3>
-        {this.userForm('user1', getFieldDecorator)}
-        <h3>Other User 2</h3>
-        {this.userForm('user2', getFieldDecorator)}
-        <Form.Item {...tailFormItemLayout}>
-          <Button type='primary' htmlType='submit'>Submit</Button>
-        </Form.Item>
-      </Form>
+      <div>
+        {this.state.submit
+          ? <Spin tip='Submting your request' />
+          : <Form onSubmit={this.handleSubmit}>
+            <h1>Create a Tenant for your Academic Organization Here</h1>
+            <p>
+        Tell us about your organization :
+            </p>
+            <Form.Item
+              {...formItemLayout}
+              label='Email Pattern'
+            >
+              {getFieldDecorator('emailPattern', {
+                rules: [{
+                  required: true, message: 'Please input the Email Pattern of your organization'
+                }]
+              })(
+                <Input />
+              )}
+            </Form.Item>
+            <Form.Item
+              {...formItemLayout}
+              label='Organization Full Name'
+            >
+              {getFieldDecorator('fullName', {
+                rules: [{ required: true, message: 'Please tell us your Organization Full Name', whitespace: true }]
+              })(
+                <Input />
+              )}
+            </Form.Item>
+            <Form.Item
+              {...formItemLayout}
+              label='Organization Short Name'
+            >
+              {getFieldDecorator('shortName', {
+                rules: [{ required: true, message: 'Please tell us your Organization Short Name', whitespace: true }]
+              })(
+                <Input />
+              )}
+            </Form.Item>
+            <Form.Item
+              {...formItemLayout}
+              label='Address'
+            >
+              {getFieldDecorator('address', {
+                rules: [{ required: true, message: 'Please tell us your Organization Address', whitespace: true }]
+              })(
+                <Input />
+              )}
+            </Form.Item>
+            <Form.Item
+              {...formItemLayout}
+              label='Contact'
+            >
+              {getFieldDecorator('contact', {
+                rules: [{ required: true, message: 'Please tell us your Organization Contact', whitespace: true }]
+              })(
+                <Input />
+              )}
+            </Form.Item>
+            <Form.Item
+              {...formItemLayout}
+              label='Organization Website'
+            >
+              {getFieldDecorator('website', {
+                rules: [{ required: true, message: 'Please tell us your Organization Website', whitespace: true }]
+              })(
+                <Input />
+              )}
+            </Form.Item>
+            <Form.Item
+              {...formItemLayout}
+              label='Describe your Organization'
+            >
+              {getFieldDecorator('organizationSummary', {
+                rules: [{ required: true, message: 'Please tell us about your Organization', whitespace: true }]
+              })(
+                <TextArea />
+              )}
+            </Form.Item>
+            <p>
+        Now please gather 2 more people and write here their information,
+            so that all of you become administrators in your newly tenant created for your organization.
+            </p>
+            <p>
+            Describe your own information, you'll be the Principal user, the devs will reach you for every information they need
+            </p>
+            <h3>Principal</h3>
+            {this.userForm('principal', getFieldDecorator)}
+            <h3>Other User 1</h3>
+            {this.userForm('user1', getFieldDecorator)}
+            <h3>Other User 2</h3>
+            {this.userForm('user2', getFieldDecorator)}
+            <Form.Item {...tailFormItemLayout}>
+              <Button type='primary' htmlType='submit'>Submit</Button>
+            </Form.Item>
+          </Form>
+        }
+      </div>
     )
   }
   componentDidUpdate () {
