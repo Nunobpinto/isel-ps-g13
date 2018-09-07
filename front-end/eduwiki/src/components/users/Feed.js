@@ -2,6 +2,7 @@ import React from 'react'
 import { List, Avatar, message } from 'antd'
 import fetcher from '../../fetcher'
 import config from '../../config'
+import timestampParser from '../../timestampParser'
 
 export default class extends React.Component {
   constructor (props) {
@@ -30,7 +31,7 @@ export default class extends React.Component {
             <List.Item.Meta
               avatar={<Avatar src='defaultUser.png' />}
               title={`${item.action_user} ${this.parseActionType(item.action_type)} ${this.parseEntityType(item.entity_type)}`}
-              description={item.timestamp}
+              description={timestampParser(item.timestamp)}
             />
             {
               !this.parseEntityType(item.entity_type).includes('staged') &&
@@ -93,7 +94,7 @@ export default class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
-        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
+        'tenant-uuid': config.TENANT_UUID
       }
     }
     fetcher(uri, options)

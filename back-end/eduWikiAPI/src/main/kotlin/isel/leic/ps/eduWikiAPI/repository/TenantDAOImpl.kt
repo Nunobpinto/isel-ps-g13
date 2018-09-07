@@ -49,7 +49,8 @@ class TenantDAOImpl : TenantDAO {
         const val PENDING_TENANTS_CREATOR_IS_PRINCIPAL = "principal_user"
         // REGISTERED_USERS FIELDS
         const val REGISTERED_USER_USERNAME = "user_username"
-        const val REGISTERED_TENANT_UUID = "tenant_uuid"
+        const val REGISTERED_USER_TENANT_UUID = "tenant_uuid"
+        const val REGISTERED_USER_CONFIRMED = "user_confirmed"
     }
 
     @Autowired
@@ -70,6 +71,9 @@ class TenantDAOImpl : TenantDAO {
     override fun getRegisteredUserByUsername(username: String): Optional<RegisteredUser> =
             jdbi.open().attach(TenantDAOJdbi::class.java).getRegisteredUserByUsername(username)
 
+    override fun confirmUser(username: String): RegisteredUser =
+            jdbi.open().attach(TenantDAOJdbi::class.java).confirmUser(username)
+
     override fun findPendingTenantById(tenantUuid: String): Optional<PendingTenantDetails> =
             jdbi.open().attach(TenantDAOJdbi::class.java).findPendingTenantById(tenantUuid)
 
@@ -87,6 +91,19 @@ class TenantDAOImpl : TenantDAO {
 
     override fun createActiveTenantEntry(dev: String, timestamp: Timestamp, pendingTenant: PendingTenantDetails): TenantDetails =
             jdbi.open().attach(TenantDAOJdbi::class.java).createActiveTenantEntry(dev, timestamp, pendingTenant)
+
+    override fun registerUser(registeredUser: RegisteredUser): RegisteredUser =
+            jdbi.open().attach(TenantDAOJdbi::class.java).registerUser(registeredUser)
+
+    override fun bulkRegisterUser(registeredUsers: List<RegisteredUser>): List<RegisteredUser> =
+            jdbi.open().attach(TenantDAOJdbi::class.java).bulkRegisterUser(registeredUsers)
+
+    override fun deleteRegisteredUser(username: String): Int =
+            jdbi.open().attach(TenantDAOJdbi::class.java).deleteRegisteredUser(username)
+
+    override fun getActiveTenantByUuid(tenantUuid: String): Optional<TenantDetails> =
+            jdbi.open().attach(TenantDAOJdbi::class.java).getActiveTenantByUuid(tenantUuid)
+
 
     override fun createTenantBasedOnPendingTenant(schema: String) {
         jdbi.open().createScript(ClasspathSqlLocator.getResourceOnClasspath("scripts/eduwiki_create_tenant.sql"))
@@ -150,6 +167,12 @@ class TenantDAOImpl : TenantDAO {
         @SqlQuery("SELECT * FROM $MASTER_SCHEMA.$REGISTERED_USERS_TABLE WHERE $REGISTERED_USER_USERNAME = :username")
         override fun getRegisteredUserByUsername(username: String): Optional<RegisteredUser>
 
+        @SqlUpdate("UPDATE $MASTER_SCHEMA.$REGISTERED_USERS_TABLE " +
+                "SET $REGISTERED_USER_CONFIRMED = true " +
+                "WHERE $REGISTERED_USER_USERNAME = :username")
+        @GetGeneratedKeys
+        override fun confirmUser(username: String): RegisteredUser
+
         @SqlQuery("SELECT * FROM $MASTER_SCHEMA.$PENDING_TENANTS_TABLE WHERE $PENDING_TENANTS_UUID = :tenantUuid")
         override fun findPendingTenantById(tenantUuid: String): Optional<PendingTenantDetails>
 
@@ -182,5 +205,30 @@ class TenantDAOImpl : TenantDAO {
         @GetGeneratedKeys
         override fun createActiveTenantEntry(dev: String, timestamp: Timestamp, pendingTenant: PendingTenantDetails): TenantDetails
 
+        @SqlUpdate(
+                "INSERT INTO $MASTER_SCHEMA.$REGISTERED_USERS_TABLE (" +
+                        "$REGISTERED_USER_USERNAME, " +
+                        "$REGISTERED_USER_TENANT_UUID, " +
+                        "$REGISTERED_USER_CONFIRMED) " +
+                        "VALUES (:registeredUser.username, :registeredUser.tenantUuid, :registeredUser.confirmed)"
+        )
+        @GetGeneratedKeys
+        override fun registerUser(registeredUser: RegisteredUser): RegisteredUser
+
+        @SqlUpdate("DELETE FROM $MASTER_SCHEMA.$REGISTERED_USERS_TABLE WHERE $REGISTERED_USER_USERNAME = :username")
+        override fun deleteRegisteredUser(username: String): Int
+
+        @SqlQuery("SELECT * FROM $MASTER_SCHEMA.$TENANTS_TABLE WHERE $TENANTS_UUID = :tenantUuid")
+        override fun getActiveTenantByUuid(tenantUuid: String): Optional<TenantDetails>
+
+        @SqlBatch(
+                "INSERT INTO $MASTER_SCHEMA.$REGISTERED_USERS_TABLE (" +
+                        "$REGISTERED_USER_USERNAME, " +
+                        "$REGISTERED_USER_TENANT_UUID, " +
+                        "$REGISTERED_USER_CONFIRMED) " +
+                        "VALUES (:registeredUser.username, :registeredUser.tenantUuid, :registeredUser.confirmed)"
+        )
+        @GetGeneratedKeys
+        override fun bulkRegisterUser(@BindBean("registeredUser") registeredUsers: List<RegisteredUser>): List<RegisteredUser>
     }
 }

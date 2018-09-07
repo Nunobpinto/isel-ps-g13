@@ -44,7 +44,7 @@ export default class extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Authorization': 'Basic ' + auth,
-        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
+        'tenant-uuid': config.TENANT_UUID
       }
     }
     fetcher(config.API_PATH + '/user', options)

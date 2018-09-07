@@ -118,8 +118,6 @@ DROP TABLE IF EXISTS isel.organization;
 
 DROP TABLE IF EXISTS isel.user_account;
 
-DROP TABLE IF EXISTS isel.validation_token;
-
 --------------------------
 -- Drop Auxiliary Types
 --------------------------

@@ -22,19 +22,14 @@ import java.util.*
 @RunWith(SpringJUnit4ClassRunner::class)
 @SpringBootTest(classes = [EduWikiApiApplication::class])
 @SqlGroup(
-        (Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = ["classpath:createMainTablesDb.sql", "classpath:insertMainTables.sql"])),
-        (Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = ["classpath:dropMainTablesDb.sql"]))
+        (Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = ["classpath:createMasterTables.sql", "classpath:insertMasterTables.sql"])),
+        (Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = ["classpath:dropMasterTables.sql"]))
 )
 @Transactional
 class TokenDAOImplTest {
 
     @Autowired
     lateinit var tokenDAO: TokenDAO
-
-    @Before
-    fun init() {
-        TenantContext.setTenantSchema("isel")
-    }
 
     @Test
     fun saveToken() {
@@ -64,11 +59,6 @@ class TokenDAOImplTest {
     fun deleteToken() {
         val rowsAffected = tokenDAO.deleteToken(UUID.fromString("04805b5d-e089-48e0-b7da-68a6321a17ff"))
         assertEquals(1, rowsAffected)
-    }
-
-    @After
-    fun cleanup() {
-        TenantContext.resetTenantSchema()
     }
 
 }

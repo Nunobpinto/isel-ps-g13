@@ -44,7 +44,6 @@ class UserDAOImplTest {
         assertEquals("1234", user.password)
         assertEquals("João", user.givenName)
         assertEquals("Gameiro", user.familyName)
-        assertEquals(true, user.confirmed)
         assertEquals("jg@isel.pt", user.email)
         assertEquals(false, user.locked)
     }
@@ -57,7 +56,6 @@ class UserDAOImplTest {
                         password = "abcd",
                         givenName = "bob",
                         familyName = "simons",
-                        confirmed = true,
                         email = "bob@isel.pt",
                         locked = false
                 )
@@ -66,27 +64,8 @@ class UserDAOImplTest {
         assertEquals("abcd", user.password)
         assertEquals("bob", user.givenName)
         assertEquals("simons", user.familyName)
-        assertEquals(true, user.confirmed)
         assertEquals("bob@isel.pt", user.email)
         assertEquals(false, user.locked)
-    }
-
-    @Test
-    fun confirmUser() {
-        val user = userDAO.createUser(
-                User(
-                        username = "bob",
-                        password = "abcd",
-                        givenName = "bob",
-                        familyName = "simons",
-                        confirmed = false,
-                        email = "bob@isel.pt",
-                        locked = false
-                )
-        )
-        assertEquals(false, user.confirmed)
-        val confirmedUser = userDAO.confirmUser(user.username)
-        assertEquals(true, confirmedUser.confirmed)
     }
 
     @Test
@@ -276,7 +255,6 @@ class UserDAOImplTest {
         assertEquals("1234", user.password)
         assertEquals("Bruno", user.givenName)
         assertEquals("Filipe", user.familyName)
-        assertEquals(true, user.confirmed)
         assertEquals("bruno@isel.pt", user.email)
         assertEquals(false, user.locked)
     }

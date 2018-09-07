@@ -12,13 +12,12 @@ import isel.leic.ps.eduWikiAPI.domain.outputModel.single.UserOutputModel
 import isel.leic.ps.eduWikiAPI.domain.outputModel.single.reports.UserReportOutputModel
 
 
-fun toUser(inputModel: UserInputModel) = User(
+fun toUser(inputModel: UserInputModel, encodedPassword: String) = User(
         username = inputModel.username,
         familyName = inputModel.familyName,
         givenName = inputModel.givenName,
         email = inputModel.email,
-        password = inputModel.password, //todo hash password before getting here
-        confirmed = false
+        password = encodedPassword
 )
 
 fun toUserReport(username: String, reportedBy: String, reportInput: UserReportInputModel) = UserReport(
@@ -32,7 +31,6 @@ fun toAuthUserOutputModel(user: User, reputation: Reputation) = AuthUserOutputMo
         givenName = user.givenName,
         familyName = user.familyName,
         email = user.email,
-        confirmed = user.confirmed,
         reputation = toReputationOutputModel(reputation)
 )
 

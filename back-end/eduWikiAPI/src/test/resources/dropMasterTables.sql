@@ -13,3 +13,5 @@ DROP TABLE IF EXISTS master.pending_tenants;
 DROP TABLE IF EXISTS master.reputation;
 
 DROP TABLE IF EXISTS master.user_account;
+
+DROP TABLE IF EXISTS master.validation_token;

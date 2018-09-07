@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 
+/**
+ * Catches exceptions thrown in Service layer and throws Problem+Json errors
+ */
 @RestControllerAdvice
 class CustomExceptionHandler : ResponseEntityExceptionHandler() {
 

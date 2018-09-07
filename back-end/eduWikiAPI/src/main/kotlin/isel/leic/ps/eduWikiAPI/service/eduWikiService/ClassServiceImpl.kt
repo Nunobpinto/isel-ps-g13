@@ -257,7 +257,6 @@ class ClassServiceImpl : ClassService {
     }
 
     override fun updateClassFromReport(classId: Int, reportId: Int, principal: Principal): ClassOutputModel {
-        //TODO: Add option to delete Class
         val klass = classDAO.getSpecificClass(classId)
                 .orElseThrow { NotFoundException("No class found", "Try other ID") }
         val report = classDAO.getSpecificReportFromClass(classId, reportId)
@@ -330,7 +329,6 @@ class ClassServiceImpl : ClassService {
     }
 
     override fun createClassFromStaged(stageId: Int, principal: Principal): ClassOutputModel {
-        //TODO: Don't delete stage, flag it!
         val classStaged = classDAO.getSpecificStagedClass(stageId)
                 .orElseThrow { NotFoundException("No class stage found", "Try other ID") }
         resolveApproval(principal.name, classStaged.createdBy)
@@ -638,30 +636,6 @@ class ClassServiceImpl : ClassService {
                 getTerm(termId),
                 getClass(classId)
         )
-    }
-
-    override fun addCourseInClassFromStaged(classId: Int, stageId: Int, principal: Principal): CourseClassOutputModel {
-        val klass = classDAO.getSpecificClass(classId)
-                .orElseThrow { NotFoundException("No class found", "Try other id") }
-        val courseClassStage = classDAO.getSpecificStagedCourseInClass(classId, stageId)
-                .orElseThrow { NotFoundException("No staged course in class found", "Try other staged id") }
-        resolveApproval(principal.name, courseClassStage.createdBy)
-
-        val created = classDAO.addCourseToClass(stagedToCourseClass(courseClassStage))
-        val term = getTerm(klass.termId)
-        val course = courseDAO.getSpecificCourse(created.classId)
-                .orElseThrow { NotFoundException("No course found", "Try other id") }
-        publisher.publishEvent(ResourceApprovedEvent(
-                principal.name,
-                ActionType.APPROVE_STAGE,
-                COURSE_CLASS_STAGE_TABLE,
-                courseClassStage.logId,
-                courseClassStage.createdBy,
-                ActionType.CREATE,
-                COURSE_CLASS_TABLE,
-                created.logId
-        ))
-        return toCourseClassOutputModel(course, klass, created, term)
     }
 
     override fun voteOnStagedCourseInClass(classId: Int, stageId: Int, vote: VoteInputModel, principal: Principal): Int {

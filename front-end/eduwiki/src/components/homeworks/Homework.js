@@ -101,13 +101,88 @@ export default class extends React.Component {
       </Layout>
     )
   }
+  voteUp () {
+    const voteInput = {
+      vote: 'Up'
+    }
+    const url = `${config.API_PATH}/classes/${this.props.match.params.classId}/courses/${this.props.match.params.courseId}/homeworks/${this.props.match.params.homeworkId}/vote`
+    const body = {
+      method: 'POST',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
+        'tenant-uuid': config.TENANT_UUID
+      },
+      body: JSON.stringify(voteInput)
+    }
+    fetcher(url, body)
+      .then(_ => this.setState(prevState => {
+        prevState.homework.votes += 1
+        message.success('Successfully voted!!')
+        return ({
+          voteUp: false,
+          homework: prevState.homework
+        })
+      }))
+      .catch(error => {
+        if (error.detail) {
+          message.error(error.detail)
+        } else {
+          message.error('Error processing your vote!!')
+        }
+        this.setState({
+          voteUp: false
+        })
+      })
+  }
+  voteDown () {
+    const voteInput = {
+      vote: 'Down'
+    }
+    const url = `${config.API_PATH}/classes/${this.props.match.params.classId}/courses/${this.props.match.params.courseId}/homeworks/${this.props.match.params.homeworkId}/vote`
+    const body = {
+      method: 'POST',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
+        'tenant-uuid': config.TENANT_UUID
+      },
+      body: JSON.stringify(voteInput)
+    }
+    fetcher(url, body)
+      .then(_ => this.setState(prevState => {
+        prevState.homework.votes -= 1
+        message.success('Successfully voted!!')
+        return ({
+          voteDown: false,
+          homework: prevState.homework
+        })
+      }))
+      .catch(error => {
+        if (error.detail) {
+          message.error(error.detail)
+        } else {
+          message.error('Error processing your vote!!')
+        }
+        this.setState({voteDown: false})
+      })
+  }
+  componentDidUpdate () {
+    if (this.state.voteUp) {
+      this.voteUp()
+    } else if (this.state.voteDown) {
+      this.voteDown()
+    }
+  }
   componentDidMount () {
     const uri = `${config.API_PATH}/classes/${this.props.match.params.classId}/courses/${this.props.match.params.courseId}/homeworks/${this.props.match.params.homeworkId}`
     const header = {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
-        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
+        'tenant-uuid': config.TENANT_UUID
       }
     }
     fetcher(uri, header)

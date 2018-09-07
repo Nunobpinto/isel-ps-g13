@@ -66,9 +66,6 @@ class AuthUserController {
      * All DELETE Routes
      */
 
-    @DeleteMapping
-    fun deleteAuthUser(principal: Principal) = userService.deleteUser(principal)
-
     @DeleteMapping("/courses")
     fun deleteAllCoursesOfUser(principal: Principal) = userService.deleteAllCoursesOfUser(principal)
 

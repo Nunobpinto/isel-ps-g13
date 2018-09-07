@@ -1,5 +1,6 @@
 package isel.leic.ps.eduWikiAPI.service.eduWikiService
 
+import isel.leic.ps.eduWikiAPI.configuration.persistence.TenantContext
 import isel.leic.ps.eduWikiAPI.configuration.security.authorization.ReputationRole
 import isel.leic.ps.eduWikiAPI.configuration.security.authorization.ReputationRole.*
 import isel.leic.ps.eduWikiAPI.domain.inputModel.UserCourseClassInputModel
@@ -106,7 +107,7 @@ class UserServiceImpl : UserService {
     )
 
     @Autowired
-    lateinit var eventPublisher: ApplicationEventPublisher
+    lateinit var passwordEncoder: PasswordEncoder
     @Autowired
     lateinit var reputationDAO: ReputationDAO
     @Autowired
@@ -135,8 +136,6 @@ class UserServiceImpl : UserService {
     lateinit var emailService: EmailService
     @Autowired
     lateinit var tenantDAO: TenantDAO
-    @Autowired
-    lateinit var passwordEncoder: PasswordEncoder
 
     override fun getAuthenticatedUser(principal: Principal): AuthUserOutputModel =
             toAuthUserOutputModel(
@@ -152,7 +151,7 @@ class UserServiceImpl : UserService {
 
     override fun saveUser(inputUser: UserInputModel): AuthUserOutputModel {
         // Get current tenant
-        val tenantDetails = tenantDAO.getCurrentTenantDetails()//TODO implement getting current tenant
+        val tenantDetails = tenantDAO.getCurrentTenantDetails()
                 .orElseThrow { BadRequestException("Bad tenant", "You must provide a valid tenant to register yourself in to") }
         // Check if email is valid
         if(! isEmailValid(inputUser.email) || ! inputUser.email.endsWith(tenantDetails.emailPattern))
@@ -164,28 +163,28 @@ class UserServiceImpl : UserService {
         if(userDAO.getUserByEmail(inputUser.email).isPresent)
             throw ConflictException("Email already taken", "Please choose another email")
 
-        val user = userDAO.createUser(toUser(inputUser))
+        // Create user
+        val user = userDAO.createUser(toUser(inputUser, passwordEncoder.encode(inputUser.password)))
         val reputation = reputationDAO.createUserReputation(Reputation(
-                role = ROLE_UNCONFIRMED.name,
+                role = ROLE_BEGINNER.name,
+                points = ROLE_BEGINNER.minPoints,
                 username = user.username
+        ))
+        tenantDAO.registerUser(RegisteredUser(
+                username = user.username,
+                tenantUuid = tenantDetails.uuid
         ))
         // Send confirmation email
         val token = ValidationToken(token = UUID.randomUUID())
         tokenDAO.saveToken(token)
-        val message =
-                "Please follow this link to confirm your account " +
-                        "" + "http://localhost:8080/users/" + user.username + "/confirm/" + token.token
-        emailService.sendSimpleMessage(
-                to = user.email,
-                subject = "Verify your Eduwiki account",
-                text = message
-        )
+        emailService.sendConfirmAccountEmail(user, token)
+
         return toAuthUserOutputModel(user, reputation)
     }
 
     override fun confirmUser(username: String, token: UUID): String {
         // Check if user exists
-        val user = userDAO.getUser(username)
+        val user = tenantDAO.getRegisteredUserByUsername(username)
                 .orElseThrow { NotFoundException("User not found", "Try another username") }
         // Check if user already is confirmed
         if(user.confirmed)
@@ -198,18 +197,19 @@ class UserServiceImpl : UserService {
         // Check if user confirmed his account in time
         tokenDAO.deleteToken(token)
         if(currentTimestamp.after(validationToken.date)) {
+            tenantDAO.deleteRegisteredUser(user.username)
+            val tenantDetails = tenantDAO.getActiveTenantByUuid(user.tenantUuid)
+                    .orElseThrow { BadRequestException("Bad tenant! Contact developer!", "There was a problem resolving your tenant") }
+            TenantContext.setTenantSchema(tenantDetails.schemaName)
             userDAO.deleteUser(username)
-            throw ExceededValidationException()
+            TenantContext.resetTenantSchema()
+            return "Time limit exceeded"
+        } else {
+            // Create user
+            tenantDAO.confirmUser(user.username)
+            return "User Confirmed!!"
         }
-
-        // Create user
-        val role = reputationDAO.updateUserRole(username, ROLE_BEGINNER.minPoints, ROLE_BEGINNER.name)
-        val changedUser = userDAO.confirmUser(user.username)
-        return "User Confirmed!!"
     }
-
-    override fun deleteUser(principal: Principal): Int =
-            userDAO.deleteUser(principal.name)
 
     override fun getCoursesOfUser(principal: Principal): CourseCollectionOutputModel {
         val courses = userDAO.getCoursesOfUser(principal.name)

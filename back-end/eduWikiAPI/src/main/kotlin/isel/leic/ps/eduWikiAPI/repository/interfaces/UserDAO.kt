@@ -10,8 +10,6 @@ interface UserDAO {
 
     fun createUser(user: User): User
 
-    fun confirmUser(username: String): User
-
     fun getCoursesOfUser(username: String): List<Course>
 
     fun getClassesOfUser(username: String): List<UserCourseClass>

@@ -238,13 +238,6 @@ class ClassController {
             principal: Principal
     ) = classService.createStagingCourseInClass(classId, courseId, principal)
 
-    @PostMapping("/{classId}/courses/stage/{stageId}")
-    fun createCourseClassFromStage(
-            @PathVariable classId: Int,
-            @PathVariable stageId: Int,
-            principal: Principal
-    ) = classService.addCourseInClassFromStaged(classId, stageId, principal)
-
     @PostMapping("/{classId}/courses/stage/{stageId}/vote")
     fun voteOnStagedCourseInClassFromStage(
             @PathVariable classId: Int,

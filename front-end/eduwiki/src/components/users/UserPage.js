@@ -27,7 +27,7 @@ export default class extends React.Component {
             history={this.props.history} />
         </div>
         <div className='centre_div'>
-          <h1>Welcome to your own page at Eduwiki</h1>
+          <h1>Feed</h1>
           <Feed />
         </div>
         <div className='right_side'>

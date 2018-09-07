@@ -8,7 +8,7 @@ insert into isel.organization_version(organization_version, created_by, organiza
   values(1, 'ze', 'Instituto Superior de Engenharia de Lisboa', 'ISEL', 'Rua Emídio Navarro', '218 317 000', 'https://www.isel.pt/', current_timestamp);
 
 insert into isel.organization_report (organization_full_name, organization_short_name, organization_address, organization_contact, organization_website, reported_by, time_stamp, votes)
-  VALUES('Instituto Superior de Engenharia de Torres Novas', 'ISETN', null, null, null, 'ze', current_timestamp, 2);
+  VALUES('Instituo Superior de Engenharia de Torres Novas', 'ISETN', null, null, null, 'ze', current_timestamp, 2);
 
 -- Programmes Insert
 insert into isel.programme (created_by, programme_full_name, programme_short_name, programme_academic_degree, programme_total_credits, programme_duration, time_stamp)
@@ -132,10 +132,52 @@ insert into isel.course_programme_report(course_id, programme_id, course_lecture
 -- Terms Insert
 
 insert into isel.term (term_short_name, term_year, term_type, time_stamp)
-  values ('1718v',2018,'SUMMER',current_timestamp);
+  values ('1718v',2017,'SUMMER',current_timestamp);
 
 insert into isel.term (term_short_name, term_year, term_type, time_stamp)
   values ('1718i',2017,'WINTER',current_timestamp);
+
+INSERT INTO isel.term (term_short_name, term_year, term_type, time_stamp)
+  VALUES ('1617v',2016,'SUMMER',current_timestamp);
+
+INSERT INTO isel.term (term_short_name, term_year, term_type, time_stamp)
+  VALUES ('1617i',2016,'WINTER',current_timestamp);
+
+INSERT INTO isel.term (term_short_name, term_year, term_type, time_stamp)
+  VALUES ('1516v',2015,'SUMMER',current_timestamp);
+
+INSERT INTO isel.term (term_short_name, term_year, term_type, time_stamp)
+  VALUES ('1516i',2015,'WINTER',current_timestamp);
+
+INSERT INTO isel.term (term_short_name, term_year, term_type, time_stamp)
+  VALUES ('1415v',2014,'SUMMER',current_timestamp);
+
+INSERT INTO isel.term (term_short_name, term_year, term_type, time_stamp)
+  VALUES ('1415i',2014,'WINTER',current_timestamp);
+
+INSERT INTO isel.term (term_short_name, term_year, term_type, time_stamp)
+  VALUES ('1314v',2013,'SUMMER',current_timestamp);
+
+INSERT INTO isel.term (term_short_name, term_year, term_type, time_stamp)
+  VALUES ('1314i',2013,'WINTER',current_timestamp);
+
+INSERT INTO isel.term (term_short_name, term_year, term_type, time_stamp)
+  VALUES ('1213v',2012,'SUMMER',current_timestamp);
+
+INSERT INTO isel.term (term_short_name, term_year, term_type, time_stamp)
+  VALUES ('1213i',2012,'WINTER',current_timestamp);
+
+INSERT INTO isel.term (term_short_name, term_year, term_type, time_stamp)
+  VALUES ('1112v',2011,'SUMMER',current_timestamp);
+
+INSERT INTO isel.term (term_short_name, term_year, term_type, time_stamp)
+  VALUES ('1112i',2011,'WINTER',current_timestamp);
+
+INSERT INTO isel.term (term_short_name, term_year, term_type, time_stamp)
+  VALUES ('1011v',2010,'SUMMER',current_timestamp);
+
+INSERT INTO isel.term (term_short_name, term_year, term_type, time_stamp)
+  VALUES ('1011i',2010,'WINTER',current_timestamp);
 
 -- Classes Insert
 
@@ -445,14 +487,14 @@ insert into isel.homework_report(homework_id, reported_by, homework_name, sheet_
 
 -- Student Insert
 
-insert into isel.user_account (user_username, user_password, user_given_name, user_family_name, user_confirmed, user_email, user_locked)
-    values ('ze', 1234, 'José', 'Antunes', true, 'ze@isel.pt', false);
+insert into isel.user_account (user_username, user_password, user_given_name, user_family_name, user_email, user_locked)
+    values ('ze', 1234, 'José', 'Antunes', 'ze@isel.pt', false);
 
-insert into isel.user_account (user_username, user_password, user_given_name, user_family_name, user_confirmed, user_email, user_locked)
-    values ('bruno', 1234, 'Bruno', 'Filipe', true, 'bruno@isel.pt', false);
+insert into isel.user_account (user_username, user_password, user_given_name, user_family_name, user_email, user_locked)
+    values ('bruno', 1234, 'Bruno', 'Filipe', 'bruno@isel.pt', false);
 
-insert into isel.user_account (user_username, user_password, user_given_name, user_family_name, user_confirmed, user_email, user_locked)
-    values ('jg', 1234, 'João', 'Gameiro', true, 'jg@isel.pt', false);
+insert into isel.user_account (user_username, user_password, user_given_name, user_family_name, user_email, user_locked)
+    values ('jg', 1234, 'João', 'Gameiro', 'jg@isel.pt', false);
 
 insert into isel.user_report (user_username, reason, reported_by, time_stamp)
     values ('ze', 'bad infos', 'bruno', current_timestamp );
@@ -495,16 +537,11 @@ insert into isel.reputation_log (reputation_log_action, reputation_log_given_by,
 insert into isel.user_course_class (user_username, course_id, course_class_id)
   values ('ze', 3, 3);
 
-
-
 insert into isel.user_course_class (user_username, course_id, course_class_id)
   values ('ze', 2, 3);
 
 insert into isel.user_course_class (user_username, course_id, course_class_id)
   values ('bruno', 1, 1);
-
-insert into isel.validation_token (token, validation_date)
-  values ('04805b5d-e089-48e0-b7da-68a6321a17ff', '2018-07-09 14:00:00.000000');
 
 -- Student Programme
 

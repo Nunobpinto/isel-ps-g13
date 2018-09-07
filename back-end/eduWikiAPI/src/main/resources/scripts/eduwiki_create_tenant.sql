@@ -20,13 +20,6 @@ CREATE TYPE <schema>.action_Type AS ENUM ('CREATE', 'ALTER', 'DELETE', 'VOTE_UP'
 -- Create Main Tables
 --------------------------
 
-CREATE TABLE IF NOT EXISTS <schema>.validation_token (
-  token_id SERIAL,
-  token UUID NOT NULL,
-  validation_date TIMESTAMP NOT NULL,
-  PRIMARY KEY (token_id)
-);
-
 CREATE TABLE IF NOT EXISTS <schema>.organization (
   organization_id CHAR(1) DEFAULT 'X' CHECK(organization_id='X'),
   organization_version INTEGER NOT NULL DEFAULT 1,
@@ -206,7 +199,6 @@ CREATE TABLE IF NOT EXISTS <schema>.user_account (
   user_password VARCHAR(60),
   user_given_name VARCHAR(15) NOT NULL,
   user_family_name VARCHAR(15) NOT NULL,
-  user_confirmed BOOLEAN NOT NULL,
   user_locked BOOLEAN NOT NULL,
   user_email varchar(35) UNIQUE NOT NULL,
   PRIMARY KEY (user_username)

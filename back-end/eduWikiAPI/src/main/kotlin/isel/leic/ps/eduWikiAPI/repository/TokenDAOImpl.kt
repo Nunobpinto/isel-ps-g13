@@ -1,6 +1,7 @@
 package isel.leic.ps.eduWikiAPI.repository
 
 import isel.leic.ps.eduWikiAPI.domain.model.ValidationToken
+import isel.leic.ps.eduWikiAPI.repository.TenantDAOImpl.Companion.MASTER_SCHEMA
 import isel.leic.ps.eduWikiAPI.repository.interfaces.TokenDAO
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys
@@ -34,7 +35,7 @@ class TokenDAOImpl : TokenDAO {
             jdbi.open().attach(TokenDAOJdbi::class.java).deleteToken(token)
 
     interface TokenDAOJdbi : TokenDAO {
-        @SqlUpdate("INSERT INTO :schema.$VALIDATION_TOKEN_TABLE (" +
+        @SqlUpdate("INSERT INTO $MASTER_SCHEMA.$VALIDATION_TOKEN_TABLE (" +
                 "$VALIDATION_TOKEN, "+
                 "$VALIDATION_TOKEN_DATE)"+
                 "VALUES ( " +
@@ -44,10 +45,10 @@ class TokenDAOImpl : TokenDAO {
         @GetGeneratedKeys
         override fun saveToken(validationToken: ValidationToken): ValidationToken
 
-        @SqlQuery("SELECT * FROM :schema.$VALIDATION_TOKEN_TABLE WHERE $VALIDATION_TOKEN = :token")
+        @SqlQuery("SELECT * FROM $MASTER_SCHEMA.$VALIDATION_TOKEN_TABLE WHERE $VALIDATION_TOKEN = :token")
         override fun getToken(token: UUID): Optional<ValidationToken>
 
-        @SqlUpdate("DELETE FROM :schema.$VALIDATION_TOKEN_TABLE WHERE $VALIDATION_TOKEN = :token")
+        @SqlUpdate("DELETE FROM $MASTER_SCHEMA.$VALIDATION_TOKEN_TABLE WHERE $VALIDATION_TOKEN = :token")
         override fun deleteToken(token: UUID): Int
     }
 

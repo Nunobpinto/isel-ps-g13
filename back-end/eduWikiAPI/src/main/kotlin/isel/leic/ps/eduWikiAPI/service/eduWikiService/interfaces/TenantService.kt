@@ -19,8 +19,8 @@ interface TenantService {
 
     fun createPendingTenant(requestDetails: TenantRequestDetails): PendingTenantDetailsOutputModel
 
-    fun realizePendingTenant(tenantUuid: String, principal: Principal): String
+    fun realizePendingTenant(tenantUuid: String, principal: Principal): TenantDetailsOutputModel
 
-    fun rejectPendingTenant(tenantUuid: String, principal: Principal): String
+    fun rejectPendingTenant(tenantUuid: String, principal: Principal): PendingTenantDetailsOutputModel
 
 }

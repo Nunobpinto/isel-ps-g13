@@ -2,6 +2,8 @@
 -- Drop Tables Tables
 --------------------------
 
+DROP TABLE IF EXISTS master.validation_token;
+
 DROP TABLE IF EXISTS master.registered_users;
 
 DROP TABLE IF EXISTS master.tenants;

@@ -2,10 +2,14 @@ package isel.leic.ps.eduWikiAPI.repository
 
 import isel.leic.ps.eduWikiAPI.EduWikiApiApplication
 import isel.leic.ps.eduWikiAPI.configuration.persistence.TenantContext
+import isel.leic.ps.eduWikiAPI.configuration.security.authorization.ReputationRole
+import isel.leic.ps.eduWikiAPI.configuration.security.authorization.ReputationRole.*
 import isel.leic.ps.eduWikiAPI.domain.mappers.tenantRequestDetailsToPendingTenantCreator
-import isel.leic.ps.eduWikiAPI.domain.model.PendingTenantCreator
-import isel.leic.ps.eduWikiAPI.domain.model.PendingTenantDetails
+import isel.leic.ps.eduWikiAPI.domain.model.*
+import isel.leic.ps.eduWikiAPI.repository.interfaces.OrganizationDAO
+import isel.leic.ps.eduWikiAPI.repository.interfaces.ReputationDAO
 import isel.leic.ps.eduWikiAPI.repository.interfaces.TenantDAO
+import isel.leic.ps.eduWikiAPI.repository.interfaces.UserDAO
 import org.junit.After
 import org.junit.Test
 
@@ -33,6 +37,12 @@ class TenantDAOImplTest {
 
     @Autowired
     lateinit var tenantDAO: TenantDAO
+    @Autowired
+    lateinit var userDAO: UserDAO
+    @Autowired
+    lateinit var reputationDAO: ReputationDAO
+    @Autowired
+    lateinit var organizationDAO: OrganizationDAO
 
     @Before
     fun init() {
@@ -186,10 +196,130 @@ class TenantDAOImplTest {
 
     @Test
     fun createTenantBasedOnPendingTenant() {
+        // Create schema
+        tenantDAO.createTenantBasedOnPendingTenant("ist")
+        // Set ThreadLocal to new schema
+        TenantContext.setTenantSchema("ist")
+        // Check if no exception is thrown by accessing a table from this schema
+        organizationDAO.getOrganization()
     }
 
     @Test
     fun populateTenant() {
+        // Create schema
+        tenantDAO.createTenantBasedOnPendingTenant("ist")
+        // Set ThreadLocal to new schema
+        TenantContext.setTenantSchema("ist")
+        // Populate schema
+        tenantDAO.populateTenant(
+                "ist",
+                Organization(
+                        fullName = "Instituto Superior Tecnico",
+                        shortName = "ist",
+                        address = "alameda",
+                        contact = "123432",
+                        website = "www.ist.pt"
+                ),
+                listOf(
+                        User(
+                                username = "nuno",
+                                password = "1234",
+                                givenName = "Nuno",
+                                familyName = "Pinto",
+                                email = "nuno@ist.pt"
+                        )
+                ),
+                listOf(
+                        Reputation(
+                                points = ROLE_ADMIN.maxPoints,
+                                role = ROLE_ADMIN.name,
+                                username = "nuno"
+                        )
+                )
+        )
+        val organization = organizationDAO.getOrganization().get()
+        assertEquals('X', organization.organizationId)
+        assertEquals(1, organization.version)
+        assertEquals(1, organization.logId)
+        assertEquals("Instituto Superior Tecnico", organization.fullName)
+        assertEquals("ist", organization.shortName)
+        assertEquals("alameda", organization.address)
+        assertEquals("123432", organization.contact)
+        assertEquals("www.ist.pt", organization.website)
+        val user = userDAO.getUser("nuno").get()
+        assertEquals("nuno", user.username)
+        assertEquals("1234", user.password)
+        assertEquals("Nuno", user.givenName)
+        assertEquals("Pinto", user.familyName)
+        assertEquals("nuno@ist.pt", user.email)
+        assertEquals(false, user.locked)
+        val reputation = reputationDAO.getUserReputationDetails("nuno").get()
+        assertEquals(ROLE_ADMIN.maxPoints, reputation.points)
+        assertEquals(1, reputation.reputationId)
+        assertEquals(ROLE_ADMIN.name, reputation.role)
+        assertEquals("nuno", reputation.username)
+    }
+
+    @Test
+    fun confirmUser() {
+        tenantDAO.confirmUser("luis")
+        val user = tenantDAO.getRegisteredUserByUsername("luis").get()
+        assertTrue(user.confirmed)
+        assertEquals(user.tenantUuid, "d39c1e3a-eec7-447a-8c63-52fda106c5e9")
+        assertEquals(user.username, "luis")
+    }
+
+    @Test
+    fun registerUser() {
+        val newUser = RegisteredUser(
+                username = "nuno",
+                tenantUuid = "4cd93a0f-5b5c-4902-ae0a-181c780fedb1",
+                confirmed = true
+        )
+        val registeredUser = tenantDAO.registerUser(newUser)
+        assertEquals(newUser.confirmed, registeredUser.confirmed)
+        assertEquals(newUser.tenantUuid, registeredUser.tenantUuid)
+        assertEquals(newUser.username, registeredUser.username)
+    }
+
+    @Test
+    fun bulkRegisterUsers() {
+        val users = listOf(
+                RegisteredUser(
+                        username = "nuno",
+                        tenantUuid = "4cd93a0f-5b5c-4902-ae0a-181c780fedb1",
+                        confirmed = true
+                ),
+                RegisteredUser(
+                        username = "alberto",
+                        tenantUuid = "4cd93a0f-5b5c-4902-ae0a-181c780fedb1",
+                        confirmed = false
+                )
+        )
+        val registeredUsers = tenantDAO.bulkRegisterUser(users)
+        assertEquals(registeredUsers.size, 2)
+        assertEquals(users[0].confirmed, registeredUsers[0].confirmed)
+        assertEquals(users[0].tenantUuid, registeredUsers[0].tenantUuid)
+        assertEquals(users[0].username, registeredUsers[0].username)
+        assertEquals(users[1].confirmed, registeredUsers[1].confirmed)
+        assertEquals(users[1].tenantUuid, registeredUsers[1].tenantUuid)
+        assertEquals(users[1].username, registeredUsers[1].username)
+    }
+
+    @Test
+    fun deleteRegisteredUser() {
+        val isDeleted = tenantDAO.deleteRegisteredUser("luis")
+        assertEquals(isDeleted, 1)
+    }
+
+    @Test
+    fun getActiveTenantByUuid() {
+        val tenant = tenantDAO.getActiveTenantByUuid("4cd93a0f-5b5c-4902-ae0a-181c780fedb1").get()
+        assertEquals("4cd93a0f-5b5c-4902-ae0a-181c780fedb1", tenant.uuid)
+        assertEquals(Timestamp.valueOf("2018-07-14 13:30:00.0"), tenant.createdAt)
+        assertEquals("nuno", tenant.createdBy)
+        assertEquals("@isel.pt", tenant.emailPattern)
+        assertEquals("isel", tenant.schemaName)
     }
 
     @After

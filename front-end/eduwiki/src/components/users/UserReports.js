@@ -23,32 +23,11 @@ export default class UserReports extends React.Component {
         header={<div><h1>User Reports</h1></div>}
         dataSource={this.state.reports}
         renderItem={item => (
-          <List.Item
-            actions={[
-              <IconText
-                type='like-o'
-                id='like_btn'
-                onClick={() =>
-                  this.setState({
-                    voteUp: true,
-                    reportId: item.reportId
-                  })}
-              />,
-              <IconText
-                type='dislike-o'
-                id='dislike_btn'
-                onClick={() =>
-                  this.setState({
-                    voteDown: true,
-                    reportId: item.reportId
-                  })}
-              />
-            ]}
-          >
+          <List.Item>
             <List.Item.Meta
-              title={`Reported by ${item.reportedBy}`}
               description={`Created at: ${item.timestamp}`}
             />
+            <p>Reported by <a href={`/users/${item.reportedBy}`}>{item.reportedBy}</a></p>
             Reason: {item.reason}
             <br />
             {
@@ -87,7 +66,7 @@ export default class UserReports extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
-        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
+        'tenant-uuid': config.TENANT_UUID
       }
     }
     fetcher(url, options)
@@ -113,7 +92,7 @@ export default class UserReports extends React.Component {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
         'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
-        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
+        'tenant-uuid': config.TENANT_UUID
       }
     }
     fetcher(url, body)
@@ -146,7 +125,7 @@ export default class UserReports extends React.Component {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Authorization': 'Basic ' + window.localStorage.getItem('auth'),
-        'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
+        'tenant-uuid': config.TENANT_UUID
       }
     }
     fetcher(url, body)

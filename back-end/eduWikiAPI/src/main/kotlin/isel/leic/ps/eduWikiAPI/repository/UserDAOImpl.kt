@@ -53,7 +53,6 @@ class UserDAOImpl : UserDAO {
         const val USER_GIVEN_NAME = "user_given_name"
         const val USER_FAMILY_NAME = "user_family_name"
         const val USER_EMAIL = "user_email"
-        const val USER_CONFIRMED_FLAG = "user_confirmed"
         const val USER_LOCKED = "user_locked"
         // USER_REPORT FIELDS
         const val USER_REPORT_USER = "user_username"
@@ -77,9 +76,6 @@ class UserDAOImpl : UserDAO {
 
     override fun createUser(user: User): User =
             jdbi.open().attach(UserDAOJdbi::class.java).createUser(user)
-
-    override fun confirmUser(username: String): User =
-            jdbi.open().attach(UserDAOJdbi::class.java).confirmUser(username)
 
     override fun getCoursesOfUser(username: String): List<Course> =
             jdbi.open().attach(UserDAOJdbi::class.java).getCoursesOfUser(username)
@@ -157,7 +153,6 @@ class UserDAOImpl : UserDAO {
                 "$USER_PASSWORD," +
                 "$USER_GIVEN_NAME," +
                 "$USER_FAMILY_NAME," +
-                "$USER_CONFIRMED_FLAG," +
                 "$USER_EMAIL, " +
                 "$USER_LOCKED " +
                 ") VALUES ( " +
@@ -165,18 +160,11 @@ class UserDAOImpl : UserDAO {
                 ":user.password," +
                 ":user.givenName," +
                 ":user.familyName," +
-                ":user.confirmed," +
                 ":user.email, " +
                 ":user.locked)"
         )
         @GetGeneratedKeys
         override fun createUser(user: User): User
-
-        @SqlUpdate("UPDATE :schema.$USER_TABLE " +
-                "SET $USER_CONFIRMED_FLAG = true " +
-                "WHERE $USER_USERNAME = :username")
-        @GetGeneratedKeys
-        override fun confirmUser(username: String): User
 
         @SqlQuery(
                 "SELECT " +
@@ -313,7 +301,6 @@ class UserDAOImpl : UserDAO {
                         "U.$USER_PASSWORD, " +
                         "U.$USER_GIVEN_NAME, " +
                         "U.$USER_FAMILY_NAME, " +
-                        "U.$USER_CONFIRMED_FLAG, " +
                         "U.$USER_EMAIL, " +
                         "U.$USER_LOCKED " +
                         "FROM :schema.$USER_TABLE AS U " +

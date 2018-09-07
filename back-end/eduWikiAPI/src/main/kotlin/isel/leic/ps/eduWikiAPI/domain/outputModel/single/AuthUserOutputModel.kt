@@ -5,6 +5,5 @@ data class AuthUserOutputModel (
         val givenName: String = "",
         val familyName: String = "",
         val email: String = "",
-        val confirmed: Boolean,
         val reputation: ReputationOutputModel
 )

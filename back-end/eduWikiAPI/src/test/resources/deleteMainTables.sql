@@ -78,8 +78,6 @@ DELETE FROM isel.homework_version;
 
 DELETE FROM isel.course_programme;
 
-DELETE FROM isel.validation_token;
-
 DELETE FROM isel.work_assignment;
 
 DELETE FROM isel.exam;

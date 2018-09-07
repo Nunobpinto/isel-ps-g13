@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS master.tenants (
 
 CREATE TABLE IF NOT EXISTS master.registered_users (
 	user_username VARCHAR(20),
+	user_confirmed BOOLEAN NOT NULL,
 	tenant_uuid VARCHAR(255) REFERENCES master.tenants,
 	PRIMARY KEY(user_username, tenant_uuid)
 );
@@ -50,7 +51,6 @@ CREATE TABLE IF NOT EXISTS master.user_account (
   user_username VARCHAR(20),
   user_password VARCHAR(60),
   user_given_name VARCHAR(15) NOT NULL,
-  user_confirmed BOOLEAN NOT NULL DEFAULT true,
   user_family_name VARCHAR(15) NOT NULL,
   user_email varchar(35) UNIQUE NOT NULL,
   PRIMARY KEY (user_username)
@@ -63,6 +63,12 @@ CREATE TABLE IF NOT EXISTS master.reputation (
   PRIMARY KEY (reputation_id, user_username)
 );
 
+CREATE TABLE IF NOT EXISTS master.validation_token (
+  token_id SERIAL,
+  token UUID NOT NULL,
+  validation_date TIMESTAMP NOT NULL,
+  PRIMARY KEY (token_id)
+);
 
 
 

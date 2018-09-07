@@ -1,21 +1,12 @@
 package isel.leic.ps.eduWikiAPI.service.mailSender
 
-import isel.leic.ps.eduWikiAPI.domain.model.User
-import isel.leic.ps.eduWikiAPI.domain.model.PendingTenantCreator
-import isel.leic.ps.eduWikiAPI.domain.model.PendingTenantDetails
+import isel.leic.ps.eduWikiAPI.domain.model.*
 import isel.leic.ps.eduWikiAPI.domain.model.report.UserReport
 import org.springframework.mail.SimpleMailMessage
 
 interface EmailService {
 
-    fun sendSimpleMessage(to: String,
-                          subject: String,
-                          text: String)
-
-    fun sendSimpleMessageUsingTemplate(to: String,
-                                       subject: String,
-                                       template: SimpleMailMessage,
-                                       vararg templateArgs: String)
+    fun sendConfirmAccountEmail(user: User, token: ValidationToken)
 
     fun sendTenantRegistrationEmail(to: PendingTenantCreator)
 
@@ -26,4 +17,6 @@ interface EmailService {
     fun sendUserBannedEmail(reportedUser: User, report: UserReport)
 
     fun sendTenantRejectedEmail(creator: PendingTenantCreator, pendingTenant: PendingTenantDetails)
+
+    fun sendTenantApprovedEmail(user: User, organization: Organization, tenantUuid: String)
 }

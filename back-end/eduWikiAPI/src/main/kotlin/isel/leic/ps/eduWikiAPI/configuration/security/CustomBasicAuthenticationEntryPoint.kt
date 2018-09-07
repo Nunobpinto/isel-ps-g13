@@ -12,6 +12,10 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationEn
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+/**
+ * In case of authentication failure, reports error back to client,
+ * in order to commence authentication again
+ */
 class CustomBasicAuthenticationEntryPoint : BasicAuthenticationEntryPoint() {
 
     override fun commence(request: HttpServletRequest, response: HttpServletResponse, authException: AuthenticationException) {

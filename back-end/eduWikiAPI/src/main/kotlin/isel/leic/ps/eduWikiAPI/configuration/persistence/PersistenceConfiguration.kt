@@ -45,5 +45,6 @@ class PersistenceConfiguration {
                     .installPlugin(PostgresPlugin())
                     .installPlugin(SqlObjectPlugin())
                     .installPlugin(KotlinSqlObjectPlugin())
+                    // SQL rewriter to add schema awareness
                     .setTemplateEngine(SchemaReWriter())
 }

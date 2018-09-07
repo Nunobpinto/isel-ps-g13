@@ -2,8 +2,6 @@
 -- Drop Report Tables
 --------------------------
 
-DROP TABLE IF EXISTS isel.validation_token;
-
 DROP TABLE IF EXISTS isel.organization_report;
 
 DROP TABLE IF EXISTS isel.programme_report;

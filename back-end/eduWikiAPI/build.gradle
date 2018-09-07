@@ -52,12 +52,12 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-web')
 //	Data access dependencies
 	compile('org.springframework.boot:spring-boot-starter-jdbc')
-    compile('org.jdbi:jdbi3-core:3.4.0')
-	compile('org.jdbi:jdbi3-kotlin:3.4.0')
-	compile('org.jdbi:jdbi3-postgres:3.4.0')
-	compile('org.jdbi:jdbi3-sqlobject:3.4.0')
-	compile('org.jdbi:jdbi3-kotlin-sqlobject:3.4.0')
-	compile('org.jdbi:jdbi3-stringtemplate4:3.4.0')
+    compile('org.jdbi:jdbi3-core:3.3.0')
+	compile('org.jdbi:jdbi3-kotlin:3.3.0')
+	compile('org.jdbi:jdbi3-postgres:3.3.0')
+	compile('org.jdbi:jdbi3-sqlobject:3.3.0')
+	compile('org.jdbi:jdbi3-kotlin-sqlobject:3.3.0')
+	compile('org.jdbi:jdbi3-stringtemplate4:3.3.0')
 	runtime('org.postgresql:postgresql')
 	compile('com.fasterxml.jackson.module:jackson-module-kotlin')
 //	Programming languages dependencies
@@ -69,6 +69,7 @@ dependencies {
 //	Mail sender dependencies
 	compile('org.springframework:spring-context-support:5.0.1.RELEASE')
 	compile('org.springframework.boot:spring-boot-starter-mail:2.0.3.RELEASE')
+	compile('org.freemarker:freemarker:2.3.23')
 //	Unit testing dependencies
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('com.h2database:h2:1.4.197')

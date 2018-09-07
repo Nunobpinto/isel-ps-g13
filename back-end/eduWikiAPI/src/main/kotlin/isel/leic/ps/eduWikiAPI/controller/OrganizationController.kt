@@ -23,7 +23,7 @@ class OrganizationController {
     @GetMapping
     fun getOrganization() = organizationService.getOrganization()
 
-    @PatchMapping("")
+    @PatchMapping()
     fun partialUpdateOnOrganization(
             @RequestBody input: OrganizationInputModel,
             principal: Principal

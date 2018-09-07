@@ -17,6 +17,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
 
+/**
+ * Configures authentication of the Service
+ */
 @EnableWebSecurity
 @Configuration
 class SecurityConfig : WebSecurityConfigurerAdapter() {
@@ -31,12 +34,10 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
     lateinit var daoAuthenticationProvider: DaoAuthenticationProvider
     @Autowired
     lateinit var authorizationConfig: AuthorizationConfig
-    @Autowired
-    lateinit var captureTenantFilter: CaptureTenantFilter
 
     override fun configure(http: HttpSecurity) {
         http
-                .addFilterAt(captureTenantFilter, BasicAuthenticationFilter::class.java)
+                .addFilterAt(captureTenantFilter(), BasicAuthenticationFilter::class.java)
                 .csrf().disable()
                 .httpBasic().realmName(REALM).authenticationEntryPoint(authenticationEntryPoint())
                 .and().cors()
@@ -61,6 +62,9 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
     }
 
     @Bean
+    fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
+
+    @Bean
     fun authenticationProvider(): DaoAuthenticationProvider {
         val auth = DaoAuthenticationProvider()
         auth.isHideUserNotFoundExceptions = false
@@ -73,5 +77,6 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
     fun authenticationEntryPoint(): CustomBasicAuthenticationEntryPoint = CustomBasicAuthenticationEntryPoint()
 
     @Bean
-    fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
+    fun captureTenantFilter(): CaptureTenantFilter = CaptureTenantFilter()
+
 }

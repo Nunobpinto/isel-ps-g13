@@ -7,11 +7,15 @@ import isel.leic.ps.eduWikiAPI.eventListeners.events.*
 import isel.leic.ps.eduWikiAPI.exceptionHandlers.exceptions.ReputationUpdateException
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ReputationDAO
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.event.EventListener
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.event.TransactionalEventListener
 
+/**
+ * Contains all listeners of reputation related events
+ */
 @Component
 class ReputationEventListeners {
 
@@ -32,7 +36,7 @@ class ReputationEventListeners {
 
     @Async
     @Transactional
-    @TransactionalEventListener
+    @EventListener
     fun handleResourceUpdatedEvent(event: ResourceUpdatedEvent) {
         // Log update
         reputationDAO.registerActionLog(
@@ -46,7 +50,7 @@ class ReputationEventListeners {
 
     @Async
     @Transactional
-    @TransactionalEventListener
+    @EventListener
     fun handleResourceDeletedEvent(event: ResourceDeletedEvent) {
         // Log Deletion
         reputationDAO.registerActionLog(
@@ -60,7 +64,7 @@ class ReputationEventListeners {
 
     @Async
     @Transactional
-    @TransactionalEventListener
+    @EventListener
     fun handleResourceCreatedEvent(event: ResourceCreatedEvent) {
         // Log creation
         reputationDAO.registerActionLog(
@@ -74,7 +78,7 @@ class ReputationEventListeners {
 
     @Async
     @Transactional
-    @TransactionalEventListener
+    @EventListener
     fun handleResourceApprovedEventOnUpdate(event: ResourceApprovedEvent) {
 
         // Log Approval
@@ -120,7 +124,7 @@ class ReputationEventListeners {
 
     @Async
     @Transactional
-    @TransactionalEventListener
+    @EventListener
     fun handleResourceRejectedEvent(event: ResourceRejectedEvent) {
 
         // Log Rejection

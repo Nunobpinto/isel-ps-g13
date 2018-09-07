@@ -17,8 +17,6 @@ interface UserService {
 
     fun saveUser(inputUser: UserInputModel): AuthUserOutputModel
 
-    fun deleteUser(principal: Principal): Int
-
     fun getCoursesOfUser(principal: Principal): CourseCollectionOutputModel
 
     fun getClassesOfCOurseOfUser(principal: Principal): CourseClassCollectionOutputModel

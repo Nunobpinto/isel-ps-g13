@@ -3,9 +3,11 @@ package isel.leic.ps.eduWikiAPI.configuration.security
 import isel.leic.ps.eduWikiAPI.configuration.persistence.CaptureTenantFilter.Companion.NO_TENANT_FOUND
 import isel.leic.ps.eduWikiAPI.configuration.persistence.CaptureTenantFilter.Companion.NO_TENANT_PROVIDED
 import isel.leic.ps.eduWikiAPI.configuration.persistence.TenantContext
+import isel.leic.ps.eduWikiAPI.configuration.security.authorization.ReputationRole
 import isel.leic.ps.eduWikiAPI.repository.interfaces.ReputationDAO
 import isel.leic.ps.eduWikiAPI.repository.interfaces.UserDAO
 import isel.leic.ps.eduWikiAPI.domain.model.User
+import isel.leic.ps.eduWikiAPI.repository.interfaces.TenantDAO
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -20,9 +22,9 @@ class UserDetailsServiceImpl : UserDetailsService {
     @Autowired
     lateinit var userDAO: UserDAO
     @Autowired
-    lateinit var reputationDAO: ReputationDAO
+    lateinit var tenantDAO: TenantDAO
     @Autowired
-    lateinit var passwordEncoder: PasswordEncoder
+    lateinit var reputationDAO: ReputationDAO
 
     @Transactional
     override fun loadUserByUsername(username: String): UserDetails {
@@ -38,12 +40,21 @@ class UserDetailsServiceImpl : UserDetailsService {
         return toUserDetails(user)
     }
 
-    private fun toUserDetails(user: User): UserDetails = org.springframework.security.core.userdetails
-            .User
-            .withUsername(user.username)
-            .disabled(!user.confirmed)
-            .accountLocked(user.locked)
-            .password(passwordEncoder.encode(user.password)) //TODO Nao te esqueças de tirar esta merda
-            .authorities(reputationDAO.getReputationRoleOfUser(user.username).orElseThrow { UsernameNotFoundException("Could not find a valid role for user ${user.username}") })
-            .build()
+    private fun toUserDetails(user: User): UserDetails {
+        val reputation = reputationDAO.getUserReputationDetails(user.username)
+                .orElseThrow { UsernameNotFoundException("Could not find a valid role for user ${user.username}") }
+        val isConfirmed =
+                if(reputation.role != ReputationRole.ROLE_DEV.name)
+                    tenantDAO.getRegisteredUserByUsername(user.username).orElseThrow { UsernameNotFoundException("User does not exist at specified tenant") }.confirmed
+                else
+                    true
+        return org.springframework.security.core.userdetails
+                .User
+                .withUsername(user.username)
+                .disabled(!isConfirmed)
+                .accountLocked(user.locked)
+                .password(user.password)
+                .authorities(reputation.role)
+                .build()
+    }
 }

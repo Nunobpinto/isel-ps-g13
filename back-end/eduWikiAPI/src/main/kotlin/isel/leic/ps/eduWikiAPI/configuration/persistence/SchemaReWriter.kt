@@ -5,7 +5,8 @@ import org.jdbi.v3.core.statement.TemplateEngine
 import java.util.Objects.nonNull
 
 /**
- * Simple class that substitutes :schema for the schema of the current http request
+ * Simple class that substitutes :schema for the schema caught in the current http request
+ * Checks for existence of ":schema"
  */
 class SchemaReWriter : TemplateEngine {
 

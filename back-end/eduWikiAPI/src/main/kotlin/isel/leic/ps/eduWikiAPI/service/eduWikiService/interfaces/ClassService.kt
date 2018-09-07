@@ -128,8 +128,6 @@ interface ClassService {
     
     fun createStagingCourseInClass(classId: Int, courseId: Int, principal: Principal): CourseClassStageOutputModel
     
-    fun addCourseInClassFromStaged(classId: Int, stageId: Int, principal: Principal): CourseClassOutputModel
-    
     fun voteOnStagedCourseInClass(classId: Int, stageId: Int, vote: VoteInputModel, principal: Principal): Int
     
     fun deleteSpecificStagedCourseInClass(classId: Int, stageId: Int, principal: Principal): Int

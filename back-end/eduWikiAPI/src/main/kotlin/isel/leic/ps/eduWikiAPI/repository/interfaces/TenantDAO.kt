@@ -22,6 +22,8 @@ interface TenantDAO {
 
     fun getRegisteredUserByUsername(username: String): Optional<RegisteredUser>
 
+    fun confirmUser(username: String): RegisteredUser
+
     fun createTenantBasedOnPendingTenant(schema: String)
 
     fun populateTenant(schema: String, organization: Organization, users: List<User>, reputations: List<Reputation>)
@@ -31,5 +33,13 @@ interface TenantDAO {
     fun deletePendingTenantById(tenantUuid: String): Int
 
     fun createActiveTenantEntry(dev: String, timestamp: Timestamp, pendingTenant: PendingTenantDetails): TenantDetails
+
+    fun registerUser(registeredUser: RegisteredUser): RegisteredUser
+
+    fun bulkRegisterUser(registeredUsers: List<RegisteredUser>): List<RegisteredUser>
+
+    fun deleteRegisteredUser(username: String): Int
+
+    fun getActiveTenantByUuid(tenantUuid: String): Optional<TenantDetails>
 
 }

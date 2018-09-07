@@ -60,8 +60,8 @@ INSERT INTO <schema>.organization_version(organization_version, created_by, orga
 -- Insert users
 
 <users:{user|
-INSERT INTO <schema>.user_account (user_username, user_password, user_given_name, user_family_name, user_confirmed, user_email, user_locked)
-  VALUES('<user.username>', '<user.password>', '<user.givenName>', '<user.familyName>', <user.confirmed>, '<user.email>', false);
+INSERT INTO <schema>.user_account (user_username, user_password, user_given_name, user_family_name, user_email, user_locked)
+  VALUES('<user.username>', '<user.password>', '<user.givenName>', '<user.familyName>', '<user.email>', false);
 }>
 
 <reputations:{rep|

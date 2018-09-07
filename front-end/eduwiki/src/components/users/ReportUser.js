@@ -61,7 +61,7 @@ class ReportForm extends React.Component {
         },
         body: JSON.stringify(report)
       }
-      const uri = `${config.API_PATH}/users/${this.props.username}/reports`
+      const uri = `${config.API_PATH}/users/${this.props.username}/report`
       fetcher(uri, options)
         .then(_ => {
           message.success('Successfully reported')
