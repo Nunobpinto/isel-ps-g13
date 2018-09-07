@@ -2,12 +2,12 @@ package isel.ps.eduwikimobile.domain.collection
 
 import android.os.Parcel
 import android.os.Parcelable
-import isel.ps.eduwikimobile.domain.single.Course
+import isel.ps.eduwikimobile.domain.single.CourseProgramme
 
 data class CourseProgrammeCollection (
-        val courseProgrammeList: Array<Course>
+        val courseProgrammeList: Array<CourseProgramme>
 ) : Parcelable {
-    constructor(parcel: Parcel) : this(parcel.createTypedArray(Course)) {
+    constructor(parcel: Parcel) : this(parcel.createTypedArray(CourseProgramme)) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -18,12 +18,12 @@ data class CourseProgrammeCollection (
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<CourseCollection> {
-        override fun createFromParcel(parcel: Parcel): CourseCollection {
-            return CourseCollection(parcel)
+    companion object CREATOR : Parcelable.Creator<CourseProgrammeCollection> {
+        override fun createFromParcel(parcel: Parcel): CourseProgrammeCollection {
+            return CourseProgrammeCollection(parcel)
         }
 
-        override fun newArray(size: Int): Array<CourseCollection?> {
+        override fun newArray(size: Int): Array<CourseProgrammeCollection?> {
             return arrayOfNulls(size)
         }
     }

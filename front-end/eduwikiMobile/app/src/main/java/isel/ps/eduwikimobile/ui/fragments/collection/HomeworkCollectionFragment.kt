@@ -10,20 +10,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
+import com.android.volley.TimeoutError
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.adapters.HomeworkListAdapter
-import isel.ps.eduwikimobile.adapters.LectureListAdapter
 import isel.ps.eduwikimobile.controller.AppController
 import isel.ps.eduwikimobile.domain.single.Homework
 import isel.ps.eduwikimobile.domain.paramsContainer.HomeworkCollectionParametersContainer
-import isel.ps.eduwikimobile.domain.paramsContainer.LectureCollectionParametersContainer
 import isel.ps.eduwikimobile.ui.IDataComunication
 import kotlinx.android.synthetic.main.homework_collection_fragment.*
-import kotlinx.android.synthetic.main.lecture_collection_fragment.*
 
 class HomeworkCollectionFragment: Fragment() {
-
 
     lateinit var app: EduWikiApplication
     private lateinit var recyclerView: RecyclerView
@@ -43,11 +40,11 @@ class HomeworkCollectionFragment: Fragment() {
 
         val courseClass = dataComunication.getCourseClass()
 
-        if (homeworkList.size > 0) {
+        if (homeworkList.size != 0) {
             homeworkList.clear()
         }
         view.findViewById<ProgressBar>(R.id.homeworks_progress_bar).visibility = View.VISIBLE
-        fetchHomeworksOfCourseClass(courseClass!!.courseId, courseClass.classId)
+        getHomeworksOfCourseClass(courseClass!!.courseId, courseClass.classId)
 
         homeworkAdapter = HomeworkListAdapter(context, homeworkList)
         recyclerView.adapter = homeworkAdapter
@@ -59,7 +56,12 @@ class HomeworkCollectionFragment: Fragment() {
         return view
     }
 
-    private fun fetchHomeworksOfCourseClass(courseId: Int, classId: Int) {
+    override fun onPause() {
+        app.repository.cancelPendingRequests(app)
+        super.onPause()
+    }
+
+    private fun getHomeworksOfCourseClass(courseId: Int, classId: Int) {
         app.controller.actionHandler(
                 AppController.ALL_HOMEWORKS_OF_COURSE_CLASS,
                 HomeworkCollectionParametersContainer(
@@ -72,7 +74,15 @@ class HomeworkCollectionFragment: Fragment() {
                             recyclerView.visibility = View.VISIBLE
                             homeworks_progress_bar.visibility = View.GONE
                         },
-                        errorCb = { error -> Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                        errorCb = { error ->
+                            if(error.exception is TimeoutError) {
+                                Toast.makeText(app, "Server isn't responding...", Toast.LENGTH_LONG).show()
+                            }
+                            else {
+                                homeworks_progress_bar.visibility = View.GONE
+                                Toast.makeText(app, "Error", Toast.LENGTH_LONG).show()
+                            }
+                        }
                 )
         )
     }

@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
+import com.android.volley.TimeoutError
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.adapters.ClassListAdapter
@@ -20,6 +21,7 @@ import isel.ps.eduwikimobile.domain.paramsContainer.ClassCollectionParametersCon
 import isel.ps.eduwikimobile.ui.IDataComunication
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 import kotlinx.android.synthetic.main.class_collection_fragment.*
+import java.util.concurrent.TimeoutException
 
 class ClassCollectionFragment : Fragment() {
 
@@ -46,10 +48,11 @@ class ClassCollectionFragment : Fragment() {
         val view: View = inflater.inflate(R.layout.class_collection_fragment, container, false)
         recyclerView = view.findViewById(R.id.classes_recycler_view)
 
-        if (classList.size == 0) {
-            view.findViewById<ProgressBar>(R.id.classes_progress_bar).visibility = View.VISIBLE
-            fetchClassItems()
+        if (classList.size != 0) {
+            classList.clear()
         }
+        view.findViewById<ProgressBar>(R.id.classes_progress_bar).visibility = View.VISIBLE
+        getClassItems()
 
         classAdapter = ClassListAdapter(context, classList)
         recyclerView.adapter = classAdapter
@@ -61,7 +64,7 @@ class ClassCollectionFragment : Fragment() {
         return view
     }
 
-    private fun fetchClassItems() {
+    private fun getClassItems() {
         app.controller.actionHandler(
                 AppController.ALL_CLASSES,
                 ClassCollectionParametersContainer(
@@ -69,12 +72,23 @@ class ClassCollectionFragment : Fragment() {
                         successCb = { classes ->
                             classList.addAll(classes.classList)
                             classAdapter.notifyDataSetChanged()
-                            recyclerView.visibility = View.VISIBLE;
-                            classes_progress_bar.visibility = View.GONE;
+                            recyclerView.visibility = View.VISIBLE
+                            classes_progress_bar.visibility = View.GONE
                         },
-                        errorCb = { error -> Toast.makeText(app, "Error" + error.message, LENGTH_LONG).show() }
+                        errorCb = { error ->
+                            if(error.exception is TimeoutError) {
+                                Toast.makeText(app, "Server isn't responding...", LENGTH_LONG).show()
+                            }
+                            classes_progress_bar.visibility = View.GONE;
+                            Toast.makeText(app, "Error", LENGTH_LONG).show()
+                        }
                 )
         )
+    }
+
+    override fun onPause() {
+        app.repository.cancelPendingRequests(app)
+        super.onPause()
     }
 
     override fun onAttach(context: Context?) {

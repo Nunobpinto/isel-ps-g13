@@ -70,8 +70,8 @@ class CourseTermListAdapter (var context: Context, var list: MutableList<Term>) 
         }
 
         fun bindView(position: Int) {
-            termShortName.text = list[position].shortName
             term = list[position]
+            termShortName.text = term.shortName
         }
     }
 

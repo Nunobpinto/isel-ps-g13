@@ -3,8 +3,10 @@ package isel.ps.eduwikimobile.domain.single
 import android.os.Parcel
 import android.os.Parcelable
 
-data class Class (
+data class Class(
         val classId: Int = 0,
+        val programmeId: Int = 0,
+        val programmeShortName: String,
         val version: Int = 0,
         val createdBy: String = "",
         val className: String = "",
@@ -17,6 +19,8 @@ data class Class (
             parcel.readInt(),
             parcel.readInt(),
             parcel.readString(),
+            parcel.readInt(),
+            parcel.readString(),
             parcel.readString(),
             parcel.readInt(),
             parcel.readString(),
@@ -26,6 +30,8 @@ data class Class (
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(classId)
+        parcel.writeInt(programmeId)
+        parcel.writeString(programmeShortName)
         parcel.writeInt(version)
         parcel.writeString(createdBy)
         parcel.writeString(className)
@@ -53,3 +59,5 @@ data class Class (
         return "class"
     }
 }
+
+

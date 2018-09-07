@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
+import com.android.volley.TimeoutError
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.adapters.FollowingListAdapter
@@ -53,6 +54,11 @@ class FollowingFragment : Fragment() {
         return view
     }
 
+    override fun onPause() {
+        app.repository.cancelPendingRequests(app)
+        super.onPause()
+    }
+
     private fun getUserFollowingItems() {
         //getting classes
         app.controller.actionHandler(
@@ -65,7 +71,14 @@ class FollowingFragment : Fragment() {
                             recyclerView.visibility = View.VISIBLE
                             following_progress_bar.visibility = View.GONE
                         },
-                        errorCb = { error -> Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                        errorCb = { error ->
+                            if (error.exception is TimeoutError) {
+                                Toast.makeText(app, "Server isn't responding...", Toast.LENGTH_LONG).show()
+                            } else {
+                                following_progress_bar.visibility = View.GONE
+                                Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show()
+                            }
+                        }
                 )
         )
         //getting courses
@@ -79,7 +92,14 @@ class FollowingFragment : Fragment() {
                             recyclerView.visibility = View.VISIBLE
                             following_progress_bar.visibility = View.GONE
                         },
-                        errorCb = { error -> Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                        errorCb = { error ->
+                            if (error.exception is TimeoutError) {
+                                Toast.makeText(app, "Server isn't responding...", Toast.LENGTH_LONG).show()
+                            } else {
+                                following_progress_bar.visibility = View.GONE
+                                Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show()
+                            }
+                        }
                 )
         )
         //getting programme
@@ -93,7 +113,14 @@ class FollowingFragment : Fragment() {
                             recyclerView.visibility = View.VISIBLE
                             following_progress_bar.visibility = View.GONE
                         },
-                        errorCb = { error -> Toast.makeText(app, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                        errorCb = { error ->
+                            if (error.exception is TimeoutError) {
+                                Toast.makeText(app, "Server isn't responding...", Toast.LENGTH_LONG).show()
+                            } else {
+                                following_progress_bar.visibility = View.GONE
+                                Toast.makeText(app, "Error", Toast.LENGTH_LONG).show()
+                            }
+                        }
                 )
         )
     }

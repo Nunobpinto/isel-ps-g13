@@ -27,7 +27,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="Due Date"
+        android:text="Due Date:"
+        android:textColor="@android:color/background_dark"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -40,7 +42,9 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="32dp"
-        android:text="Late Delivery"
+        android:text="Late Delivery:"
+        android:textColor="@android:color/background_dark"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/homework_details_insert_due_date" />
@@ -52,10 +56,12 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="32dp"
-        android:text="Multiple Deliveries"
+        android:text="Multiple Deliveries:"
+        android:textColor="@android:color/background_dark"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/homework_details_switch_late_delivery" />
+        app:layout_constraintTop_toBottomOf="@+id/homework_details_insert_late_delivery" />
 
     <TextView
         android:id="@+id/homework_details_insert_due_date"
@@ -65,6 +71,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="Insert Due Date"
+        android:textColor="@android:color/background_dark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/homework_details_due_date" />
@@ -73,41 +80,37 @@
         android:id="@+id/homework_details_sheet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="32dp"
         android:text="Sheet"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
         android:visibility="invisible"
-        app:layout_constraintTop_toBottomOf="@+id/homework_details_switch_multiple_deliveries" />
-
-    <Switch
-        android:id="@+id/homework_details_switch_multiple_deliveries"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:clickable="false"
-        android:showText="true"
-        android:textOff="No"
-        android:textOn="Yes"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/homework_details_multiple_deliveries" />
+        app:layout_constraintTop_toBottomOf="@+id/homework_details_insert_multiple" />
 
-    <Switch
-        android:id="@+id/homework_details_switch_late_delivery"
+    <TextView
+        android:id="@+id/homework_details_insert_late_delivery"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:clickable="false"
-        android:showText="true"
-        android:textOff="No"
-        android:textOn="Yes"
+        android:text="late"
+        android:textColor="@android:color/background_dark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/homework_details_late_delivery" />
+
+    <TextView
+        android:id="@+id/homework_details_insert_multiple"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="multiple"
+        android:textColor="@android:color/background_dark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/homework_details_multiple_deliveries" />
 
 
 </android.support.constraint.ConstraintLayout>

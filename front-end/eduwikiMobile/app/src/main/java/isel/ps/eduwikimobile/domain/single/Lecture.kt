@@ -3,9 +3,12 @@ package isel.ps.eduwikimobile.domain.single
 import android.os.Parcel
 import android.os.Parcelable
 
-data class Lecture (
+data class Lecture(
         val lectureId: Int = 0,
         val version: Int = 0,
+        val className: String = "",
+        val lecturedTerm: String = "",
+        val courseShortName: String = "",
         val createdBy: String = "",
         val weekDay: String = "",
         val begins: String = "",
@@ -22,6 +25,9 @@ data class Lecture (
             parcel.readString(),
             parcel.readString(),
             parcel.readString(),
+            parcel.readString(),
+            parcel.readString(),
+            parcel.readString(),
             parcel.readInt(),
             parcel.readString()) {
     }
@@ -29,6 +35,9 @@ data class Lecture (
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(lectureId)
         parcel.writeInt(version)
+        parcel.writeString(className)
+        parcel.writeString(lecturedTerm)
+        parcel.writeString(courseShortName)
         parcel.writeString(createdBy)
         parcel.writeString(weekDay)
         parcel.writeString(begins)
@@ -55,4 +64,5 @@ data class Lecture (
     override fun toString(): String {
         return "lecture"
     }
+
 }

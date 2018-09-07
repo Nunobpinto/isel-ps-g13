@@ -7,13 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import isel.ps.eduwikimobile.R
-import isel.ps.eduwikimobile.domain.single.Class
+import isel.ps.eduwikimobile.domain.single.CourseProgramme
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 
-class ClassListAdapter (var context: Context, var list: MutableList<Class>) : RecyclerView.Adapter<ClassListAdapter.ListViewHolder>() {
+class CourseProgrammeListAdapter(var context: Context, var list: MutableList<CourseProgramme>) : RecyclerView.Adapter<CourseProgrammeListAdapter.ListViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ListViewHolder {
-        val view: View = LayoutInflater.from(parent!!.context).inflate(R.layout.class_item_row, parent, false)
+        val view: View = LayoutInflater.from(parent!!.context).inflate(R.layout.course_item_row, parent, false)
         val newHolder = ListViewHolder(view)
 
         newHolder.setListItemClickListener(object : ListItemClickListener {
@@ -33,12 +33,12 @@ class ClassListAdapter (var context: Context, var list: MutableList<Class>) : Re
 
     inner class ListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
-        var classShortName: TextView
+        var courseProgrammeShortName: TextView
 
         private lateinit var listener: ListItemClickListener
 
         init {
-            classShortName = itemView.findViewById(R.id.class_short_name)
+            courseProgrammeShortName = itemView.findViewById(R.id.course_short_name)
             itemView.setOnClickListener(this)
         }
 
@@ -49,12 +49,12 @@ class ClassListAdapter (var context: Context, var list: MutableList<Class>) : Re
         fun getItem(position: Int) = list[position]
 
         fun bindView(position: Int) {
-            classShortName.text = list[position].lecturedTerm + '/' + list[position].className
+            courseProgrammeShortName.text = list[position].shortName
         }
 
         override fun onClick(v: View) {
             listener.onClick(v, adapterPosition)
         }
-
     }
+
 }

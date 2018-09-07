@@ -14,8 +14,8 @@ import isel.ps.eduwikimobile.domain.paramsContainer.ProgrammeCollectionParameter
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.widget.ProgressBar
+import com.android.volley.TimeoutError
 import isel.ps.eduwikimobile.adapters.ProgrammeListAdapter
-import isel.ps.eduwikimobile.domain.collection.ProgrammeCollection
 import isel.ps.eduwikimobile.domain.single.Programme
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 import kotlinx.android.synthetic.main.programme_collection_fragment.*
@@ -26,11 +26,6 @@ class ProgrammeCollectionFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var programmeList: MutableList<Programme>
     private lateinit var pAdapter: ProgrammeListAdapter
-
-    companion object {
-        val type = ProgrammeCollection::class.java
-    }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,10 +44,12 @@ class ProgrammeCollectionFragment : Fragment() {
         val view: View = inflater.inflate(R.layout.programme_collection_fragment, container, false)
         recyclerView = view.findViewById(R.id.programmes_recycler_view)
 
-        if (programmeList.size == 0) {
-            view.findViewById<ProgressBar>(R.id.programmes_progress_bar).visibility = View.VISIBLE
-            fetchProgrammeItems()
+        if (programmeList.size != 0) {
+            programmeList.clear()
         }
+
+        view.findViewById<ProgressBar>(R.id.programmes_progress_bar).visibility = View.VISIBLE
+        getProgrammeItems()
 
         pAdapter = ProgrammeListAdapter(context, programmeList)
         recyclerView.adapter = pAdapter
@@ -63,7 +60,12 @@ class ProgrammeCollectionFragment : Fragment() {
         return view
     }
 
-    private fun fetchProgrammeItems() {
+    override fun onPause() {
+        app.repository.cancelPendingRequests(app)
+        super.onPause()
+    }
+
+    private fun getProgrammeItems() {
         app.controller.actionHandler(
                 AppController.ALL_PROGRAMMES,
                 ProgrammeCollectionParametersContainer(
@@ -71,10 +73,18 @@ class ProgrammeCollectionFragment : Fragment() {
                         successCb = { programmes ->
                             programmeList.addAll(programmes.programmeList)
                             pAdapter.notifyDataSetChanged()
-                            recyclerView.visibility = View.VISIBLE;
-                            programmes_progress_bar.visibility = View.GONE;
+                            recyclerView.visibility = View.VISIBLE
+                            programmes_progress_bar.visibility = View.GONE
                         },
-                        errorCb = { error -> Toast.makeText(app, "Error" + error.message, LENGTH_LONG).show() }
+                        errorCb = { error ->
+                            if(error.exception is TimeoutError) {
+                                Toast.makeText(app, "Server isn't responding...", LENGTH_LONG).show()
+                            }
+                            else {
+                                programmes_progress_bar.visibility = View.GONE
+                                Toast.makeText(app, "Error", LENGTH_LONG).show()
+                            }
+                        }
                 )
         )
     }

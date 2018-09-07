@@ -13,6 +13,9 @@ data class Homework(
         val lateDelivery: Boolean = false,
         val multipleDeliveries: Boolean = false,
         val votes: Int = 0,
+        val className: String = "",
+        val lecturedTerm: String = "",
+        val courseShortName: String = "",
         val timestamp: String = ""
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
@@ -25,6 +28,9 @@ data class Homework(
             parcel.readByte() != 0.toByte(),
             parcel.readByte() != 0.toByte(),
             parcel.readInt(),
+            parcel.readString(),
+            parcel.readString(),
+            parcel.readString(),
             parcel.readString()) {
     }
 
@@ -38,6 +44,9 @@ data class Homework(
         parcel.writeByte(if (lateDelivery) 1 else 0)
         parcel.writeByte(if (multipleDeliveries) 1 else 0)
         parcel.writeInt(votes)
+        parcel.writeString(className)
+        parcel.writeString(lecturedTerm)
+        parcel.writeString(courseShortName)
         parcel.writeString(timestamp)
     }
 
@@ -58,4 +67,5 @@ data class Homework(
     override fun toString(): String {
         return "homework"
     }
+
 }

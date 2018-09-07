@@ -11,18 +11,17 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
+import com.android.volley.TimeoutError
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
-import isel.ps.eduwikimobile.adapters.CourseClassListAdapter
 import isel.ps.eduwikimobile.adapters.LectureListAdapter
 import isel.ps.eduwikimobile.controller.AppController
-import isel.ps.eduwikimobile.domain.single.CourseClass
 import isel.ps.eduwikimobile.domain.single.Lecture
 import isel.ps.eduwikimobile.domain.paramsContainer.LectureCollectionParametersContainer
 import isel.ps.eduwikimobile.ui.IDataComunication
 import kotlinx.android.synthetic.main.lecture_collection_fragment.*
 
-class LectureCollectionFragment: Fragment() {
+class LectureCollectionFragment : Fragment() {
 
     lateinit var app: EduWikiApplication
     private lateinit var recyclerView: RecyclerView
@@ -42,11 +41,11 @@ class LectureCollectionFragment: Fragment() {
 
         val courseClass = dataComunication.getCourseClass()
 
-        if (lectureList.size > 0) {
+        if (lectureList.size != 0) {
             lectureList.clear()
         }
         view.findViewById<ProgressBar>(R.id.lectures_progress_bar).visibility = View.VISIBLE
-        fetchLecturesOfCourseClass(courseClass!!.courseId, courseClass.classId)
+        getLecturesOfCourseClass(courseClass!!.courseId, courseClass.classId)
 
         lectureAdapter = LectureListAdapter(context, lectureList)
         recyclerView.adapter = lectureAdapter
@@ -58,7 +57,12 @@ class LectureCollectionFragment: Fragment() {
         return view
     }
 
-    private fun fetchLecturesOfCourseClass(courseId: Int, classId: Int) {
+    override fun onPause() {
+        app.repository.cancelPendingRequests(app)
+        super.onPause()
+    }
+
+    private fun getLecturesOfCourseClass(courseId: Int, classId: Int) {
         app.controller.actionHandler(
                 AppController.ALL_LECTURES_OF_COURSE_CLASS,
                 LectureCollectionParametersContainer(
@@ -68,10 +72,17 @@ class LectureCollectionFragment: Fragment() {
                         successCb = { lectures ->
                             lectureList.addAll(lectures.lectureList)
                             lectureAdapter.notifyDataSetChanged()
-                            recyclerView.visibility = View.VISIBLE;
-                            lectures_progress_bar.visibility = View.GONE;
+                            recyclerView.visibility = View.VISIBLE
+                            lectures_progress_bar.visibility = View.GONE
                         },
-                        errorCb = { error -> Toast.makeText(app, "Error" + error.message, LENGTH_LONG).show() }
+                        errorCb = { error ->
+                            if (error.exception is TimeoutError) {
+                                Toast.makeText(app, "Server isn't responding...", LENGTH_LONG).show()
+                            } else {
+                                lectures_progress_bar.visibility = View.GONE
+                                Toast.makeText(app, "Error", LENGTH_LONG).show()
+                            }
+                        }
                 )
         )
     }

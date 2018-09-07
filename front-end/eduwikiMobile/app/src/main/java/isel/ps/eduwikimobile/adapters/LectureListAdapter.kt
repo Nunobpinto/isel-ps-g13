@@ -24,7 +24,7 @@ class LectureListAdapter (var context: Context, var list: MutableList<Lecture>) 
         newHolder.setListItemClickListener(object : ListItemClickListener {
             override fun onClick(view: View, position: Int) {
                 val mainActivity = context as MainActivity
-                mainActivity.navigateToListItem(newHolder.getItem(position), null)
+                mainActivity.navigateToListItem(newHolder.getItem(position))
             }
         })
         return newHolder
@@ -39,17 +39,11 @@ class LectureListAdapter (var context: Context, var list: MutableList<Lecture>) 
     inner class ListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
         var weekDay: TextView
-        var location: TextView
-        var begins: TextView
-        var duration: TextView
 
         private lateinit var listener: ListItemClickListener
 
         init {
             weekDay = itemView.findViewById(R.id.to_insert_lecture_weekday)
-            location = itemView.findViewById(R.id.to_insert_lecture_location)
-            begins = itemView.findViewById(R.id.to_insert_lecture_begins)
-            duration = itemView.findViewById(R.id.to_insert_lecture_duration)
             itemView.setOnClickListener(this)
         }
 
@@ -64,10 +58,6 @@ class LectureListAdapter (var context: Context, var list: MutableList<Lecture>) 
             val hours = Duration.parse(item.duration).toHours()
             val minutes = Duration.parse(item.duration).minusHours(hours).toMinutes()
             weekDay.text = item.weekDay
-            location.text = item.location
-            begins.text = "${LocalTime.parse(item.begins, DateTimeFormatter.ISO_TIME).hour}:${LocalTime.parse(item.begins, DateTimeFormatter.ISO_TIME).minute}"
-            if(minutes > 9) duration.text = "${hours}h:${minutes}m"
-            else duration.text = "${hours}h:${minutes}0m"
         }
 
         override fun onClick(v: View) {

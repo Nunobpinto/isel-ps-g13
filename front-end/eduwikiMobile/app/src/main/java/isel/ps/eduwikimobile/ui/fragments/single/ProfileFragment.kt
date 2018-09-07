@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
+import com.android.volley.TimeoutError
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.adapters.ProfileViewPagerAdapter
@@ -26,7 +27,6 @@ class ProfileFragment : Fragment() {
 
     lateinit var dataComunication: IDataComunication
     lateinit var programme: Programme
-    lateinit var user: User
     lateinit var mainActivity: MainActivity
     lateinit var app: EduWikiApplication
 
@@ -51,6 +51,11 @@ class ProfileFragment : Fragment() {
         return view
     }
 
+    override fun onPause() {
+        app.repository.cancelPendingRequests(app)
+        super.onPause()
+    }
+
     private fun getUserInfo() {
         app.controller.actionHandler(
                 AppController.USER_PROFILE_INFO,
@@ -63,8 +68,17 @@ class ProfileFragment : Fragment() {
                             user_profile_progressBar.visibility = View.GONE
                             user_profile_name.visibility = View.VISIBLE
                             user_profile_reputation.visibility = View.VISIBLE
+                            user_profile_points.visibility = View.VISIBLE
                         },
-                        errorCb = { error -> Toast.makeText(app, "Error" + error.message, LENGTH_LONG).show() }
+                        errorCb = { error ->
+                            if(error.exception is TimeoutError) {
+                                Toast.makeText(app, "Server isn't responding...", LENGTH_LONG).show()
+                            }
+                            else {
+                                user_profile_progressBar.visibility = View.GONE
+                                Toast.makeText(app, "Error" + error.message, LENGTH_LONG).show()
+                            }
+                        }
                 )
         )
 
@@ -77,10 +91,15 @@ class ProfileFragment : Fragment() {
                             user_profile_progressBar.visibility = View.GONE
                             user_profile_programme.visibility = View.VISIBLE
                         },
-                        errorCb = { error -> Toast.makeText(app, "Error" + error.message, LENGTH_LONG).show() }
+                        errorCb = { error ->
+                            if(error.exception is TimeoutError) {
+                                Toast.makeText(app, "Server isn't responding...", LENGTH_LONG).show()
+                            }
+                            user_profile_progressBar.visibility = View.GONE
+                            Toast.makeText(app, "Error", LENGTH_LONG).show()
+                        }
                 )
         )
-
     }
 
     override fun onAttach(context: Context?) {

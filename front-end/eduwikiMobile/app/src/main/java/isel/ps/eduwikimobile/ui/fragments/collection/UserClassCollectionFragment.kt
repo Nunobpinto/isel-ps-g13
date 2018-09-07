@@ -11,17 +11,14 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
+import com.android.volley.TimeoutError
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
-import isel.ps.eduwikimobile.adapters.ClassListAdapter
 import isel.ps.eduwikimobile.adapters.CourseClassListAdapter
 import isel.ps.eduwikimobile.controller.AppController
-import isel.ps.eduwikimobile.domain.single.Class
 import isel.ps.eduwikimobile.domain.single.CourseClass
-import isel.ps.eduwikimobile.domain.paramsContainer.ClassCollectionParametersContainer
 import isel.ps.eduwikimobile.domain.paramsContainer.CourseClassCollectionParametersContainer
 import isel.ps.eduwikimobile.ui.IDataComunication
-import isel.ps.eduwikimobile.ui.activities.MainActivity
 import kotlinx.android.synthetic.main.class_collection_fragment.*
 
 class UserClassCollectionFragment : Fragment() {
@@ -42,10 +39,12 @@ class UserClassCollectionFragment : Fragment() {
         val view: View = inflater.inflate(R.layout.class_collection_fragment, container, false)
         recyclerView = view.findViewById(R.id.classes_recycler_view)
 
-        if (classList.size == 0) {
-            view.findViewById<ProgressBar>(R.id.classes_progress_bar).visibility = View.VISIBLE
-            fetchUserClassItems()
+        if (classList.size != 0) {
+            classList.clear()
         }
+
+        view.findViewById<ProgressBar>(R.id.classes_progress_bar).visibility = View.VISIBLE
+        getUserClassItems()
 
         classAdapter = CourseClassListAdapter(context, classList)
         recyclerView.adapter = classAdapter
@@ -57,7 +56,12 @@ class UserClassCollectionFragment : Fragment() {
         return view
     }
 
-    private fun fetchUserClassItems() {
+    override fun onPause() {
+        app.repository.cancelPendingRequests(app)
+        super.onPause()
+    }
+
+    private fun getUserClassItems() {
         app.controller.actionHandler(
                 AppController.USER_FOLLOWING_CLASSES,
                 CourseClassCollectionParametersContainer(
@@ -65,10 +69,18 @@ class UserClassCollectionFragment : Fragment() {
                         successCb = { classes ->
                             classList.addAll(classes.courseClassList)
                             classAdapter.notifyDataSetChanged()
-                            recyclerView.visibility = View.VISIBLE;
-                            classes_progress_bar.visibility = View.GONE;
+                            recyclerView.visibility = View.VISIBLE
+                            classes_progress_bar.visibility = View.GONE
                         },
-                        errorCb = { error -> Toast.makeText(app, "Error" + error.message, LENGTH_LONG).show() }
+                        errorCb = { error ->
+                            if(error.exception is TimeoutError) {
+                                Toast.makeText(app, "Server isn't responding...", LENGTH_LONG).show()
+                            }
+                            else {
+                                classes_progress_bar.visibility = View.GONE
+                                Toast.makeText(app, "Error", LENGTH_LONG).show()
+                            }
+                        }
                 )
         )
     }

@@ -13,7 +13,6 @@ import isel.ps.eduwikimobile.service.Service
 class EduWikiApplication : Application() {
 
     lateinit var requestQueue: RequestQueue
-    lateinit var service: IService
     lateinit var repository: IEduWikiRepository
     lateinit var controller: AppController
 
@@ -21,9 +20,7 @@ class EduWikiApplication : Application() {
         super.onCreate()
         requestQueue = Volley.newRequestQueue(this)
         repository = EduWikiRepository()
-        service = Service(repository)
-        controller = AppController(service)
-
+        controller = AppController(Service(repository))
     }
 
 }

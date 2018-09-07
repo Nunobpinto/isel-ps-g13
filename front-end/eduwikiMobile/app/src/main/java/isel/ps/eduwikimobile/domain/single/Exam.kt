@@ -13,12 +13,16 @@ data class Exam (
         val type: String = "",
         val phase: String = "",
         val location: String = "",
+        val courseShortName: String = "",
+        val termShortName: String = "",
         val timestamp: String = ""
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
             parcel.readInt(),
             parcel.readInt(),
             parcel.readInt(),
+            parcel.readString(),
+            parcel.readString(),
             parcel.readString(),
             parcel.readString(),
             parcel.readString(),
@@ -38,6 +42,8 @@ data class Exam (
         parcel.writeString(type)
         parcel.writeString(phase)
         parcel.writeString(location)
+        parcel.writeString(courseShortName)
+        parcel.writeString(termShortName)
         parcel.writeString(timestamp)
     }
 
@@ -54,8 +60,8 @@ data class Exam (
             return arrayOfNulls(size)
         }
     }
-
     override fun toString(): String {
         return "exam"
     }
+
 }

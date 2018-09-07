@@ -27,52 +27,46 @@
             android:id="@+id/course_programme_progress_bar"
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_height="48dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="244dp"
             android:visibility="invisible"
-            app:layout_constraintBottom_toTopOf="@+id/course_programme_recycler_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/course_programme_full_name"
-            app:layout_constraintVertical_bias="0.966" />
+            app:layout_constraintTop_toTopOf="@+id/course_programme_full_name" />
 
 
         <TextView
             android:id="@+id/course_programme_lectured_term"
             android:layout_width="wrap_content"
-            android:layout_height="19dp"
-            android:layout_marginEnd="8dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="32dp"
-            android:text="Lectured Term"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"
+            android:text="Lectured Term:"
+            android:textColor="@android:color/background_dark"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/course_programme_full_name" />
 
         <TextView
             android:id="@+id/course_programme_optional"
             android:layout_width="wrap_content"
-            android:layout_height="19dp"
-            android:layout_marginEnd="8dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="Optional"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"
+            android:text="Optional:"
+            android:textColor="@android:color/background_dark"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/course_programme_lectured_term" />
 
         <TextView
             android:id="@+id/course_programme_credits"
             android:layout_width="wrap_content"
-            android:layout_height="17dp"
-            android:layout_marginEnd="8dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="Credits"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"
+            android:text="Credits:"
+            android:textColor="@android:color/background_dark"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/course_programme_optional" />
 
@@ -81,10 +75,43 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="184dp"
+            android:layout_marginTop="168dp"
             android:scrollbars="vertical"
             app:layout_constraintTop_toTopOf="parent"
             tools:layout_editor_absoluteX="0dp" />
+
+        <TextView
+            android:id="@+id/course_programme_to_insert_term"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:text="Term"
+            android:textColor="@android:color/background_dark"
+            app:layout_constraintStart_toEndOf="@+id/course_programme_lectured_term"
+            app:layout_constraintTop_toBottomOf="@+id/course_programme_full_name" />
+
+        <TextView
+            android:id="@+id/course_programme_to_insert_optional"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:text="Opt"
+            android:textColor="@android:color/background_dark"
+            app:layout_constraintStart_toEndOf="@+id/course_programme_optional"
+            app:layout_constraintTop_toBottomOf="@+id/course_programme_to_insert_term" />
+
+        <TextView
+            android:id="@+id/course_programme_to_insert_credits"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:text="Credits"
+            android:textColor="@android:color/background_dark"
+            app:layout_constraintStart_toEndOf="@+id/course_programme_credits"
+            app:layout_constraintTop_toBottomOf="@+id/course_programme_to_insert_optional" />
 
 
     </android.support.constraint.ConstraintLayout>

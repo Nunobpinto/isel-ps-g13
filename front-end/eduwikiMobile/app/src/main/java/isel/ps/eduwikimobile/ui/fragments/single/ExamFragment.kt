@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import com.android.volley.TimeoutError
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.controller.AppController
@@ -46,20 +47,15 @@ class ExamFragment : Fragment() {
         dataComunication.setExam(exam)
 
         val examName = view.findViewById<TextView>(R.id.exam_details_name)
-        val examVotes = view.findViewById<TextView>(R.id.exam_votes)
-        val examDueDate = view.findViewById<TextView>(R.id.exam_due_date)
-        val examLocation = view.findViewById<TextView>(R.id.exam_location)
+        val examDueDate = view.findViewById<TextView>(R.id.exam_details_insert_due_date)
+        val examLocation = view.findViewById<TextView>(R.id.exam_details_insert_location)
         val examSheet = view.findViewById<Button>(R.id.download_exam_sheet)
 
         mainActivity.toolbar.displayOptions = ActionBar.DISPLAY_SHOW_TITLE
-        if (course != null && term != null) {
-            mainActivity.toolbar.title = course!!.shortName + "/" + term!!.shortName + "/" + "Exams"
-        } else { //TODO pedido para obter o course
-            mainActivity.toolbar.title = "Exam"
-        }
+        mainActivity.toolbar.title = exam.courseShortName + "/" + exam.termShortName + "/" + "Exams"
         mainActivity.toolbar.subtitle = exam.createdBy
-        examName.text = exam.phase + " " + exam.type
-        examVotes.text = exam.votes.toString()
+
+        examName.text = "${exam.phase}/${exam.type}"
         examDueDate.text = exam.dueDate
         examLocation.text = exam.location
         if (exam.sheetId != null) {
@@ -72,7 +68,11 @@ class ExamFragment : Fragment() {
                                 resourceId = exam.sheetId!!,
                                 app = app,
                                 successCb = { _ -> Toast.makeText(mainActivity, "Download Completed", Toast.LENGTH_LONG).show() },
-                                errorCb = { error -> Toast.makeText(mainActivity, "Error" + error.message, Toast.LENGTH_LONG).show() }
+                                errorCb = { error ->
+                                    if (error.exception is TimeoutError) {
+                                        Toast.makeText(app, "Server isn't responding...", Toast.LENGTH_LONG).show()
+                                    } else Toast.makeText(mainActivity, "Error", Toast.LENGTH_LONG).show()
+                                }
                         )
                 )
             }

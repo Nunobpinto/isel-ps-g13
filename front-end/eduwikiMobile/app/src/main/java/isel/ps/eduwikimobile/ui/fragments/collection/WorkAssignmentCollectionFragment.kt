@@ -8,8 +8,10 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
+import com.android.volley.TimeoutError
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.adapters.WorkAssignmentListAdapter
@@ -18,6 +20,7 @@ import isel.ps.eduwikimobile.domain.single.Course
 import isel.ps.eduwikimobile.domain.single.Term
 import isel.ps.eduwikimobile.domain.single.WorkAssignment
 import isel.ps.eduwikimobile.domain.paramsContainer.WorkAssignmentCollectionParametersContainer
+import isel.ps.eduwikimobile.domain.single.CourseProgramme
 import isel.ps.eduwikimobile.ui.IDataComunication
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 import kotlinx.android.synthetic.main.work_assignment_collection_fragment.*
@@ -29,7 +32,8 @@ class WorkAssignmentCollectionFragment : Fragment() {
     private lateinit var workAssignmentList: MutableList<WorkAssignment>
     private lateinit var workAssignmentAdapter: WorkAssignmentListAdapter
     lateinit var dataComunication: IDataComunication
-    lateinit var course: Course
+    var course: Course? = null
+    var courseProgramme: CourseProgramme? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,15 +47,25 @@ class WorkAssignmentCollectionFragment : Fragment() {
 
         val bundle: Bundle = arguments
         val term: Term = bundle.getParcelable("actualTerm")
-
-        course = dataComunication.getCourse()!!
         dataComunication.setTerm(term)
-
         val activity = activity as MainActivity
-        activity.toolbar.title = course.shortName + "/" + term.shortName + "/" + "Work-Assignments"
+        view.findViewById<ProgressBar>(R.id.work_assignments_progress_bar).visibility = View.VISIBLE
+
+        if (dataComunication.getCourse() != null) {
+            course = dataComunication.getCourse()
+            getWorkAssignmentItems(course!!.courseId, term.termId)
+            activity.toolbar.title =  course!!.shortName + "/" + term.shortName + "/" + "Work-Assignments"
+        } else {
+            courseProgramme = dataComunication.getCourseProgramme()
+            getWorkAssignmentItems(courseProgramme!!.courseId, term.termId)
+            activity.toolbar.title =  courseProgramme!!.shortName + "/" + term.shortName + "/" + "Work-Assignments"
+        }
         activity.toolbar.subtitle = ""
 
-        fetchWorkAssignmentItems(course.courseId, term.termId)
+
+        if (workAssignmentList.size != 0) {
+            workAssignmentList.clear()
+        }
 
         workAssignmentAdapter = WorkAssignmentListAdapter(context, workAssignmentList)
         recyclerView.adapter = workAssignmentAdapter
@@ -62,8 +76,12 @@ class WorkAssignmentCollectionFragment : Fragment() {
         return view
     }
 
+    override fun onPause() {
+        app.repository.cancelPendingRequests(app)
+        super.onPause()
+    }
 
-    private fun fetchWorkAssignmentItems(courseId: Int, termId: Int) {
+    private fun getWorkAssignmentItems(courseId: Int, termId: Int) {
         app.controller.actionHandler(
                 AppController.WORK_ASSIGNMENTS,
                 WorkAssignmentCollectionParametersContainer(
@@ -73,10 +91,18 @@ class WorkAssignmentCollectionFragment : Fragment() {
                         successCb = { works ->
                             workAssignmentList.addAll(works.workAssignmentList)
                             workAssignmentAdapter.notifyDataSetChanged()
-                            recyclerView.visibility = View.VISIBLE;
-                            work_assignments_progress_bar.visibility = View.GONE;
+                            recyclerView.visibility = View.VISIBLE
+                            work_assignments_progress_bar.visibility = View.GONE
                         },
-                        errorCb = { error -> Toast.makeText(app, "Error" + error.message, LENGTH_LONG).show() }
+                        errorCb = { error ->
+                            if(error.exception is TimeoutError) {
+                                Toast.makeText(app, "Server isn't responding...", LENGTH_LONG).show()
+                            }
+                            else {
+                                work_assignments_progress_bar.visibility = View.GONE
+                                Toast.makeText(app, "Error", LENGTH_LONG).show()
+                            }
+                        }
                 )
         )
     }

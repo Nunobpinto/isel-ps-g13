@@ -19,8 +19,10 @@ data class WorkAssignment(
         val lateDelivery: Boolean = false,
         val multipleDeliveries: Boolean = false,
         val requiresReport: Boolean = false,
-        val timestamp: String = ""
-) : Parcelable {
+        val timestamp: String = "",
+        val courseShortName: String = "",
+        val termShortName: String = ""
+): Parcelable {
     constructor(parcel: Parcel) : this(
             parcel.readInt(),
             parcel.readInt(),
@@ -34,6 +36,8 @@ data class WorkAssignment(
             parcel.readByte() != 0.toByte(),
             parcel.readByte() != 0.toByte(),
             parcel.readByte() != 0.toByte(),
+            parcel.readString(),
+            parcel.readString(),
             parcel.readString()) {
     }
 
@@ -51,6 +55,8 @@ data class WorkAssignment(
         parcel.writeByte(if (multipleDeliveries) 1 else 0)
         parcel.writeByte(if (requiresReport) 1 else 0)
         parcel.writeString(timestamp)
+        parcel.writeString(courseShortName)
+        parcel.writeString(termShortName)
     }
 
     override fun describeContents(): Int {
