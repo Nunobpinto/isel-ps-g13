@@ -46,7 +46,7 @@
         android:background="@color/colorPrimary"
         android:text="Term"
         android:textAlignment="center"
-        android:textColor="@android:color/background_dark"
+        android:textColor="@android:color/white"
         android:textSize="24sp"
         android:textStyle="bold" />
 

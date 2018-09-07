@@ -1,6 +1,5 @@
 package isel.ps.eduwikimobile.controller
 
-import isel.ps.eduwikimobile.domain.single.Programme
 import isel.ps.eduwikimobile.domain.single.User
 import isel.ps.eduwikimobile.domain.paramsContainer.*
 import isel.ps.eduwikimobile.service.IService
@@ -48,7 +47,7 @@ class AppController(
             FEED_ACTIONS -> getFeedActions(params as ActionsFeedParametersContainer)
             USER_FOLLOWING_CLASSES -> getUserFollowingClasses(params as CourseClassCollectionParametersContainer)
             USER_FOLLOWING_COURSES -> getUserFollowingCourses(params as CourseCollectionParametersContainer)
-            USER_FOLLOWING_PROGRAMME -> getUserFollowingProgramme(params as EntityParametersContainer<Programme>)
+            USER_FOLLOWING_PROGRAMME -> getUserFollowingProgramme(params as UserProgrammeParametersContainer)
             SPECIFIC_RESOURCE -> getSpecificResource(params as ResourceParametersContainer)
             AUTH_USER -> getAuthenticatedUser(params as LoginParametersContainer)
             USER_PROFILE_INFO -> getUserProfileInfo(params as EntityParametersContainer<User>)
@@ -110,9 +109,7 @@ class AppController(
     private fun getUserFollowingCourses(params: CourseCollectionParametersContainer) =
             service.getUserFollowingCourses(params)
 
-    private fun getUserFollowingProgramme(params: EntityParametersContainer<Programme>) =
+    private fun getUserFollowingProgramme(params: UserProgrammeParametersContainer) =
             service.getUserFollowingProgramme(params)
-
-
 
 }

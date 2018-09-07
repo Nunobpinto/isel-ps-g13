@@ -25,14 +25,15 @@ import kotlinx.android.synthetic.main.course_collection_fragment.*
 
 class ClassFragment : Fragment() {
 
-    lateinit var app: EduWikiApplication
-    lateinit var dataComunication: IDataComunication
-    lateinit var courseClassList: MutableList<CourseClass>
+    private lateinit var app: EduWikiApplication
+    private lateinit var courseClassList: MutableList<CourseClass>
     private lateinit var recyclerView: RecyclerView
     private lateinit var courseAdapter: CourseClassListAdapter
+    private lateinit var mainActivity: MainActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mainActivity = context as MainActivity
         app = activity.applicationContext as EduWikiApplication
         courseClassList = ArrayList()
     }
@@ -44,19 +45,19 @@ class ClassFragment : Fragment() {
         val bundle: Bundle = arguments
         val klass = bundle.getParcelable<Class>("item_selected")
 
-        if(courseClassList.size != 0) {
+        if (courseClassList.size != 0) {
             courseClassList.clear()
         }
+
         view.findViewById<ProgressBar>(R.id.courses_progress_bar).visibility = View.VISIBLE
         getAllCoursesOfClass(klass.classId)
 
+        mainActivity.toolbar.displayOptions = ActionBar.DISPLAY_SHOW_TITLE
+        mainActivity.toolbar.title = "${klass.lecturedTerm}/${klass.className}/Courses"
+        mainActivity.toolbar.subtitle = klass.createdBy
+
         courseAdapter = CourseClassListAdapter(context, courseClassList)
         recyclerView.adapter = courseAdapter
-
-        val mainActivity = context as MainActivity
-        mainActivity.toolbar.displayOptions = ActionBar.DISPLAY_SHOW_TITLE
-        mainActivity.toolbar.title = klass.lecturedTerm + "/" + klass.className + "/" + "Courses"
-        mainActivity.toolbar.subtitle = klass.createdBy
 
         val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(activity)
         recyclerView.layoutManager = layoutManager
@@ -82,12 +83,11 @@ class ClassFragment : Fragment() {
                             courses_progress_bar.visibility = View.GONE
                         },
                         errorCb = { error ->
-                            if(error.exception is TimeoutError) {
+                            if (error.exception is TimeoutError) {
                                 Toast.makeText(app, "Server isn't responding...", LENGTH_LONG).show()
-                            }
-                            else {
+                            } else {
                                 courses_progress_bar.visibility = View.GONE
-                                Toast.makeText(app, "Error", LENGTH_LONG).show()
+                                Toast.makeText(app, "${error.title} ${error.detail}", Toast.LENGTH_LONG).show()
                             }
                         }
                 )

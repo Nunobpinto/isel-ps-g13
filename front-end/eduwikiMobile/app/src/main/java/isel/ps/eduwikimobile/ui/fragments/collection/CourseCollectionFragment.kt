@@ -22,7 +22,7 @@ import kotlinx.android.synthetic.main.course_collection_fragment.*
 
 class CourseCollectionFragment : Fragment() {
 
-    lateinit var app: EduWikiApplication
+    private lateinit var app: EduWikiApplication
     private lateinit var recyclerView: RecyclerView
     private lateinit var courseList: MutableList<Course>
     private lateinit var cAdapter: CourseListAdapter
@@ -49,7 +49,7 @@ class CourseCollectionFragment : Fragment() {
         }
 
         view.findViewById<ProgressBar>(R.id.courses_progress_bar).visibility = View.VISIBLE
-        fetchCourseItems()
+        getCourseItems()
 
         cAdapter = CourseListAdapter(context, courseList)
         recyclerView.adapter = cAdapter
@@ -66,7 +66,7 @@ class CourseCollectionFragment : Fragment() {
         super.onPause()
     }
 
-    private fun fetchCourseItems() {
+    private fun getCourseItems() {
         app.controller.actionHandler(
                 AppController.ALL_COURSES,
                 CourseCollectionParametersContainer(
@@ -78,15 +78,15 @@ class CourseCollectionFragment : Fragment() {
                             courses_progress_bar.visibility = View.GONE
                         },
                         errorCb = { error ->
-                            if(error.exception is TimeoutError) {
+                            if (error.exception is TimeoutError) {
                                 Toast.makeText(app, "Server isn't responding...", LENGTH_LONG).show()
-                            }
-                            else {
+                            } else {
                                 courses_progress_bar.visibility = View.GONE
-                                Toast.makeText(app, "Error", LENGTH_LONG).show()
+                                Toast.makeText(app, "${error.title} ${error.detail}", Toast.LENGTH_LONG).show()
                             }
                         }
                 )
         )
     }
+
 }

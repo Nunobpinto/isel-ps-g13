@@ -8,9 +8,7 @@ import android.view.ViewGroup
 import android.widget.*
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
-import isel.ps.eduwikimobile.controller.AppController
 import isel.ps.eduwikimobile.domain.single.Homework
-import isel.ps.eduwikimobile.domain.paramsContainer.ResourceParametersContainer
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 
 class HomeworkListAdapter(var context: Context, var list: MutableList<Homework>) : RecyclerView.Adapter<HomeworkListAdapter.ListViewHolder>() {

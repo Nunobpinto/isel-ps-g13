@@ -50,7 +50,7 @@ class ExamListAdapter(var context: Context, var list: MutableList<Exam>) : Recyc
 
         fun bindView(position: Int) {
             val item = list[position]
-            examName.text = item.phase + " " + item.type
+            examName.text = "${item.phase} ${item.type}"
         }
 
         override fun onClick(v: View) {

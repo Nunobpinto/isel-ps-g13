@@ -23,13 +23,13 @@ import kotlinx.android.synthetic.main.class_collection_fragment.*
 
 class ClassCollectionOfSpecificCourseFragment : Fragment() {
 
-    lateinit var app: EduWikiApplication
+    private lateinit var app: EduWikiApplication
     private lateinit var recyclerView: RecyclerView
     private lateinit var classesOfSpecificCourseList: MutableList<Class>
     private lateinit var classAdapter: ClassListAdapter
-    lateinit var dataComunication: IDataComunication
-    var course: Course? = null
-    var courseProgramme: CourseProgramme? = null
+    private lateinit var dataComunication: IDataComunication
+    private var course: Course? = null
+    private var courseProgramme: CourseProgramme? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,7 +46,6 @@ class ClassCollectionOfSpecificCourseFragment : Fragment() {
         val term: Term = bundle.getParcelable("actualTerm")
         dataComunication.setTerm(term)
 
-
         if (classesOfSpecificCourseList.size != 0) {
             classesOfSpecificCourseList.clear()
         }
@@ -56,13 +55,13 @@ class ClassCollectionOfSpecificCourseFragment : Fragment() {
             course = dataComunication.getCourse()
             getClassesOfCourse(course!!.courseId, term.termId)
             activity.toolbar.title = course!!.shortName + "/" + term.shortName + "/" + "Classes"
+            activity.toolbar.subtitle = course!!.createdBy
         } else {
             courseProgramme = dataComunication.getCourseProgramme()
             getClassesOfCourse(courseProgramme!!.courseId, term.termId)
             activity.toolbar.title = courseProgramme!!.shortName + "/" + term.shortName + "/" + "Classes"
+            activity.toolbar.subtitle = courseProgramme!!.createdBy
         }
-
-        activity.toolbar.subtitle = ""
 
         classAdapter = ClassListAdapter(context, classesOfSpecificCourseList)
         recyclerView.adapter = classAdapter
@@ -91,7 +90,7 @@ class ClassCollectionOfSpecificCourseFragment : Fragment() {
                                 Toast.makeText(app, "Server isn't responding...", Toast.LENGTH_LONG).show()
                             } else {
                                 classes_progress_bar.visibility = View.GONE
-                                Toast.makeText(app, "Error", Toast.LENGTH_LONG).show()
+                                Toast.makeText(app, "${error.title} ${error.detail}", Toast.LENGTH_LONG).show()
                             }
                         }
                 )

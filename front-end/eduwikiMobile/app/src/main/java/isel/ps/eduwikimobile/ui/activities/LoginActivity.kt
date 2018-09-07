@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
+import com.android.volley.TimeoutError
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.comms.Session
@@ -28,10 +29,9 @@ class LoginActivity : AppCompatActivity() {
         btn_login.isEnabled = false
         val username = input_username.text.toString()
         val password = input_password.text.toString()
-        if(username.isEmpty()|| password.isEmpty()){
-            Toast.makeText(this, "Please fill all the authentication fields" , Toast.LENGTH_LONG).show()
-        }
-        else {
+        if (username.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Please fill all the authentication fields", Toast.LENGTH_LONG).show()
+        } else {
             app.controller.actionHandler(
                     AppController.AUTH_USER,
                     LoginParametersContainer(
@@ -44,8 +44,12 @@ class LoginActivity : AppCompatActivity() {
                                 startActivity(intent)
                             },
                             errorCb = { error ->
-                                btn_login.isEnabled = true
-                                Toast.makeText(app, error.message, Toast.LENGTH_LONG).show()
+                                if (error.exception is TimeoutError) {
+                                    Toast.makeText(app, "Server isn't responding...", Toast.LENGTH_LONG).show()
+                                } else {
+                                    btn_login.isEnabled = true
+                                    Toast.makeText(app, "${error.title} ${error.detail}", Toast.LENGTH_LONG).show()
+                                }
                             }
                     )
             )

@@ -23,11 +23,11 @@ import kotlinx.android.synthetic.main.course_collection_fragment.*
 
 class CourseCollectionOfSpecificProgrammeFragment : Fragment() {
 
-    lateinit var app: EduWikiApplication
+    private lateinit var app: EduWikiApplication
     private lateinit var recyclerView: RecyclerView
     private lateinit var coursesOfProgrammeList: MutableList<CourseProgramme>
     private lateinit var cAdapter: CourseProgrammeListAdapter
-    lateinit var dataComunication: IDataComunication
+    private lateinit var dataComunication: IDataComunication
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,13 +39,11 @@ class CourseCollectionOfSpecificProgrammeFragment : Fragment() {
         val view: View = inflater.inflate(R.layout.course_collection_fragment, container, false)
         recyclerView = view.findViewById(R.id.courses_recycler_view)
 
-        val programmeId = dataComunication.getProgramme()!!.programmeId
-
         if (coursesOfProgrammeList.size != 0) {
             coursesOfProgrammeList.clear()
         }
         view.findViewById<ProgressBar>(R.id.courses_progress_bar).visibility = View.VISIBLE
-        getCoursesOfProgramme(programmeId)
+        getCoursesOfProgramme(dataComunication.getProgramme()!!.programmeId)
 
         cAdapter = CourseProgrammeListAdapter(context, coursesOfProgrammeList)
         recyclerView.adapter = cAdapter
@@ -75,12 +73,11 @@ class CourseCollectionOfSpecificProgrammeFragment : Fragment() {
                             courses_progress_bar.visibility = View.GONE
                         },
                         errorCb = { error ->
-                            if(error.exception is TimeoutError) {
+                            if (error.exception is TimeoutError) {
                                 Toast.makeText(app, "Server isn't responding...", LENGTH_LONG).show()
-                            }
-                            else {
+                            } else {
                                 courses_progress_bar.visibility = View.GONE
-                                Toast.makeText(app, "Error", LENGTH_LONG).show()
+                                Toast.makeText(app, "${error.title} ${error.detail}", Toast.LENGTH_LONG).show()
                             }
                         }
                 )

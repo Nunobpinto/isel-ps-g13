@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.course_collection_fragment.*
 
 class UserCourseCollectionFragment : Fragment() {
 
-    lateinit var app: EduWikiApplication
+    private lateinit var app: EduWikiApplication
     private lateinit var recyclerView: RecyclerView
     private lateinit var courseList: MutableList<Course>
     private lateinit var cAdapter: CourseListAdapter
@@ -74,7 +74,7 @@ class UserCourseCollectionFragment : Fragment() {
                                 Toast.makeText(app, "Server isn't responding...", LENGTH_LONG).show()
                             } else {
                                 courses_progress_bar.visibility = View.GONE
-                                Toast.makeText(app, "Error", LENGTH_LONG).show()
+                                Toast.makeText(app, "${error.title} ${error.detail}", Toast.LENGTH_LONG).show()
                             }
                         }
                 )

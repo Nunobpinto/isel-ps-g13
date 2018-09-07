@@ -49,8 +49,7 @@ class WorkAssignmentListAdapter(var context: Context, var list: MutableList<Work
         fun getItem(position: Int) = list[position]
 
         fun bindView(position: Int) {
-            val item = list[position]
-            workAssignmentName.text = " " + list[position].phase + " Work Assignment"
+            workAssignmentName.text = "${list[position].phase} Work Assignment"
         }
 
         override fun onClick(v: View) {

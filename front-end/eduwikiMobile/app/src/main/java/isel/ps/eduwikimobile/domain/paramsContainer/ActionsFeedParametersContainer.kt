@@ -2,7 +2,6 @@ package isel.ps.eduwikimobile.domain.paramsContainer
 
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.domain.collection.UserActionCollection
-import isel.ps.eduwikimobile.exceptions.AppException
 import isel.ps.eduwikimobile.exceptions.ServerErrorResponse
 
 class ActionsFeedParametersContainer (

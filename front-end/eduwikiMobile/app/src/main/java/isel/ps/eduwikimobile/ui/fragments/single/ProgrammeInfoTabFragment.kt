@@ -7,23 +7,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.domain.single.Programme
 import isel.ps.eduwikimobile.ui.IDataComunication
 
 class ProgrammeInfoTabFragment : Fragment() {
 
-    lateinit var dataComunication: IDataComunication
-    lateinit var programme: Programme
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        programme = dataComunication.getProgramme()!!
-    }
+    private lateinit var dataComunication: IDataComunication
+    private lateinit var programme: Programme
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater!!.inflate(R.layout.programme_info_tab_fragment, container, false)
+        programme = dataComunication.getProgramme()!!
 
         val programmeAcademicDegree = view.findViewById<TextView>(R.id.academic_degree)
         val programmeDuration = view.findViewById<TextView>(R.id.duration)

@@ -1,6 +1,5 @@
 package isel.ps.eduwikimobile.ui.fragments.single
 
-import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.ActionBar
@@ -14,8 +13,6 @@ import com.android.volley.TimeoutError
 import isel.ps.eduwikimobile.EduWikiApplication
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.controller.AppController
-import isel.ps.eduwikimobile.domain.single.Course
-import isel.ps.eduwikimobile.domain.single.Term
 import isel.ps.eduwikimobile.domain.single.WorkAssignment
 import isel.ps.eduwikimobile.domain.paramsContainer.ResourceParametersContainer
 import isel.ps.eduwikimobile.ui.IDataComunication
@@ -27,8 +24,6 @@ class WorkAssignmentFragment : Fragment() {
     lateinit var workAssignment: WorkAssignment
     lateinit var mainActivity: MainActivity
     lateinit var app: EduWikiApplication
-    var course: Course? = null
-    var term: Term? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,9 +35,6 @@ class WorkAssignmentFragment : Fragment() {
         val view: View = inflater.inflate(R.layout.work_assignment_details_fragment, container, false)
         val bundle: Bundle = arguments
         workAssignment = bundle.getParcelable("item_selected")
-        dataComunication.setWorkAssignment(workAssignment)
-        course = dataComunication.getCourse()
-        term = dataComunication.getTerm()
 
         val workAssignmentName = view.findViewById<TextView>(R.id.work_assignment_details_name)
         val workAssignmentDueDate = view.findViewById<TextView>(R.id.work_assignment_insert_due_date)
@@ -75,10 +67,9 @@ class WorkAssignmentFragment : Fragment() {
                                 app = app,
                                 successCb = { _ -> Toast.makeText(mainActivity, "Download Completed", Toast.LENGTH_LONG).show() },
                                 errorCb = { error ->
-                                    if(error.exception is TimeoutError) {
+                                    if (error.exception is TimeoutError) {
                                         Toast.makeText(app, "Server isn't responding...", Toast.LENGTH_LONG).show()
-                                    }
-                                    else Toast.makeText(mainActivity, "Error", Toast.LENGTH_LONG).show()
+                                    } else Toast.makeText(app, "${error.title} ${error.detail}", Toast.LENGTH_LONG).show()
                                 }
                         )
                 )
@@ -96,10 +87,9 @@ class WorkAssignmentFragment : Fragment() {
                                 app = app,
                                 successCb = { _ -> Toast.makeText(mainActivity, "Download Completed", Toast.LENGTH_LONG).show() },
                                 errorCb = { error ->
-                                    if(error.exception is TimeoutError) {
+                                    if (error.exception is TimeoutError) {
                                         Toast.makeText(app, "Server isn't responding...", Toast.LENGTH_LONG).show()
-                                    }
-                                    else Toast.makeText(mainActivity, "Error", Toast.LENGTH_LONG).show()
+                                    } else Toast.makeText(app, "${error.title} ${error.detail}", Toast.LENGTH_LONG).show()
                                 }
                         )
                 )
@@ -107,16 +97,5 @@ class WorkAssignmentFragment : Fragment() {
         }
         return view
     }
-
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-
-        try {
-            dataComunication = context as IDataComunication
-        } catch (e: ClassCastException) {
-            throw ClassCastException(e.message)
-        }
-    }
-
 
 }

@@ -9,13 +9,8 @@ import android.widget.TextView
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.domain.single.Lecture
 import isel.ps.eduwikimobile.ui.activities.MainActivity
-import org.w3c.dom.Text
-import java.time.Duration
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.util.*
 
-class LectureListAdapter (var context: Context, var list: MutableList<Lecture>) : RecyclerView.Adapter<LectureListAdapter.ListViewHolder>() {
+class LectureListAdapter(var context: Context, var list: MutableList<Lecture>) : RecyclerView.Adapter<LectureListAdapter.ListViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ListViewHolder {
         val view: View = LayoutInflater.from(parent!!.context).inflate(R.layout.lecture_item_row, parent, false)
@@ -54,16 +49,12 @@ class LectureListAdapter (var context: Context, var list: MutableList<Lecture>) 
         fun getItem(position: Int) = list[position]
 
         fun bindView(position: Int) {
-            val item = list[position]
-            val hours = Duration.parse(item.duration).toHours()
-            val minutes = Duration.parse(item.duration).minusHours(hours).toMinutes()
-            weekDay.text = item.weekDay
+            weekDay.text = list[position].weekDay
         }
 
         override fun onClick(v: View) {
             listener.onClick(v, adapterPosition)
         }
-
     }
 
 }

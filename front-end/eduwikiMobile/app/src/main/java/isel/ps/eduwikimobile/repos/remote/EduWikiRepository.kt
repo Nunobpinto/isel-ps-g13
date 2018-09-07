@@ -18,12 +18,10 @@ import isel.ps.eduwikimobile.comms.Session
 import isel.ps.eduwikimobile.domain.single.User
 import java.util.*
 import isel.ps.eduwikimobile.ui.activities.MainActivity
-import isel.ps.eduwikimobile.exceptions.AppException
 import isel.ps.eduwikimobile.domain.paramsContainer.LoginParametersContainer
 import isel.ps.eduwikimobile.domain.paramsContainer.ParametersContainer
 import isel.ps.eduwikimobile.domain.paramsContainer.ResourceParametersContainer
 import isel.ps.eduwikimobile.exceptions.ServerErrorResponse
-import java.util.concurrent.TimeoutException
 import kotlin.collections.ArrayList
 
 class EduWikiRepository : IEduWikiRepository {
@@ -95,15 +93,6 @@ class EduWikiRepository : IEduWikiRepository {
         tagList.clear()
     }
 
-//    private fun handlerException(error: ServerErrorResponse): ServerErrorResponse {
-//        if (error.exception is TimeoutException)
-//            return ServerErrorResponse(
-//                    "Server isn't responding..."
-//
-//            )
-//        return AppException(error.message ?: "An error ocurred! Try again later!")
-//    }
-
     private fun isConnected(context: Context): Boolean {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetworkInfo = connectivityManager.activeNetworkInfo
@@ -156,8 +145,8 @@ class EduWikiRepository : IEduWikiRepository {
             uri: String,
             app: EduWikiApplication
     ) {
-        activity.url = uri
-        activity.header = contentDisposition
+        activity.fileUrl = uri
+        activity.fileHeader = contentDisposition
         if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             Log.e("Permission status", "You have permission")
             downloadFile(contentDisposition, uri, app)

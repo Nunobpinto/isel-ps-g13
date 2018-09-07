@@ -28,29 +28,32 @@ import kotlinx.android.synthetic.main.course_programme_details_fragment.*
 
 class CourseProgrammeFragment : Fragment() {
 
-    lateinit var app: EduWikiApplication
-    lateinit var dataComunication: IDataComunication
-    lateinit var termList: MutableList<Term>
-    lateinit var courseProgramme: CourseProgramme
+    private lateinit var app: EduWikiApplication
+    private lateinit var dataComunication: IDataComunication
+    private lateinit var termList: MutableList<Term>
+    private lateinit var courseProgramme: CourseProgramme
+    private lateinit var mainActivity: MainActivity
     private lateinit var recyclerView: RecyclerView
     private lateinit var courseTermsAdapter: CourseTermListAdapter
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mainActivity = context as MainActivity
         app = activity.applicationContext as EduWikiApplication
         termList = ArrayList()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.course_programme_details_fragment, container, false)
-        val courseName = view.findViewById<TextView>(R.id.course_programme_full_name)
-
         recyclerView = view.findViewById(R.id.course_programme_recycler_view)
+        val courseName = view.findViewById<TextView>(R.id.course_programme_full_name)
 
         val bundle: Bundle = arguments
         courseProgramme = bundle.getParcelable("item_selected")
         dataComunication.setCourseProgramme(courseProgramme)
-        view.findViewById<TextView>(R.id.course_programme_to_insert_optional).text = if(courseProgramme.optional) "Yes" else "No"
+
+        view.findViewById<TextView>(R.id.course_programme_to_insert_optional).text = if (courseProgramme.optional) "Yes" else "No"
         view.findViewById<TextView>(R.id.course_programme_to_insert_term).text = courseProgramme.lecturedTerm
         view.findViewById<TextView>(R.id.course_programme_to_insert_credits).text = courseProgramme.credits.toString()
 
@@ -64,9 +67,7 @@ class CourseProgrammeFragment : Fragment() {
         courseTermsAdapter = CourseTermListAdapter(context, termList)
         recyclerView.adapter = courseTermsAdapter
 
-        val mainActivity = context as MainActivity
         mainActivity.toolbar.displayOptions = ActionBar.DISPLAY_SHOW_TITLE
-
         mainActivity.toolbar.title = "${courseProgramme.programmeShortName}/${courseProgramme.shortName}"
         mainActivity.toolbar.subtitle = courseProgramme.createdBy
 
@@ -106,12 +107,11 @@ class CourseProgrammeFragment : Fragment() {
                             course_programme_progress_bar.visibility = View.GONE
                         },
                         errorCb = { error ->
-                            if(error.exception is TimeoutError) {
+                            if (error.exception is TimeoutError) {
                                 Toast.makeText(app, "Server isn't responding...", Toast.LENGTH_LONG).show()
-                            }
-                            else {
+                            } else {
                                 course_programme_progress_bar.visibility = View.GONE
-                                Toast.makeText(app, "Error", Toast.LENGTH_LONG).show()
+                                Toast.makeText(app, "${error.title} ${error.detail}", Toast.LENGTH_LONG).show()
                             }
                         }
                 )

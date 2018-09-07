@@ -7,7 +7,6 @@ import com.android.volley.toolbox.Volley
 import isel.ps.eduwikimobile.controller.AppController
 import isel.ps.eduwikimobile.repos.remote.EduWikiRepository
 import isel.ps.eduwikimobile.repos.remote.IEduWikiRepository
-import isel.ps.eduwikimobile.service.IService
 import isel.ps.eduwikimobile.service.Service
 
 class EduWikiApplication : Application() {

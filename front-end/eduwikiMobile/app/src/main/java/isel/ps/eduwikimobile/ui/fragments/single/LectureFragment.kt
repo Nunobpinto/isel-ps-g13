@@ -1,6 +1,5 @@
 package isel.ps.eduwikimobile.ui.fragments.single
 
-import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.ActionBar
@@ -10,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import isel.ps.eduwikimobile.R
 import isel.ps.eduwikimobile.domain.single.Lecture
-import isel.ps.eduwikimobile.ui.IDataComunication
 import isel.ps.eduwikimobile.ui.activities.MainActivity
 import java.time.Duration
 import java.time.LocalTime
@@ -18,9 +16,8 @@ import java.time.format.DateTimeFormatter
 
 class LectureFragment : Fragment() {
 
-    lateinit var dataComunication: IDataComunication
-    lateinit var lecture: Lecture
-    lateinit var mainActivity: MainActivity
+    private lateinit var lecture: Lecture
+    private lateinit var mainActivity: MainActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +28,6 @@ class LectureFragment : Fragment() {
         val view: View = inflater.inflate(R.layout.lecture_details_fragment, container, false)
         val bundle: Bundle = arguments
         lecture = bundle.getParcelable("item_selected")
-        dataComunication.setLecture(lecture)
 
         val lectureName = view.findViewById<TextView>(R.id.lecture_details_name)
         val lectureBegins = view.findViewById<TextView>(R.id.insert_lecture_begins)
@@ -45,7 +41,7 @@ class LectureFragment : Fragment() {
         lectureName.text = "${lecture.weekDay} Lecture"
         val durationHours = Duration.parse(lecture.duration).toHours()
         val durationMinutes = Duration.parse(lecture.duration).minusHours(durationHours).toMinutes()
-        var beginsHours = LocalTime.parse(lecture.begins, DateTimeFormatter.ISO_TIME).hour
+        val beginsHours = LocalTime.parse(lecture.begins, DateTimeFormatter.ISO_TIME).hour
         val beginsMinutes = LocalTime.parse(lecture.begins, DateTimeFormatter.ISO_TIME).minute
         lectureLocation.text = lecture.location
 
@@ -58,16 +54,6 @@ class LectureFragment : Fragment() {
         else lectureDuration.text = "${durationHours}h"
 
         return view
-    }
-
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-
-        try {
-            dataComunication = context as IDataComunication
-        } catch (e: ClassCastException) {
-            throw ClassCastException(e.message)
-        }
     }
 
 }

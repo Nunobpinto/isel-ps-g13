@@ -1,6 +1,6 @@
 package isel.ps.eduwikimobile.service
 
-import isel.ps.eduwikimobile.API_URL
+import isel.ps.eduwikimobile.API_URL_EMULATOR
 import isel.ps.eduwikimobile.domain.collection.*
 import isel.ps.eduwikimobile.domain.single.Organization
 import isel.ps.eduwikimobile.domain.single.Programme
@@ -13,16 +13,16 @@ class Service(
 ) : IService {
 
     companion object {
-        val ALL_PROGRAMMES_URL = API_URL + "/programmes"
-        val ALL_COURSES_URL = API_URL + "/courses"
-        val ALL_CLASSES_URL = API_URL + "/classes"
-        val ORGANIZATION_URL = API_URL + "/organization"
-        val RESOURCES = API_URL + "/resources"
-        val USER_FOLLOWING_CLASSES = API_URL + "/user/classes"
-        val USER_FOLLOWING_COURSES = API_URL + "/user/courses"
-        val USER_FOLLOWING_PROGRAMME = API_URL + "/user/programme"
-        val FEED = API_URL + "/user/feed"
-        val AUTH_USER = API_URL + "/user"
+        val ALL_PROGRAMMES_URL = API_URL_EMULATOR + "/programmes"
+        val ALL_COURSES_URL = API_URL_EMULATOR + "/courses"
+        val ALL_CLASSES_URL = API_URL_EMULATOR + "/classes"
+        val ORGANIZATION_URL = API_URL_EMULATOR + "/organization"
+        val RESOURCES = API_URL_EMULATOR + "/resources"
+        val USER_FOLLOWING_CLASSES = API_URL_EMULATOR + "/user/classes"
+        val USER_FOLLOWING_COURSES = API_URL_EMULATOR + "/user/courses"
+        val USER_FOLLOWING_PROGRAMME = API_URL_EMULATOR + "/user/programme"
+        val FEED = API_URL_EMULATOR + "/user/feed"
+        val AUTH_USER = API_URL_EMULATOR + "/user"
     }
 
     override fun getAllProgrammes(params: ProgrammeCollectionParametersContainer) =
@@ -139,7 +139,7 @@ class Service(
                     params
             )
 
-    override fun getUserFollowingProgramme(params: EntityParametersContainer<Programme>) =
+    override fun getUserFollowingProgramme(params: UserProgrammeParametersContainer) =
             repository.getEntity(
                     USER_FOLLOWING_PROGRAMME,
                     Programme::class.java,
