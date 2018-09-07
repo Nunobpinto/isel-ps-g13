@@ -67,9 +67,13 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
     @Bean
     fun authenticationProvider(): DaoAuthenticationProvider {
         val auth = DaoAuthenticationProvider()
+        val passwordEncoder = passwordEncoder()
+        println(passwordEncoder.encode("1234"))
+        println(passwordEncoder.encode("1234"))
+        println(passwordEncoder.encode("1234"))
         auth.isHideUserNotFoundExceptions = false
         auth.setUserDetailsService(userDetailsServiceImpl)
-        auth.setPasswordEncoder(passwordEncoder())
+        auth.setPasswordEncoder(passwordEncoder)
         return auth
     }
 

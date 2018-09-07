@@ -38,7 +38,7 @@ class UsersController {
             @RequestBody inputUser: UserInputModel
     ) = userService.saveUser(inputUser)
 
-    @PostMapping("/{username}/report")
+    @PostMapping("/{username}/reports")
     fun reportUser(
             principal: Principal,
             @PathVariable username: String,

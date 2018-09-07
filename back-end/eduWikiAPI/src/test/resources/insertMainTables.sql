@@ -488,13 +488,13 @@ insert into isel.homework_report(homework_id, reported_by, homework_name, sheet_
 -- Student Insert
 
 insert into isel.user_account (user_username, user_password, user_given_name, user_family_name, user_email, user_locked)
-    values ('ze', 1234, 'José', 'Antunes', 'ze@isel.pt', false);
+    values ('ze', '$2a$10$kgFRBU1tqlXtyvi03mSszeflOHOqbfVj0AxV9MbuBQ0ftgkGwO0wO', 'José', 'Antunes', 'ze@isel.pt', false);
 
 insert into isel.user_account (user_username, user_password, user_given_name, user_family_name, user_email, user_locked)
-    values ('bruno', 1234, 'Bruno', 'Filipe', 'bruno@isel.pt', false);
+    values ('bruno', '$2a$10$2gj4kGRHE3BrJNfvQuwjiOINMfw1lgMVpL3OwhIyAp8Q6BKX6vkOu', 'Bruno', 'Filipe', 'bruno@isel.pt', false);
 
 insert into isel.user_account (user_username, user_password, user_given_name, user_family_name, user_email, user_locked)
-    values ('jg', 1234, 'João', 'Gameiro', 'jg@isel.pt', false);
+    values ('jg', '$2a$10$9flToPHIXh1FM0tyZI6ph.o6X/SFmLJAdlcM.bVQ8VwVKriUOiU8C', 'João', 'Gameiro', 'jg@isel.pt', false);
 
 insert into isel.user_report (user_username, reason, reported_by, time_stamp)
     values ('ze', 'bad infos', 'bruno', current_timestamp );
