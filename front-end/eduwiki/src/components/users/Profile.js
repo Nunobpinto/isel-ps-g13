@@ -44,7 +44,7 @@ class Profile extends React.Component {
         {
           this.props.user.reputation.role === 'ROLE_ADMIN'
             ? <div>
-              <div className='centre_div'>
+              <div className='centre_div_profile'>
 
                 <h1>Staged resources</h1>
                 <Layout style={{ background: '#fff' }}>
@@ -97,8 +97,6 @@ class Profile extends React.Component {
                     }
                   </Content>
                 </Layout>
-              </div>
-              <div className='right_side'>
                 <h1>Reputation</h1>
                 <UserReputation />
               </div>

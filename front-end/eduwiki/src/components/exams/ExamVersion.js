@@ -14,7 +14,7 @@ export default class extends React.Component {
     this.showResource = this.showResource.bind(this)
   }
   showResource (sheet) {
-    const resourceUrl = `http://localhost:8080/resources/${sheet}`
+    const resourceUrl = `${config.API_PATH}/resources/${sheet}`
     window.open(resourceUrl)
   }
   render () {

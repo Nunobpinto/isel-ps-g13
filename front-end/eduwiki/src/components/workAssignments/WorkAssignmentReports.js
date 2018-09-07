@@ -161,8 +161,8 @@ class WorkAssignmentReports extends React.Component {
           voteUp: false
         })
       }))
-      .catch(_ => {
-        message.error('Error while processing your vote')
+      .catch(error => {
+        message.error(error.detail)
         this.setState({voteUp: false})
       })
   }
@@ -194,8 +194,8 @@ class WorkAssignmentReports extends React.Component {
           voteDown: false
         })
       }))
-      .catch(_ => {
-        message.error('Error while processing your vote')
+      .catch(error => {
+        message.error(error.detail)
         this.setState({voteDown: false})
       })
   }

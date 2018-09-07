@@ -1,6 +1,5 @@
 import React from 'react'
-import {message, Form, Input, Button} from 'antd'
-import fetcher from '../../fetcher'
+import {Form, Input, Button} from 'antd'
 
 class RegisterForm extends React.Component {
   constructor (props) {
@@ -120,42 +119,6 @@ class RegisterForm extends React.Component {
         </Form.Item>
       </Form>
     )
-  }
-
-  componentDidUpdate () {
-    if (this.state.register) {
-      const user = {
-        username: this.state.username,
-        family_name: this.state.familyName,
-        personal_email: this.state.personalEmail,
-        given_name: this.state.givenName,
-        organization_email: this.state.organizationEmail,
-        password: this.state.password
-      }
-      const options = {
-        method: 'POST',
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Content-Type': 'application/json',
-          'tenant-uuid': '4cd93a0f-5b5c-4902-ae0a-181c780fedb1'
-        },
-        body: JSON.stringify(user)
-      }
-      fetcher('http://localhost:8080/users', options)
-        .then(_ => {
-          this.setState(prevState => {
-            const current = prevState.current + 1
-            return ({
-              register: false,
-              current: current
-            })
-          })
-        })
-        .catch(error => {
-          message.error(error.detail)
-          this.setState({register: false})
-        })
-    }
   }
 }
 

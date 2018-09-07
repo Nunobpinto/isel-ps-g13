@@ -27,7 +27,7 @@ export default class extends React.Component {
             <Avatar src='/defaultUser.png' />
             <TransparentButton
               destiny='/user'
-              message={`${this.props.user.username} (${this.props.user.reputation.role} - ${this.props.user.reputation.points} points)`} />
+              message={`${this.props.user.username} (${this.props.user.reputation.role.split('_')[1]} - ${this.props.user.reputation.points} points)`} />
           </Col>
           <Col span={6} />
           <Col span={6}>

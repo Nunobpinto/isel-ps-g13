@@ -97,7 +97,7 @@ export default class extends React.Component {
               <h1>{item.className}</h1>
               <p>Term : {item.lecturedTerm}</p>
               <p>Programme : {item.programmeShortName}</p>
-              <p>Created By : <a href={`/users/${item.createdBy}`}>{item.createdBy}</a>{item.createdBy}</p>
+              <p>Created By : <a href={`/users/${item.createdBy}`}>{item.createdBy}</a></p>
               <p>Created at: {timestampParser(item.timestamp)}</p>
               <IconText
                 type='check'

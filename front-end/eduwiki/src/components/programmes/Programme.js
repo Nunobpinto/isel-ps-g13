@@ -51,7 +51,7 @@ class Programme extends React.Component {
     return (
       <div>
         <div className='title_div'>
-          <h1>{this.state.full_name} - {this.state.short_name} <small>({timestampParser(this.state.timestamp)})</small></h1>
+          <h1>{this.state.full_name} <small>({timestampParser(this.state.timestamp)})</small></h1>
         </div>
         <div className='version_div'>
           <Popover placement='bottom' content={<ProgrammeVersions auth={window.localStorage.getItem('auth')} id={this.props.match.params.id} version={this.state.versionNumber} />} trigger='click'>
@@ -60,6 +60,7 @@ class Programme extends React.Component {
             </Button>
           </Popover>
         </div>
+        <h3>{this.state.short_name}</h3>
         <p>Created By : <a href={`/users/${this.state.createdBy}`}>{this.state.createdBy}</a></p>
         <p>
           Votes : {this.state.votes}
@@ -280,8 +281,8 @@ class Programme extends React.Component {
           votes: prevState.votes - 1
         }))
       })
-      .catch(_ => {
-        message.error('Error while processing your vote')
+      .catch(error => {
+        message.error(error.detail)
         this.setState({ voteDown: false })
       })
   }
@@ -304,7 +305,10 @@ class Programme extends React.Component {
           allCourses: newCourses
         })
       }))
-      .catch(_ => message.error('Error fetching other courses'))
+      .catch(_ => {
+        message.error('Error fetching other courses')
+        this.setState({seeAllCourses: false})
+      })
   }
 
   componentDidMount () {

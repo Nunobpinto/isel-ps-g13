@@ -1,6 +1,8 @@
 import React from 'react'
 import { List, message } from 'antd'
 import fetcher from '../../fetcher'
+import timestampParser from '../../timestampParser'
+import config from '../../config';
 
 export default class extends React.Component {
   constructor (props) {
@@ -18,7 +20,7 @@ export default class extends React.Component {
           <List.Item>
             <p>
               {item.pointsGiven > 0 ? '+' : '-' } {item.pointsGiven} given
-              by {item.givenBy} for {item.action.action_type} {item.action.entity_type} on {item.action.timestamp}
+              by {item.givenBy} for {item.action.action_type} {item.action.entity_type} on {timestampParser(item.action.timestamp)}
             </p>
           </List.Item>
         )}
@@ -26,7 +28,7 @@ export default class extends React.Component {
     )
   }
   componentDidMount () {
-    const uri = `http://localhost:8080/user/reputation`
+    const uri = `${config.API_PATH}/user/reputation`
     const options = {
       headers: {
         'Access-Control-Allow-Origin': '*',

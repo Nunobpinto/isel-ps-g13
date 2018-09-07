@@ -402,8 +402,8 @@ class Programmes extends React.Component {
           voteUpStaged: false
         })
       }))
-      .catch(_ => {
-        message.error('Error while processing your vote')
+      .catch(error => {
+        message.error(error.detail)
         this.setState({voteUpStaged: false})
       })
   }
@@ -435,8 +435,8 @@ class Programmes extends React.Component {
           voteDownStaged: false
         })
       }))
-      .catch(_ => {
-        message.error('Error while processing your vote')
+      .catch(error => {
+        message.error(error.detail)
         this.setState({voteDownStaged: false})
       })
   }

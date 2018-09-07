@@ -2,6 +2,7 @@ import React from 'react'
 import { Timeline, message } from 'antd'
 import fetcher from '../../fetcher'
 import config from '../../config'
+import timestampParser from '../../timestampParser'
 
 export default class extends React.Component {
   constructor (props) {
@@ -16,7 +17,7 @@ export default class extends React.Component {
       <Timeline>
         {this.state.actions.map(action => (
           <Timeline.Item>
-            {this.parseActionType(action.action_type)} {this.parseEntityType(action.entity_type)} on {action.timestamp}
+            {this.parseActionType(action.action_type)} {this.parseEntityType(action.entity_type)} on {timestampParser(action.timestamp)}
           </Timeline.Item>
         ))}
       </Timeline>

@@ -124,6 +124,9 @@ export default class extends React.Component {
         } else {
           message.error('Error processing your vote!!')
         }
+        return ({
+          voteUp: false
+        })
       })
   }
   voteDown () {
@@ -146,7 +149,7 @@ export default class extends React.Component {
         prevState.exam.votes -= 1
         message.success('Successfully voted!!')
         return ({
-          voteUp: false,
+          voteDown: false,
           exam: prevState.exam
         })
       }))
@@ -156,6 +159,9 @@ export default class extends React.Component {
         } else {
           message.error('Error processing your vote!!')
         }
+        return ({
+          voteDown: false
+        })
       })
   }
   componentDidUpdate () {

@@ -38,7 +38,7 @@ class Class extends React.Component {
           <h1>
             <strong>Class {this.state.klass.lecturedTerm}</strong>
              /
-            <strong>{this.state.klass.programmeShortName}</strong>
+            <a href={`/programmes/${this.state.klass.programmeId}`}><strong>{this.state.klass.programmeShortName}</strong></a>
              /
             <strong>{this.state.klass.className} - ({timestampParser(this.state.klass.timestamp)})</strong>
           </h1>
@@ -341,7 +341,7 @@ class Class extends React.Component {
     }
     fetcher(uri, header)
       .then(klass => {
-        const coursesUri = `${config.API_PATH}classes/${id}/courses`
+        const coursesUri = `${config.API_PATH}/classes/${id}/courses`
         fetcher(coursesUri, header)
           .then(json => {
             this.setState({

@@ -1,5 +1,5 @@
 import React from 'react'
-import {message, Button, Steps} from 'antd'
+import {message, Button, Steps, Spin} from 'antd'
 import RegisterForm from './RegisterForm'
 import {Redirect} from 'react-router-dom'
 import fetcher from '../../fetcher'
@@ -83,6 +83,7 @@ export default class Register extends React.Component {
       <div id='holder'>
         <img alt='EduWiki Logo' id='home-logo' src='logo_color.png' />
         <div style={{ padding: '30px' }}>
+          {this.state.register && <Spin tip='Submiting your regist' />}
           <Steps current={current}>
             {this.state.steps.map(item => <Step key={item.title} title={item.title} />)}
           </Steps>
