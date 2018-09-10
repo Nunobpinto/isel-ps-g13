@@ -127,7 +127,7 @@ export default class extends React.Component {
         'tenant-uuid': config.TENANT_UUID
       }
     }
-    const url = `${config.API_PATH}/courses/${this.props.courseId}/terms`
+    const url = `${config.API_PATH}/terms`
     fetcher(url, options)
       .then(json => this.setState({terms: json.termList}))
       .catch(error => message.error(error.detail))

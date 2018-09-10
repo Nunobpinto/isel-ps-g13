@@ -45,15 +45,15 @@ export default class extends React.Component {
   }
   parseActionType (action) {
     switch (action) {
-      case 'CREATE': return 'created a'
-      case 'ALTER': return 'changed a'
-      case 'DELETE': return 'deleted a'
-      case 'VOTE_UP': return 'voted up on a'
-      case 'VOTE_DOWN': return 'voted down on a'
-      case 'APPROVE_REPORT': return 'approved a'
-      case 'APPROVE_STAGE': return 'approved a'
-      case 'REJECT_REPORT': return 'rejected a'
-      case 'REJECT_STAGE': return 'rejected a'
+      case 'CREATE': return 'created - '
+      case 'ALTER': return 'changed - '
+      case 'DELETE': return 'deleted - '
+      case 'VOTE_UP': return 'voted up on - '
+      case 'VOTE_DOWN': return 'voted down on - '
+      case 'APPROVE_REPORT': return 'approved - '
+      case 'APPROVE_STAGE': return 'approved - '
+      case 'REJECT_REPORT': return 'rejected - '
+      case 'REJECT_STAGE': return 'rejected - '
       default: return ''
     }
   }
@@ -68,6 +68,9 @@ export default class extends React.Component {
       case 'course_class' : return 'course in class'
       case 'course_class_report' : return 'report on course in class'
       case 'course_class_stage' : return 'staged course in class'
+      case 'course_programme': return 'course in programme'
+      case 'course_programme_report': return 'course in programme report'
+      case 'course_programme_stage': return 'course in programme stage'
       case 'exam' : return 'exam'
       case 'exam_report' : return 'report on exam'
       case 'exam_stage' : return 'staged course in class'
@@ -82,9 +85,9 @@ export default class extends React.Component {
       case 'programme' : return 'programme'
       case 'programme_report' : return 'report on programme'
       case 'programme_stage' : return 'staged programme'
-      case 'work_assignment' : return 'work_assignment'
-      case 'work_assignment_report' : return 'report on work_assignment'
-      case 'work_assignment_stage' : return 'staged work_assignment'
+      case 'work_assignment' : return 'work assignment'
+      case 'work_assignment_report' : return 'report on work assignment'
+      case 'work_assignment_stage' : return 'staged work assignment'
       default: return ''
     }
   }

@@ -29,6 +29,7 @@ export default class extends React.Component {
                   <p>Due Date : {work.dueDate}</p>
                   <p>Created At : {timestampParser(work.timestamp)}</p>
                   <button onClick={() => this.showResource(work.sheetId)}> See Homework sheet</button>
+                  <a href={`/classes/${this.props.classId}/courses/${this.props.courseId}/homeworks/${work.homeworkId}`}><p>See its page</p></a>
                 </Card>
               </Col>
             </Row>

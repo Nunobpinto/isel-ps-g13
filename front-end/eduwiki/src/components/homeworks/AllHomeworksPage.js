@@ -182,6 +182,7 @@ class AllHomeworks extends React.Component {
               itemLayout='vertical'
               size='large'
               bordered
+              footer={<a href={`/classes/${this.props.classId}/courses/${this.props.courseId}`}><Button>Go back to Course Class</Button></a>}
               loading={this.state.loading}
               dataSource={this.state.homeworks}
               renderItem={item => (
@@ -265,7 +266,6 @@ class AllHomeworks extends React.Component {
             </div>
           </div>
         </div>
-        <a href={`/classes/${this.props.classId}/courses/${this.props.courseId}`}><Button>Go back to Course Class</Button></a>
       </div>
     )
   }

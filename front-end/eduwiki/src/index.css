@@ -208,6 +208,7 @@ body {
 .centre_div {
   display: inline-block;
   margin:0 auto;
+  width: 40%;
   margin-left: 5%
 }
 

@@ -15,7 +15,7 @@ export default (props) => (
 )
 
 class Classes extends React.Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       classes: [{
@@ -44,7 +44,7 @@ class Classes extends React.Component {
     this.fetchStagedClasses = this.fetchStagedClasses.bind(this)
   }
 
-  fetchStagedClasses () {
+  fetchStagedClasses() {
     const stagedUrl = config.API_PATH + '/classes/stage'
     const options = {
       headers: {
@@ -65,20 +65,20 @@ class Classes extends React.Component {
       })
       .catch(_ => {
         message.error('Error fetching staged classes')
-        this.setState({stagedCourseView: false})
+        this.setState({ stagedCourseView: false })
       })
   }
 
-  filterStagedByName (ev) {
+  filterStagedByName(ev) {
     const name = ev.target.value.toLowerCase()
     this.setState(prevState => {
       let array = prevState.staged
       array = array.filter(staged => staged.className.toLowerCase().includes(name))
-      return ({viewStaged: array})
+      return ({ viewStaged: array })
     })
   }
 
-  render () {
+  render() {
     return (
       <div className='container'>
         <div className='left-div'>
@@ -91,7 +91,12 @@ class Classes extends React.Component {
                 size='large'
                 bordered
                 dataSource={this.state.viewClasses}
-                footer={<div><Button icon='plus' id='create_btn' type='primary' onClick={() => this.setState({stagedCourseView: true})}>See staged and Create Class</Button></div>}
+                footer={<div> {
+                  this.props.user.reputation.role === 'ROLE_ADMIN'
+                    ? <Button type='primary' onClick={() => this.setState({ createClassForm: true })}>Create Class</Button>
+                    : <Button icon='plus' id='create_btn' type='primary' onClick={() => this.setState({ stagedCourseView: true })}>See staged and Create Class</Button>
+                }
+                </div>}
                 renderItem={item => (
                   <List.Item>
                     <Card title={item.term}>
@@ -118,62 +123,61 @@ class Classes extends React.Component {
         <div class='right-div'>
           {
             this.state.seeStaged &&
-              <div id='stagedCourses'>
-                <h1>All staged Classes</h1>
-                <p> Filter By Name : </p>
-                <Input.Search
-                  name='stagedNameFilter'
-                  placeholder='Search name'
-                  onChange={this.filterStagedByName}
+            <div id='stagedCourses'>
+              <h1>All staged Classes</h1>
+              <p> Filter By Name : </p>
+              <Input.Search
+                name='stagedNameFilter'
+                placeholder='Search name'
+                onChange={this.filterStagedByName}
 
-                />
-                <List id='staged-list'
-                  grid={{ gutter: 50, column: 2 }}
-                  dataSource={this.state.viewStaged}
-                  renderItem={item => (
-                    <List.Item>
-                      <Card title={item.className}>
-                        <p>Term : {item.lecturedTerm}</p>
-                        <p>Programme : {item.programmeShortName}</p>
-                        <p>Created By : <a href={`/users/${item.createdBy}`}>{item.createdBy}</a></p>
-                        <p>Created at : {timesetampParser(item.timestamp)}</p>
-                      </Card>
-                      <IconText
-                        type='like-o'
-                        id='like_btn'
-                        onClick={() =>
-                          this.setState({
-                            voteUpStaged: true,
-                            stageID: item.stagedId
-                          })}
-                        text={item.votes}
-                      />
-                      <IconText
-                        type='dislike-o'
-                        id='dislike_btn'
-                        onClick={() =>
-                          this.setState({
-                            voteDownStaged: true,
-                            stageID: item.stagedId
-                          })}
-                      />
-                    </List.Item>
-                  )}
-                />
-                <Button type='primary' onClick={() => this.setState({createClassForm: true})}>Still want to create?</Button>
-                {this.state.createClassForm &&
-                  <CreateClass
-                    auth={window.localStorage.getItem('auth')}
-                    action={(data) => this.setState({data: data, createClassFlag: true})}
-                  />}
-              </div>
+              />
+              <List id='staged-list'
+                grid={{ gutter: 50, column: 2 }}
+                dataSource={this.state.viewStaged}
+                renderItem={item => (
+                  <List.Item>
+                    <Card title={item.className}>
+                      <p>Term : {item.lecturedTerm}</p>
+                      <p>Programme : {item.programmeShortName}</p>
+                      <p>Created By : <a href={`/users/${item.createdBy}`}>{item.createdBy}</a></p>
+                      <p>Created at : {timesetampParser(item.timestamp)}</p>
+                    </Card>
+                    <IconText
+                      type='like-o'
+                      id='like_btn'
+                      onClick={() =>
+                        this.setState({
+                          voteUpStaged: true,
+                          stageID: item.stagedId
+                        })}
+                      text={item.votes}
+                    />
+                    <IconText
+                      type='dislike-o'
+                      id='dislike_btn'
+                      onClick={() =>
+                        this.setState({
+                          voteDownStaged: true,
+                          stageID: item.stagedId
+                        })}
+                    />
+                  </List.Item>
+                )}
+              />
+              <Button type='primary' onClick={() => this.setState({ createClassForm: true })}>Still want to create?</Button> </div>
           }
+          {this.state.createClassForm &&
+            <CreateClass
+              auth={window.localStorage.getItem('auth')}
+              action={(data) => this.setState({ data: data, createClassFlag: true })}
+            />}
         </div>
       </div>
     )
   }
 
-  reorderClasses (data) {
+  reorderClasses(data) {
     let newArray = []
     data.forEach(value => {
       const index = newArray.findIndex(element => element.term === value.lecturedTerm)
@@ -204,7 +208,7 @@ class Classes extends React.Component {
     return newArray
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const uri = config.API_PATH + '/classes/'
     const header = {
       headers: {
@@ -223,11 +227,11 @@ class Classes extends React.Component {
       })
       .catch(error => {
         message.error('Error fetching classes')
-        this.setState({error: error})
+        this.setState({ error: error })
       })
   }
 
-  voteUpStaged () {
+  voteUpStaged() {
     const voteInput = {
       vote: 'Up'
     }
@@ -262,11 +266,11 @@ class Classes extends React.Component {
         } else {
           message.error('Cannot vote up')
         }
-        this.setState({voteUpStaged: false})
+        this.setState({ voteUpStaged: false })
       })
   }
 
-  voteDownStaged () {
+  voteDownStaged() {
     const voteInput = {
       vote: 'Down'
     }
@@ -301,11 +305,11 @@ class Classes extends React.Component {
         } else {
           message.error('Cannot vote up')
         }
-        this.setState({voteDownStaged: false})
+        this.setState({ voteDownStaged: false })
       })
   }
 
-  createDefinitiveClass () {
+  createDefinitiveClass() {
     const stagedUrl = config.API_PATH + '/classes'
     const options = {
       method: 'POST',
@@ -323,7 +327,14 @@ class Classes extends React.Component {
         this.setState(prevState => {
           let array = prevState.classes
           const idx = array.findIndex(obj => obj.term === klass.lecturedTerm)
-          array[idx].classes.push(klass)
+          if (idx === -1) {
+            array.push({
+              term: klass.lecturedTerm,
+              classes: [klass]
+            })
+          } else {
+            array[idx].classes.push(klass)
+          }
           return ({
             classes: array,
             createClassFlag: false
@@ -338,7 +349,7 @@ class Classes extends React.Component {
       })
   }
 
-  createStagedClass () {
+  createStagedClass() {
     const stagedUrl = config.API_PATH + '/classes/stage'
     const options = {
       method: 'POST',
@@ -369,7 +380,7 @@ class Classes extends React.Component {
       })
   }
 
-  createClass () {
+  createClass() {
     if (this.props.user.reputation.role === 'ROLE_ADMIN') {
       this.createDefinitiveClass()
     } else {
@@ -377,7 +388,7 @@ class Classes extends React.Component {
     }
   }
 
-  componentDidUpdate () {
+  componentDidUpdate() {
     if (this.state.voteUpStaged) {
       this.voteUpStaged()
     } else if (this.state.voteDownStaged) {

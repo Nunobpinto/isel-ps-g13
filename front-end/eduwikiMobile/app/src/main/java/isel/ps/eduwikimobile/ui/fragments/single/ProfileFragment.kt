@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
+import android.support.v7.app.ActionBar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,6 +36,10 @@ class ProfileFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate( R.layout.profile_fragment, container, false)
 
+        mainActivity.toolbar.displayOptions = ActionBar.DISPLAY_SHOW_TITLE
+        mainActivity.toolbar.title = ""
+        mainActivity.toolbar.subtitle = ""
+
         val viewPager = view.findViewById<ViewPager>(R.id.profile_view_pager)
         val tabLayout = view.findViewById<TabLayout>(R.id.profile_tab_layout)
 
@@ -60,7 +65,6 @@ class ProfileFragment : Fragment() {
                         successCb = { user ->
                             user_profile_name.text = "${user.givenName} ${user.familyName}"
                             user_profile_reputation.text = user.reputation!!.points.toString()
-                            mainActivity.toolbar.title = user.username
                             user_profile_progressBar.visibility = View.GONE
                             user_profile_name.visibility = View.VISIBLE
                             user_profile_reputation.visibility = View.VISIBLE

@@ -106,7 +106,7 @@ class Class extends React.Component {
               {this.state.otherCourses.map(crs =>
                 <Col span={8} key={crs.courseId}>
                   <Card title={crs.shortName}>
-                    <p>{crs.fullName} ({crs.shortName}) - <small> Created By {timestampParser(crs.createdBy)}</small> </p>
+                    <p>{crs.fullName} ({crs.shortName}) - <small> Created By {crs.createdBy}</small> </p>
                     <Button
                       type='primary'
                       onClick={() => this.setState({

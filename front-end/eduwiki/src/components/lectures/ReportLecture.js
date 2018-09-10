@@ -25,7 +25,7 @@ export default class extends React.Component {
   }
   handleChange (ev) {
     this.setState({
-      [ev.target.name]: ev.target.value
+      weekDay: ev
     })
   }
   handleSubmit (ev) {

@@ -33,6 +33,7 @@ export default class extends React.Component {
                   <p>Duration : {this.parseDuration(item.duration)}</p>
                   <p>Location : {item.location}</p>
                   <p>Created At : {timestampParser(item.timestamp)}</p>
+                  <a href={`/classes/${this.props.classId}/courses/${this.props.courseId}/lectures/${item.lectureId}`}><p>See its page</p></a>
                 </Card>
               </Col>
             </Row>

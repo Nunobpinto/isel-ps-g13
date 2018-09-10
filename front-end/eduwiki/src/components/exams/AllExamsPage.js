@@ -365,7 +365,7 @@ class AllExams extends React.Component {
     }
     fetcher(config.API_PATH + '/courses/' + this.props.courseId, header)
       .then(course => {
-        fetcher(`${config.API_PATH}/courses/${this.props.courseId}/terms/${this.props.termId}`, header)
+        fetcher(`${config.API_PATH}/terms/${this.props.termId}`, header)
           .then(term => {
             fetcher(uri, header)
               .then(exams => {
